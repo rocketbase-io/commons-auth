@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.rocketbase.commons</groupId>
+    <artifactId>commons-auth-root</artifactId>
+    <version>LATEST-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Marten Prieß</name>
+            <id>melistik</id>
+            <email>marten@rocketbase.io</email>
+            <organization>rocketbase.io software productions GmbH</organization>
+        </developer>
+        <developer>
+            <name>Niels Schelbach</name>
+            <id>captainnilo</id>
+            <email>niels@rocketbase.io</email>
+            <organization>rocketbase.io software productions GmbH</organization>
+        </developer>
+    </developers>
+
+    <modules>
+        <module>commons-auth</module>
+        <module>commons-auth-sample</module>
+    </modules>
+
+
+</project>
