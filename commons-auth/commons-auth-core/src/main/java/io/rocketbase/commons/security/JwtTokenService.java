@@ -1,26 +1,28 @@
 package io.rocketbase.commons.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.impl.DefaultClock;
 import io.rocketbase.commons.config.AuthConfiguration;
 import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.dto.JwtTokenBundle;
 import io.rocketbase.commons.model.AppUser;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
 
+@Slf4j
 @Component
 public class JwtTokenService implements Serializable {
+
+    public static final String REFRESH_TOKEN = "REFRESH_TOKEN";
 
     @Resource
     private AuthConfiguration authConfiguration;
@@ -46,12 +48,14 @@ public class JwtTokenService implements Serializable {
         return result;
     }
 
-    public Date getIssuedAtDateFromToken(String token) {
-        return getClaimFromToken(token, Claims::getIssuedAt);
+    public LocalDateTime getIssuedAtDateFromToken(String token) {
+        Date issuedAt = getClaimFromToken(token, Claims::getIssuedAt);
+        return LocalDateTime.ofInstant(issuedAt.toInstant(), ZoneId.systemDefault());
     }
 
-    public Date getExpirationDateFromToken(String token) {
-        return getClaimFromToken(token, Claims::getExpiration);
+    public LocalDateTime getExpirationDateFromToken(String token) {
+        Date expiration = getClaimFromToken(token, Claims::getExpiration);
+        return LocalDateTime.ofInstant(expiration.toInstant(), ZoneId.systemDefault());
     }
 
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
@@ -71,7 +75,7 @@ public class JwtTokenService implements Serializable {
 
         return new JwtTokenBundle(generateAccessToken(now, user),
                 prepareBuilder(now, getJwt().getExpiration().getRefreshToken(), user.getUsername())
-                        .claim("scopes", Arrays.asList("REFRESH_TOKEN"))
+                        .claim("scopes", Arrays.asList(REFRESH_TOKEN))
                         .compact());
     }
 
@@ -96,21 +100,31 @@ public class JwtTokenService implements Serializable {
     }
 
     public Boolean validateToken(String token, AppUser user) {
-        if (!getUsernameFromToken(token).equals(user.getUsername())) {
-            // username not fitting
+        try {
+            getAllClaimsFromToken(token);
+        } catch (JwtException e) {
+            // should show catch expiration etc. exceptions
+            if (log.isTraceEnabled()) {
+                log.trace("token is invalid", e);
+            }
             return false;
         }
-        if (!getExpirationDateFromToken(token).before(DefaultClock.INSTANCE.now())) {
-            // expired token
+        if (!getUsernameFromToken(token).equals(user.getUsername())) {
+            // username not fitting
+            if (log.isTraceEnabled()) {
+                log.trace("token username differs");
+            }
             return false;
         }
         if (user.getLastTokenInvalidation() == null) {
             return true;
         } else {
-            // check if invalidation is newer then token creation
-            Date created = getIssuedAtDateFromToken(token);
-            Date lastTokenInvalidation = Date.from(user.getLastTokenInvalidation().atZone(ZoneId.systemDefault()).toInstant());
-            return created.before(lastTokenInvalidation);
+            // check if token creation is newer then last token invalidation
+            boolean validIssued = user.getLastTokenInvalidation().isBefore(getIssuedAtDateFromToken(token));
+            if (log.isTraceEnabled() && !validIssued) {
+                log.trace("token is issued {} before lastTokenInvalidation {}", getIssuedAtDateFromToken(token), user.getLastTokenInvalidation());
+            }
+            return validIssued;
         }
     }
 }

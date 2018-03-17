@@ -1,5 +1,6 @@
 package io.rocketbase.sample.config;
 
+import io.rocketbase.commons.config.AuthConfiguration;
 import io.rocketbase.commons.filter.JwtAuthenticationTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -20,13 +21,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsUtils;
 
+import javax.annotation.Resource;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
+    @Resource
     private UserDetailsService userDetailsService;
+
+    @Resource
+    private AuthConfiguration authConfiguration;
 
     @Bean
     public RoleHierarchy roleHierarchy() {
@@ -72,8 +78,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     "/assets/**",
                     "/favicon.ico"
             ).permitAll()
-            .antMatchers("/auth/login").permitAll()
-            .antMatchers("/api/user/**").hasRole("ADMIN");
+            // configure auth endpoint
+            .antMatchers("/auth/login", "/auth/refresh").permitAll()
+            .antMatchers("/auth/me/**").authenticated()
+            // user-management is only allowed by ADMINS
+            .antMatchers("/api/user/**").hasRole(authConfiguration.getRole().getAdmin())
+            // secure all other api-endpoints
+            .antMatchers("/api/**").authenticated();
 
         // Custom JWT based security filter
         httpSecurity

@@ -4,12 +4,15 @@ spring:
     mongodb:
       database: commons-auth-sample
   # json configuration
-  #jackson:
-  #  serialization:
-  #    - WRITE_DATES_AS_TIMESTAMPS: false
-  #  serialization:
-  #    - INDENT_OUTPUT: true
-  #  default-property-inclusion: NON_NULL
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+      INDENT_OUTPUT: true
+    default-property-inclusion: NON_NULL
+
+logging:
+  level:
+    io.rocketbase: TRACE
 
 
 # auth configuration

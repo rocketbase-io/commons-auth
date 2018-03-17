@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Email;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -20,11 +22,12 @@ import java.util.List;
 @NoArgsConstructor
 public class AppUserEntity extends AppUser {
 
+    @Id
+    private String id;
 
     @NotNull
     @Indexed(unique = true)
-    private String id;
-
+    @Email
     private String username;
 
     private String firstName;
@@ -43,6 +46,7 @@ public class AppUserEntity extends AppUser {
 
     private boolean enabled;
 
+    @CreatedDate
     private LocalDateTime created;
 
     private LocalDateTime lastLogin;

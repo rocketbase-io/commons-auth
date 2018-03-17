@@ -1,5 +1,6 @@
-package io.rocketbase.sample.dto.data;
+package io.rocketbase.sample.dto.employee;
 
+import io.rocketbase.sample.dto.company.CompanyRead;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

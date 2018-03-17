@@ -69,6 +69,7 @@ public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUse
                 .username(username)
                 .password(passwordEncoder.encode(password))
                 .roles(Arrays.asList(admin ? authConfiguration.getRole().getAdmin() : authConfiguration.getRole().getUser()))
+                .enabled(true)
                 .created(LocalDateTime.now())
                 .build());
     }

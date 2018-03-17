@@ -16,6 +16,8 @@ public class UserInitializer {
 
     @PostConstruct
     public void postConstruct() {
-        appUserService.initializeUser("admin", "admin", "info@rocketbase.io", true);
+        if (appUserService.getByUsername("admin") == null) {
+            appUserService.initializeUser("admin", "admin", "info@rocketbase.io", true);
+        }
     }
 }

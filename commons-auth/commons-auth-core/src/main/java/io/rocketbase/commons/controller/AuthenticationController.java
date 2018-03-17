@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -55,6 +56,7 @@ public class AuthenticationController {
     }
 
     @RequestMapping(value = "/me", method = RequestMethod.GET)
+    @ResponseBody
     public ResponseEntity<AppUserRead> getAuthenticated(Authentication authentication) {
         if (authentication == null || !(authentication.getPrincipal() instanceof AppUser)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -77,5 +79,19 @@ public class AuthenticationController {
         appUserService.updatePassword(username, passwordChange.getNewPassword());
 
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @RequestMapping(value = "/refresh", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<String> refreshToken(Authentication authentication) {
+        if (authentication == null || !(authentication.getPrincipal() instanceof AppUser)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        if (authentication.getAuthorities() == null || !authentication.getAuthorities()
+                .contains(new SimpleGrantedAuthority(String.format("ROLE_%s", JwtTokenService.REFRESH_TOKEN)))) {
+            return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
+        }
+
+        return ResponseEntity.ok(jwtTokenService.generateAccessToken((AppUser) authentication.getPrincipal()));
     }
 }

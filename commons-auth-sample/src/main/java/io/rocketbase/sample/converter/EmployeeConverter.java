@@ -1,8 +1,8 @@
 package io.rocketbase.sample.converter;
 
 import io.rocketbase.commons.converter.EntityReadWriteConverter;
-import io.rocketbase.sample.dto.data.EmployeeRead;
-import io.rocketbase.sample.dto.edit.EmployeeWrite;
+import io.rocketbase.sample.dto.employee.EmployeeRead;
+import io.rocketbase.sample.dto.employee.EmployeeWrite;
 import io.rocketbase.sample.model.Employee;
 import org.mapstruct.*;
 
