@@ -27,7 +27,6 @@ public class AppUserEntity extends AppUser {
 
     @NotNull
     @Indexed(unique = true)
-    @Email
     private String username;
 
     private String firstName;
