@@ -8,12 +8,11 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 @EnableConfigurationProperties
-@ConfigurationProperties(prefix = "auth")
-public class AuthConfiguration {
+@ConfigurationProperties(prefix = "auth.registration")
+public class RegistrationConfiguration {
 
-    private String roleNameAdmin = "ADMIN";
-    private String roleNameUser = "USER";
-    private String keySecret = "QENtCtMfH7pv2Qf6GWBcCEDMApQC62SA";
-
-
+    private boolean enabled = true;
+    private boolean emailValidation = true;
+    private long emailValidationExpiration = 1440;
+    private String role = "USER";
 }

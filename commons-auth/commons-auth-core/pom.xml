@@ -85,6 +85,17 @@ SOFTWARE.
         </dependency>
         <!-- mapstruct end -->
 
+        <!-- mailing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mitchellbosecke</groupId>
+            <artifactId>pebble</artifactId>
+            <version>${pebble.version}</version>
+        </dependency>
+
         <!-- security -->
         <dependency>
             <groupId>org.springframework.security</groupId>

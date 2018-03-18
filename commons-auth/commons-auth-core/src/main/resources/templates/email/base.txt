@@ -1,0 +1,21 @@
+{{ header.title }}
+
+{% for line in lines %}
+{{ line | raw}}
+{% endfor %}
+
+{% if action %}
+{{ action.text }} -> {{ action.url | urlencode }}
+{% endif %}
+
+{% for greet in greetings %}
+{{ greet | raw}}
+{% endfor %}
+
+{% if receiveNote %}
+You’re receiving this email because you have an account in {{ serviceName }}.
+If you are not sure why you’re receiving this, please contact us {{ supportEmail }}.
+{% endif %}
+{% if copyright %}
+{{ copyright.date | date("yyyy") }} {{ copyright.name }}
+{% endif %}

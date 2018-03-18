@@ -82,7 +82,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/auth/login", "/auth/refresh").permitAll()
             .antMatchers("/auth/me/**").authenticated()
             // user-management is only allowed by ADMINS
-            .antMatchers("/api/user/**").hasRole(authConfiguration.getRole().getAdmin())
+            .antMatchers("/api/user/**").hasRole(authConfiguration.getRoleNameAdmin())
             // secure all other api-endpoints
             .antMatchers("/api/**").authenticated();
 

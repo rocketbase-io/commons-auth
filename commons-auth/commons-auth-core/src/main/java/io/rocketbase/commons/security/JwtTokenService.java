@@ -2,7 +2,7 @@ package io.rocketbase.commons.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.impl.DefaultClock;
-import io.rocketbase.commons.config.AuthConfiguration;
+import io.rocketbase.commons.config.JwtConfiguration;
 import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.dto.JwtTokenBundle;
 import io.rocketbase.commons.model.AppUser;
@@ -25,14 +25,10 @@ public class JwtTokenService implements Serializable {
     public static final String REFRESH_TOKEN = "REFRESH_TOKEN";
 
     @Resource
-    private AuthConfiguration authConfiguration;
+    private JwtConfiguration jwtConfiguration;
 
     @Resource
     private AppUserConverter appUserConverter;
-
-    private AuthConfiguration.JwtConfiguration getJwt() {
-        return authConfiguration.getJwt();
-    }
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -65,7 +61,7 @@ public class JwtTokenService implements Serializable {
 
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
-                .setSigningKey(getJwt().getSecret())
+                .setSigningKey(jwtConfiguration.getSecret())
                 .parseClaimsJws(token)
                 .getBody();
     }
@@ -74,7 +70,7 @@ public class JwtTokenService implements Serializable {
         Date now = DefaultClock.INSTANCE.now();
 
         return new JwtTokenBundle(generateAccessToken(now, user),
-                prepareBuilder(now, getJwt().getExpiration().getRefreshToken(), user.getUsername())
+                prepareBuilder(now, jwtConfiguration.getExpiration().getRefreshToken(), user.getUsername())
                         .claim("scopes", Arrays.asList(REFRESH_TOKEN))
                         .compact());
     }
@@ -85,7 +81,7 @@ public class JwtTokenService implements Serializable {
     }
 
     private String generateAccessToken(Date now, AppUser user) {
-        return prepareBuilder(now, getJwt().getExpiration().getAccessToken(), user.getUsername())
+        return prepareBuilder(now, jwtConfiguration.getExpiration().getAccessToken(), user.getUsername())
                 .claim("scopes", user.getRoles())
                 .claim("user", appUserConverter.fromEntity(user))
                 .compact();
@@ -94,8 +90,8 @@ public class JwtTokenService implements Serializable {
     private JwtBuilder prepareBuilder(final Date createdDate, long expiration, String username) {
         return Jwts.builder()
                 .setIssuedAt(createdDate)
-                .setExpiration(new Date(createdDate.getTime() + expiration))
-                .signWith(SignatureAlgorithm.HS512, getJwt().getSecret())
+                .setExpiration(new Date(createdDate.getTime() + expiration * 60 * 1000))
+                .signWith(SignatureAlgorithm.HS512, jwtConfiguration.getSecret())
                 .setSubject(username);
     }
 
