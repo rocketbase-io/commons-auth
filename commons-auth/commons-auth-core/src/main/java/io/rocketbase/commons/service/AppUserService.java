@@ -3,6 +3,9 @@ package io.rocketbase.commons.service;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import io.rocketbase.commons.config.AuthConfiguration;
+import io.rocketbase.commons.config.RegistrationConfiguration;
+import io.rocketbase.commons.dto.RegistrationRequest;
 import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.model.AppUser;
 import lombok.SneakyThrows;
@@ -15,11 +18,18 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Service
 public class AppUserService implements UserDetailsService {
+
+    @Resource
+    private AuthConfiguration authConfiguration;
+
+    @Resource
+    private RegistrationConfiguration registrationConfiguration;
 
     @Resource
     private AppUserPersistenceService appUserPersistenceService;
@@ -49,6 +59,10 @@ public class AppUserService implements UserDetailsService {
             return userEntity.get();
         }
         return null;
+    }
+
+    public Optional<AppUser> findByEmail(String email) {
+        return appUserPersistenceService.findByEmail(email);
     }
 
     public AppUser updateLastLogin(String username) {
@@ -91,6 +105,41 @@ public class AppUserService implements UserDetailsService {
     }
 
     public AppUser initializeUser(String username, String password, String email, boolean admin) {
-        return appUserPersistenceService.initializeUser(username, password, email, admin);
+        AppUser instance = appUserPersistenceService.initNewInstance();
+        instance.setUsername(username);
+        instance.setEmail(email);
+        instance.setPassword(passwordEncoder.encode(password));
+        instance.setRoles(Arrays.asList(admin ? authConfiguration.getRoleNameAdmin() : authConfiguration.getRoleNameUser()));
+        instance.setEnabled(true);
+
+        return appUserPersistenceService.save(instance);
+    }
+
+    public AppUser registerUser(RegistrationRequest registration) {
+        AppUser instance = appUserPersistenceService.initNewInstance();
+        instance.setUsername(registration.getUsername());
+        instance.setFirstName(registration.getFirstName());
+        instance.setLastName(registration.getLastName());
+        instance.setPassword(passwordEncoder.encode(registration.getPassword()));
+        instance.setRoles(Arrays.asList(registrationConfiguration.getRole()));
+        instance.setEnabled(!registrationConfiguration.isEmailValidation());
+
+        return appUserPersistenceService.save(instance);
+    }
+
+    public AppUser registrationVerification(String username) {
+        AppUser entity = getByUsername(username);
+        if (entity == null) {
+            throw new NotFoundException();
+        }
+
+        entity.setEnabled(true);
+        entity.updateLastLogin();
+
+        return appUserPersistenceService.save(entity);
+    }
+
+    public void delete(AppUser user) {
+        appUserPersistenceService.delete(user);
     }
 }

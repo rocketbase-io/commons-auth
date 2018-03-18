@@ -1,16 +1,14 @@
 package io.rocketbase.commons.service;
 
-import io.rocketbase.commons.config.AuthConfiguration;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.repository.AppUserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,16 +18,14 @@ public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUse
     @Resource
     private AppUserRepository repository;
 
-    @Resource
-    private PasswordEncoder passwordEncoder;
-
-    @Resource
-    private AuthConfiguration authConfiguration;
-
-
     @Override
     public Optional<AppUserEntity> findByUsername(String username) {
         return repository.findByUsername(username);
+    }
+
+    @Override
+    public Optional<AppUserEntity> findByEmail(String email) {
+        return repository.findByEmail(email);
     }
 
     @Override
@@ -63,14 +59,11 @@ public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUse
     }
 
     @Override
-    public AppUserEntity initializeUser(String username, String password, String email, boolean admin) {
-        return repository.save(AppUserEntity.builder()
+    public AppUserEntity initNewInstance() {
+        return AppUserEntity.builder()
                 .id(UUID.randomUUID().toString())
-                .username(username)
-                .password(passwordEncoder.encode(password))
-                .roles(Arrays.asList(admin ? authConfiguration.getRole().getAdmin() : authConfiguration.getRole().getUser()))
-                .enabled(true)
                 .created(LocalDateTime.now())
-                .build());
+                .roles(new ArrayList<>())
+                .build();
     }
 }

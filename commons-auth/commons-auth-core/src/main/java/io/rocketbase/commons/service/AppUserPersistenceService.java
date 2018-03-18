@@ -10,6 +10,8 @@ public interface AppUserPersistenceService<S extends AppUser> {
 
     Optional<S> findByUsername(String username);
 
+    Optional<S> findByEmail(String email);
+
     Page<S> findAll(Pageable pageable);
 
     S save(S entity);
@@ -22,6 +24,5 @@ public interface AppUserPersistenceService<S extends AppUser> {
 
     void deleteAll();
 
-    S initializeUser(String username, String password, String email, boolean admin);
-
+    S initNewInstance();
 }
