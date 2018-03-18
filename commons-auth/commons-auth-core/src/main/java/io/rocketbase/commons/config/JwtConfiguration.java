@@ -20,11 +20,6 @@ public class JwtConfiguration {
     @NotNull
     private String secret;
 
-    private Expiration expiration;
-
-    @Data
-    public static class Expiration {
-        private long accessToken = 60;
-        private long refreshToken = 43200;
-    }
+    private long accessTokenExpiration = 60;
+    private long refreshTokenExpiration = 43200;
 }

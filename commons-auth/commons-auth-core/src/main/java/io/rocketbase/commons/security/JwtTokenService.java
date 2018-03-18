@@ -70,7 +70,7 @@ public class JwtTokenService implements Serializable {
         Date now = DefaultClock.INSTANCE.now();
 
         return new JwtTokenBundle(generateAccessToken(now, user),
-                prepareBuilder(now, jwtConfiguration.getExpiration().getRefreshToken(), user.getUsername())
+                prepareBuilder(now, jwtConfiguration.getRefreshTokenExpiration(), user.getUsername())
                         .claim("scopes", Arrays.asList(REFRESH_TOKEN))
                         .compact());
     }
@@ -81,7 +81,7 @@ public class JwtTokenService implements Serializable {
     }
 
     private String generateAccessToken(Date now, AppUser user) {
-        return prepareBuilder(now, jwtConfiguration.getExpiration().getAccessToken(), user.getUsername())
+        return prepareBuilder(now, jwtConfiguration.getAccessTokenExpiration(), user.getUsername())
                 .claim("scopes", user.getRoles())
                 .claim("user", appUserConverter.fromEntity(user))
                 .compact();
