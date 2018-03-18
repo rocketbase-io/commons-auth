@@ -9,26 +9,20 @@ spring:
       WRITE_DATES_AS_TIMESTAMPS: false
       INDENT_OUTPUT: true
     default-property-inclusion: NON_NULL
+  # email
+  mail:
+    host: smtp.mailgun.org
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    port: 587
 
 logging:
   level:
     io.rocketbase: TRACE
 
 
+
 # auth configuration
 auth:
-  registration:
-    enabled: true
-    email-validation: true
-    role: USER
-  role:
-    admin: ADMIN
-    user: USER
   jwt:
-    header: Authorization
-    token-prefix: 'Bearer '
-    uri-param: token
     secret: 'cmFiRmZ5RThJc2pjMzBONVE3dnczbW1mb3puRjhnaGRYeFA3NmpRa0JGa2x3Qk1JZXVKRjJBZVFidW1vNzZOZg=='
-    expiration:
-      access-token: 3600000 # 1 hour
-      refresh-token: 2592000000 # 30 days
