@@ -1,6 +1,5 @@
 package io.rocketbase.commons.service;
 
-import io.rocketbase.commons.config.AuthConfiguration;
 import io.rocketbase.commons.config.EmailConfiguration;
 import io.rocketbase.commons.config.RegistrationConfiguration;
 import io.rocketbase.commons.model.AppUser;
@@ -24,6 +23,7 @@ public class EmailService {
 
     @Resource
     private EmailConfiguration emailConfiguration;
+
     @Resource
     private RegistrationConfiguration registrationConfiguration;
 
@@ -61,7 +61,7 @@ public class EmailService {
         emailSender.send(message);
     }
 
-    private String buildActionUrl(String username, String applicationBaseUrl, ActionType actionType) {
+    protected String buildActionUrl(String username, String applicationBaseUrl, ActionType actionType) {
         StringBuffer uriBuilder = new StringBuffer();
         if (emailConfiguration.getApplicationBaseUrl() != null) {
             uriBuilder.append(emailConfiguration.getApplicationBaseUrl());
@@ -69,7 +69,7 @@ public class EmailService {
             uriBuilder.append(applicationBaseUrl);
         }
         if (uriBuilder.toString().endsWith("/")) {
-            uriBuilder.deleteCharAt(uriBuilder.toString().length() - 1);
+            uriBuilder.deleteCharAt(uriBuilder.length() - 1);
         }
         uriBuilder.append(actionType.getApiPath());
 

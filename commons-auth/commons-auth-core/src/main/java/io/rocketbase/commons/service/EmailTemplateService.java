@@ -24,7 +24,7 @@ public class EmailTemplateService {
     public HtmlTextEmail buildHtmlTextTemplate(TemplateConfigBuilder configBuilder) {
         try {
             PebbleTemplate htmlTemplate = engine.getTemplate("templates/email/base.html");
-            PebbleTemplate textTemplate = engine.getTemplate("templates/email/base.text");
+            PebbleTemplate textTemplate = engine.getTemplate("templates/email/base.txt");
 
             Writer htmlWriter = new StringWriter();
             htmlTemplate.evaluate(htmlWriter, configBuilder.getTemplate());
