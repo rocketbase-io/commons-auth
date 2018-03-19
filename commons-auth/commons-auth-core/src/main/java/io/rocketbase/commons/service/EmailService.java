@@ -41,7 +41,7 @@ public class EmailService {
                 MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());
 
-        TemplateConfigBuilder templateConfigBuilder = TemplateConfigBuilder.initDefault()
+        TemplateConfigBuilder templateConfigBuilder = TemplateConfigBuilder.build()
                 .title("Please Verify Your Account")
                 .header("Verify Your Account")
                 .addLine(String.format("Hi %s,", user.getUsername()))

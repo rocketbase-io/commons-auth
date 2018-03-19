@@ -12,7 +12,10 @@ import org.springframework.stereotype.Service;
 
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -48,32 +51,24 @@ public class EmailTemplateService {
 
     public static class TemplateConfigBuilder {
 
+        private static ColorStyle BASE_STYLE = new ColorStyle("ffffff", "457B9D");
         @Getter
         private Map<String, Object> template = new HashMap<>();
 
         private TemplateConfigBuilder() {
         }
 
-        public static TemplateConfigBuilder initDefault() {
-            TemplateConfigBuilder self = new TemplateConfigBuilder();
-            self.template.put("header.color.text", "ffffff");
-            self.template.put("header.color.bg", "457B9D");
-            self.template.put("action.color.text", "ffffff");
-            self.template.put("action.color.bg", "457B9D");
-
-            self.template.put("copyright.date", new Date());
-
-            return self;
+        public static TemplateConfigBuilder build() {
+            return new TemplateConfigBuilder();
         }
 
         public TemplateConfigBuilder header(String title) {
-            template.put("header.title", title);
+            template.put("header", new Header(title, BASE_STYLE));
             return this;
         }
 
-        public TemplateConfigBuilder headerStyling(String colorText, String colorBg) {
-            template.put("header.color.text", colorText);
-            template.put("header.color.bg", colorBg);
+        public TemplateConfigBuilder headerWithStyling(String title, String colorText, String colorBg) {
+            template.put("header", new Header(title, new ColorStyle(colorText, colorBg)));
             return this;
         }
 
@@ -83,22 +78,17 @@ public class EmailTemplateService {
         }
 
         public TemplateConfigBuilder action(String url, String text) {
-            template.put("action", true);
-            template.put("action.url", url);
-            template.put("action.text", text);
+            template.put("action", new Action(url, text, BASE_STYLE));
             return this;
         }
 
-        public TemplateConfigBuilder actionStyling(String colorText, String colorBg) {
-            template.put("action.color.text", colorText);
-            template.put("action.color.bg", colorBg);
+        public TemplateConfigBuilder actionWithStyling(String url, String text, String colorText, String colorBg) {
+            template.put("action", new Action(url, text, new ColorStyle(colorText, colorBg)));
             return this;
         }
 
         public TemplateConfigBuilder copyright(String url, String name) {
-            template.put("copyright", true);
-            template.put("copyright.url", url);
-            template.put("copyright.name", name);
+            template.put("copyright", new Copyright(url, name));
             return this;
         }
 
@@ -123,6 +113,35 @@ public class EmailTemplateService {
             }
             ((List) template.get(key)).add(text);
             return this;
+        }
+
+        @RequiredArgsConstructor
+        @Data
+        private static class ColorStyle {
+            private final String text;
+            private final String bg;
+        }
+
+        @RequiredArgsConstructor
+        @Data
+        private static class Header {
+            private final String title;
+            private final ColorStyle color;
+        }
+
+        @RequiredArgsConstructor
+        @Data
+        private static class Action {
+            private final String url;
+            private final String text;
+            private final ColorStyle color;
+        }
+
+        @RequiredArgsConstructor
+        @Data
+        private static class Copyright {
+            private final String url;
+            private final String name;
         }
 
     }
