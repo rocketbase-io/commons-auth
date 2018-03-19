@@ -22,14 +22,20 @@ import java.util.Base64;
 public class VerificationLinkService {
 
     private static final String ALGORITHM = "Blowfish";
+
     @Resource
     private AuthConfiguration authConfiguration;
+
     private Key key;
 
     @SneakyThrows
     @PostConstruct
     void postConstruct() {
-        key = new SecretKeySpec(authConfiguration.getKeySecret().getBytes(), ALGORITHM);
+        initKey(authConfiguration.getKeySecret());
+    }
+
+    protected void initKey(String keySecret) {
+        key = new SecretKeySpec(keySecret.getBytes(), ALGORITHM);
     }
 
     @SneakyThrows
@@ -54,7 +60,7 @@ public class VerificationLinkService {
 
             byte[] decValue = cipher.doFinal(Base64.getDecoder()
                     .decode(encKey));
-            return VerificationToken.parseString(String.valueOf(decValue));
+            return VerificationToken.parseString(new String(decValue));
         } catch (Exception e) {
             log.debug("unable to decode key", e.getMessage());
             return new VerificationToken(null, null, null);
@@ -86,7 +92,7 @@ public class VerificationLinkService {
             try {
                 String values[] = serialization.split("\\|");
                 LocalDateTime exp = LocalDateTime.parse(values[1], DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-                ActionType type = ActionType.valueOf(values[2]);
+                ActionType type = ActionType.values()[Integer.parseInt(values[2])];
                 return new VerificationToken(values[0], exp, type);
             } catch (Exception e) {
                 log.warn("couldn't parse token {}, error: {}", serialization, e.getMessage());
