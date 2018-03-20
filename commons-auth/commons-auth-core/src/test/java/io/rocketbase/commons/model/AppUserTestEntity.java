@@ -27,6 +27,8 @@ public class AppUserTestEntity extends AppUser {
 
     private String email;
 
+    private String avatar;
+
     private List<String> roles;
 
     private boolean enabled;

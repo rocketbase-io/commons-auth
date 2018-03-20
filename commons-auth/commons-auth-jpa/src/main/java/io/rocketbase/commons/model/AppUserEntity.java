@@ -41,6 +41,9 @@ public class AppUserEntity extends AppUser {
     @Email
     private String email;
 
+    @Column(length = 2000)
+    private String avatar;
+
     @ElementCollection
     @CollectionTable(
             name = "USER_ROLES",

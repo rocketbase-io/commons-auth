@@ -36,6 +36,10 @@ public abstract class AppUser implements UserDetails {
 
     public abstract void setEmail(String email);
 
+    public abstract String getAvatar();
+
+    public abstract void setAvatar(String avatar);
+
     public abstract List<String> getRoles();
 
     public abstract void setRoles(List<String> roles);

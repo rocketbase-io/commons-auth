@@ -41,6 +41,8 @@ public class AppUserEntity extends AppUser {
     @Email
     private String email;
 
+    private String avatar;
+
     private List<String> roles;
 
     private boolean enabled;

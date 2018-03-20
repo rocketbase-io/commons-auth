@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import io.rocketbase.commons.config.AuthConfiguration;
+import io.rocketbase.commons.config.GravatarConfiguration;
 import io.rocketbase.commons.config.RegistrationConfiguration;
 import io.rocketbase.commons.dto.RegistrationRequest;
 import io.rocketbase.commons.exception.NotFoundException;
@@ -32,7 +33,13 @@ public class AppUserService implements UserDetailsService {
     private RegistrationConfiguration registrationConfiguration;
 
     @Resource
+    private GravatarConfiguration gravatarConfiguration;
+
+    @Resource
     private AppUserPersistenceService appUserPersistenceService;
+
+    @Resource
+    private GravatarService gravatarService;
 
     @Resource
     private PasswordEncoder passwordEncoder;
@@ -111,6 +118,9 @@ public class AppUserService implements UserDetailsService {
         instance.setPassword(passwordEncoder.encode(password));
         instance.setRoles(Arrays.asList(admin ? authConfiguration.getRoleNameAdmin() : authConfiguration.getRoleNameUser()));
         instance.setEnabled(true);
+        if (gravatarConfiguration.isEnabled()) {
+            instance.setAvatar(gravatarService.getAvatar(email));
+        }
 
         return appUserPersistenceService.save(instance);
     }
@@ -123,6 +133,9 @@ public class AppUserService implements UserDetailsService {
         instance.setPassword(passwordEncoder.encode(registration.getPassword()));
         instance.setRoles(Arrays.asList(registrationConfiguration.getRole()));
         instance.setEnabled(!registrationConfiguration.isEmailValidation());
+        if (gravatarConfiguration.isEnabled()) {
+            instance.setAvatar(gravatarService.getAvatar(registration.getEmail()));
+        }
 
         return appUserPersistenceService.save(instance);
     }
