@@ -45,6 +45,11 @@ SOFTWARE.
             <artifactId>commons-auth-api</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.rocketbase.commons</groupId>
+            <artifactId>commons-rest-server</artifactId>
+            <version>0.2.0</version>
+        </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>

@@ -5,9 +5,6 @@ set -e
 # only do deployment, when travis detects a new tag
 if [ ! -z "$TRAVIS_TAG" ]
 then
-    echo "only perform for commons-rest not for sample etc."
-    cd commons-auth
-
     echo "on a tag -> set pom.xml <version> to $TRAVIS_TAG"
     mvn versions:set -DnewVersion=$TRAVIS_TAG
     mvn versions:commit

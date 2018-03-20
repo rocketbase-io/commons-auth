@@ -19,11 +19,11 @@ Containing an implementation for Token-Generators, UserManagement, Filters and m
 
 ## commons-auth-mongo
 
-Containing the persistence layer for user via mongo-db
+Containing the persistence layer for user via spring-data-mongo
 
-## commons-auth-sample
+## commons-auth-jpa
 
-Sample spring-boot application to demonstrate the use of the provided commons-auth libraries. 
+Containing the persistence layer for user via jpa
 
 ### The MIT License (MIT)
 Copyright (c) 2018 rocketbase.io
