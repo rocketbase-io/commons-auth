@@ -1,4 +1,4 @@
-package io.rocketbase.commons.resource;
+package io.rocketbase.commons.adapters;
 
 public interface JwtTokenProvider {
 
@@ -8,5 +8,5 @@ public interface JwtTokenProvider {
 
     String getRefreshToken();
 
-    String getRefreshTokenEndpoint();
+    String getBaseAuthApiUrl();
 }

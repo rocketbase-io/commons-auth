@@ -1,13 +1,13 @@
 package io.rocketbase.commons.controller;
 
 import io.rocketbase.commons.adapters.JwtRestTemplate;
+import io.rocketbase.commons.adapters.JwtTokenProvider;
 import io.rocketbase.commons.adapters.SimpleJwtTokenProvider;
 import io.rocketbase.commons.dto.AppUserRead;
 import io.rocketbase.commons.dto.JwtTokenBundle;
 import io.rocketbase.commons.dto.LoginRequest;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.resource.AuthenticationResource;
-import io.rocketbase.commons.resource.JwtTokenProvider;
 import io.rocketbase.commons.test.BaseIntegrationTest;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
 import org.junit.Assert;
@@ -78,8 +78,8 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
                 .build();
 
         // when
-        SimpleJwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl() + "/auth/me/refresh");
-        AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider), getBaseUrl());
+        SimpleJwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl());
+        AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
         JwtTokenBundle response = resource.login(login);
 
         // then
@@ -94,10 +94,10 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
         AppUser user = buildSampleUser();
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
 
-        JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl() + "/auth/me/refresh", tokenBundle);
+        JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
 
         // when
-        AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider), getBaseUrl());
+        AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
         AppUserRead response = resource.getAuthenticated();
 
         // the
@@ -113,13 +113,13 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
         AppUser user = buildSampleUser();
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
 
-        SimpleJwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl() + "/auth/refresh");
+        SimpleJwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl());
         tokenProvider.setRefreshToken(tokenBundle.getRefreshToken());
         String expiredToken = modifiedJwtTokenService.generateExpiredToken(user);
         tokenProvider.setToken(expiredToken);
 
         // when
-        AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider), getBaseUrl());
+        AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
         AppUserRead response = resource.getAuthenticated();
 
         // the
@@ -133,11 +133,11 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
     public void getAuthenticatedWithInvalidRefreshToken() {
         // given
         AppUser user = buildSampleUser();
-        SimpleJwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl() + "/auth/refresh");
+        SimpleJwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl());
         tokenProvider.setRefreshToken("---");
         tokenProvider.setToken(modifiedJwtTokenService.generateExpiredToken(user));
 
-        AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider), getBaseUrl());
+        AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
 
         // when
         try {
@@ -147,4 +147,5 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
         } catch (HttpClientErrorException e) {
         }
     }
+
 }
