@@ -6,8 +6,8 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Base64;
-import java.util.Date;
 import java.util.List;
 
 public final class JwtTokenDecoder {
@@ -29,6 +29,9 @@ public final class JwtTokenDecoder {
     @Setter
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class JwtTokenBody {
+
+        private static final ZoneId ZONE_UTC = ZoneId.of("+0");
+
         /**
          * token creation date
          */
@@ -48,21 +51,21 @@ public final class JwtTokenDecoder {
 
         public boolean isExpired() {
             if (exp != null) {
-                return getExpiration().isBefore(LocalDateTime.now());
+                return getExpiration().isBefore(LocalDateTime.now(ZONE_UTC));
             }
             return false;
         }
 
         public LocalDateTime getExpiration() {
             if (exp != null) {
-                return LocalDateTime.ofInstant(new Date(exp * 1000).toInstant(), ZoneId.systemDefault());
+                return LocalDateTime.ofEpochSecond(exp, 0, ZoneOffset.UTC);
             }
             return null;
         }
 
         public LocalDateTime getIssuedAt() {
             if (iat != null) {
-                return LocalDateTime.ofInstant(new Date(iat * 1000).toInstant(), ZoneId.systemDefault());
+                return LocalDateTime.ofEpochSecond(iat, 0, ZoneOffset.UTC);
             }
             return null;
         }

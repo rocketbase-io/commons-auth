@@ -5,13 +5,14 @@ import io.rocketbase.commons.security.JwtTokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 @Slf4j
 @Component
 public class ModifiedJwtTokenService extends JwtTokenService {
 
     public String generateExpiredToken(AppUser user) {
-        return generateAccessToken(new Date(new Date().getTime() - 1000 * 60 * 60 * 24), user);
+        return generateAccessToken(LocalDateTime.now(ZoneOffset.UTC).minusDays(100), user);
     }
 }

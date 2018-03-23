@@ -15,6 +15,8 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 @Slf4j
 public class JwtClientRequestFactory extends HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory {
@@ -22,6 +24,9 @@ public class JwtClientRequestFactory extends HttpComponentsClientHttpRequestFact
     private JwtTokenProvider tokenProvider;
     private String header = HttpHeaders.AUTHORIZATION;
     private String tokenPrefix = "Bearer ";
+
+    private String lastToken;
+    private LocalDateTime exp;
 
     public JwtClientRequestFactory(@NotNull JwtTokenProvider tokenProvider) {
         super(HttpClients.custom()
@@ -47,8 +52,19 @@ public class JwtClientRequestFactory extends HttpComponentsClientHttpRequestFact
 
     private boolean checkTokenProvidedNeedsRefresh() {
         if (tokenProvider.getToken() != null && tokenProvider.getRefreshToken() != null) {
-            JwtTokenBody tokenBody = JwtTokenDecoder.decodeTokenBody(tokenProvider.getToken());
-            return tokenBody.isExpired();
+            if (lastToken == null || !tokenProvider.getToken().equals(lastToken)) {
+                JwtTokenBody tokenBody = JwtTokenDecoder.decodeTokenBody(tokenProvider.getToken());
+                exp = tokenBody.getExpiration();
+                if (exp == null) {
+                    // in case of broken tokens
+                    return true;
+                }
+                lastToken = tokenProvider.getToken();
+            }
+
+            return LocalDateTime.now(ZoneOffset.UTC)
+                    .plusMinutes(1)
+                    .isAfter(exp);
         }
         return false;
     }
@@ -62,6 +78,9 @@ public class JwtClientRequestFactory extends HttpComponentsClientHttpRequestFact
             HttpResponse response = getHttpClient().execute(uriRequest);
             String newToken = EntityUtils.toString(response.getEntity());
             tokenProvider.setToken(newToken);
+
+            lastToken = null;
+            exp = null;
 
             if (log.isTraceEnabled()) {
                 log.trace("refreshed token before processing http-request");

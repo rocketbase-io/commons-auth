@@ -94,11 +94,9 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
         AppUser user = buildSampleUser();
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
 
-        JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl() + "/auth/me/refresh")
-                .init(tokenBundle);
+        JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl() + "/auth/me/refresh", tokenBundle);
 
         // when
-
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider), getBaseUrl());
         AppUserRead response = resource.getAuthenticated();
 
@@ -106,6 +104,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
         assertThat(response, notNullValue());
         assertThat(response.getUsername(), equalTo(user.getUsername()));
         assertThat(response.getEmail(), equalTo(user.getEmail()));
+        assertThat(tokenProvider.getToken(), equalTo(tokenBundle.getToken()));
     }
 
     @Test
@@ -116,7 +115,8 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
 
         SimpleJwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl() + "/auth/refresh");
         tokenProvider.setRefreshToken(tokenBundle.getRefreshToken());
-        tokenProvider.setToken(modifiedJwtTokenService.generateExpiredToken(user));
+        String expiredToken = modifiedJwtTokenService.generateExpiredToken(user);
+        tokenProvider.setToken(expiredToken);
 
         // when
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider), getBaseUrl());
@@ -126,6 +126,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
         assertThat(response, notNullValue());
         assertThat(response.getUsername(), equalTo(user.getUsername()));
         assertThat(response.getEmail(), equalTo(user.getEmail()));
+        assertThat(tokenProvider.getToken().equals(expiredToken), equalTo(false));
     }
 
     @Test

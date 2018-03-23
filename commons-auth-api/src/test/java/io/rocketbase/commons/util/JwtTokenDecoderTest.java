@@ -4,6 +4,7 @@ import io.rocketbase.commons.util.JwtTokenDecoder.JwtTokenBody;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -20,8 +21,8 @@ public class JwtTokenDecoderTest {
 
         // then
         assertThat(tokenBody, notNullValue());
-        assertThat(tokenBody.getExpiration(), equalTo(LocalDateTime.of(2018, 3, 23, 17, 5, 35, 0)));
-        assertThat(tokenBody.getIssuedAt(), equalTo(LocalDateTime.of(2018, 3, 23, 16, 5, 35, 0)));
+        assertThat(tokenBody.getExpiration(), equalTo(LocalDateTime.ofEpochSecond(1521821135, 0, ZoneOffset.UTC)));
+        assertThat(tokenBody.getIssuedAt(), equalTo(LocalDateTime.ofEpochSecond(1521817535, 0, ZoneOffset.UTC)));
         assertThat(tokenBody.hasRole("USER"), equalTo(true));
         assertThat(tokenBody.hasRole("--"), equalTo(false));
         assertThat(tokenBody.getUsername(), equalTo("user"));

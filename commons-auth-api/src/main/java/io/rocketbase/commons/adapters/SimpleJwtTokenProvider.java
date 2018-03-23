@@ -15,9 +15,9 @@ public class SimpleJwtTokenProvider implements JwtTokenProvider {
         this.refreshTokenEndpoint = refreshTokenEndpoint;
     }
 
-    public JwtTokenProvider init(JwtTokenBundle jwtTokenBundle) {
+    public SimpleJwtTokenProvider(String refreshTokenEndpoint, JwtTokenBundle jwtTokenBundle) {
+        this.refreshTokenEndpoint = refreshTokenEndpoint;
         this.token = jwtTokenBundle.getToken();
         this.refreshToken = jwtTokenBundle.getRefreshToken();
-        return this;
     }
 }

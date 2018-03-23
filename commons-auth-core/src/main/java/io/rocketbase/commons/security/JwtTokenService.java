@@ -1,9 +1,7 @@
 package io.rocketbase.commons.security;
 
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.impl.DefaultClock;
 import io.rocketbase.commons.config.JwtConfiguration;
-import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.dto.JwtTokenBundle;
 import io.rocketbase.commons.model.AppUser;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +12,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.function.Function;
 
@@ -25,10 +23,7 @@ public class JwtTokenService implements Serializable {
     public static final String REFRESH_TOKEN = "REFRESH_TOKEN";
 
     @Resource
-    private JwtConfiguration jwtConfiguration;
-
-    @Resource
-    private AppUserConverter appUserConverter;
+    JwtConfiguration jwtConfiguration;
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -46,12 +41,12 @@ public class JwtTokenService implements Serializable {
 
     public LocalDateTime getIssuedAtDateFromToken(String token) {
         Date issuedAt = getClaimFromToken(token, Claims::getIssuedAt);
-        return LocalDateTime.ofInstant(issuedAt.toInstant(), ZoneId.systemDefault());
+        return LocalDateTime.ofInstant(issuedAt.toInstant(), ZoneOffset.UTC);
     }
 
     public LocalDateTime getExpirationDateFromToken(String token) {
         Date expiration = getClaimFromToken(token, Claims::getExpiration);
-        return LocalDateTime.ofInstant(expiration.toInstant(), ZoneId.systemDefault());
+        return LocalDateTime.ofInstant(expiration.toInstant(), ZoneOffset.UTC);
     }
 
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
@@ -67,8 +62,7 @@ public class JwtTokenService implements Serializable {
     }
 
     public JwtTokenBundle generateTokenBundle(AppUser user) {
-        Date now = DefaultClock.INSTANCE.now();
-
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         return new JwtTokenBundle(generateAccessToken(now, user),
                 prepareBuilder(now, jwtConfiguration.getRefreshTokenExpiration(), user.getUsername())
                         .claim("scopes", Arrays.asList(REFRESH_TOKEN))
@@ -77,21 +71,26 @@ public class JwtTokenService implements Serializable {
 
 
     public String generateAccessToken(AppUser user) {
-        return generateAccessToken(DefaultClock.INSTANCE.now(), user);
+        return generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), user);
     }
 
-    protected String generateAccessToken(Date now, AppUser user) {
-        return prepareBuilder(now, jwtConfiguration.getAccessTokenExpiration(), user.getUsername())
+    protected String generateAccessToken(LocalDateTime ldt, AppUser user) {
+        return prepareBuilder(ldt, jwtConfiguration.getAccessTokenExpiration(), user.getUsername())
                 .claim("scopes", user.getRoles())
                 .compact();
     }
 
-    private JwtBuilder prepareBuilder(final Date createdDate, long expiration, String username) {
+    private JwtBuilder prepareBuilder(LocalDateTime ldt, long expirationMinutes, String username) {
         return Jwts.builder()
-                .setIssuedAt(createdDate)
-                .setExpiration(new Date(createdDate.getTime() + expiration * 60 * 1000))
+                .setIssuedAt(convert(ldt))
+                .setExpiration(convert(ldt.plusMinutes(expirationMinutes)))
                 .signWith(SignatureAlgorithm.HS512, jwtConfiguration.getSecret())
                 .setSubject(username);
+    }
+
+    private Date convert(LocalDateTime ldt) {
+        return Date.from(ldt.atZone(ZoneOffset.UTC)
+                .toInstant());
     }
 
     public Boolean validateToken(String token, AppUser user) {
