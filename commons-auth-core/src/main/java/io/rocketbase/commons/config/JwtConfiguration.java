@@ -3,6 +3,7 @@ package io.rocketbase.commons.config;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
@@ -13,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @ConfigurationProperties(prefix = "auth.jwt")
 public class JwtConfiguration {
 
-    private String header = "Authorization";
+    private String header = HttpHeaders.AUTHORIZATION;
     private String tokenPrefix = "Bearer ";
     private String uriParam = "token";
 

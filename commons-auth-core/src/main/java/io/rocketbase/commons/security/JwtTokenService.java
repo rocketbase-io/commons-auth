@@ -80,10 +80,9 @@ public class JwtTokenService implements Serializable {
         return generateAccessToken(DefaultClock.INSTANCE.now(), user);
     }
 
-    private String generateAccessToken(Date now, AppUser user) {
+    protected String generateAccessToken(Date now, AppUser user) {
         return prepareBuilder(now, jwtConfiguration.getAccessTokenExpiration(), user.getUsername())
                 .claim("scopes", user.getRoles())
-                .claim("user", appUserConverter.fromEntity(user))
                 .compact();
     }
 
