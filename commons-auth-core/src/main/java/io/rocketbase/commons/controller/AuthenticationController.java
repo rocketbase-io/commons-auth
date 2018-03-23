@@ -63,7 +63,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(appUserConverter.fromEntity((AppUser) authentication.getPrincipal()));
     }
 
-    @RequestMapping(value = "/auth/me/change-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/auth/change-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> changePassword(@RequestBody @NotNull @Validated PasswordChangeRequest passwordChange, Authentication authentication) {
         if (authentication == null || !(authentication.getPrincipal() instanceof AppUser)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
