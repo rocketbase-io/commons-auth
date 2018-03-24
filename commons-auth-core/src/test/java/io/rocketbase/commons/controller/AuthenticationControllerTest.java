@@ -6,6 +6,7 @@ import io.rocketbase.commons.adapters.SimpleJwtTokenProvider;
 import io.rocketbase.commons.dto.AppUserRead;
 import io.rocketbase.commons.dto.JwtTokenBundle;
 import io.rocketbase.commons.dto.LoginRequest;
+import io.rocketbase.commons.dto.PasswordChangeRequest;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.resource.AuthenticationResource;
 import io.rocketbase.commons.test.BaseIntegrationTest;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 
 import javax.annotation.Resource;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -91,7 +93,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
     @Test
     public void getAuthenticated() {
         // given
-        AppUser user = buildSampleUser();
+        AppUser user = getAppUser();
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
 
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
@@ -110,7 +112,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
     @Test
     public void getAuthenticatedUserRefreshToken() {
         // given
-        AppUser user = buildSampleUser();
+        AppUser user = getAppUser();
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
 
         SimpleJwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl());
@@ -132,7 +134,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
     @Test
     public void getAuthenticatedWithInvalidRefreshToken() {
         // given
-        AppUser user = buildSampleUser();
+        AppUser user = getAppUser();
         SimpleJwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl());
         tokenProvider.setRefreshToken("---");
         tokenProvider.setToken(modifiedJwtTokenService.generateExpiredToken(user));
@@ -144,6 +146,60 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
             AppUserRead response = resource.getAuthenticated();
             // then
             Assert.fail("should have thrown HttpClientErrorException");
+        } catch (HttpClientErrorException e) {
+        }
+    }
+
+    @Test
+    public void refreshToken() throws InterruptedException {
+        // given
+        AppUser user = getAppUser();
+        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
+        String token = tokenBundle.getToken();
+        JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
+
+        // in order to get other token with different time
+        TimeUnit.SECONDS.sleep(2);
+
+        // when
+        AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
+        resource.refreshToken();
+
+        // the
+        assertThat(token.equals(tokenProvider.getToken()), equalTo(false));
+    }
+
+    @Test
+    public void changePasswordSuccess() {
+        // given
+        AppUser user = getAppUser("user-change");
+        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
+        JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
+        AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
+
+        // when
+        resource.changePassword(PasswordChangeRequest.builder()
+                .currentPassword("pw")
+                .newPassword("r0cketB@ase")
+                .build());
+    }
+
+    @Test
+    public void changePasswordFailure() {
+        // given
+        AppUser user = getAppUser("user-change");
+        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
+        JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
+        AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
+
+        // when
+        try {
+            resource.changePassword(PasswordChangeRequest.builder()
+                    .currentPassword("wrong-pw")
+                    .newPassword("r0cketB@ase")
+                    .build());
+            // then
+            Assert.fail("should have thrown UNAUTHORIZED");
         } catch (HttpClientErrorException e) {
         }
     }

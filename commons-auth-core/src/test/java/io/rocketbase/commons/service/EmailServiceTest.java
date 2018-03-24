@@ -28,7 +28,7 @@ public class EmailServiceTest extends BaseIntegrationTest {
     @Test
     public void simpleSendRegistrationEmail() throws Exception {
         // given
-        AppUser user = buildSampleUser();
+        AppUser user = getAppUser();
 
         String prefix = "[PRE]";
         given(emailConfiguration.getSubjectPrefix())

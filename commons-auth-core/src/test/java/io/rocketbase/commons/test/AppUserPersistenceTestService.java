@@ -38,6 +38,7 @@ public class AppUserPersistenceTestService implements AppUserPersistenceService<
     @PostConstruct
     public void init() {
         userMap.put("user", buildAppUser("user", authConfiguration.getRoleNameUser(), "user@rocketbase.io"));
+        userMap.put("user-change", buildAppUser("user-change", authConfiguration.getRoleNameUser(), "user-change@rocketbase.io"));
         userMap.put("admin", buildAppUser("admin", authConfiguration.getRoleNameAdmin(), "user@rocketbase.io"));
         AppUserTestEntity disabled = buildAppUser("disabled", authConfiguration.getRoleNameAdmin(), "disabled@rocketbase.io");
         disabled.setEnabled(false);

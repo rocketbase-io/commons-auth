@@ -19,22 +19,20 @@ import javax.annotation.Resource;
 public abstract class BaseIntegrationTest {
 
     @Getter
-    @Value("http://localhost:${local.server.port}")
-    protected String baseUrl;
-
-    @Getter
     @Rule
     public SmtpServerRule smtpServerRule = new SmtpServerRule();
-
+    @Getter
+    @Value("http://localhost:${local.server.port}")
+    protected String baseUrl;
     @Resource
     private AppUserPersistenceService appUserPersistenceService;
 
-    protected AppUser buildSampleUser() {
-        return (AppUser) appUserPersistenceService.findByUsername("user").get();
+    protected AppUser getAppUser() {
+        return getAppUser("user");
     }
 
-    protected AppUser buildSampleAdmin() {
-        return (AppUser) appUserPersistenceService.findByUsername("admin").get();
+    protected AppUser getAppUser(String username) {
+        return (AppUser) appUserPersistenceService.findByUsername(username).get();
     }
 
 

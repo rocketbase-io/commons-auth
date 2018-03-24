@@ -9,6 +9,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 public class AuthenticationResource {
 
@@ -20,9 +21,19 @@ public class AuthenticationResource {
         this.restTemplate = restTemplate;
     }
 
+    protected RestTemplate getDefaultRestTemplate() {
+        return new RestTemplate();
+    }
 
+
+    /**
+     * login via username and password
+     *
+     * @param login credentials
+     * @return token bundle with access- and refresh-token
+     */
     public JwtTokenBundle login(LoginRequest login) {
-        ResponseEntity<JwtTokenBundle> response = restTemplate
+        ResponseEntity<JwtTokenBundle> response = getDefaultRestTemplate()
                 .exchange(restTemplate.getBaseAuthApiBuilder()
                                 .path("/auth/login").toUriString(),
                         HttpMethod.POST,
@@ -32,6 +43,11 @@ public class AuthenticationResource {
         return response.getBody();
     }
 
+    /**
+     * get details of logged in user
+     *
+     * @return user details
+     */
     public AppUserRead getAuthenticated() {
         ResponseEntity<AppUserRead> response = restTemplate
                 .exchange(restTemplate.getBaseAuthApiBuilder()
@@ -45,6 +61,11 @@ public class AuthenticationResource {
         return response.getBody();
     }
 
+    /**
+     * perform a password change for a logged in user
+     *
+     * @param passwordChange change request
+     */
     public void changePassword(PasswordChangeRequest passwordChange) {
         restTemplate
                 .exchange(restTemplate.getBaseAuthApiBuilder()
@@ -52,6 +73,22 @@ public class AuthenticationResource {
                         HttpMethod.PUT,
                         new HttpEntity<>(passwordChange),
                         Void.class);
+    }
+
+    /**
+     * uses refreshToken from tokenProvider and updates token after success
+     */
+    public void refreshToken() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(header, String.format("%s%s", tokenPrefix, restTemplate.getTokenProvider().getRefreshToken()));
+
+        ResponseEntity<String> response = getDefaultRestTemplate().exchange(restTemplate.getBaseAuthApiBuilder()
+                        .path("/auth/refresh").toUriString(),
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                String.class);
+
+        restTemplate.getTokenProvider().setToken(response.getBody());
     }
 
 }
