@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Data
@@ -47,5 +48,23 @@ public class AppUserTestEntity extends AppUser {
     @Override
     public void updateLastTokenInvalidation() {
         this.lastTokenInvalidation = LocalDateTime.now();
+    }
+
+    @Override
+    public AppUserTestEntity clone() {
+        return AppUserTestEntity.builder()
+                .id(getId())
+                .username(getUsername())
+                .password(getPassword())
+                .email(getEmail())
+                .enabled(isEnabled())
+                .roles(getRoles() != null ? getRoles().stream().map(r -> String.valueOf(r)).collect(Collectors.toList()) : null)
+                .firstName(getFirstName())
+                .lastName(getLastName())
+                .avatar(getAvatar())
+                .created(getCreated())
+                .lastLogin(getLastLogin())
+                .lastTokenInvalidation(getLastTokenInvalidation())
+                .build();
     }
 }

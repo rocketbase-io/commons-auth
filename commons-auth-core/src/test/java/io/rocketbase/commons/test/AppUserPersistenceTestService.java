@@ -37,8 +37,13 @@ public class AppUserPersistenceTestService implements AppUserPersistenceService<
 
     @PostConstruct
     public void init() {
+        resetData();
+    }
+
+    public void resetData() {
+        userMap.clear();
+
         userMap.put("user", buildAppUser("user", authConfiguration.getRoleNameUser(), "user@rocketbase.io"));
-        userMap.put("user-change", buildAppUser("user-change", authConfiguration.getRoleNameUser(), "user-change@rocketbase.io"));
         userMap.put("admin", buildAppUser("admin", authConfiguration.getRoleNameAdmin(), "user@rocketbase.io"));
         AppUserTestEntity disabled = buildAppUser("disabled", authConfiguration.getRoleNameAdmin(), "disabled@rocketbase.io");
         disabled.setEnabled(false);
@@ -48,14 +53,14 @@ public class AppUserPersistenceTestService implements AppUserPersistenceService<
 
     @Override
     public Optional<AppUserTestEntity> findByUsername(String username) {
-        return userMap.containsKey(username) ? Optional.of(userMap.get(username)) : Optional.empty();
+        return userMap.containsKey(username) ? Optional.of(userMap.get(username).clone()) : Optional.empty();
     }
 
     @Override
     public Optional<AppUserTestEntity> findByEmail(String email) {
         for (AppUserTestEntity user : userMap.values()) {
             if (email.equals(user.getEmail())) {
-                return Optional.of(user);
+                return Optional.of(user.clone());
             }
         }
         return Optional.empty();
@@ -68,7 +73,8 @@ public class AppUserPersistenceTestService implements AppUserPersistenceService<
 
     @Override
     public AppUserTestEntity save(AppUserTestEntity entity) {
-        return null;
+        userMap.put(entity.getUsername(), entity);
+        return userMap.get(entity.getUsername());
     }
 
     @Override

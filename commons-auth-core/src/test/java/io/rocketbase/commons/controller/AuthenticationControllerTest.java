@@ -9,11 +9,12 @@ import io.rocketbase.commons.dto.LoginRequest;
 import io.rocketbase.commons.dto.PasswordChangeRequest;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.resource.AuthenticationResource;
+import io.rocketbase.commons.test.AppUserPersistenceTestService;
 import io.rocketbase.commons.test.BaseIntegrationTest;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -24,17 +25,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
-
 public class AuthenticationControllerTest extends BaseIntegrationTest {
 
     @Resource
     private AuthenticationController authenticationController;
 
     @Resource
-    private TestRestTemplate testRestTemplate;
+    private AppUserPersistenceTestService appUserPersistenceTestService;
 
     @Resource
     private ModifiedJwtTokenService modifiedJwtTokenService;
+
+    @Before
+    public void beforeEachTest() {
+        appUserPersistenceTestService.resetData();
+    }
 
     @Test
     public void successLogin() {
@@ -172,7 +177,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
     @Test
     public void changePasswordSuccess() {
         // given
-        AppUser user = getAppUser("user-change");
+        AppUser user = getAppUser();
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
@@ -187,7 +192,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
     @Test
     public void changePasswordFailure() {
         // given
-        AppUser user = getAppUser("user-change");
+        AppUser user = getAppUser();
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));

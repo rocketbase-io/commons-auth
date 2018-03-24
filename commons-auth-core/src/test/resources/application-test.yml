@@ -32,5 +32,6 @@ logging:
 
 # auth configuration
 auth:
+  user-cache-time: 0
   jwt:
     secret: 'UnU7PkNfKEAuJ045NDgkcls5OFR0MmteWmMpLlkze0U='

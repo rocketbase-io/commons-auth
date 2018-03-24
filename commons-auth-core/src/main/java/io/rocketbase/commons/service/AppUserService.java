@@ -48,20 +48,26 @@ public class AppUserService implements UserDetailsService {
 
     @PostConstruct
     public void postConstruct() {
-        cache = CacheBuilder.newBuilder()
-                .expireAfterAccess(30, TimeUnit.MINUTES)
-                .maximumSize(100)
-                .build(new CacheLoader<String, Optional<AppUser>>() {
-                    @Override
-                    public Optional<AppUser> load(String key) {
-                        return appUserPersistenceService.findByUsername(key);
-                    }
-                });
+        if (authConfiguration.getUserCacheTime() > 0) {
+            cache = CacheBuilder.newBuilder()
+                    .expireAfterAccess(authConfiguration.getUserCacheTime(), TimeUnit.MINUTES)
+                    .build(new CacheLoader<String, Optional<AppUser>>() {
+                        @Override
+                        public Optional<AppUser> load(String key) {
+                            return appUserPersistenceService.findByUsername(key);
+                        }
+                    });
+        }
     }
 
     @SneakyThrows
     public AppUser getByUsername(String username) {
-        Optional<AppUser> userEntity = cache.get(username);
+        Optional<AppUser> userEntity = null;
+        if (cache != null) {
+            userEntity = cache.get(username);
+        } else {
+            userEntity = appUserPersistenceService.findByUsername(username);
+        }
         if (userEntity.isPresent()) {
             return userEntity.get();
         }
@@ -99,7 +105,9 @@ public class AppUserService implements UserDetailsService {
     }
 
     private void refreshUsername(String username) {
-        cache.refresh(username);
+        if (cache != null) {
+            cache.refresh(username);
+        }
     }
 
     @Override
