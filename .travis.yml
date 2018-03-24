@@ -15,7 +15,7 @@ deploy:
   script: ".travis/deploy.sh"
   skip_cleanup: true
   on:
-    repo: rocketbase-io/commons-rest
+    repo: rocketbase-io/commons-auth
     tags: true
     jdk: oraclejdk8
 ## disable emailing
