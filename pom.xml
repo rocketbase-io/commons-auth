@@ -95,7 +95,7 @@ SOFTWARE.
         <maven.compiler.target>1.8</maven.compiler.target>
         <spring-boot.version>1.5.10.RELEASE</spring-boot.version>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
-        <commons-rest.version>0.3.0</commons-rest.version>
+        <commons-rest.version>0.4.1</commons-rest.version>
         <jjwt.version>0.9.0</jjwt.version>
         <mapstruct.version>1.2.0.Final</mapstruct.version>
         <pebble.version>2.4.0</pebble.version>

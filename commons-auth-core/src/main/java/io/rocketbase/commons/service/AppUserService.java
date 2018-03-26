@@ -136,6 +136,7 @@ public class AppUserService implements UserDetailsService {
     public AppUser registerUser(RegistrationRequest registration) {
         AppUser instance = appUserPersistenceService.initNewInstance();
         instance.setUsername(registration.getUsername());
+        instance.setEmail(registration.getEmail());
         instance.setFirstName(registration.getFirstName());
         instance.setLastName(registration.getLastName());
         instance.setPassword(passwordEncoder.encode(registration.getPassword()));

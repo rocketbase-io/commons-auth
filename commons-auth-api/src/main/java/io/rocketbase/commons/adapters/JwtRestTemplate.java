@@ -1,5 +1,6 @@
 package io.rocketbase.commons.adapters;
 
+import io.rocketbase.commons.resource.BasicResponseErrorHandler;
 import lombok.Getter;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.web.client.RestOperations;
@@ -12,13 +13,15 @@ public class JwtRestTemplate extends RestTemplate implements RestOperations {
     private JwtTokenProvider tokenProvider;
 
     /**
-     * default constructor
+     * default constructor<br>
+     * set's {@link BasicResponseErrorHandler} as errorHandler
      *
      * @param tokenProvider will get used to init an {@link JwtClientRequestFactory}
      */
     public JwtRestTemplate(JwtTokenProvider tokenProvider) {
         super(new JwtClientRequestFactory(tokenProvider));
         this.tokenProvider = tokenProvider;
+        setErrorHandler(new BasicResponseErrorHandler());
     }
 
     /**
