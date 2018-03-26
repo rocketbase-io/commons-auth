@@ -130,7 +130,9 @@ public class AppUserService implements UserDetailsService {
             instance.setAvatar(gravatarService.getAvatar(email));
         }
 
-        return appUserPersistenceService.save(instance);
+        AppUser entity = appUserPersistenceService.save(instance);
+        refreshUsername(entity.getUsername());
+        return entity;
     }
 
     public AppUser registerUser(RegistrationRequest registration) {
@@ -146,7 +148,9 @@ public class AppUserService implements UserDetailsService {
             instance.setAvatar(gravatarService.getAvatar(registration.getEmail()));
         }
 
-        return appUserPersistenceService.save(instance);
+        AppUser entity = appUserPersistenceService.save(instance);
+        refreshUsername(entity.getUsername());
+        return entity;
     }
 
     public AppUser registrationVerification(String username) {
@@ -158,10 +162,13 @@ public class AppUserService implements UserDetailsService {
         entity.setEnabled(true);
         entity.updateLastLogin();
 
-        return appUserPersistenceService.save(entity);
+        appUserPersistenceService.save(entity);
+        refreshUsername(entity.getUsername());
+        return entity;
     }
 
     public void delete(AppUser user) {
         appUserPersistenceService.delete(user);
+        refreshUsername(user.getUsername());
     }
 }
