@@ -121,8 +121,8 @@ public class AppUserService implements UserDetailsService {
 
     public AppUser initializeUser(String username, String password, String email, boolean admin) {
         AppUser instance = appUserPersistenceService.initNewInstance();
-        instance.setUsername(username);
-        instance.setEmail(email);
+        instance.setUsername(username.toLowerCase());
+        instance.setEmail(email.toLowerCase());
         instance.setPassword(passwordEncoder.encode(password));
         instance.setRoles(Arrays.asList(admin ? authConfiguration.getRoleNameAdmin() : authConfiguration.getRoleNameUser()));
         instance.setEnabled(true);
@@ -135,8 +135,8 @@ public class AppUserService implements UserDetailsService {
 
     public AppUser registerUser(RegistrationRequest registration) {
         AppUser instance = appUserPersistenceService.initNewInstance();
-        instance.setUsername(registration.getUsername());
-        instance.setEmail(registration.getEmail());
+        instance.setUsername(registration.getUsername().toLowerCase());
+        instance.setEmail(registration.getEmail().toLowerCase());
         instance.setFirstName(registration.getFirstName());
         instance.setLastName(registration.getLastName());
         instance.setPassword(passwordEncoder.encode(registration.getPassword()));

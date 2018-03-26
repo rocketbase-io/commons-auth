@@ -45,12 +45,12 @@ public class AuthenticationController {
     public ResponseEntity<JwtTokenBundle> login(@RequestBody @NotNull @Validated LoginRequest login) {
         // Perform the security
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(login.getUsername(), login.getPassword())
+                new UsernamePasswordAuthenticationToken(login.getUsername().toLowerCase(), login.getPassword())
         );
         SecurityContextHolder.getContext()
                 .setAuthentication(authentication);
 
-        AppUser user = appUserService.updateLastLogin(login.getUsername());
+        AppUser user = appUserService.updateLastLogin(login.getUsername().toLowerCase());
         return ResponseEntity.ok(jwtTokenService.generateTokenBundle(user));
     }
 

@@ -52,8 +52,8 @@ public class RegistrationController {
     @RequestMapping(method = RequestMethod.POST, path = "/auth/register", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<AppUserRead> register(HttpServletRequest request, @RequestBody @NotNull @Validated RegistrationRequest registration) {
-        AppUser search = appUserService.getByUsername(registration.getUsername());
-        boolean emailUsed = appUserService.findByEmail(registration.getEmail()).isPresent();
+        AppUser search = appUserService.getByUsername(registration.getUsername().toLowerCase());
+        boolean emailUsed = appUserService.findByEmail(registration.getEmail().toLowerCase()).isPresent();
         if (search != null || emailUsed) {
             throw new RegistrationException(search != null, emailUsed);
         }
