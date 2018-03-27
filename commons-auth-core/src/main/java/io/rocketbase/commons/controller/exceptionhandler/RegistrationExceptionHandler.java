@@ -20,13 +20,13 @@ public class RegistrationExceptionHandler extends BaseExceptionHandler {
     @ResponseStatus(BAD_REQUEST)
     @ResponseBody
     public ErrorResponse handleRegistrationException(HttpServletRequest request, RegistrationException e) {
-        ErrorResponse response = new ErrorResponse(AuthErrorCodes.REGISTRATION_ALREADY_IN_USE.getStatus(), null);
+        ErrorResponse response = new ErrorResponse(AuthErrorCodes.REGISTRATION_ALREADY_IN_USE.getStatus(), translate(request, "error.registration", "Username/Email already used"));
         response.setFields(new HashMap<>());
         if (e.isUsername()) {
-            response.getFields().put("username", translate(request, "registration.username.alreadyused", "Username already used"));
+            response.getFields().put("username", translate(request, "error.registration.username", "Username already used"));
         }
         if (e.isEmail()) {
-            response.getFields().put("email", translate(request, "registration.email.alreadyused", "Email already used"));
+            response.getFields().put("email", translate(request, "error.registration.email", "Email already used"));
         }
         return response;
     }
