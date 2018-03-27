@@ -69,7 +69,7 @@ public class VerificationLinkService {
 
     public enum ActionType {
 
-        VERIFICATION("/auth/verify"), PASSWORD_RESET(("/auth/password-reset"));
+        VERIFICATION("/auth/verify"), PASSWORD_RESET(("/auth/reset-password/index.html"));
 
         @Getter
         private String apiPath;

@@ -17,7 +17,17 @@ public class EmailConfiguration {
     private String fromEmail = "no-reply@localhost";
     private String copyrightName = "rocketbase.io";
     private String copyrightUrl = "https://www.rocketbase.io";
-    private String applicationBaseUrl = null;
+    /**
+     * full qualified url to a custom UI that proceed the verification<br>
+     * ?verification=VALUE will get append
+     */
+    private String verificationUrl = null;
+
+    /**
+     * full qualified url to a custom UI that proceed the password reset<br>
+     * ?verification=VALUE will get append
+     */
+    private String passwordResetUrl = null;
     private long passwordResetExpiration = 60;
 
 }

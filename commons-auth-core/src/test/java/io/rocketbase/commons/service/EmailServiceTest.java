@@ -38,7 +38,7 @@ public class EmailServiceTest extends BaseIntegrationTest {
                 .willReturn(from);
 
         // when
-        emailService.sendRegistrationEmail(user, "http://localhost:8080/");
+        emailService.sentRegistrationEmail(user, "http://localhost:8080/");
 
         // then
         MimeMessage[] receivedMessages = getSmtpServerRule().getMessages();
@@ -58,7 +58,7 @@ public class EmailServiceTest extends BaseIntegrationTest {
         // given
         String applicationBaseUrl = "http://localhost:9090";
 
-        given(emailConfiguration.getApplicationBaseUrl())
+        given(emailConfiguration.getVerificationUrl())
                 .willReturn(null);
 
         // when
@@ -74,13 +74,29 @@ public class EmailServiceTest extends BaseIntegrationTest {
         String applicationBaseUrl = "http://localhost:9090";
 
         String configBaseUrl = "https://api.rocketbase.io/";
-        given(emailConfiguration.getApplicationBaseUrl())
+        given(emailConfiguration.getVerificationUrl())
                 .willReturn(configBaseUrl);
 
         // when
         String result = emailService.buildActionUrl("user", applicationBaseUrl, ActionType.VERIFICATION);
 
         // then
-        assertThat(result, startsWith("https://api.rocketbase.io" + ActionType.VERIFICATION.getApiPath()));
+        assertThat(result, startsWith("https://api.rocketbase.io/?verification="));
+    }
+
+    @Test
+    public void buildActionUrlWithFilledConfigQueryParam() {
+        // given
+        String applicationBaseUrl = "http://localhost:9090";
+
+        String configBaseUrl = "https://api.rocketbase.io/?action=submit";
+        given(emailConfiguration.getVerificationUrl())
+                .willReturn(configBaseUrl);
+
+        // when
+        String result = emailService.buildActionUrl("user", applicationBaseUrl, ActionType.VERIFICATION);
+
+        // then
+        assertThat(result, startsWith("https://api.rocketbase.io/?action=submit&verification="));
     }
 }

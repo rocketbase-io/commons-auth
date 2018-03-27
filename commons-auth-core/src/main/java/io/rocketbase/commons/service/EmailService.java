@@ -35,7 +35,7 @@ public class EmailService {
 
 
     @SneakyThrows
-    public void sendRegistrationEmail(AppUser user, String applicationBaseUrl) {
+    public void sentRegistrationEmail(AppUser user, String applicationBaseUrl) {
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message,
                 MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
@@ -55,32 +55,85 @@ public class EmailService {
 
         helper.setTo(user.getEmail());
         helper.setSubject(String.format("%s Verify Your Account", emailConfiguration.getSubjectPrefix()).trim());
-        helper.setText(htmlTextEmail.getHtml(), htmlTextEmail.getText());
+        helper.setText(htmlTextEmail.getText(), htmlTextEmail.getHtml());
+        helper.setFrom(emailConfiguration.getFromEmail());
+
+        emailSender.send(message);
+    }
+
+    @SneakyThrows
+    public void sentForgotPasswordEmail(AppUser user, String applicationBaseUrl) {
+        MimeMessage message = emailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message,
+                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                StandardCharsets.UTF_8.name());
+
+
+        String url = buildActionUrl(user.getUsername(), applicationBaseUrl, ActionType.PASSWORD_RESET);
+
+        TemplateConfigBuilder templateConfigBuilder = TemplateConfigBuilder.build()
+                .title("Reset Password")
+                .headerWithStyling("You have submitted a password change request!", "fff", "E63946")
+                .addLine(String.format("Hi %s,", user.getUsername()))
+                .addLine("if it was you, confirm the password change by clicking the button")
+                .actionWithStyling(url, "confirm password change", "fff", "E63946")
+                .addGreeting(String.format("- %s", emailConfiguration.getServiceName()))
+                .receiveNote(emailConfiguration.getServiceName(), emailConfiguration.getSupportEmail())
+                .copyright(emailConfiguration.getCopyrightUrl(), emailConfiguration.getCopyrightName());
+
+        HtmlTextEmail htmlTextEmail = emailTemplateService.buildHtmlTextTemplate(templateConfigBuilder);
+
+        helper.setTo(user.getEmail());
+        helper.setSubject(String.format("%s Reset Password", emailConfiguration.getSubjectPrefix()).trim());
+        helper.setText(htmlTextEmail.getText(), htmlTextEmail.getHtml());
         helper.setFrom(emailConfiguration.getFromEmail());
 
         emailSender.send(message);
     }
 
     protected String buildActionUrl(String username, String applicationBaseUrl, ActionType actionType) {
-        StringBuffer uriBuilder = new StringBuffer();
-        if (emailConfiguration.getApplicationBaseUrl() != null) {
-            uriBuilder.append(emailConfiguration.getApplicationBaseUrl());
+        String uri = handleBaseUrl(applicationBaseUrl, actionType);
+        uri += uri.contains("?") ? "&" : "?";
+        uri += "verification=";
+        uri += verificationLinkService.generateKey(username, actionType, getExpiresInMinutes(actionType));
+        return uri;
+    }
+
+    private long getExpiresInMinutes(ActionType actionType) {
+        Long expiresInMinutes = null;
+        switch (actionType) {
+            case VERIFICATION:
+                expiresInMinutes = registrationConfiguration.getEmailValidationExpiration();
+                break;
+            case PASSWORD_RESET:
+                expiresInMinutes = emailConfiguration.getPasswordResetExpiration();
+                break;
+        }
+        return expiresInMinutes;
+    }
+
+    private String handleBaseUrl(String applicationBaseUrl, ActionType actionType) {
+        String configuredUrl = null;
+        switch (actionType) {
+            case VERIFICATION:
+                configuredUrl = emailConfiguration.getVerificationUrl();
+                break;
+            case PASSWORD_RESET:
+                configuredUrl = emailConfiguration.getPasswordResetUrl();
+                break;
+        }
+
+        String result;
+        if (configuredUrl != null) {
+            // in case of configured url this will have a full qualified url to a custom UI
+            result = configuredUrl;
         } else {
-            uriBuilder.append(applicationBaseUrl);
+            result = applicationBaseUrl;
+            if (result.endsWith("/")) {
+                result = result.substring(0, result.length() - 1);
+            }
+            result += actionType.getApiPath();
         }
-        if (uriBuilder.toString().endsWith("/")) {
-            uriBuilder.deleteCharAt(uriBuilder.length() - 1);
-        }
-        uriBuilder.append(actionType.getApiPath());
-
-        uriBuilder.append("?verification=");
-
-        long expiresInMinutes = actionType.equals(ActionType.VERIFICATION) ?
-                registrationConfiguration.getEmailValidationExpiration() :
-                emailConfiguration.getPasswordResetExpiration();
-
-        uriBuilder.append(verificationLinkService.generateKey(username, actionType, expiresInMinutes));
-
-        return uriBuilder.toString();
+        return result;
     }
 }
