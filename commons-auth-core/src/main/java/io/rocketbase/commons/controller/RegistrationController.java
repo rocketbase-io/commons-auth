@@ -62,7 +62,7 @@ public class RegistrationController {
         if (registrationConfiguration.isEmailValidation()) {
             try {
                 String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-                emailService.sendRegistrationEmail(entity, baseUrl);
+                emailService.sentRegistrationEmail(entity, baseUrl);
             } catch (Exception e) {
                 appUserService.delete(entity);
                 throw e;

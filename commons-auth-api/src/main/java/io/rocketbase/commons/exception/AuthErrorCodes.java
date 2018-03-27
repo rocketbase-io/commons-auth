@@ -4,7 +4,8 @@ import lombok.Getter;
 
 public enum AuthErrorCodes {
     REGISTRATION_ALREADY_IN_USE(1010),
-    VERIFICATION_INVALID(1011);
+    VERIFICATION_INVALID(1011),
+    UNKNOWN_USER(1012);
 
     @Getter
     private int status;

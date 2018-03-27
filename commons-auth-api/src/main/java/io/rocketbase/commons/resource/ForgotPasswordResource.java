@@ -1,0 +1,42 @@
+package io.rocketbase.commons.resource;
+
+import io.rocketbase.commons.dto.ForgotPasswordRequest;
+import io.rocketbase.commons.dto.PerformPasswordResetRequest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
+public class ForgotPasswordResource implements BaseRestResource {
+
+    private String baseAuthApiUrl;
+
+    public ForgotPasswordResource(String baseAuthApiUrl) {
+        this.baseAuthApiUrl = baseAuthApiUrl;
+    }
+
+    protected RestTemplate getDefaultRestTemplate() {
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setErrorHandler(new BasicResponseErrorHandler());
+        return restTemplate;
+    }
+
+    public void forgotPassword(ForgotPasswordRequest forgotPassword) {
+        ResponseEntity<Void> response = getDefaultRestTemplate()
+                .exchange(UriComponentsBuilder.fromUriString(ensureEndsWithSlash(baseAuthApiUrl))
+                                .path("/auth/forgot-password").toUriString(),
+                        HttpMethod.PUT,
+                        new HttpEntity<>(forgotPassword),
+                        Void.class);
+    }
+
+    public void resetPassword(PerformPasswordResetRequest performPasswordReset) {
+        ResponseEntity<Void> response = getDefaultRestTemplate()
+                .exchange(UriComponentsBuilder.fromUriString(ensureEndsWithSlash(baseAuthApiUrl))
+                                .path("/auth/reset-password").toUriString(),
+                        HttpMethod.PUT,
+                        new HttpEntity<>(performPasswordReset),
+                        Void.class);
+    }
+}
