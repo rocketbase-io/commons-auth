@@ -1,10 +1,7 @@
 package io.rocketbase.commons.controller;
 
 import io.rocketbase.commons.converter.AppUserConverter;
-import io.rocketbase.commons.dto.AppUserRead;
-import io.rocketbase.commons.dto.JwtTokenBundle;
-import io.rocketbase.commons.dto.LoginRequest;
-import io.rocketbase.commons.dto.PasswordChangeRequest;
+import io.rocketbase.commons.dto.*;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.AppUserService;
@@ -76,6 +73,19 @@ public class AuthenticationController {
         );
 
         appUserService.updatePassword(username, passwordChange.getNewPassword());
+
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @RequestMapping(value = "/auth/update-profile", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> updateProfile(@RequestBody @NotNull @Validated UpdateProfileRequest updateProfile, Authentication authentication) {
+        if (authentication == null || !(authentication.getPrincipal() instanceof AppUser)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String username = ((AppUser) authentication.getPrincipal()).getUsername();
+
+        appUserService.updateProfile(username, updateProfile.getFirstName(), updateProfile.getLastName(), updateProfile.getAvatar());
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }

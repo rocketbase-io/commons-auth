@@ -95,6 +95,16 @@ public class AppUserService implements UserDetailsService {
         refreshUsername(username);
     }
 
+    public void updateProfile(String username, String firstName, String lastName, String avatar) {
+        AppUser entity = getEntityByUsername(username);
+        entity.setFirstName(firstName);
+        entity.setLastName(lastName);
+        entity.setAvatar(avatar);
+
+        appUserPersistenceService.save(entity);
+        refreshUsername(username);
+    }
+
     @Nonnull
     private AppUser getEntityByUsername(String username) {
         Optional<AppUser> optional = appUserPersistenceService.findByUsername(username);

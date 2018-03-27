@@ -1,10 +1,7 @@
 package io.rocketbase.commons.resource;
 
 import io.rocketbase.commons.adapters.JwtRestTemplate;
-import io.rocketbase.commons.dto.AppUserRead;
-import io.rocketbase.commons.dto.JwtTokenBundle;
-import io.rocketbase.commons.dto.LoginRequest;
-import io.rocketbase.commons.dto.PasswordChangeRequest;
+import io.rocketbase.commons.dto.*;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -76,6 +73,20 @@ public class AuthenticationResource {
                                 .path("/auth/change-password").toUriString(),
                         HttpMethod.PUT,
                         new HttpEntity<>(passwordChange),
+                        Void.class);
+    }
+
+    /**
+     * update user profile details for logged in user
+     *
+     * @param updateProfile change request
+     */
+    public void updateProfile(UpdateProfileRequest updateProfile) {
+        restTemplate
+                .exchange(restTemplate.getBaseAuthApiBuilder()
+                                .path("/auth/update-profile").toUriString(),
+                        HttpMethod.PUT,
+                        new HttpEntity<>(updateProfile),
                         Void.class);
     }
 

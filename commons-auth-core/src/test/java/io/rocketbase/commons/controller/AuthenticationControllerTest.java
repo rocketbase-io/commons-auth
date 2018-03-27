@@ -3,10 +3,7 @@ package io.rocketbase.commons.controller;
 import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.adapters.JwtTokenProvider;
 import io.rocketbase.commons.adapters.SimpleJwtTokenProvider;
-import io.rocketbase.commons.dto.AppUserRead;
-import io.rocketbase.commons.dto.JwtTokenBundle;
-import io.rocketbase.commons.dto.LoginRequest;
-import io.rocketbase.commons.dto.PasswordChangeRequest;
+import io.rocketbase.commons.dto.*;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.resource.AuthenticationResource;
 import io.rocketbase.commons.test.AppUserPersistenceTestService;
@@ -208,5 +205,32 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
         } catch (HttpClientErrorException e) {
         }
     }
+
+
+    @Test
+    public void updateProfile() {
+        // given
+        AppUser user = getAppUser();
+        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
+        JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
+        AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
+
+        // when
+        String avatar = "https://www.gravatar.com/avatar/fc40e22b7bcd7230b49c34b113d5dbc.jpg?s=160&d=retro";
+        resource.updateProfile(UpdateProfileRequest.builder()
+                .firstName("firstName")
+                .lastName("lastName")
+                .avatar(avatar)
+                .build());
+
+        AppUserRead response = resource.getAuthenticated();
+
+        // then
+        assertThat(response.getFirstName(), equalTo("firstName"));
+        assertThat(response.getLastName(), equalTo("lastName"));
+        assertThat(response.getAvatar(), equalTo(avatar));
+
+    }
+
 
 }
