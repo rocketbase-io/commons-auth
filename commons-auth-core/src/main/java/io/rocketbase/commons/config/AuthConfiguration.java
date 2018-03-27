@@ -5,6 +5,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import javax.validation.constraints.NotNull;
+
 @Component
 @Data
 @EnableConfigurationProperties
@@ -13,7 +15,9 @@ public class AuthConfiguration {
 
     private String roleNameAdmin = "ADMIN";
     private String roleNameUser = "USER";
-    private String keySecret = "QENtCtMfH7pv2Qf6GWBcCEDMApQC62SA";
+
+    @NotNull
+    private String keySecret;
     /**
      * cache time in minutes - 0 means disabled
      */
