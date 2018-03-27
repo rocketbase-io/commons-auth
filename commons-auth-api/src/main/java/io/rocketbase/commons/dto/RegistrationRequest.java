@@ -5,13 +5,14 @@ import org.hibernate.validator.constraints.Email;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.io.Serializable;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"password"})
-public class RegistrationRequest {
+public class RegistrationRequest implements Serializable {
 
     @NotNull
     private String username;

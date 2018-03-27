@@ -7,12 +7,13 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Email;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ForgotPasswordRequest {
+public class ForgotPasswordRequest implements Serializable {
 
     @NotNull
     @Email

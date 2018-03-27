@@ -24,6 +24,8 @@ public class AppUserRead {
 
     private String email;
 
+    private String avatar;
+
     private List<String> roles;
 
     private Boolean enabled;
