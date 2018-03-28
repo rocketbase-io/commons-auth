@@ -4,6 +4,7 @@ import io.rocketbase.commons.config.AuthConfiguration;
 import io.rocketbase.commons.model.AppUserTestEntity;
 import io.rocketbase.commons.service.AppUserPersistenceService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -68,7 +69,7 @@ public class AppUserPersistenceTestService implements AppUserPersistenceService<
 
     @Override
     public Page findAll(Pageable pageable) {
-        return null;
+        return new PageImpl(new ArrayList(userMap.values()), pageable, userMap.size());
     }
 
     @Override
@@ -79,6 +80,11 @@ public class AppUserPersistenceTestService implements AppUserPersistenceService<
 
     @Override
     public AppUserTestEntity findOne(String id) {
+        for (AppUserTestEntity user : userMap.values()) {
+            if (id.equals(user.getId())) {
+                return user.clone();
+            }
+        }
         return null;
     }
 
@@ -89,6 +95,7 @@ public class AppUserPersistenceTestService implements AppUserPersistenceService<
 
     @Override
     public void delete(AppUserTestEntity entity) {
+        userMap.remove(entity.getUsername());
     }
 
     @Override

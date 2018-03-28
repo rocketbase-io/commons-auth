@@ -114,9 +114,9 @@ public class AppUserService implements UserDetailsService {
         return optional.get();
     }
 
-    private void refreshUsername(String username) {
+    public void refreshUsername(String username) {
         if (cache != null) {
-            cache.refresh(username);
+            cache.invalidate(username);
         }
     }
 
