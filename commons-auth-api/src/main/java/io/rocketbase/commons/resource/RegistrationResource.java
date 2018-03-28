@@ -1,8 +1,8 @@
 package io.rocketbase.commons.resource;
 
-import io.rocketbase.commons.dto.AppUserRead;
-import io.rocketbase.commons.dto.JwtTokenBundle;
-import io.rocketbase.commons.dto.RegistrationRequest;
+import io.rocketbase.commons.dto.appuser.AppUserRead;
+import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
+import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;

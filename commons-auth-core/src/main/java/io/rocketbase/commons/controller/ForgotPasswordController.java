@@ -1,8 +1,8 @@
 package io.rocketbase.commons.controller;
 
 
-import io.rocketbase.commons.dto.ForgotPasswordRequest;
-import io.rocketbase.commons.dto.PerformPasswordResetRequest;
+import io.rocketbase.commons.dto.forgot.ForgotPasswordRequest;
+import io.rocketbase.commons.dto.forgot.PerformPasswordResetRequest;
 import io.rocketbase.commons.exception.UnknownUserException;
 import io.rocketbase.commons.exception.VerificationException;
 import io.rocketbase.commons.model.AppUser;

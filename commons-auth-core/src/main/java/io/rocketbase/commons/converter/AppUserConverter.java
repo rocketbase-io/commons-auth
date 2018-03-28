@@ -1,6 +1,6 @@
 package io.rocketbase.commons.converter;
 
-import io.rocketbase.commons.dto.AppUserRead;
+import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.model.AppUser;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mappings;

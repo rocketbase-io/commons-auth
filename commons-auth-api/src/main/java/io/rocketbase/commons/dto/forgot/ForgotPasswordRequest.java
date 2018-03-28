@@ -1,4 +1,4 @@
-package io.rocketbase.commons.dto;
+package io.rocketbase.commons.dto.forgot;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

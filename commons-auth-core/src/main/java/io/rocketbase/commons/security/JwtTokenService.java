@@ -2,7 +2,7 @@ package io.rocketbase.commons.security;
 
 import io.jsonwebtoken.*;
 import io.rocketbase.commons.config.JwtConfiguration;
-import io.rocketbase.commons.dto.JwtTokenBundle;
+import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.model.AppUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;

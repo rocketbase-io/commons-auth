@@ -1,5 +1,6 @@
-package io.rocketbase.commons.dto;
+package io.rocketbase.commons.dto.registration;
 
+import io.rocketbase.commons.dto.CommonDtoSettings;
 import lombok.*;
 import org.hibernate.validator.constraints.Email;
 

@@ -1,5 +1,4 @@
-package io.rocketbase.commons.dto;
-
+package io.rocketbase.commons.dto.authentication;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,8 +11,12 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class JwtTokenBundle implements Serializable {
+public class UpdateProfileRequest implements Serializable {
 
-    private String token;
-    private String refreshToken;
+    private String firstName;
+
+    private String lastName;
+
+    private String avatar;
+
 }

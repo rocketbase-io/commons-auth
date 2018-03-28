@@ -2,9 +2,9 @@ package io.rocketbase.commons.controller;
 
 import io.rocketbase.commons.config.RegistrationConfiguration;
 import io.rocketbase.commons.converter.AppUserConverter;
-import io.rocketbase.commons.dto.AppUserRead;
-import io.rocketbase.commons.dto.JwtTokenBundle;
-import io.rocketbase.commons.dto.RegistrationRequest;
+import io.rocketbase.commons.dto.appuser.AppUserRead;
+import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
+import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.RegistrationException;
 import io.rocketbase.commons.exception.VerificationException;
 import io.rocketbase.commons.model.AppUser;

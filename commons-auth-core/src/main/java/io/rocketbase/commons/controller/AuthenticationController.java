@@ -1,7 +1,11 @@
 package io.rocketbase.commons.controller;
 
 import io.rocketbase.commons.converter.AppUserConverter;
-import io.rocketbase.commons.dto.*;
+import io.rocketbase.commons.dto.appuser.AppUserRead;
+import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
+import io.rocketbase.commons.dto.authentication.LoginRequest;
+import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
+import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.AppUserService;

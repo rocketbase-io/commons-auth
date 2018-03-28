@@ -1,6 +1,6 @@
 package io.rocketbase.commons.adapters;
 
-import io.rocketbase.commons.dto.JwtTokenBundle;
+import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import lombok.Data;
 
 @Data

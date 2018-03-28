@@ -1,5 +1,6 @@
-package io.rocketbase.commons.dto;
+package io.rocketbase.commons.dto.forgot;
 
+import io.rocketbase.commons.dto.CommonDtoSettings;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
@@ -10,13 +11,13 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"currentPassword", "newPassword"})
-public class PasswordChangeRequest implements Serializable {
+@ToString(exclude = {"password"})
+public class PerformPasswordResetRequest implements Serializable {
 
     @NotNull
-    private String currentPassword;
+    private String verification;
 
     @NotNull
     @Pattern(message = CommonDtoSettings.PASSWORD_MESSAGE, regexp = CommonDtoSettings.PASSWORD_REGEX)
-    private String newPassword;
+    private String password;
 }

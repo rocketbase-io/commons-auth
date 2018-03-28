@@ -1,7 +1,11 @@
 package io.rocketbase.commons.resource;
 
 import io.rocketbase.commons.adapters.JwtRestTemplate;
-import io.rocketbase.commons.dto.*;
+import io.rocketbase.commons.dto.appuser.AppUserRead;
+import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
+import io.rocketbase.commons.dto.authentication.LoginRequest;
+import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
+import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;

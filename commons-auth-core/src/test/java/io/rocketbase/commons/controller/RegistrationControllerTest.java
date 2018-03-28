@@ -1,7 +1,7 @@
 package io.rocketbase.commons.controller;
 
-import io.rocketbase.commons.dto.AppUserRead;
-import io.rocketbase.commons.dto.RegistrationRequest;
+import io.rocketbase.commons.dto.appuser.AppUserRead;
+import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.AuthErrorCodes;
 import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.exception.ErrorCodes;

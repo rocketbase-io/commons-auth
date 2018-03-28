@@ -6,7 +6,7 @@ import com.google.common.cache.LoadingCache;
 import io.rocketbase.commons.config.AuthConfiguration;
 import io.rocketbase.commons.config.GravatarConfiguration;
 import io.rocketbase.commons.config.RegistrationConfiguration;
-import io.rocketbase.commons.dto.RegistrationRequest;
+import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.model.AppUser;
 import lombok.SneakyThrows;

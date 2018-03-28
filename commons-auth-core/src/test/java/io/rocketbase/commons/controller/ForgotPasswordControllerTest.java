@@ -1,8 +1,7 @@
 package io.rocketbase.commons.controller;
 
 import io.rocketbase.commons.config.EmailConfiguration;
-import io.rocketbase.commons.dto.ForgotPasswordRequest;
-import io.rocketbase.commons.dto.JwtTokenBundle;
+import io.rocketbase.commons.dto.forgot.ForgotPasswordRequest;
 import io.rocketbase.commons.resource.ForgotPasswordResource;
 import io.rocketbase.commons.service.AppUserService;
 import io.rocketbase.commons.test.AppUserPersistenceTestService;
@@ -11,7 +10,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.ResponseEntity;
 
 import javax.annotation.Resource;
 import javax.mail.Message;
