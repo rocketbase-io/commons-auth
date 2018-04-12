@@ -48,7 +48,7 @@ SOFTWARE.
         <dependency>
             <groupId>io.rocketbase.commons</groupId>
             <artifactId>commons-rest-server</artifactId>
-            <version>0.2.0</version>
+            <version>${commons-rest.version}</version>
         </dependency>
 
         <dependency>
