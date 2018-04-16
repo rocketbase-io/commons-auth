@@ -39,8 +39,8 @@ public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUse
     }
 
     @Override
-    public AppUserEntity findOne(String id) {
-        return repository.findOne(id);
+    public Optional<AppUserEntity> findById(String id) {
+        return repository.findById(id);
     }
 
     @Override

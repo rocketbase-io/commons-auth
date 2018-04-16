@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
+import java.util.Optional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -54,10 +55,7 @@ public class AppUserController implements BaseController {
     @RequestMapping(method = RequestMethod.PATCH, path = "/api/user/{id}", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public AppUserRead patch(@PathVariable("id") String id, @RequestBody @NotNull @Validated AppUserUpdate update) {
-        AppUser entity = appUserPersistenceService.findOne(id);
-        if (entity == null) {
-            throw new NotFoundException();
-        }
+        AppUser entity = getById(id);
         if (shouldPatch(update.getUsername())) {
             if (appUserService.getByUsername(update.getUsername().toLowerCase()) != null) {
                 throw new RegistrationException(true, false);
@@ -96,12 +94,18 @@ public class AppUserController implements BaseController {
 
     @RequestMapping(method = RequestMethod.DELETE, path = "/api/user/{id}")
     public void delete(@PathVariable("id") String id) {
-        AppUser entity = appUserPersistenceService.findOne(id);
-        if (entity == null) {
-            throw new NotFoundException();
-        }
+        AppUser entity = getById(id);
         appUserPersistenceService.delete(entity);
         appUserService.refreshUsername(entity.getUsername());
+    }
+
+
+    private AppUser getById(String id) {
+        Optional<AppUser> optionalAppUser = appUserPersistenceService.findById(id);
+        if (!optionalAppUser.isPresent()) {
+            throw new NotFoundException();
+        }
+        return optionalAppUser.get();
     }
 
     private boolean shouldPatch(String value) {

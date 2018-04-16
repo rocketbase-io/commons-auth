@@ -16,7 +16,7 @@ public interface AppUserPersistenceService<S extends AppUser> {
 
     S save(S entity);
 
-    S findOne(String id);
+    Optional<S> findById(String id);
 
     long count();
 

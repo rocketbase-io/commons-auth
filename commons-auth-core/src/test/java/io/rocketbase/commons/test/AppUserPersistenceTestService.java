@@ -79,13 +79,13 @@ public class AppUserPersistenceTestService implements AppUserPersistenceService<
     }
 
     @Override
-    public AppUserTestEntity findOne(String id) {
+    public Optional<AppUserTestEntity> findById(String id) {
         for (AppUserTestEntity user : userMap.values()) {
             if (id.equals(user.getId())) {
-                return user.clone();
+                return Optional.of(user.clone());
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     @Override

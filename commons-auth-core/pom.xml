@@ -27,9 +27,6 @@ SOFTWARE.
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <properties>
-        <guava.version>24.0-jre</guava.version>
-    </properties>
 
     <parent>
         <groupId>io.rocketbase.commons</groupId>
@@ -133,11 +130,6 @@ SOFTWARE.
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
             <version>${jjwt.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-validator</artifactId>
         </dependency>
 
         <!-- tests -->
