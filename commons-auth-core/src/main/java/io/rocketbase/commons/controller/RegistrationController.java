@@ -10,7 +10,7 @@ import io.rocketbase.commons.exception.VerificationException;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.AppUserService;
-import io.rocketbase.commons.service.EmailService;
+import io.rocketbase.commons.service.email.EmailService;
 import io.rocketbase.commons.service.VerificationLinkService;
 import io.rocketbase.commons.service.VerificationLinkService.ActionType;
 import io.rocketbase.commons.service.VerificationLinkService.VerificationToken;

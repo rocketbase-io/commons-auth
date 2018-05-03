@@ -16,6 +16,7 @@ import java.security.Key;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
+import java.util.Random;
 
 @Slf4j
 @Service
@@ -46,7 +47,7 @@ public class VerificationLinkService {
         byte[] encValue = cipher.doFinal(
                 new VerificationToken(username, LocalDateTime.now()
                         .plusMinutes(expiresInMinutes), type)
-                        .serialize()
+                        .serializeWithSalt()
                         .getBytes());
 
         return Base64.getEncoder()
@@ -100,8 +101,8 @@ public class VerificationLinkService {
             }
         }
 
-        public String serialize() {
-            return String.format("%s|%s|%s", username, DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(exp), type.ordinal());
+        public String serializeWithSalt() {
+            return String.format("%s|%s|%s|%d", username, DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(exp), type.ordinal(), new Random().nextInt(500));
         }
 
         public boolean isValid(ActionType type) {

@@ -1,10 +1,10 @@
-package io.rocketbase.commons.service;
+package io.rocketbase.commons.service.email;
 
 import io.rocketbase.commons.config.EmailConfiguration;
 import io.rocketbase.commons.config.RegistrationConfiguration;
 import io.rocketbase.commons.model.AppUser;
-import io.rocketbase.commons.service.EmailTemplateService.HtmlTextEmail;
-import io.rocketbase.commons.service.EmailTemplateService.TemplateConfigBuilder;
+import io.rocketbase.commons.service.email.EmailTemplateService.HtmlTextEmail;
+import io.rocketbase.commons.service.VerificationLinkService;
 import io.rocketbase.commons.service.VerificationLinkService.ActionType;
 import lombok.SneakyThrows;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -20,6 +20,9 @@ public class EmailService {
 
     @Resource
     private JavaMailSender emailSender;
+
+    @Resource
+    private MailContentConfig mailContentConfig;
 
     @Resource
     private EmailConfiguration emailConfiguration;
@@ -41,20 +44,11 @@ public class EmailService {
                 MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());
 
-        TemplateConfigBuilder templateConfigBuilder = TemplateConfigBuilder.build()
-                .title("Please Verify Your Account")
-                .header("Verify Your Account")
-                .addLine(String.format("Hi %s,", user.getUsername()))
-                .addLine("please verify your account by clicking the button")
-                .action(buildActionUrl(user.getUsername(), applicationBaseUrl, ActionType.VERIFICATION), "verify your account")
-                .addGreeting(String.format("- %s", emailConfiguration.getServiceName()))
-                .receiveNote(emailConfiguration.getServiceName(), emailConfiguration.getSupportEmail())
-                .copyright(emailConfiguration.getCopyrightUrl(), emailConfiguration.getCopyrightName());
-
-        HtmlTextEmail htmlTextEmail = emailTemplateService.buildHtmlTextTemplate(templateConfigBuilder);
+        TemplateConfigBuilder register = mailContentConfig.register(user, buildActionUrl(user.getUsername(), applicationBaseUrl, ActionType.VERIFICATION));
+        HtmlTextEmail htmlTextEmail = emailTemplateService.buildHtmlTextTemplate(register);
 
         helper.setTo(user.getEmail());
-        helper.setSubject(String.format("%s Verify Your Account", emailConfiguration.getSubjectPrefix()).trim());
+        helper.setSubject(mailContentConfig.registerSubject(user));
         helper.setText(htmlTextEmail.getText(), htmlTextEmail.getHtml());
         helper.setFrom(emailConfiguration.getFromEmail());
 
@@ -68,23 +62,11 @@ public class EmailService {
                 MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());
 
-
-        String url = buildActionUrl(user.getUsername(), applicationBaseUrl, ActionType.PASSWORD_RESET);
-
-        TemplateConfigBuilder templateConfigBuilder = TemplateConfigBuilder.build()
-                .title("Reset Password")
-                .headerWithStyling("You have submitted a password change request!", "fff", "E63946")
-                .addLine(String.format("Hi %s,", user.getUsername()))
-                .addLine("if it was you, confirm the password change by clicking the button")
-                .actionWithStyling(url, "confirm password change", "fff", "E63946")
-                .addGreeting(String.format("- %s", emailConfiguration.getServiceName()))
-                .receiveNote(emailConfiguration.getServiceName(), emailConfiguration.getSupportEmail())
-                .copyright(emailConfiguration.getCopyrightUrl(), emailConfiguration.getCopyrightName());
-
-        HtmlTextEmail htmlTextEmail = emailTemplateService.buildHtmlTextTemplate(templateConfigBuilder);
+        TemplateConfigBuilder forgotPassword = mailContentConfig.forgotPassword(user, buildActionUrl(user.getUsername(), applicationBaseUrl, ActionType.PASSWORD_RESET));
+        HtmlTextEmail htmlTextEmail = emailTemplateService.buildHtmlTextTemplate(forgotPassword);
 
         helper.setTo(user.getEmail());
-        helper.setSubject(String.format("%s Reset Password", emailConfiguration.getSubjectPrefix()).trim());
+        helper.setSubject(mailContentConfig.forgotPasswordSubject(user));
         helper.setText(htmlTextEmail.getText(), htmlTextEmail.getHtml());
         helper.setFrom(emailConfiguration.getFromEmail());
 

@@ -1,8 +1,9 @@
-package io.rocketbase.commons.service;
+package io.rocketbase.commons.service.email;
 
 import io.rocketbase.commons.config.EmailConfiguration;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.service.VerificationLinkService.ActionType;
+import io.rocketbase.commons.service.email.EmailService;
 import io.rocketbase.commons.test.BaseIntegrationTest;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;

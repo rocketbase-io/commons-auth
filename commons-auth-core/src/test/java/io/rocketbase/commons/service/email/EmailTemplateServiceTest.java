@@ -1,6 +1,7 @@
-package io.rocketbase.commons.service;
+package io.rocketbase.commons.service.email;
 
-import io.rocketbase.commons.service.EmailTemplateService.TemplateConfigBuilder;
+import io.rocketbase.commons.service.email.EmailTemplateService;
+import io.rocketbase.commons.service.email.TemplateConfigBuilder;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.*;
