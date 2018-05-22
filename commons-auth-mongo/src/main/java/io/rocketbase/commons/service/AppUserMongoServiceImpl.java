@@ -1,14 +1,18 @@
 package io.rocketbase.commons.service;
 
 import io.rocketbase.commons.model.AppUserEntity;
-import io.rocketbase.commons.repository.AppUserRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,46 +20,64 @@ import java.util.UUID;
 public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUserEntity> {
 
     @Resource
-    private AppUserRepository repository;
+    private MongoTemplate mongoTemplate;
 
     @Override
     public Optional<AppUserEntity> findByUsername(String username) {
-        return repository.findByUsername(username);
+        AppUserEntity entity = mongoTemplate.findOne(new Query(Criteria.where("username")
+                .is(username)), AppUserEntity.class);
+        if (entity != null) {
+            return Optional.of(entity);
+        }
+        return Optional.empty();
     }
 
     @Override
     public Optional<AppUserEntity> findByEmail(String email) {
-        return repository.findByEmail(email);
-    }
+        AppUserEntity entity = mongoTemplate.findOne(new Query(Criteria.where("email")
+                .is(email)), AppUserEntity.class);
+        if (entity != null) {
+            return Optional.of(entity);
+        }
+        return Optional.empty();    }
 
     @Override
     public Page<AppUserEntity> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
+        List<AppUserEntity> entities = mongoTemplate.find(new Query().with(pageable), AppUserEntity.class);
+        long total = mongoTemplate.count(new Query(), AppUserEntity.class);
+
+        return new PageImpl<AppUserEntity>(entities, pageable, total);
     }
 
     @Override
     public AppUserEntity save(AppUserEntity entity) {
-        return repository.save(entity);
+        mongoTemplate.save(entity);
+        return entity;
     }
 
     @Override
     public Optional<AppUserEntity> findById(String id) {
-        return repository.findById(id);
-    }
+        AppUserEntity entity = mongoTemplate.findOne(new Query(Criteria.where("_id")
+                .is(id)), AppUserEntity.class);
+        if (entity != null) {
+            return Optional.of(entity);
+        }
+        return Optional.empty();    }
 
     @Override
     public long count() {
-        return repository.count();
+        return mongoTemplate.count(new Query(), AppUserEntity.class);
     }
 
     @Override
     public void delete(AppUserEntity entity) {
-        repository.delete(entity);
+        mongoTemplate.remove(new Query(Criteria.where("_id")
+                .is(entity.getId())));
     }
 
     @Override
     public void deleteAll() {
-        repository.deleteAll();
+        mongoTemplate.findAllAndRemove(new Query(), AppUserEntity.class);
     }
 
     @Override
