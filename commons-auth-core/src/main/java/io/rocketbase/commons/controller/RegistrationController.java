@@ -29,7 +29,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @Slf4j
 @RestController
 @ConditionalOnProperty(value = "${auth.registration.enabled}", matchIfMissing = true)
-public class RegistrationController {
+public class RegistrationController implements BaseController{
 
     @Resource
     private RegistrationConfiguration registrationConfiguration;
@@ -61,8 +61,7 @@ public class RegistrationController {
 
         if (registrationConfiguration.isEmailValidation()) {
             try {
-                String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-                emailService.sentRegistrationEmail(entity, baseUrl);
+                emailService.sentRegistrationEmail(entity, getBaseUrl(request));
             } catch (Exception e) {
                 appUserService.delete(entity);
                 throw e;

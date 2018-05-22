@@ -7,9 +7,9 @@ import io.rocketbase.commons.exception.UnknownUserException;
 import io.rocketbase.commons.exception.VerificationException;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.service.AppUserService;
-import io.rocketbase.commons.service.email.EmailService;
 import io.rocketbase.commons.service.VerificationLinkService;
 import io.rocketbase.commons.service.VerificationLinkService.VerificationToken;
+import io.rocketbase.commons.service.email.EmailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +28,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 @RestController
-public class ForgotPasswordController {
+public class ForgotPasswordController implements BaseController {
 
     @Resource
     private AppUserService appUserService;
@@ -47,8 +47,7 @@ public class ForgotPasswordController {
             throw new UnknownUserException();
         }
 
-        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-        emailService.sentForgotPasswordEmail(optional.get(), baseUrl);
+        emailService.sentForgotPasswordEmail(optional.get(), getBaseUrl(request));
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
