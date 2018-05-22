@@ -3,15 +3,16 @@ package io.rocketbase.commons.service.email;
 import io.rocketbase.commons.config.EmailConfiguration;
 import io.rocketbase.commons.config.RegistrationConfiguration;
 import io.rocketbase.commons.model.AppUser;
-import io.rocketbase.commons.service.email.EmailTemplateService.HtmlTextEmail;
 import io.rocketbase.commons.service.VerificationLinkService;
 import io.rocketbase.commons.service.VerificationLinkService.ActionType;
+import io.rocketbase.commons.service.email.EmailTemplateService.HtmlTextEmail;
 import lombok.SneakyThrows;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
 
@@ -39,37 +40,30 @@ public class EmailService {
 
     @SneakyThrows
     public void sentRegistrationEmail(AppUser user, String applicationBaseUrl) {
-        MimeMessage message = emailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message,
-                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-                StandardCharsets.UTF_8.name());
-
         TemplateConfigBuilder register = mailContentConfig.register(user, buildActionUrl(user.getUsername(), applicationBaseUrl, ActionType.VERIFICATION));
         HtmlTextEmail htmlTextEmail = emailTemplateService.buildHtmlTextTemplate(register);
 
-        helper.setTo(user.getEmail());
-        helper.setSubject(mailContentConfig.registerSubject(user));
-        helper.setText(htmlTextEmail.getText(), htmlTextEmail.getHtml());
-        helper.setFrom(emailConfiguration.getFromEmail());
-
-        emailSender.send(message);
+        sentEmail(new InternetAddress(user.getEmail()), mailContentConfig.registerSubject(user), htmlTextEmail, new InternetAddress(emailConfiguration.getFromEmail()));
     }
 
     @SneakyThrows
     public void sentForgotPasswordEmail(AppUser user, String applicationBaseUrl) {
+        TemplateConfigBuilder forgotPassword = mailContentConfig.forgotPassword(user, buildActionUrl(user.getUsername(), applicationBaseUrl, ActionType.PASSWORD_RESET));
+        HtmlTextEmail htmlTextEmail = emailTemplateService.buildHtmlTextTemplate(forgotPassword);
+
+        sentEmail(new InternetAddress(user.getEmail()), mailContentConfig.forgotPasswordSubject(user), htmlTextEmail, new InternetAddress(emailConfiguration.getFromEmail()));
+    }
+
+    @SneakyThrows
+    public void sentEmail(InternetAddress to, String subject, HtmlTextEmail htmlTextEmail, InternetAddress from) {
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message,
                 MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());
-
-        TemplateConfigBuilder forgotPassword = mailContentConfig.forgotPassword(user, buildActionUrl(user.getUsername(), applicationBaseUrl, ActionType.PASSWORD_RESET));
-        HtmlTextEmail htmlTextEmail = emailTemplateService.buildHtmlTextTemplate(forgotPassword);
-
-        helper.setTo(user.getEmail());
-        helper.setSubject(mailContentConfig.forgotPasswordSubject(user));
+        helper.setTo(to);
+        helper.setSubject(subject);
         helper.setText(htmlTextEmail.getText(), htmlTextEmail.getHtml());
-        helper.setFrom(emailConfiguration.getFromEmail());
-
+        helper.setFrom(from);
         emailSender.send(message);
     }
 
