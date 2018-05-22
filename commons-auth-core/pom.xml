@@ -93,7 +93,7 @@ SOFTWARE.
             <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.mitchellbosecke</groupId>
+            <groupId>io.pebbletemplates</groupId>
             <artifactId>pebble</artifactId>
             <version>${pebble.version}</version>
         </dependency>
