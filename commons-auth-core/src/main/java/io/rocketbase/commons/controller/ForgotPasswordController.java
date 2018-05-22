@@ -3,6 +3,8 @@ package io.rocketbase.commons.controller;
 
 import io.rocketbase.commons.dto.forgot.ForgotPasswordRequest;
 import io.rocketbase.commons.dto.forgot.PerformPasswordResetRequest;
+import io.rocketbase.commons.event.ForgotPasswordEvent;
+import io.rocketbase.commons.event.ResetPasswordEvent;
 import io.rocketbase.commons.exception.UnknownUserException;
 import io.rocketbase.commons.exception.VerificationException;
 import io.rocketbase.commons.model.AppUser;
@@ -11,6 +13,7 @@ import io.rocketbase.commons.service.VerificationLinkService;
 import io.rocketbase.commons.service.VerificationLinkService.VerificationToken;
 import io.rocketbase.commons.service.email.EmailService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -39,6 +42,9 @@ public class ForgotPasswordController implements BaseController {
     @Resource
     private VerificationLinkService verificationLinkService;
 
+    @Resource
+    private ApplicationEventPublisher applicationEventPublisher;
+
 
     @RequestMapping(value = "/auth/forgot-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> forgotPassword(HttpServletRequest request, @RequestBody @NotNull @Validated ForgotPasswordRequest forgotPassword) {
@@ -48,6 +54,8 @@ public class ForgotPasswordController implements BaseController {
         }
 
         emailService.sentForgotPasswordEmail(optional.get(), getBaseUrl(request));
+
+        applicationEventPublisher.publishEvent(new ForgotPasswordEvent(this, optional.get()));
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -63,6 +71,8 @@ public class ForgotPasswordController implements BaseController {
             throw new UnknownUserException();
         }
         appUserService.updatePassword(user.getUsername(), performPasswordReset.getPassword());
+
+        applicationEventPublisher.publishEvent(new ResetPasswordEvent(this, user));
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }

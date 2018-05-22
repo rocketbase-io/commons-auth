@@ -6,10 +6,14 @@ import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.authentication.LoginRequest;
 import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
 import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
+import io.rocketbase.commons.event.ChangePasswordEvent;
+import io.rocketbase.commons.event.LoginEvent;
+import io.rocketbase.commons.event.UpdateProfileEvent;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.AppUserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -41,6 +45,9 @@ public class AuthenticationController {
     @Resource
     private AppUserConverter appUserConverter;
 
+    @Resource
+    private ApplicationEventPublisher applicationEventPublisher;
+
     @RequestMapping(method = RequestMethod.POST, path = "/auth/login", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<JwtTokenBundle> login(@RequestBody @NotNull @Validated LoginRequest login) {
@@ -52,6 +59,9 @@ public class AuthenticationController {
                 .setAuthentication(authentication);
 
         AppUser user = appUserService.updateLastLogin(login.getUsername().toLowerCase());
+
+        applicationEventPublisher.publishEvent(new LoginEvent(this, user));
+
         return ResponseEntity.ok(jwtTokenService.generateTokenBundle(user));
     }
 
@@ -78,6 +88,8 @@ public class AuthenticationController {
 
         appUserService.updatePassword(username, passwordChange.getNewPassword());
 
+        applicationEventPublisher.publishEvent(new ChangePasswordEvent(this, appUserService.getByUsername(username)));
+
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -90,6 +102,8 @@ public class AuthenticationController {
         String username = ((AppUser) authentication.getPrincipal()).getUsername();
 
         appUserService.updateProfile(username, updateProfile.getFirstName(), updateProfile.getLastName(), updateProfile.getAvatar());
+
+        applicationEventPublisher.publishEvent(new UpdateProfileEvent(this, appUserService.getByUsername(username)));
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
