@@ -72,7 +72,7 @@ public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUse
     @Override
     public void delete(AppUserEntity entity) {
         mongoTemplate.remove(new Query(Criteria.where("_id")
-                .is(entity.getId())));
+                .is(entity.getId())), AppUserEntity.class);
     }
 
     @Override
