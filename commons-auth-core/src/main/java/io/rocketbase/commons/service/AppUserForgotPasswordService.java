@@ -10,6 +10,7 @@ import io.rocketbase.commons.exception.UnknownUserException;
 import io.rocketbase.commons.exception.VerificationException;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.service.email.EmailService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 
@@ -19,8 +20,9 @@ import java.util.Optional;
 import static io.rocketbase.commons.service.AppUserService.FORGOTPW_KV;
 
 @RequiredArgsConstructor
-public class AppUserForgotPasswordService {
+public class AppUserForgotPasswordService implements FeedbackActionService {
 
+    @Getter
     final AuthProperties authProperties;
 
     @Resource
@@ -43,7 +45,7 @@ public class AppUserForgotPasswordService {
         String token = tokenizerService.generateToken(optional.get().getUsername(), null, authProperties.getPasswordResetExpiration());
         appUserService.updateKeyValues(optional.get().getUsername(), ImmutableMap.of(FORGOTPW_KV, token));
 
-        emailService.sentForgotPasswordEmail(optional.get(), baseUrl, token);
+        emailService.sentForgotPasswordEmail(optional.get(), buildActionUrl(baseUrl, ActionType.PASSWORD_RESET, token));
 
         applicationEventPublisher.publishEvent(new ForgotPasswordEvent(this, optional.get()));
 

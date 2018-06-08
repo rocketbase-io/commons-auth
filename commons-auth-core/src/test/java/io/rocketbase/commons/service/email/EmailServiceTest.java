@@ -28,7 +28,7 @@ public class EmailServiceTest extends BaseIntegrationTest {
         EmailProperties emailProperties = new EmailProperties();
 
         // when
-        emailService.sentRegistrationEmail(user, "http://localhost:8080/", "token");
+        emailService.sentRegistrationEmail(user, "http://localhost:8080/?verification=token");
 
         // then
         MimeMessage[] receivedMessages = getSmtpServerRule().getMessages();
@@ -41,55 +41,5 @@ public class EmailServiceTest extends BaseIntegrationTest {
         assertThat(current.getRecipients(Message.RecipientType.TO)[0].toString(), containsString(user.getEmail()));
         assertThat(current.getContent(), instanceOf(MimeMultipart.class));
         assertThat(((MimeMultipart) current.getContent()).getBodyPart(0).getSize(), greaterThan(0));
-    }
-
-    @Test
-    public void buildActionUrlWithNullConfig() {
-        // given
-        String applicationBaseUrl = "http://localhost:9090";
-
-        AuthProperties authProperties = new AuthProperties();
-        authProperties.setVerificationUrl(null);
-
-        // when
-        String result = new EmailService(authProperties, new EmailProperties())
-                .buildActionUrl(applicationBaseUrl, EmailService.ActionType.VERIFICATION, "token");
-
-        // then
-        assertThat(result, startsWith(applicationBaseUrl + EmailService.ActionType.VERIFICATION.getApiPath()));
-    }
-
-    @Test
-    public void buildActionUrlWithFilledConfig() {
-        // given
-        String applicationBaseUrl = "http://localhost:9090";
-
-        String configBaseUrl = "https://api.rocketbase.io/";
-        AuthProperties authProperties = new AuthProperties();
-        authProperties.setVerificationUrl(configBaseUrl);
-
-        // when
-        String result = new EmailService(authProperties, new EmailProperties())
-                .buildActionUrl(applicationBaseUrl, EmailService.ActionType.VERIFICATION, "token");
-
-        // then
-        assertThat(result, startsWith("https://api.rocketbase.io/?verification="));
-    }
-
-    @Test
-    public void buildActionUrlWithFilledConfigQueryParam() {
-        // given
-        String applicationBaseUrl = "http://localhost:9090";
-
-        String configBaseUrl = "https://api.rocketbase.io/?action=submit";
-        AuthProperties authProperties = new AuthProperties();
-        authProperties.setVerificationUrl(configBaseUrl);
-
-        // when
-        String result = new EmailService(authProperties, new EmailProperties())
-                .buildActionUrl(applicationBaseUrl, EmailService.ActionType.VERIFICATION, "token");
-
-        // then
-        assertThat(result, startsWith("https://api.rocketbase.io/?action=submit&verification="));
     }
 }

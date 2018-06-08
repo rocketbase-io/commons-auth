@@ -6,10 +6,13 @@ import io.rocketbase.commons.service.email.EmailService;
 import io.rocketbase.commons.service.email.MailContentConfig;
 import io.rocketbase.commons.service.email.SimpleMailContentConfig;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import javax.mail.internet.InternetAddress;
 
 @Configuration
 @EnableConfigurationProperties({AuthProperties.class, JwtProperties.class, EmailProperties.class, RegistrationProperties.class, GravatarProperties.class})
@@ -28,14 +31,15 @@ public class BeanConfiguration {
         return new SimpleMailContentConfig(emailProperties);
     }
 
+    @SneakyThrows
     @Bean
     public EmailService emailService() {
-        return new EmailService(authProperties, emailProperties);
+        return new EmailService(new InternetAddress(emailProperties.getFromEmail(), emailProperties.getServiceName()));
     }
 
     @Bean
     public AppUserRegistrationService appUserRegistrationService() {
-        return new AppUserRegistrationService(registrationProperties);
+        return new AppUserRegistrationService(authProperties, registrationProperties);
     }
 
     @Bean
