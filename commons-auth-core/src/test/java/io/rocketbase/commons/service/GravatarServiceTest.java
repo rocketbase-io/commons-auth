@@ -1,6 +1,6 @@
 package io.rocketbase.commons.service;
 
-import io.rocketbase.commons.config.GravatarConfiguration;
+import io.rocketbase.commons.config.GravatarProperties;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.*;
@@ -33,7 +33,10 @@ public class GravatarServiceTest {
         assertThat(imageUrl, nullValue());
     }
 
-    private GravatarConfiguration getGravatarConfiguration() {
-        return new GravatarConfiguration(true, 160, GravatarConfiguration.DefaultImage.ROBOHASH, null);
+    private GravatarProperties getGravatarConfiguration() {
+        GravatarProperties gravatarProperties = new GravatarProperties();
+        gravatarProperties.setSize(160);
+        gravatarProperties.setImage(GravatarProperties.DefaultImage.ROBOHASH);
+        return gravatarProperties;
     }
 }

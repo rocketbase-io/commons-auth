@@ -101,7 +101,7 @@ public class AuthenticationController {
 
         String username = ((AppUser) authentication.getPrincipal()).getUsername();
 
-        appUserService.updateProfile(username, updateProfile.getFirstName(), updateProfile.getLastName(), updateProfile.getAvatar());
+        appUserService.updateProfile(username, updateProfile.getFirstName(), updateProfile.getLastName(), updateProfile.getAvatar(), null);
 
         applicationEventPublisher.publishEvent(new UpdateProfileEvent(this, appUserService.getByUsername(username)));
 

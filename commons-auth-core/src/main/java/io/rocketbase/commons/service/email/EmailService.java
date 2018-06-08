@@ -1,23 +1,25 @@
 package io.rocketbase.commons.service.email;
 
-import io.rocketbase.commons.config.EmailConfiguration;
-import io.rocketbase.commons.config.RegistrationConfiguration;
+import io.rocketbase.commons.config.AuthProperties;
+import io.rocketbase.commons.config.EmailProperties;
 import io.rocketbase.commons.model.AppUser;
-import io.rocketbase.commons.service.VerificationLinkService;
-import io.rocketbase.commons.service.VerificationLinkService.ActionType;
 import io.rocketbase.commons.service.email.EmailTemplateService.HtmlTextEmail;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
 
-@Service
+@RequiredArgsConstructor
 public class EmailService {
+
+    final AuthProperties authProperties;
+    final EmailProperties emailProperties;
 
     @Resource
     private JavaMailSender emailSender;
@@ -26,32 +28,23 @@ public class EmailService {
     private MailContentConfig mailContentConfig;
 
     @Resource
-    private EmailConfiguration emailConfiguration;
-
-    @Resource
-    private RegistrationConfiguration registrationConfiguration;
-
-    @Resource
     private EmailTemplateService emailTemplateService;
 
-    @Resource
-    private VerificationLinkService verificationLinkService;
-
-
     @SneakyThrows
-    public void sentRegistrationEmail(AppUser user, String applicationBaseUrl) {
-        TemplateConfigBuilder register = mailContentConfig.register(user, buildActionUrl(user.getUsername(), applicationBaseUrl, ActionType.VERIFICATION));
+    public void sentRegistrationEmail(AppUser user, String applicationBaseUrl, String token) {
+
+        TemplateConfigBuilder register = mailContentConfig.register(user, buildActionUrl(applicationBaseUrl, ActionType.VERIFICATION, token));
         HtmlTextEmail htmlTextEmail = emailTemplateService.buildHtmlTextTemplate(register);
 
-        sentEmail(new InternetAddress(user.getEmail()), mailContentConfig.registerSubject(user), htmlTextEmail, new InternetAddress(emailConfiguration.getFromEmail()));
+        sentEmail(new InternetAddress(user.getEmail()), mailContentConfig.registerSubject(user), htmlTextEmail, new InternetAddress(emailProperties.getFromEmail()));
     }
 
     @SneakyThrows
-    public void sentForgotPasswordEmail(AppUser user, String applicationBaseUrl) {
-        TemplateConfigBuilder forgotPassword = mailContentConfig.forgotPassword(user, buildActionUrl(user.getUsername(), applicationBaseUrl, ActionType.PASSWORD_RESET));
+    public void sentForgotPasswordEmail(AppUser user, String applicationBaseUrl, String token) {
+        TemplateConfigBuilder forgotPassword = mailContentConfig.forgotPassword(user, buildActionUrl(applicationBaseUrl, ActionType.PASSWORD_RESET, token));
         HtmlTextEmail htmlTextEmail = emailTemplateService.buildHtmlTextTemplate(forgotPassword);
 
-        sentEmail(new InternetAddress(user.getEmail()), mailContentConfig.forgotPasswordSubject(user), htmlTextEmail, new InternetAddress(emailConfiguration.getFromEmail()));
+        sentEmail(new InternetAddress(user.getEmail()), mailContentConfig.forgotPasswordSubject(user), htmlTextEmail, new InternetAddress(emailProperties.getFromEmail()));
     }
 
     @SneakyThrows
@@ -67,35 +60,21 @@ public class EmailService {
         emailSender.send(message);
     }
 
-    protected String buildActionUrl(String username, String applicationBaseUrl, ActionType actionType) {
+    protected String buildActionUrl(String applicationBaseUrl, ActionType actionType, String token) {
         String uri = handleBaseUrl(applicationBaseUrl, actionType);
         uri += uri.contains("?") ? "&" : "?";
-        uri += "verification=";
-        uri += verificationLinkService.generateKey(username, actionType, getExpiresInMinutes(actionType));
+        uri += "verification=" + token;
         return uri;
-    }
-
-    private long getExpiresInMinutes(ActionType actionType) {
-        Long expiresInMinutes = null;
-        switch (actionType) {
-            case VERIFICATION:
-                expiresInMinutes = registrationConfiguration.getEmailValidationExpiration();
-                break;
-            case PASSWORD_RESET:
-                expiresInMinutes = emailConfiguration.getPasswordResetExpiration();
-                break;
-        }
-        return expiresInMinutes;
     }
 
     private String handleBaseUrl(String applicationBaseUrl, ActionType actionType) {
         String configuredUrl = null;
         switch (actionType) {
             case VERIFICATION:
-                configuredUrl = emailConfiguration.getVerificationUrl();
+                configuredUrl = authProperties.getVerificationUrl();
                 break;
             case PASSWORD_RESET:
-                configuredUrl = emailConfiguration.getPasswordResetUrl();
+                configuredUrl = authProperties.getPasswordResetUrl();
                 break;
         }
 
@@ -111,5 +90,18 @@ public class EmailService {
             result += actionType.getApiPath();
         }
         return result;
+    }
+
+    enum ActionType {
+
+        VERIFICATION("/auth/verify"), PASSWORD_RESET(("/auth/reset-password/index.html"));
+
+        @Getter
+        private String apiPath;
+
+        ActionType(String apiPath) {
+            this.apiPath = apiPath;
+        }
+
     }
 }

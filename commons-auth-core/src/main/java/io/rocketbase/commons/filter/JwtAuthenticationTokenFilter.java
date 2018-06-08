@@ -3,7 +3,7 @@ package io.rocketbase.commons.filter;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
-import io.rocketbase.commons.config.JwtConfiguration;
+import io.rocketbase.commons.config.JwtProperties;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.AppUserService;
@@ -32,21 +32,21 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
     private JwtTokenService jwtTokenService;
 
     @Resource
-    private JwtConfiguration jwtConfiguration;
+    private JwtProperties jwtProperties;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        final String requestHeader = request.getHeader(jwtConfiguration.getHeader());
+        final String requestHeader = request.getHeader(jwtProperties.getHeader());
 
         String username = null;
         String authToken = null;
 
-        if (requestHeader != null && requestHeader.startsWith(jwtConfiguration.getTokenPrefix())) {
+        if (requestHeader != null && requestHeader.startsWith(jwtProperties.getTokenPrefix())) {
             // check header
-            authToken = requestHeader.substring(jwtConfiguration.getTokenPrefix().length());
-        } else if (request.getParameter(jwtConfiguration.getUriParam()) != null) {
+            authToken = requestHeader.substring(jwtProperties.getTokenPrefix().length());
+        } else if (request.getParameter(jwtProperties.getUriParam()) != null) {
             // check uiParam
-            authToken = request.getParameter(jwtConfiguration.getUriParam());
+            authToken = request.getParameter(jwtProperties.getUriParam());
         }
 
         if (authToken != null) {

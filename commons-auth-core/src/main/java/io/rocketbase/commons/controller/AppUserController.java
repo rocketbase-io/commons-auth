@@ -46,8 +46,9 @@ public class AppUserController implements BaseController {
     @ResponseBody
     public AppUserRead create(@RequestBody @NotNull @Validated AppUserCreate create) {
         AppUser entity = appUserService.initializeUser(create.getUsername(), create.getPassword(), create.getEmail(), create.getAdmin());
-        if (create.getFirstName() != null || create.getLastName() != null || create.getAvatar() != null) {
-            appUserService.updateProfile(entity.getUsername(), create.getFirstName(), create.getLastName(), create.getAvatar() != null ? create.getAvatar() : entity.getAvatar());
+        if (create.getFirstName() != null || create.getLastName() != null || create.getAvatar() != null || create.getKeyValues() != null) {
+            String avatar = create.getAvatar() != null ? create.getAvatar() : entity.getAvatar();
+            appUserService.updateProfile(entity.getUsername(), create.getFirstName(), create.getLastName(), avatar, create.getKeyValues());
         }
         return appUserConverter.fromEntity(entity);
     }
@@ -80,6 +81,7 @@ public class AppUserController implements BaseController {
         if (update.getEnabled() != null) {
             entity.setEnabled(update.getEnabled());
         }
+        appUserService.handleKeyValues(entity, update.getKeyValues());
 
         appUserPersistenceService.save(entity);
 

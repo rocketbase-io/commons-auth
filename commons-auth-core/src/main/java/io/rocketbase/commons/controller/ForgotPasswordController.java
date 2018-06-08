@@ -3,17 +3,8 @@ package io.rocketbase.commons.controller;
 
 import io.rocketbase.commons.dto.forgot.ForgotPasswordRequest;
 import io.rocketbase.commons.dto.forgot.PerformPasswordResetRequest;
-import io.rocketbase.commons.event.ForgotPasswordEvent;
-import io.rocketbase.commons.event.ResetPasswordEvent;
-import io.rocketbase.commons.exception.UnknownUserException;
-import io.rocketbase.commons.exception.VerificationException;
-import io.rocketbase.commons.model.AppUser;
-import io.rocketbase.commons.service.AppUserService;
-import io.rocketbase.commons.service.VerificationLinkService;
-import io.rocketbase.commons.service.VerificationLinkService.VerificationToken;
-import io.rocketbase.commons.service.email.EmailService;
+import io.rocketbase.commons.service.AppUserForgotPasswordService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
-import java.util.Optional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -34,46 +24,17 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class ForgotPasswordController implements BaseController {
 
     @Resource
-    private AppUserService appUserService;
-
-    @Resource
-    private EmailService emailService;
-
-    @Resource
-    private VerificationLinkService verificationLinkService;
-
-    @Resource
-    private ApplicationEventPublisher applicationEventPublisher;
-
+    private AppUserForgotPasswordService appUserForgotPasswordService;
 
     @RequestMapping(value = "/auth/forgot-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> forgotPassword(HttpServletRequest request, @RequestBody @NotNull @Validated ForgotPasswordRequest forgotPassword) {
-        Optional<AppUser> optional = appUserService.findByEmail(forgotPassword.getEmail().toLowerCase());
-        if (!optional.isPresent() || !optional.get().isEnabled()) {
-            throw new UnknownUserException();
-        }
-
-        emailService.sentForgotPasswordEmail(optional.get(), getBaseUrl(request));
-
-        applicationEventPublisher.publishEvent(new ForgotPasswordEvent(this, optional.get()));
-
+        appUserForgotPasswordService.requestPasswordReset(forgotPassword, getBaseUrl(request));
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @RequestMapping(value = "/auth/reset-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> resetPassword(@RequestBody @NotNull @Validated PerformPasswordResetRequest performPasswordReset) {
-        VerificationToken token = verificationLinkService.parseKey(performPasswordReset.getVerification());
-        if (!token.isValid(VerificationLinkService.ActionType.PASSWORD_RESET)) {
-            throw new VerificationException();
-        }
-        AppUser user = appUserService.getByUsername(token.getUsername());
-        if (user == null || !user.isEnabled()) {
-            throw new UnknownUserException();
-        }
-        appUserService.updatePassword(user.getUsername(), performPasswordReset.getPassword());
-
-        applicationEventPublisher.publishEvent(new ResetPasswordEvent(this, user));
-
+        appUserForgotPasswordService.resetPassword(performPasswordReset);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

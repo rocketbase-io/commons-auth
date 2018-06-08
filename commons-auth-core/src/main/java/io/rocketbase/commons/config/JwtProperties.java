@@ -2,19 +2,15 @@ package io.rocketbase.commons.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
 
-@Component
 @Data
-@EnableConfigurationProperties
 @ConfigurationProperties(prefix = "auth.jwt")
-@Validated
-public class JwtConfiguration {
+public class JwtProperties {
+
 
     private String header = HttpHeaders.AUTHORIZATION;
     private String tokenPrefix = "Bearer ";
@@ -23,6 +19,14 @@ public class JwtConfiguration {
     @NotNull
     private String secret;
 
+    /**
+     * default 1 hour
+     */
     private long accessTokenExpiration = 60;
+
+    /**
+     * default 30 days
+     */
     private long refreshTokenExpiration = 43200;
+
 }

@@ -28,11 +28,8 @@ logging:
   level:
     io.rocketbase: TRACE
 
-
-
 # auth configuration
 auth:
-  user-cache-time: 0
-  key-secret: 'QENtCtMfH7pv2Qf6GWBcCEDMApQC62SA'
   jwt:
     secret: 'UnU7PkNfKEAuJ045NDgkcls5OFR0MmteWmMpLlkze0U='
+  user-cache-time: 0

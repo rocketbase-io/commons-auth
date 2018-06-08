@@ -1,25 +1,17 @@
 package io.rocketbase.commons.config;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
-import static io.rocketbase.commons.config.GravatarConfiguration.DefaultImage.RETRO;
 
-@Component
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@EnableConfigurationProperties
 @ConfigurationProperties(prefix = "auth.gravatar")
-public class GravatarConfiguration {
+public class GravatarProperties {
 
     private boolean enabled = true;
     private Integer size = 160;
-    private DefaultImage defaultImage = RETRO;
+    private DefaultImage image = DefaultImage.RETRO;
     private ImageRating rating = null;
 
     public enum DefaultImage {
@@ -83,4 +75,5 @@ public class GravatarConfiguration {
             return this.name().toLowerCase();
         }
     }
+
 }

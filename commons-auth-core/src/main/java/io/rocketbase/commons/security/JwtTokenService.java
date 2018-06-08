@@ -1,15 +1,14 @@
 package io.rocketbase.commons.security;
 
 import io.jsonwebtoken.*;
-import io.rocketbase.commons.config.JwtConfiguration;
+import io.rocketbase.commons.config.JwtProperties;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.model.AppUser;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -17,13 +16,12 @@ import java.util.*;
 import java.util.function.Function;
 
 @Slf4j
-@Component
+@RequiredArgsConstructor
 public class JwtTokenService implements Serializable {
 
     public static final String REFRESH_TOKEN = "REFRESH_TOKEN";
 
-    @Resource
-    JwtConfiguration jwtConfiguration;
+    final JwtProperties jwtProperties;
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -56,7 +54,7 @@ public class JwtTokenService implements Serializable {
 
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
-                .setSigningKey(jwtConfiguration.getSecret())
+                .setSigningKey(jwtProperties.getSecret())
                 .parseClaimsJws(token)
                 .getBody();
     }
@@ -64,7 +62,7 @@ public class JwtTokenService implements Serializable {
     public JwtTokenBundle generateTokenBundle(AppUser user) {
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
         return new JwtTokenBundle(generateAccessToken(now, user),
-                prepareBuilder(now, jwtConfiguration.getRefreshTokenExpiration(), user.getUsername())
+                prepareBuilder(now, jwtProperties.getRefreshTokenExpiration(), user.getUsername())
                         .claim("scopes", Arrays.asList(REFRESH_TOKEN))
                         .compact());
     }
@@ -75,7 +73,7 @@ public class JwtTokenService implements Serializable {
     }
 
     protected String generateAccessToken(LocalDateTime ldt, AppUser user) {
-        return prepareBuilder(ldt, jwtConfiguration.getAccessTokenExpiration(), user.getUsername())
+        return prepareBuilder(ldt, jwtProperties.getAccessTokenExpiration(), user.getUsername())
                 .claim("scopes", user.getRoles())
                 .compact();
     }
@@ -84,7 +82,7 @@ public class JwtTokenService implements Serializable {
         return Jwts.builder()
                 .setIssuedAt(convert(ldt))
                 .setExpiration(convert(ldt.plusMinutes(expirationMinutes)))
-                .signWith(SignatureAlgorithm.HS512, jwtConfiguration.getSecret())
+                .signWith(SignatureAlgorithm.HS512, jwtProperties.getSecret())
                 .setSubject(username);
     }
 

@@ -3,7 +3,7 @@ package io.rocketbase.commons.controller;
 import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.adapters.JwtTokenProvider;
 import io.rocketbase.commons.adapters.SimpleJwtTokenProvider;
-import io.rocketbase.commons.config.AuthConfiguration;
+import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.dto.PageableResult;
 import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
@@ -23,8 +23,6 @@ import static org.hamcrest.Matchers.*;
 
 public class AppUserControllerTest extends BaseIntegrationTest {
 
-    @Resource
-    private AuthConfiguration authConfiguration;
 
     @Resource
     private AppUserPersistenceTestService appUserPersistenceTestService;
@@ -73,7 +71,7 @@ public class AppUserControllerTest extends BaseIntegrationTest {
         // then
         assertThat(response, notNullValue());
         assertThat(response.getId(), notNullValue());
-        assertThat(response.getRoles(), containsInAnyOrder(authConfiguration.getRoleNameUser()));
+        assertThat(response.getRoles(), containsInAnyOrder(new AuthProperties().getRoleUser()));
     }
 
     @Test
@@ -92,7 +90,7 @@ public class AppUserControllerTest extends BaseIntegrationTest {
         assertThat(response, notNullValue());
         assertThat(response.getFirstName(), equalTo("firstName"));
         assertThat(response.getLastName(), equalTo("lastName"));
-        assertThat(response.getRoles(), containsInAnyOrder(authConfiguration.getRoleNameUser()));
+        assertThat(response.getRoles(), containsInAnyOrder(new AuthProperties().getRoleUser()));
     }
 
     @Test

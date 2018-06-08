@@ -1,6 +1,6 @@
 package io.rocketbase.commons.test;
 
-import io.rocketbase.commons.config.AuthConfiguration;
+import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.model.AppUserTestEntity;
 import io.rocketbase.commons.service.AppUserPersistenceService;
 import org.springframework.data.domain.Page;
@@ -19,8 +19,6 @@ public class AppUserPersistenceTestService implements AppUserPersistenceService<
 
     private Map<String, AppUserTestEntity> userMap = new HashMap<>();
 
-    @Resource
-    private AuthConfiguration authConfiguration;
 
     @Resource
     private PasswordEncoder passwordEncoder;
@@ -44,9 +42,11 @@ public class AppUserPersistenceTestService implements AppUserPersistenceService<
     public void resetData() {
         userMap.clear();
 
-        userMap.put("user", buildAppUser("user", authConfiguration.getRoleNameUser(), "user@rocketbase.io"));
-        userMap.put("admin", buildAppUser("admin", authConfiguration.getRoleNameAdmin(), "user@rocketbase.io"));
-        AppUserTestEntity disabled = buildAppUser("disabled", authConfiguration.getRoleNameAdmin(), "disabled@rocketbase.io");
+        AuthProperties authProperties = new AuthProperties();
+
+        userMap.put("user", buildAppUser("user", authProperties.getRoleUser(), "user@rocketbase.io"));
+        userMap.put("admin", buildAppUser("admin", authProperties.getRoleAdmin(), "user@rocketbase.io"));
+        AppUserTestEntity disabled = buildAppUser("disabled", authProperties.getRoleAdmin(), "disabled@rocketbase.io");
         disabled.setEnabled(false);
         userMap.put("disabled", disabled);
     }

@@ -1,23 +1,17 @@
 package io.rocketbase.commons.service;
 
-import io.rocketbase.commons.config.GravatarConfiguration;
+import io.rocketbase.commons.config.GravatarProperties;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 
-@Service
+@RequiredArgsConstructor
 public class GravatarService {
 
-    protected GravatarConfiguration gravatarConfiguration;
-
-    @Autowired
-    public GravatarService(GravatarConfiguration gravatarConfiguration) {
-        this.gravatarConfiguration = gravatarConfiguration;
-    }
+    final GravatarProperties gravatarProperties;
 
     public String getAvatar(String email) {
         if (email == null) {
@@ -26,10 +20,10 @@ public class GravatarService {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString("https://www.gravatar.com/avatar/");
         uriBuilder.path(md5(email.toLowerCase()));
         uriBuilder.path(".jpg");
-        uriBuilder.queryParam("s", gravatarConfiguration.getSize());
-        uriBuilder.queryParam("d", gravatarConfiguration.getDefaultImage().getUrlParam());
-        if (gravatarConfiguration.getRating() != null) {
-            uriBuilder.queryParam("r", gravatarConfiguration.getRating().getUrlParam());
+        uriBuilder.queryParam("s", gravatarProperties.getSize());
+        uriBuilder.queryParam("d", gravatarProperties.getImage().getUrlParam());
+        if (gravatarProperties.getRating() != null) {
+            uriBuilder.queryParam("r", gravatarProperties.getRating().getUrlParam());
         }
         return uriBuilder.toUriString();
     }
@@ -41,4 +35,7 @@ public class GravatarService {
         return DatatypeConverter.printHexBinary(md.digest()).toLowerCase();
     }
 
+    public boolean isEnabled() {
+        return gravatarProperties.isEnabled();
+    }
 }

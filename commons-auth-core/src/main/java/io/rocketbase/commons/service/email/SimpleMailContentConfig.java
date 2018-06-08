@@ -1,15 +1,13 @@
 package io.rocketbase.commons.service.email;
 
-import io.rocketbase.commons.config.EmailConfiguration;
+import io.rocketbase.commons.config.EmailProperties;
 import io.rocketbase.commons.model.AppUser;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class SimpleMailContentConfig implements MailContentConfig {
 
-    private EmailConfiguration emailConfiguration;
-
-    public SimpleMailContentConfig(EmailConfiguration emailConfiguration) {
-        this.emailConfiguration = emailConfiguration;
-    }
+    final EmailProperties emailProperties;
 
     @Override
     public TemplateConfigBuilder register(AppUser user, String actionUrl) {
@@ -19,14 +17,14 @@ public class SimpleMailContentConfig implements MailContentConfig {
                 .addLine(String.format("Hi %s,", user.getUsername()))
                 .addLine("please verify your account by clicking the button")
                 .action(actionUrl, "verify your account")
-                .addGreeting(String.format("- %s", emailConfiguration.getServiceName()))
-                .receiveNote(emailConfiguration.getServiceName(), emailConfiguration.getSupportEmail())
-                .copyright(emailConfiguration.getCopyrightUrl(), emailConfiguration.getCopyrightName());
+                .addGreeting(String.format("- %s", emailProperties.getServiceName()))
+                .receiveNote(emailProperties.getServiceName(), emailProperties.getSupportEmail())
+                .copyright(emailProperties.getCopyrightUrl(), emailProperties.getCopyrightName());
     }
 
     @Override
     public String registerSubject(AppUser user) {
-        return String.format("%s Verify Your Account", emailConfiguration.getSubjectPrefix()).trim();
+        return String.format("%s Verify Your Account", emailProperties.getSubjectPrefix()).trim();
     }
 
     @Override
@@ -37,13 +35,13 @@ public class SimpleMailContentConfig implements MailContentConfig {
                 .addLine(String.format("Hi %s,", user.getUsername()))
                 .addLine("if it was you, confirm the password change by clicking the button")
                 .actionWithStyling(actionUrl, "confirm password change", "fff", "E63946")
-                .addGreeting(String.format("- %s", emailConfiguration.getServiceName()))
-                .receiveNote(emailConfiguration.getServiceName(), emailConfiguration.getSupportEmail())
-                .copyright(emailConfiguration.getCopyrightUrl(), emailConfiguration.getCopyrightName());
+                .addGreeting(String.format("- %s", emailProperties.getServiceName()))
+                .receiveNote(emailProperties.getServiceName(), emailProperties.getSupportEmail())
+                .copyright(emailProperties.getCopyrightUrl(), emailProperties.getCopyrightName());
     }
 
     @Override
     public String forgotPasswordSubject(AppUser user) {
-        return String.format("%s Reset Password", emailConfiguration.getSubjectPrefix()).trim();
+        return String.format("%s Reset Password", emailProperties.getSubjectPrefix()).trim();
     }
 }

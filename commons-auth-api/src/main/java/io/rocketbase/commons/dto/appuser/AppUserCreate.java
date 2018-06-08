@@ -10,6 +10,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
+import java.util.Map;
 
 @Data
 @Builder
@@ -33,6 +34,8 @@ public class AppUserCreate implements Serializable {
     private String email;
 
     private String avatar;
+
+    private Map<String, String> keyValues;
 
     @NotNull
     private Boolean admin;

@@ -1,6 +1,6 @@
 package io.rocketbase.commons.security;
 
-import io.rocketbase.commons.config.JwtConfiguration;
+import io.rocketbase.commons.config.JwtProperties;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.model.AppUserTestEntity;
 import org.junit.Test;
@@ -22,10 +22,9 @@ public class JwtTokenServiceTest {
     private ZoneId UTC = ZoneId.of("+0");
 
     private JwtTokenService getInstance() {
-        JwtTokenService service = new JwtTokenService();
-        JwtConfiguration config = new JwtConfiguration();
+        JwtProperties config = new JwtProperties();
         config.setSecret("YSZESjg5aiZ0ZHszcSc1R0BEOiY5PFgp");
-        service.jwtConfiguration = config;
+        JwtTokenService service = new JwtTokenService(config);
         return service;
     }
 
@@ -95,9 +94,9 @@ public class JwtTokenServiceTest {
         // then
         assertThat(expired, notNullValue());
         assertThat(expired.isAfter(beforeCreate
-                .plusMinutes(getInstance().jwtConfiguration.getAccessTokenExpiration())), equalTo(true));
+                .plusMinutes(getInstance().jwtProperties.getAccessTokenExpiration())), equalTo(true));
         assertThat(expired.isBefore(beforeCreate
-                .plusMinutes(getInstance().jwtConfiguration.getAccessTokenExpiration() + 1)), equalTo(true));
+                .plusMinutes(getInstance().jwtProperties.getAccessTokenExpiration() + 1)), equalTo(true));
 
     }
 

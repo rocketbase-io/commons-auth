@@ -3,37 +3,36 @@ package io.rocketbase.commons.service;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import io.rocketbase.commons.config.AuthConfiguration;
-import io.rocketbase.commons.config.GravatarConfiguration;
-import io.rocketbase.commons.config.RegistrationConfiguration;
+import com.google.common.collect.ImmutableMap;
+import io.rocketbase.commons.config.AuthProperties;
+import io.rocketbase.commons.config.RegistrationProperties;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.model.AppUser;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-@Service
+
+@RequiredArgsConstructor
 public class AppUserService implements UserDetailsService {
 
-    @Resource
-    private AuthConfiguration authConfiguration;
+    public static String REGISTRATION_KV = "_registration";
+    public static String FORGOTPW_KV = "_forgotpw";
 
-    @Resource
-    private RegistrationConfiguration registrationConfiguration;
-
-    @Resource
-    private GravatarConfiguration gravatarConfiguration;
+    final AuthProperties authProperties;
+    final RegistrationProperties registrationProperties;
 
     @Resource
     private AppUserPersistenceService appUserPersistenceService;
@@ -48,9 +47,9 @@ public class AppUserService implements UserDetailsService {
 
     @PostConstruct
     public void postConstruct() {
-        if (authConfiguration.getUserCacheTime() > 0) {
+        if (authProperties.getUserCacheTime() > 0) {
             cache = CacheBuilder.newBuilder()
-                    .expireAfterAccess(authConfiguration.getUserCacheTime(), TimeUnit.MINUTES)
+                    .expireAfterAccess(authProperties.getUserCacheTime(), TimeUnit.MINUTES)
                     .build(new CacheLoader<String, Optional<AppUser>>() {
                         @Override
                         public Optional<AppUser> load(String key) {
@@ -95,11 +94,20 @@ public class AppUserService implements UserDetailsService {
         refreshUsername(username);
     }
 
-    public void updateProfile(String username, String firstName, String lastName, String avatar) {
+    public void updateProfile(String username, String firstName, String lastName, String avatar, Map<String, String> keyValues) {
         AppUser entity = getEntityByUsername(username);
         entity.setFirstName(firstName);
         entity.setLastName(lastName);
         entity.setAvatar(avatar);
+        handleKeyValues(entity, keyValues);
+
+        appUserPersistenceService.save(entity);
+        refreshUsername(username);
+    }
+
+    public void updateKeyValues(String username, Map<String, String> keyValues) {
+        AppUser entity = getEntityByUsername(username);
+        handleKeyValues(entity, keyValues);
 
         appUserPersistenceService.save(entity);
         refreshUsername(username);
@@ -134,9 +142,9 @@ public class AppUserService implements UserDetailsService {
         instance.setUsername(username.toLowerCase());
         instance.setEmail(email.toLowerCase());
         instance.setPassword(passwordEncoder.encode(password));
-        instance.setRoles(Arrays.asList(admin ? authConfiguration.getRoleNameAdmin() : authConfiguration.getRoleNameUser()));
+        instance.setRoles(Arrays.asList(admin ? authProperties.getRoleAdmin() : authProperties.getRoleUser()));
         instance.setEnabled(true);
-        if (gravatarConfiguration.isEnabled()) {
+        if (gravatarService.isEnabled()) {
             instance.setAvatar(gravatarService.getAvatar(email));
         }
 
@@ -152,18 +160,31 @@ public class AppUserService implements UserDetailsService {
         instance.setFirstName(registration.getFirstName());
         instance.setLastName(registration.getLastName());
         instance.setPassword(passwordEncoder.encode(registration.getPassword()));
-        instance.setRoles(Arrays.asList(registrationConfiguration.getRole()));
-        instance.setEnabled(!registrationConfiguration.isEmailValidation());
-        if (gravatarConfiguration.isEnabled()) {
+        instance.setRoles(Arrays.asList(registrationProperties.getRole()));
+        instance.setEnabled(!registrationProperties.isVerification());
+        if (gravatarService.isEnabled()) {
             instance.setAvatar(gravatarService.getAvatar(registration.getEmail()));
         }
+        handleKeyValues(instance, registration.getKeyValues());
 
         AppUser entity = appUserPersistenceService.save(instance);
         refreshUsername(entity.getUsername());
         return entity;
     }
 
-    public AppUser registrationVerification(String username) {
+    public void handleKeyValues(AppUser user, Map<String, String> keyValues) {
+        if (keyValues != null) {
+            keyValues.forEach((key, value) -> {
+                if (value != null) {
+                    user.addKeyValue(key, value);
+                } else {
+                    user.removeKeyValue(key);
+                }
+            });
+        }
+    }
+
+    public void processRegistrationVerification(String username) {
         AppUser entity = getByUsername(username);
         if (entity == null) {
             throw new NotFoundException();
@@ -172,9 +193,10 @@ public class AppUserService implements UserDetailsService {
         entity.setEnabled(true);
         entity.updateLastLogin();
 
+        handleKeyValues(entity, ImmutableMap.of(REGISTRATION_KV, null));
+
         appUserPersistenceService.save(entity);
         refreshUsername(entity.getUsername());
-        return entity;
     }
 
     public void delete(AppUser user) {

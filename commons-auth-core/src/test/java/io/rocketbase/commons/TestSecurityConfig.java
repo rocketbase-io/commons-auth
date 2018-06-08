@@ -1,6 +1,6 @@
 package io.rocketbase.commons;
 
-import io.rocketbase.commons.config.AuthConfiguration;
+import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.filter.JwtAuthenticationTokenFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -32,8 +32,6 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
     @Resource
     private UserDetailsService userDetailsService;
 
-    @Resource
-    private AuthConfiguration authConfiguration;
 
     @Bean
     public RoleHierarchy roleHierarchy() {
@@ -93,7 +91,7 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/auth/login", "/auth/refresh").permitAll()
             .antMatchers("/auth/me/**").authenticated()
             // user-management is only allowed by ADMINS
-            .antMatchers("/api/user/**").hasRole(authConfiguration.getRoleNameAdmin())
+            .antMatchers("/api/user/**").hasRole(new AuthProperties().getRoleAdmin())
             // secure all other api-endpoints
             .antMatchers("/api/**").authenticated();
 

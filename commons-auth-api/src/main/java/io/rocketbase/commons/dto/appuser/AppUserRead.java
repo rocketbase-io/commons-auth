@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Builder
@@ -28,6 +29,8 @@ public class AppUserRead implements Serializable {
     private String avatar;
 
     private List<String> roles;
+
+    private Map<String, String> keyValues;
 
     private Boolean enabled;
 

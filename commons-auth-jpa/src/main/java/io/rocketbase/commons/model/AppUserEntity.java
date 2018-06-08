@@ -1,17 +1,20 @@
 package io.rocketbase.commons.model;
 
+import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.validator.constraints.Email;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Entity
@@ -52,6 +55,13 @@ public class AppUserEntity extends AppUser {
     @Column(name = "role")
     private List<String> roles;
 
+    @ElementCollection
+    @CollectionTable(name = "USER_KEYVALUE_PAIRS", joinColumns = @JoinColumn(name = "id"))
+    @MapKeyColumn(name = "FIELD_KEY", length = 50)
+    @Column(name = "FIELD_VALUE", length = 4000)
+    @Builder.Default
+    private Map<String, String> keyValueMap = new HashMap<>();
+
     private boolean enabled;
 
     @CreatedDate
@@ -70,4 +80,23 @@ public class AppUserEntity extends AppUser {
     public void updateLastTokenInvalidation() {
         this.lastTokenInvalidation = LocalDateTime.now();
     }
+
+    @Override
+    public AppUser addKeyValue(String key, String value) {
+        checkKeyValue(key, value);
+        keyValueMap.put(key.toLowerCase(), value);
+        return this;
+    }
+
+    @Override
+    public void removeKeyValue(String key) {
+        keyValueMap.remove(key.toLowerCase());
+    }
+
+    @Override
+    public Map<String, String> getKeyValues() {
+        return keyValueMap != null ? ImmutableMap.copyOf(keyValueMap) : null;
+    }
+
+
 }
