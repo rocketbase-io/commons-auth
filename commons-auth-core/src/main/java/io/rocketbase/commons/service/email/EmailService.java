@@ -2,6 +2,7 @@ package io.rocketbase.commons.service.email;
 
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.service.email.EmailTemplateService.HtmlTextEmail;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -15,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class EmailService {
 
-
+    @Getter
     final InternetAddress from;
 
     @Resource
@@ -32,7 +33,7 @@ public class EmailService {
         TemplateConfigBuilder register = mailContentConfig.register(user, verificationUrl);
         HtmlTextEmail htmlTextEmail = emailTemplateService.buildHtmlTextTemplate(register);
 
-        sentEmail(new InternetAddress(user.getEmail()), mailContentConfig.registerSubject(user), htmlTextEmail, from);
+        sentEmail(new InternetAddress(user.getEmail()), mailContentConfig.registerSubject(user), htmlTextEmail);
     }
 
     @SneakyThrows
@@ -40,7 +41,11 @@ public class EmailService {
         TemplateConfigBuilder forgotPassword = mailContentConfig.forgotPassword(user, verificationUrl);
         HtmlTextEmail htmlTextEmail = emailTemplateService.buildHtmlTextTemplate(forgotPassword);
 
-        sentEmail(new InternetAddress(user.getEmail()), mailContentConfig.forgotPasswordSubject(user), htmlTextEmail, from);
+        sentEmail(new InternetAddress(user.getEmail()), mailContentConfig.forgotPasswordSubject(user), htmlTextEmail);
+    }
+
+    public void sentEmail(InternetAddress to, String subject, HtmlTextEmail htmlTextEmail) {
+        sentEmail(to, subject, htmlTextEmail, getFrom());
     }
 
     @SneakyThrows
