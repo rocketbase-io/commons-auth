@@ -46,7 +46,7 @@ public class AppUserEntity extends AppUser {
     @Column(length = 2000)
     private String avatar;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "USER_ROLES",
             joinColumns = @JoinColumn(name = "id", referencedColumnName = "id")
@@ -54,7 +54,7 @@ public class AppUserEntity extends AppUser {
     @Column(name = "role")
     private List<String> roles;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "USER_KEYVALUE_PAIRS", joinColumns = @JoinColumn(name = "id"))
     @MapKeyColumn(name = "FIELD_KEY", length = 50)
     @Column(name = "FIELD_VALUE", length = 4000)
