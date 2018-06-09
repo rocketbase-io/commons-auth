@@ -137,6 +137,14 @@ public class AppUserService implements UserDetailsService {
         return entity;
     }
 
+    public AppUser initializeUserIfNotExists(String username, String password, String email, boolean admin) {
+        AppUser result = getByUsername(username);
+        if (result == null) {
+            result = initializeUser(username, password, email, admin);
+        }
+        return result;
+    }
+
     public AppUser initializeUser(String username, String password, String email, boolean admin) {
         AppUser instance = appUserPersistenceService.initNewInstance();
         instance.setUsername(username.toLowerCase());
