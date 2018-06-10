@@ -10,7 +10,13 @@ Add the missing auth service to your spring-boot applications. We [@rocketbase.i
 The implementation bases on spring-boot: mainly on **spring-mvc**, **spring-data**, **javax.mail** and **jjwt**
 
 **Features:**
-* many is planned :)
+* authentication with jwt-tokens
+* refresh token flow
+* registration + verification flow
+* optional gravatar integration
+* optional key values pairs to hold custom properties to user
+* password forgot/reset flow
+* admin endpoints to crud users
 
 ## commons-auth-api
 
@@ -76,6 +82,19 @@ The Content of the emails (forgot-password + registration-verification) is been 
 | auth.email.copyright-name          | commons-auth          | name of sender |
 | auth.email.copyright-url          | link to github repro          | will get displayed in email-text |
 
+To send emails the is used. This needs also some configurations:
+
+| property                                         | default    |
+| ------------------------------------------------ | ---------- |
+| spring.mail.host                                 | *required* |
+| spring.mail.port                                 | *required* |
+| spring.mail.username                             | *required* |
+| spring.mail.password                             | *required* |
+| spring.mail.properties.mail.smtp.auth            | *required* |
+| spring.mail.properties.mail.smtp.starttls.enable | *required* |
+
+
+
 ### configure spring-security
 
 Apart from the configuration properties to get it running you need to configure and activate the security filter etc. Here you can find an example:
@@ -88,9 +107,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Resource
     private UserDetailsService userDetailsService;
-
-    @Resource
-    private AuthConfiguration authConfiguration;
 
     @Bean
     public RoleHierarchy roleHierarchy() {
@@ -152,7 +168,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/auth/login", "/auth/refresh").permitAll()
             .antMatchers("/auth/me/**").authenticated()
             // user-management is only allowed by ADMINS
-            .antMatchers("/api/user/**").hasRole(authConfiguration.getRoleNameAdmin())
+            .antMatchers("/api/user/**").hasRole("ADMIN")
             // secure all other api-endpoints
             .antMatchers("/api/**").authenticated();
 
