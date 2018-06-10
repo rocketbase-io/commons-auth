@@ -20,6 +20,8 @@ This module provides the DTOs and a client to communicate with the authenticatio
 
 Containing an implementation for Token-Generators, UserManagement, Filters and many more...
 
+### configuration properties
+
 You can configure the behaviour of the service by following properties
 
 | property                       | default         | explanation                                                  |
@@ -74,6 +76,115 @@ The Content of the emails (forgot-password + registration-verification) is been 
 | auth.email.copyright-name          | commons-auth          | name of sender |
 | auth.email.copyright-url          | link to github repro          | will get displayed in email-text |
 
+### configure spring-security
+
+Apart from the configuration properties to get it running you need to configure and activate the security filter etc. Here you can find an example:
+
+```java
+@Configuration
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Resource
+    private UserDetailsService userDetailsService;
+
+    @Resource
+    private AuthConfiguration authConfiguration;
+
+    @Bean
+    public RoleHierarchy roleHierarchy() {
+        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
+        roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_USER");
+        return roleHierarchy;
+    }
+
+    @Autowired
+    public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+        authenticationManagerBuilder
+                .userDetailsService(this.userDetailsService)
+                .passwordEncoder(passwordEncoder());
+    }
+
+    /**
+     * a bit confusing but needed
+     * https://github.com/spring-projects/spring-boot/issues/11136
+     */
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public JwtAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
+        return new JwtAuthenticationTokenFilter();
+    }
+
+    @Override
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
+        // @formatter:off
+        httpSecurity
+            // activate CorsConfigurationSource
+            .cors().and()
+            // we don't need CSRF because our token is invulnerable
+            .csrf().disable()
+
+            // don't create session
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            .and()
+
+            .authorizeRequests()
+            .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+
+            // allow anonymous resource requests
+            .antMatchers(HttpMethod.GET,
+                    "/",
+                    "/assets/**",
+                    "/favicon.ico"
+            ).permitAll()
+            // configure auth endpoint
+            .antMatchers("/auth/login", "/auth/refresh").permitAll()
+            .antMatchers("/auth/me/**").authenticated()
+            // user-management is only allowed by ADMINS
+            .antMatchers("/api/user/**").hasRole(authConfiguration.getRoleNameAdmin())
+            // secure all other api-endpoints
+            .antMatchers("/api/**").authenticated();
+
+        // Custom JWT based security filter
+        httpSecurity
+                .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
+
+        // disable page cachingtemplates
+        httpSecurity.headers().cacheControl().disable();
+        // @formatter:on
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin(CorsConfiguration.ALL);
+        configuration.addAllowedMethod(CorsConfiguration.ALL);
+        configuration.addAllowedHeader(CorsConfiguration.ALL);
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(600L);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+}
+```
+
+Furthermore you need to add the package "io.rocketbase.commons" to your componentscan - otherwise all  provided beans will not get found
+
+```java
+@ComponentScan(basePackages = {"io.rocketbase.commons", "YOUR_PACKAGE"})
+```
 
 ## commons-auth-mongo
 
@@ -86,6 +197,15 @@ Will create on collection with name of **user**
 Containing the persistence layer for user via jpa
 
 Will create 3 tables: **USER**, **USER_ROLES**, **USER_KEYVALUE_PAIRS**
+
+In order to get it running you need to add the following annotations to your project, so that jpa detects also the provided entites and repositories...
+
+```java
+@EnableJpaRepositories(basePackages = {"io.rocketbase.commons", "YOUR_PACKAGE"})
+@EntityScan({"io.rocketbase.commons", "YOUR_PACKAGE"})
+```
+
+
 
 ### The MIT License (MIT)
 Copyright (c) 2018 rocketbase.io
