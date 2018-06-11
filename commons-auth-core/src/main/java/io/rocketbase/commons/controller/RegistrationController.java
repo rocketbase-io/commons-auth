@@ -40,7 +40,7 @@ public class RegistrationController implements BaseController {
         return ResponseEntity.ok(appUserConverter.fromEntity(entity));
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/auth/verify", consumes = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.GET, path = "/auth/verify")
     @ResponseBody
     public ResponseEntity<JwtTokenBundle> verify(@RequestParam("verification") String verification) {
         AppUser entity = appUserRegistrationService.verifyRegistration(verification);

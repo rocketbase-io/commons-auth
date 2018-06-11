@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.Assert;
+import org.springframework.util.Base64Utils;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -12,7 +13,10 @@ import java.io.Serializable;
 import java.security.Key;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Random;
 
 @Slf4j
 public class TokenizerService {
@@ -52,8 +56,7 @@ public class TokenizerService {
                         .serialize()
                         .getBytes());
 
-        return Base64.getEncoder()
-                .encodeToString(encValue);
+        return Base64Utils.encodeToUrlSafeString(encValue);
     }
 
     /**
@@ -66,8 +69,7 @@ public class TokenizerService {
             Cipher cipher = Cipher.getInstance(ALGORITHM);
             cipher.init(Cipher.DECRYPT_MODE, key);
 
-            byte[] decValue = cipher.doFinal(Base64.getDecoder()
-                    .decode(cryptedToken));
+            byte[] decValue = cipher.doFinal(Base64Utils.decodeFromUrlSafeString(cryptedToken));
             return Token.parseString(new String(decValue));
         } catch (Exception e) {
             log.debug("unable to decode key", e.getMessage());
