@@ -9,6 +9,7 @@ import io.rocketbase.commons.event.ResetPasswordEvent;
 import io.rocketbase.commons.exception.UnknownUserException;
 import io.rocketbase.commons.exception.VerificationException;
 import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.service.SimpleTokenService.Token;
 import io.rocketbase.commons.service.email.EmailService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -32,9 +33,6 @@ public class AppUserForgotPasswordService implements FeedbackActionService {
     private EmailService emailService;
 
     @Resource
-    private TokenizerService tokenizerService;
-
-    @Resource
     private ApplicationEventPublisher applicationEventPublisher;
 
     public AppUser requestPasswordReset(ForgotPasswordRequest forgotPassword, String baseUrl) {
@@ -42,7 +40,7 @@ public class AppUserForgotPasswordService implements FeedbackActionService {
         if (!optional.isPresent() || !optional.get().isEnabled()) {
             throw new UnknownUserException();
         }
-        String token = tokenizerService.generateToken(optional.get().getUsername(), null, authProperties.getPasswordResetExpiration());
+        String token = SimpleTokenService.generateToken(optional.get().getUsername(), authProperties.getPasswordResetExpiration());
         appUserService.updateKeyValues(optional.get().getUsername(), ImmutableMap.of(FORGOTPW_KV, token));
 
         emailService.sentForgotPasswordEmail(optional.get(), buildActionUrl(baseUrl, ActionType.PASSWORD_RESET, token));
@@ -53,7 +51,7 @@ public class AppUserForgotPasswordService implements FeedbackActionService {
     }
 
     public AppUser resetPassword(PerformPasswordResetRequest performPasswordReset) {
-        TokenizerService.Token token = tokenizerService.parseToken(performPasswordReset.getVerification());
+        Token token = SimpleTokenService.parseToken(performPasswordReset.getVerification());
         if (!token.isValid()) {
             throw new VerificationException();
         }
@@ -62,7 +60,7 @@ public class AppUserForgotPasswordService implements FeedbackActionService {
             throw new UnknownUserException();
         }
         String dbForgotToken = user.getKeyValues().getOrDefault(FORGOTPW_KV, null);
-        if (!token.equals(dbForgotToken)) {
+        if (!performPasswordReset.getVerification().equals(dbForgotToken)) {
             throw new VerificationException();
         }
 
