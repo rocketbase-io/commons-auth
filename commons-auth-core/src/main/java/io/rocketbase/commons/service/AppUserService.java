@@ -20,6 +20,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -201,7 +202,10 @@ public class AppUserService implements UserDetailsService {
         entity.setEnabled(true);
         entity.updateLastLogin();
 
-        handleKeyValues(entity, ImmutableMap.of(REGISTRATION_KV, null));
+        // remove registration Key from keyValue map
+        HashMap<String, String> keyValues = new HashMap<>();
+        keyValues.put(REGISTRATION_KV, null);
+        handleKeyValues(entity, keyValues);
 
         appUserPersistenceService.save(entity);
         refreshUsername(entity.getUsername());
