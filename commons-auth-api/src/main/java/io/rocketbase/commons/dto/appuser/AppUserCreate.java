@@ -19,6 +19,7 @@ import java.util.Map;
 public class AppUserCreate implements Serializable {
 
     @NotNull
+    @Pattern(message = CommonDtoSettings.USERNAME_MESSAGE, regexp = CommonDtoSettings.USERNAME_REGEX)
     private String username;
 
     @NotNull

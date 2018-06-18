@@ -17,6 +17,7 @@ import java.util.Map;
 public class RegistrationRequest implements Serializable {
 
     @NotNull
+    @Pattern(message = CommonDtoSettings.USERNAME_MESSAGE, regexp = CommonDtoSettings.USERNAME_REGEX)
     private String username;
 
     private String firstName;
