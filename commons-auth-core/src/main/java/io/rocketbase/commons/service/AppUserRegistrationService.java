@@ -70,7 +70,7 @@ public class AppUserRegistrationService implements FeedbackActionService {
         AppUser entity = appUserService.getByUsername(token.getUsername());
         String dbRegistrationToken = entity.getKeyValues().getOrDefault(REGISTRATION_KV, null);
 
-        if (!token.equals(dbRegistrationToken)) {
+        if (!verification.equals(dbRegistrationToken)) {
             throw new VerificationException();
         }
 
