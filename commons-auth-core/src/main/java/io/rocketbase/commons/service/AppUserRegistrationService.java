@@ -9,6 +9,7 @@ import io.rocketbase.commons.event.VerificationEvent;
 import io.rocketbase.commons.exception.RegistrationException;
 import io.rocketbase.commons.exception.VerificationException;
 import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.service.SimpleTokenService.Token;
 import io.rocketbase.commons.service.email.EmailService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -32,9 +33,6 @@ public class AppUserRegistrationService implements FeedbackActionService {
     private EmailService emailService;
 
     @Resource
-    private TokenizerService tokenizerService;
-
-    @Resource
     private ApplicationEventPublisher applicationEventPublisher;
 
 
@@ -48,7 +46,7 @@ public class AppUserRegistrationService implements FeedbackActionService {
 
         if (registrationProperties.isVerification()) {
             try {
-                String token = tokenizerService.generateToken(entity.getUsername(), null, registrationProperties.getVerificationExpiration());
+                String token = SimpleTokenService.generateToken(registration.getUsername(), registrationProperties.getVerificationExpiration());
                 appUserService.updateKeyValues(entity.getUsername(), ImmutableMap.of(REGISTRATION_KV, token));
 
                 emailService.sentRegistrationEmail(entity, buildActionUrl(baseUrl, ActionType.VERIFICATION, token));
@@ -63,7 +61,7 @@ public class AppUserRegistrationService implements FeedbackActionService {
     }
 
     public AppUser verifyRegistration(String verification) {
-        TokenizerService.Token token = tokenizerService.parseToken(verification);
+        Token token = SimpleTokenService.parseToken(verification);
         if (!token.isValid()) {
             throw new VerificationException();
         }
