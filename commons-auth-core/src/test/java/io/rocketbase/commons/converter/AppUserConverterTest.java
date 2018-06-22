@@ -1,7 +1,6 @@
 package io.rocketbase.commons.converter;
 
 import com.google.common.collect.ImmutableMap;
-import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.model.AppUserTestEntity;
@@ -10,10 +9,9 @@ import org.junit.Test;
 
 import javax.annotation.Resource;
 
-import java.util.Map;
-
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 
 public class AppUserConverterTest extends BaseIntegrationTest {
 

@@ -1,9 +1,6 @@
 package io.rocketbase.commons.dto.appuser;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.List;
@@ -16,17 +13,14 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"password"})
 public class AppUserUpdate implements Serializable {
-
-    private String username;
 
     private String password;
 
     private String firstName;
 
     private String lastName;
-
-    private String email;
 
     private String avatar;
 

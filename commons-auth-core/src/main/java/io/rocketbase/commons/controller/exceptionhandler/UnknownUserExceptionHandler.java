@@ -18,7 +18,7 @@ public class UnknownUserExceptionHandler extends BaseExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(BAD_REQUEST)
     @ResponseBody
-    public ErrorResponse handleRegistrationException(HttpServletRequest request, UnknownUserException e) {
+    public ErrorResponse handleUnknownUserException(HttpServletRequest request, UnknownUserException e) {
         return new ErrorResponse(AuthErrorCodes.UNKNOWN_USER.getStatus(), translate(request, "error.unknownuser", "User is unknown"));
     }
 }

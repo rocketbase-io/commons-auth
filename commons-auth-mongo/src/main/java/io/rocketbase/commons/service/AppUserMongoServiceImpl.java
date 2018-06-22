@@ -46,7 +46,7 @@ public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUse
         List<AppUserEntity> entities = mongoTemplate.find(new Query().with(pageable), AppUserEntity.class);
         long total = mongoTemplate.count(new Query(), AppUserEntity.class);
 
-        return new PageImpl<AppUserEntity>(entities, pageable, total);
+        return new PageImpl<>(entities, pageable, total);
     }
 
     @Override

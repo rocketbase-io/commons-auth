@@ -3,14 +3,15 @@ package io.rocketbase.commons.service;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.ImmutableMap;
 import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.config.RegistrationProperties;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
+import io.rocketbase.commons.exception.EmailValidationException;
 import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.model.AppUser;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,9 +26,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-
+@Slf4j
 @RequiredArgsConstructor
-public class AppUserService implements UserDetailsService {
+public class AppUserService implements UserDetailsService, ValidationUserLookupService {
 
     public static String REGISTRATION_KV = "_registration";
     public static String FORGOTPW_KV = "_forgotpw";
@@ -44,7 +45,11 @@ public class AppUserService implements UserDetailsService {
     @Resource
     private PasswordEncoder passwordEncoder;
 
+    @Resource
+    private ValidationService validationService;
+
     private LoadingCache<String, Optional<AppUser>> cache;
+
 
     @PostConstruct
     public void postConstruct() {
@@ -75,7 +80,7 @@ public class AppUserService implements UserDetailsService {
     }
 
     public Optional<AppUser> findByEmail(String email) {
-        return appUserPersistenceService.findByEmail(email);
+        return appUserPersistenceService.findByEmail(email.toLowerCase());
     }
 
     public AppUser updateLastLogin(String username) {
@@ -87,6 +92,8 @@ public class AppUserService implements UserDetailsService {
     }
 
     public void updatePassword(String username, String newPassword) {
+        validationService.passwordIsValid(newPassword);
+
         AppUser entity = getEntityByUsername(username);
         entity.setPassword(passwordEncoder.encode(newPassword));
         entity.updateLastTokenInvalidation();
@@ -146,7 +153,17 @@ public class AppUserService implements UserDetailsService {
         return result;
     }
 
-    public AppUser initializeUser(String username, String password, String email, boolean admin) {
+    /**
+     * @param username will get verified
+     * @param password will not get verified
+     * @param email    will get verified
+     * @param admin    should user get created as admin or normale user
+     * @return initialized user
+     */
+    public AppUser initializeUser(String username, String password, String email, boolean admin) throws UsernameNotFoundException, EmailValidationException {
+        validationService.usernameIsValid(username);
+        validationService.emailIsValid(email);
+
         AppUser instance = appUserPersistenceService.initNewInstance();
         instance.setUsername(username.toLowerCase());
         instance.setEmail(email.toLowerCase());
@@ -163,6 +180,8 @@ public class AppUserService implements UserDetailsService {
     }
 
     public AppUser registerUser(RegistrationRequest registration) {
+        validationService.validateRegistration(registration.getUsername(), registration.getPassword(), registration.getEmail());
+
         AppUser instance = appUserPersistenceService.initNewInstance();
         instance.setUsername(registration.getUsername().toLowerCase());
         instance.setEmail(registration.getEmail().toLowerCase());

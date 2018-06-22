@@ -18,7 +18,7 @@ public class VerificationExceptionHandler extends BaseExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(BAD_REQUEST)
     @ResponseBody
-    public ErrorResponse handleRegistrationException(HttpServletRequest request, VerificationException e) {
+    public ErrorResponse handleVerificationException(HttpServletRequest request, VerificationException e) {
         return new ErrorResponse(AuthErrorCodes.VERIFICATION_INVALID.getStatus(), translate(request, "error.verification", "Verification is invalid or expired"));
     }
 }

@@ -7,7 +7,6 @@ import io.rocketbase.commons.service.AppUserService;
 import io.rocketbase.commons.test.AppUserPersistenceTestService;
 import io.rocketbase.commons.test.BaseIntegrationTest;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import javax.annotation.Resource;
@@ -24,16 +23,8 @@ public class ForgotPasswordControllerTest extends BaseIntegrationTest {
     @Resource
     private AppUserService appUserService;
 
-    @Resource
-    private AppUserPersistenceTestService appUserPersistenceTestService;
-
-    @Before
-    public void beforeEachTest() {
-        appUserPersistenceTestService.resetData();
-    }
-
     @Test
-    public void forgotPassword() throws Exception {
+    public void forgotPasswordByEmail() throws Exception {
         // given
         EmailProperties emailProperties = new EmailProperties();
 
@@ -42,7 +33,30 @@ public class ForgotPasswordControllerTest extends BaseIntegrationTest {
         appUserService.initializeUser("forget", "pw", email, false);
 
         // when
-        forgotPasswordResource.forgotPassword(new ForgotPasswordRequest(email));
+        forgotPasswordResource.forgotPassword(new ForgotPasswordRequest(null, email));
+
+        // then
+        MimeMessage[] receivedMessages = getSmtpServerRule().getMessages();
+        assertEquals(1, receivedMessages.length);
+
+        MimeMessage current = receivedMessages[0];
+        assertThat(current.getSubject(), startsWith(emailProperties.getSubjectPrefix() + " "));
+        assertThat(current.getFrom()[0].toString(), containsString(emailProperties.getFromEmail()));
+        assertThat(current.getRecipients(Message.RecipientType.TO)[0].toString(), containsString(email));
+    }
+
+    @Test
+    public void forgotPasswordByUsername() throws Exception {
+        // given
+        EmailProperties emailProperties = new EmailProperties();
+
+        String username = "forgot-pw";
+        String email = "forget@rocketbase.io";
+        ForgotPasswordResource forgotPasswordResource = new ForgotPasswordResource(getBaseUrl());
+        appUserService.initializeUser(username, "pw", email, false);
+
+        // when
+        forgotPasswordResource.forgotPassword(new ForgotPasswordRequest(username, null));
 
         // then
         MimeMessage[] receivedMessages = getSmtpServerRule().getMessages();
@@ -61,7 +75,7 @@ public class ForgotPasswordControllerTest extends BaseIntegrationTest {
 
         // when
         try {
-            forgotPasswordResource.forgotPassword(new ForgotPasswordRequest("unkown@rocketbase.io"));
+            forgotPasswordResource.forgotPassword(new ForgotPasswordRequest(null, "unkown@rocketbase.io"));
             // then
             Assert.fail("should have thrown NotFoundException");
         } catch (Exception e) {

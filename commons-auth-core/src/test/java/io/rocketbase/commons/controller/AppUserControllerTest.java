@@ -13,7 +13,6 @@ import io.rocketbase.commons.resource.AppUserResource;
 import io.rocketbase.commons.test.AppUserPersistenceTestService;
 import io.rocketbase.commons.test.BaseIntegrationTest;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
-import org.junit.Before;
 import org.junit.Test;
 
 import javax.annotation.Resource;
@@ -29,11 +28,6 @@ public class AppUserControllerTest extends BaseIntegrationTest {
 
     @Resource
     private ModifiedJwtTokenService modifiedJwtTokenService;
-
-    @Before
-    public void beforeEachTest() {
-        appUserPersistenceTestService.resetData();
-    }
 
     @Test
     public void find() {

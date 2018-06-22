@@ -1,5 +1,6 @@
 package io.rocketbase.commons.controller.exceptionhandler;
 
+import com.google.common.base.Joiner;
 import io.rocketbase.commons.dto.ErrorResponse;
 import io.rocketbase.commons.exception.AuthErrorCodes;
 import io.rocketbase.commons.exception.RegistrationException;
@@ -20,13 +21,16 @@ public class RegistrationExceptionHandler extends BaseExceptionHandler {
     @ResponseStatus(BAD_REQUEST)
     @ResponseBody
     public ErrorResponse handleRegistrationException(HttpServletRequest request, RegistrationException e) {
-        ErrorResponse response = new ErrorResponse(AuthErrorCodes.REGISTRATION_ALREADY_IN_USE.getStatus(), translate(request, "error.registration", "Username/Email already used"));
+        ErrorResponse response = new ErrorResponse(AuthErrorCodes.REGISTRATION.getStatus(), translate(request, "error.registration", "Registation not possible"));
         response.setFields(new HashMap<>());
-        if (e.isUsername()) {
-            response.getFields().put("username", translate(request, "error.registration.username", "Username already used"));
+        if (e.getUsernameErrors() != null) {
+            response.getFields().put("username", Joiner.on(", ").join(e.getUsernameErrors()));
         }
-        if (e.isEmail()) {
-            response.getFields().put("email", translate(request, "error.registration.email", "Email already used"));
+        if (e.getPasswordErrors() != null) {
+            response.getFields().put("password", Joiner.on(", ").join(e.getPasswordErrors()));
+        }
+        if (e.getEmailErrors() != null) {
+            response.getFields().put("email", Joiner.on(", ").join(e.getEmailErrors()));
         }
         return response;
     }

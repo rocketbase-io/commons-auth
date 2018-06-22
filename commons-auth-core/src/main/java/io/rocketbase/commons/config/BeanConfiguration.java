@@ -11,11 +11,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import javax.mail.internet.InternetAddress;
 
 @Configuration
-@EnableConfigurationProperties({AuthProperties.class, JwtProperties.class, EmailProperties.class, RegistrationProperties.class, GravatarProperties.class})
+@EnableConfigurationProperties({AuthProperties.class, JwtProperties.class, EmailProperties.class, RegistrationProperties.class, GravatarProperties.class, UsernameProperties.class, PasswordProperties.class})
 @RequiredArgsConstructor
 public class BeanConfiguration {
 
@@ -24,6 +25,8 @@ public class BeanConfiguration {
     private final EmailProperties emailProperties;
     private final RegistrationProperties registrationProperties;
     private final GravatarProperties gravatarProperties;
+    private final UsernameProperties usernameProperties;
+    private final PasswordProperties passwordProperties;
 
     @Bean
     @ConditionalOnMissingBean
@@ -66,5 +69,10 @@ public class BeanConfiguration {
     @Bean
     public TokenizerService tokenizerService() {
         return new TokenizerService(authProperties.getTokenSecret());
+    }
+
+    @Bean
+    public ValidationService validationService() {
+        return new ValidationService(usernameProperties, passwordProperties, appUserService());
     }
 }

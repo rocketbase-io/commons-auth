@@ -3,9 +3,10 @@ package io.rocketbase.commons.exception;
 import lombok.Getter;
 
 public enum AuthErrorCodes {
-    REGISTRATION_ALREADY_IN_USE(1010),
+    REGISTRATION(1010),
     VERIFICATION_INVALID(1011),
-    UNKNOWN_USER(1012);
+    UNKNOWN_USER(1012),
+    VALIDATION(1013);
 
     @Getter
     private int status;

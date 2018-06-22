@@ -48,7 +48,7 @@ public class SimpleTokenService {
          */
         public static Token parseString(String serialization) {
             try {
-                String values[] = serialization.split("\\:");
+                String values[] = serialization.split("\\:", 2);
 
                 LocalDateTime expired = null;
                 if (values[0] != null && values[0].length() == 21) {

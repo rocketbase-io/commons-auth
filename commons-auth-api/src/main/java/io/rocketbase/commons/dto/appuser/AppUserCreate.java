@@ -1,14 +1,9 @@
 package io.rocketbase.commons.dto.appuser;
 
-import io.rocketbase.commons.dto.CommonDtoSettings;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -16,14 +11,13 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"password"})
 public class AppUserCreate implements Serializable {
 
     @NotNull
-    @Pattern(message = CommonDtoSettings.USERNAME_MESSAGE, regexp = CommonDtoSettings.USERNAME_REGEX)
     private String username;
 
     @NotNull
-    @Pattern(message = CommonDtoSettings.PASSWORD_MESSAGE, regexp = CommonDtoSettings.PASSWORD_REGEX)
     private String password;
 
     private String firstName;

@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Data
@@ -15,7 +14,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class ForgotPasswordRequest implements Serializable {
 
-    @NotNull
+    private String username;
+
     @Email
     private String email;
 }

@@ -6,10 +6,10 @@ import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.appuser.AppUserUpdate;
 import io.rocketbase.commons.exception.NotFoundException;
-import io.rocketbase.commons.exception.RegistrationException;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.service.AppUserPersistenceService;
 import io.rocketbase.commons.service.AppUserService;
+import io.rocketbase.commons.service.ValidationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.util.MultiValueMap;
@@ -35,6 +35,9 @@ public class AppUserController implements BaseController {
     @Resource
     private AppUserConverter appUserConverter;
 
+    @Resource
+    private ValidationService validationService;
+
     @RequestMapping(method = RequestMethod.GET, path = "/api/user")
     @ResponseBody
     public PageableResult<AppUserRead> find(@RequestParam(required = false) MultiValueMap<String, String> params) {
@@ -45,6 +48,8 @@ public class AppUserController implements BaseController {
     @RequestMapping(method = RequestMethod.POST, path = "/api/user", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public AppUserRead create(@RequestBody @NotNull @Validated AppUserCreate create) {
+        validationService.validateRegistration(create.getUsername(), create.getPassword(), create.getEmail());
+
         AppUser entity = appUserService.initializeUser(create.getUsername(), create.getPassword(), create.getEmail(), create.getAdmin());
         if (create.getFirstName() != null || create.getLastName() != null || create.getAvatar() != null || create.getKeyValues() != null) {
             String avatar = create.getAvatar() != null ? create.getAvatar() : entity.getAvatar();
@@ -57,23 +62,11 @@ public class AppUserController implements BaseController {
     @ResponseBody
     public AppUserRead patch(@PathVariable("id") String id, @RequestBody @NotNull @Validated AppUserUpdate update) {
         AppUser entity = getById(id);
-        if (shouldPatch(update.getUsername())) {
-            if (appUserService.getByUsername(update.getUsername().toLowerCase()) != null) {
-                throw new RegistrationException(true, false);
-            }
-            entity.setUsername(update.getUsername().toLowerCase());
-        }
         if (shouldPatch(update.getFirstName())) {
             entity.setFirstName(update.getFirstName());
         }
         if (shouldPatch(update.getLastName())) {
             entity.setLastName(update.getLastName());
-        }
-        if (shouldPatch(update.getEmail())) {
-            if (appUserService.findByEmail(update.getEmail().toLowerCase()).isPresent()) {
-                throw new RegistrationException(false, true);
-            }
-            entity.setEmail(update.getEmail().toLowerCase());
         }
         if (update.getRoles() != null && !update.getRoles().isEmpty()) {
             entity.setRoles(update.getRoles());
@@ -86,6 +79,7 @@ public class AppUserController implements BaseController {
         appUserPersistenceService.save(entity);
 
         if (shouldPatch(update.getPassword())) {
+            validationService.passwordIsValid(update.getPassword());
             appUserService.updatePassword(entity.getUsername(), update.getPassword());
         }
 

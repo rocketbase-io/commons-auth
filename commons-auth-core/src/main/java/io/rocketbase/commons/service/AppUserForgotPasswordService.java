@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 
 import javax.annotation.Resource;
-import java.util.Optional;
 
 import static io.rocketbase.commons.service.AppUserService.FORGOTPW_KV;
 
@@ -33,21 +32,29 @@ public class AppUserForgotPasswordService implements FeedbackActionService {
     private EmailService emailService;
 
     @Resource
+    private ValidationService validationService;
+
+    @Resource
     private ApplicationEventPublisher applicationEventPublisher;
 
     public AppUser requestPasswordReset(ForgotPasswordRequest forgotPassword, String baseUrl) {
-        Optional<AppUser> optional = appUserService.findByEmail(forgotPassword.getEmail().toLowerCase());
-        if (!optional.isPresent() || !optional.get().isEnabled()) {
+        AppUser appUser = null;
+        if (forgotPassword.getUsername() != null) {
+            appUser = appUserService.getByUsername(forgotPassword.getUsername());
+        } else if (forgotPassword.getEmail() != null) {
+            appUser = appUserService.findByEmail(forgotPassword.getEmail().toLowerCase()).orElseGet(null);
+        }
+        if (appUser == null || !appUser.isEnabled()) {
             throw new UnknownUserException();
         }
-        String token = SimpleTokenService.generateToken(optional.get().getUsername(), authProperties.getPasswordResetExpiration());
-        appUserService.updateKeyValues(optional.get().getUsername(), ImmutableMap.of(FORGOTPW_KV, token));
+        String token = SimpleTokenService.generateToken(appUser.getUsername(), authProperties.getPasswordResetExpiration());
+        appUserService.updateKeyValues(appUser.getUsername(), ImmutableMap.of(FORGOTPW_KV, token));
 
-        emailService.sentForgotPasswordEmail(optional.get(), buildActionUrl(baseUrl, ActionType.PASSWORD_RESET, token));
+        emailService.sentForgotPasswordEmail(appUser, buildActionUrl(baseUrl, ActionType.PASSWORD_RESET, token));
 
-        applicationEventPublisher.publishEvent(new ForgotPasswordEvent(this, optional.get()));
+        applicationEventPublisher.publishEvent(new ForgotPasswordEvent(this, appUser));
 
-        return optional.get();
+        return appUser;
     }
 
     public AppUser resetPassword(PerformPasswordResetRequest performPasswordReset) {

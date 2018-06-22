@@ -6,7 +6,6 @@ import io.rocketbase.commons.config.RegistrationProperties;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.event.RegistrationEvent;
 import io.rocketbase.commons.event.VerificationEvent;
-import io.rocketbase.commons.exception.RegistrationException;
 import io.rocketbase.commons.exception.VerificationException;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.service.SimpleTokenService.Token;
@@ -33,17 +32,13 @@ public class AppUserRegistrationService implements FeedbackActionService {
     private EmailService emailService;
 
     @Resource
+    private ValidationService validationService;
+
+    @Resource
     private ApplicationEventPublisher applicationEventPublisher;
 
-
     public AppUser register(RegistrationRequest registration, String baseUrl) {
-        AppUser search = appUserService.getByUsername(registration.getUsername().toLowerCase());
-        boolean emailUsed = appUserService.findByEmail(registration.getEmail().toLowerCase()).isPresent();
-        if (search != null || emailUsed) {
-            throw new RegistrationException(search != null, emailUsed);
-        }
         AppUser entity = appUserService.registerUser(registration);
-
         if (registrationProperties.isVerification()) {
             try {
                 String token = SimpleTokenService.generateToken(registration.getUsername(), registrationProperties.getVerificationExpiration());

@@ -1,6 +1,5 @@
 package io.rocketbase.commons.service.email;
 
-import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.config.EmailProperties;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.test.BaseIntegrationTest;

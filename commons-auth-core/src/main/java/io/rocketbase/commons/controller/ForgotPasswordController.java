@@ -28,6 +28,9 @@ public class ForgotPasswordController implements BaseController {
 
     @RequestMapping(value = "/auth/forgot-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> forgotPassword(HttpServletRequest request, @RequestBody @NotNull @Validated ForgotPasswordRequest forgotPassword) {
+        if (forgotPassword.getEmail() == null || forgotPassword.getUsername() == null) {
+
+        }
         appUserForgotPasswordService.requestPasswordReset(forgotPassword, getBaseUrl(request));
         return ResponseEntity.status(HttpStatus.OK).build();
     }

@@ -1,11 +1,9 @@
 package io.rocketbase.commons.dto.registration;
 
-import io.rocketbase.commons.dto.CommonDtoSettings;
 import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -17,7 +15,6 @@ import java.util.Map;
 public class RegistrationRequest implements Serializable {
 
     @NotNull
-    @Pattern(message = CommonDtoSettings.USERNAME_MESSAGE, regexp = CommonDtoSettings.USERNAME_REGEX)
     private String username;
 
     private String firstName;
@@ -29,7 +26,6 @@ public class RegistrationRequest implements Serializable {
     private String email;
 
     @NotNull
-    @Pattern(message = CommonDtoSettings.PASSWORD_MESSAGE, regexp = CommonDtoSettings.PASSWORD_REGEX)
     private String password;
 
     private Map<String, String> keyValues;

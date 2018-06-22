@@ -14,7 +14,6 @@ import io.rocketbase.commons.test.AppUserPersistenceTestService;
 import io.rocketbase.commons.test.BaseIntegrationTest;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
@@ -36,11 +35,6 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
 
     @Resource
     private ModifiedJwtTokenService modifiedJwtTokenService;
-
-    @Before
-    public void beforeEachTest() {
-        appUserPersistenceTestService.resetData();
-    }
 
     @Test
     public void successLogin() {

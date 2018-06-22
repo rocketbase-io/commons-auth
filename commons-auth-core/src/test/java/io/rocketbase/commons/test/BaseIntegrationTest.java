@@ -2,8 +2,8 @@ package io.rocketbase.commons.test;
 
 
 import io.rocketbase.commons.model.AppUser;
-import io.rocketbase.commons.service.AppUserPersistenceService;
 import lombok.Getter;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,19 +21,25 @@ public abstract class BaseIntegrationTest {
     @Getter
     @Rule
     public SmtpServerRule smtpServerRule = new SmtpServerRule();
+
     @Getter
     @Value("http://localhost:${local.server.port}")
     protected String baseUrl;
+
     @Resource
-    private AppUserPersistenceService appUserPersistenceService;
+    private AppUserPersistenceTestService appUserPersistenceTestService;
 
     protected AppUser getAppUser() {
         return getAppUser("user");
     }
 
     protected AppUser getAppUser(String username) {
-        return (AppUser) appUserPersistenceService.findByUsername(username).get();
+        return (AppUser) appUserPersistenceTestService.findByUsername(username).get();
     }
 
+    @Before
+    public void beforeEachTest() {
+        appUserPersistenceTestService.resetData();
+    }
 
 }

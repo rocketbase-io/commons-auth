@@ -6,14 +6,12 @@ import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.AuthErrorCodes;
 import io.rocketbase.commons.exception.BadRequestException;
-import io.rocketbase.commons.exception.ErrorCodes;
 import io.rocketbase.commons.model.AppUserTestEntity;
 import io.rocketbase.commons.resource.RegistrationResource;
 import io.rocketbase.commons.service.AppUserService;
 import io.rocketbase.commons.test.AppUserPersistenceTestService;
 import io.rocketbase.commons.test.BaseIntegrationTest;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import javax.annotation.Resource;
@@ -26,11 +24,6 @@ public class RegistrationControllerTest extends BaseIntegrationTest {
 
     @Resource
     private AppUserPersistenceTestService appUserPersistenceTestService;
-
-    @Before
-    public void beforeEachTest() {
-        appUserPersistenceTestService.resetData();
-    }
 
     @Test
     public void registerSuccess() {
@@ -82,7 +75,7 @@ public class RegistrationControllerTest extends BaseIntegrationTest {
             // then
             Assert.fail("should have thrown RegistrationException");
         } catch (BadRequestException e) {
-            assertThat(e.getErrorResponse().getStatus(), equalTo(AuthErrorCodes.REGISTRATION_ALREADY_IN_USE.getStatus()));
+            assertThat(e.getErrorResponse().getStatus(), equalTo(AuthErrorCodes.REGISTRATION.getStatus()));
         }
     }
 
@@ -99,7 +92,7 @@ public class RegistrationControllerTest extends BaseIntegrationTest {
             // then
             Assert.fail("should have thrown RegistrationException");
         } catch (BadRequestException e) {
-            assertThat(e.getErrorResponse().getStatus(), equalTo(ErrorCodes.FORM_ERROR.getStatus()));
+            assertThat(e.getErrorResponse().getStatus(), equalTo(AuthErrorCodes.REGISTRATION.getStatus()));
         }
     }
 
