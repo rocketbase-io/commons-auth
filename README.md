@@ -51,6 +51,25 @@ For handling the JWT-Tokens and it's expirations you can use these properties:
 | auth.jwt.access-token-expiration          | 60          | time in minutes |
 | auth.jwt.refresh-token-expiration          | 43200          | time in minutes - default means 30 days |
 
+The required security for password could be configured by the following properties:
+
+| property                 | default | explanation                                                  |
+| ------------------------ | ------- | ------------------------------------------------------------ |
+| auth.password.min-length | 8       | minimum length of password                                   |
+| auth.password.max-length | 100     | maximum length of password                                   |
+| auth.password.lowercase  | 1       | at least X chars of lowercase                                |
+| auth.password.uppercase  | 1       | at least X chars of uppercase                                |
+| auth.password.digit      | 1       | at least X chars of digit                                    |
+| auth.password.digit      | 1       | at least X chars of special<br />!"#$%&'()*+,-./:;<=>?@[\]^_`{\|}~ |
+
+You can also configure the setup ot the username:
+
+| property                         | default | explanation                                                  |
+| -------------------------------- | ------- | ------------------------------------------------------------ |
+| auth.username.min-length         | 3       | minimum length of username                                   |
+| auth.username.max-length         | 20      | maximum length of username                                   |
+| auth.username.special-characters | .-_     | allowed char apart from a-z and digits<br />username need to be lowercase in total |
+
 The service contains also an registration flow that is by default enabled
 
 
@@ -165,7 +184,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     "/favicon.ico"
             ).permitAll()
             // configure auth endpoint
-            .antMatchers("/auth/login", "/auth/refresh").permitAll()
+            .antMatchers("/auth/login", "/auth/refresh", "/auth/validate/**").permitAll()
             .antMatchers("/auth/me/**").authenticated()
             // user-management is only allowed by ADMINS
             .antMatchers("/api/user/**").hasRole("ADMIN")
