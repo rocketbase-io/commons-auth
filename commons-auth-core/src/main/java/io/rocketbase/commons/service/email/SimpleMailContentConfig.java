@@ -1,6 +1,9 @@
 package io.rocketbase.commons.service.email;
 
 import io.rocketbase.commons.config.EmailProperties;
+import io.rocketbase.commons.email.EmailTemplateBuilder;
+import io.rocketbase.commons.email.model.HtmlTextEmail;
+import io.rocketbase.commons.email.template.ColorStyle;
 import io.rocketbase.commons.model.AppUser;
 import lombok.RequiredArgsConstructor;
 
@@ -10,16 +13,17 @@ public class SimpleMailContentConfig implements MailContentConfig {
     final EmailProperties emailProperties;
 
     @Override
-    public TemplateConfigBuilder register(AppUser user, String actionUrl) {
-        return TemplateConfigBuilder.build()
-                .title("Please Verify Your Account")
+    public HtmlTextEmail register(AppUser user, String actionUrl) {
+        return EmailTemplateBuilder.builder()
                 .header("Verify Your Account")
-                .addLine(String.format("Hi %s,", user.getUsername()))
-                .addLine("please verify your account by clicking the button")
-                .action(actionUrl, "verify your account")
-                .addGreeting(String.format("- %s", emailProperties.getServiceName()))
-                .receiveNote(emailProperties.getServiceName(), emailProperties.getSupportEmail())
-                .copyright(emailProperties.getCopyrightUrl(), emailProperties.getCopyrightName());
+                .addText(String.format("Hi %s,", user.getUsername()))
+                .addText("please verify your account by clicking the button")
+                .addButton("verify your account", actionUrl)
+                .addText(String.format("- %s", emailProperties.getServiceName()))
+                .addFooter(String.format("You’re receiving this email because you have an account in %s.<br>" +
+                        "If you are not sure why you’re receiving this, please contact us %s", emailProperties.getServiceName(), emailProperties.getSupportEmail()), true)
+                .copyright(emailProperties.getCopyrightUrl(), emailProperties.getCopyrightName())
+                .build();
     }
 
     @Override
@@ -28,16 +32,17 @@ public class SimpleMailContentConfig implements MailContentConfig {
     }
 
     @Override
-    public TemplateConfigBuilder forgotPassword(AppUser user, String actionUrl) {
-        return TemplateConfigBuilder.build()
-                .title("Reset Password")
-                .headerWithStyling("You have submitted a password change request!", "fff", "E63946")
-                .addLine(String.format("Hi %s,", user.getUsername()))
-                .addLine("if it was you, confirm the password change by clicking the button")
-                .actionWithStyling(actionUrl, "confirm password change", "fff", "E63946")
-                .addGreeting(String.format("- %s", emailProperties.getServiceName()))
-                .receiveNote(emailProperties.getServiceName(), emailProperties.getSupportEmail())
-                .copyright(emailProperties.getCopyrightUrl(), emailProperties.getCopyrightName());
+    public HtmlTextEmail forgotPassword(AppUser user, String actionUrl) {
+        return EmailTemplateBuilder.builder()
+                .header("You have submitted a password change request!", new ColorStyle("fff", "E63946"))
+                .addText(String.format("Hi %s,", user.getUsername()))
+                .addText("if it was you, confirm the password change by clicking the button")
+                .addButton("confirm password change", actionUrl, new ColorStyle("fff", "E63946"))
+                .addText(String.format("- %s", emailProperties.getServiceName()))
+                .addFooter(String.format("You’re receiving this email because you have an account in %s.<br>" +
+                        "If you are not sure why you’re receiving this, please contact us %s", emailProperties.getServiceName(), emailProperties.getSupportEmail()), true)
+                .copyright(emailProperties.getCopyrightUrl(), emailProperties.getCopyrightName())
+                .build();
     }
 
     @Override
