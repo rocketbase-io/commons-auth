@@ -95,7 +95,7 @@ SOFTWARE.
         <pebble.version>2.6.0</pebble.version>
         <guava.version>25.1-jre</guava.version>
         <passay.version>1.0</passay.version>
-        <email-template-builder.version>0.1.0</email-template-builder.version>
+        <email-template-builder.version>1.0.0</email-template-builder.version>
     </properties>
 
     <dependencyManagement>

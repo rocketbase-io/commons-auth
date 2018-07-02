@@ -15,14 +15,14 @@ public class SimpleMailContentConfig implements MailContentConfig {
     @Override
     public HtmlTextEmail register(AppUser user, String actionUrl) {
         return EmailTemplateBuilder.builder()
-                .header("Verify Your Account")
-                .addText(String.format("Hi %s,", user.getUsername()))
-                .addText("please verify your account by clicking the button")
-                .addButton("verify your account", actionUrl)
-                .addText(String.format("- %s", emailProperties.getServiceName()))
+                .header("Verify Your Account").and()
+                .addText(String.format("Hi %s,", user.getUsername())).and()
+                .addText("please verify your account by clicking the button").and()
+                .addButton("verify your account", actionUrl).center().and()
+                .addText(String.format("- %s", emailProperties.getServiceName())).and()
                 .addFooter(String.format("You’re receiving this email because you have an account in %s.<br>" +
-                        "If you are not sure why you’re receiving this, please contact us %s", emailProperties.getServiceName(), emailProperties.getSupportEmail()), true)
-                .copyright(emailProperties.getCopyrightUrl(), emailProperties.getCopyrightName())
+                        "If you are not sure why you’re receiving this, please contact us %s", emailProperties.getServiceName(), emailProperties.getSupportEmail())).and()
+                .copyright(emailProperties.getCopyrightName()).url(emailProperties.getCopyrightUrl())
                 .build();
     }
 
@@ -34,14 +34,14 @@ public class SimpleMailContentConfig implements MailContentConfig {
     @Override
     public HtmlTextEmail forgotPassword(AppUser user, String actionUrl) {
         return EmailTemplateBuilder.builder()
-                .header("You have submitted a password change request!", new ColorStyle("fff", "E63946"))
-                .addText(String.format("Hi %s,", user.getUsername()))
-                .addText("if it was you, confirm the password change by clicking the button")
-                .addButton("confirm password change", actionUrl, new ColorStyle("fff", "E63946"))
-                .addText(String.format("- %s", emailProperties.getServiceName()))
+                .header("You have submitted a password change request!").color(new ColorStyle("fff", "E63946")).and()
+                .addText(String.format("Hi %s,", user.getUsername())).and()
+                .addText("if it was you, confirm the password change by clicking the button").and()
+                .addButton("confirm password change", actionUrl).color(new ColorStyle("fff", "E63946")).center().and()
+                .addText(String.format("- %s", emailProperties.getServiceName())).and()
                 .addFooter(String.format("You’re receiving this email because you have an account in %s.<br>" +
-                        "If you are not sure why you’re receiving this, please contact us %s", emailProperties.getServiceName(), emailProperties.getSupportEmail()), true)
-                .copyright(emailProperties.getCopyrightUrl(), emailProperties.getCopyrightName())
+                        "If you are not sure why you’re receiving this, please contact us %s", emailProperties.getServiceName(), emailProperties.getSupportEmail())).and()
+                .copyright(emailProperties.getCopyrightName()).url(emailProperties.getCopyrightUrl())
                 .build();
     }
 
