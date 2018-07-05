@@ -12,42 +12,38 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class RegistrationResource implements BaseRestResource {
 
     private String baseAuthApiUrl;
+    private RestTemplate restTemplate;
 
     public RegistrationResource(String baseAuthApiUrl) {
         this.baseAuthApiUrl = baseAuthApiUrl;
     }
 
-    protected RestTemplate getDefaultRestTemplate() {
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setErrorHandler(new BasicResponseErrorHandler());
+    protected RestTemplate getRestTemplate() {
+        if (restTemplate == null) {
+            restTemplate = new RestTemplate();
+            restTemplate.setErrorHandler(new BasicResponseErrorHandler());
+        }
         return restTemplate;
     }
 
-    protected <R> R handleResponse(ResponseEntity<R> response) {
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return response.getBody();
-        }
-        return null;
-    }
-
     public AppUserRead register(RegistrationRequest registration) {
-        ResponseEntity<AppUserRead> response = getDefaultRestTemplate()
+        ResponseEntity<AppUserRead> response = getRestTemplate()
                 .exchange(UriComponentsBuilder.fromUriString(ensureEndsWithSlash(baseAuthApiUrl))
                                 .path("/auth/register").toUriString(),
                         HttpMethod.POST,
                         new HttpEntity<>(registration),
                         AppUserRead.class);
-        return handleResponse(response);
+        return response.getBody();
     }
 
     public JwtTokenBundle verify(String verification) {
-        ResponseEntity<JwtTokenBundle> response = getDefaultRestTemplate()
+        ResponseEntity<JwtTokenBundle> response = getRestTemplate()
                 .exchange(UriComponentsBuilder.fromUriString(ensureEndsWithSlash(baseAuthApiUrl))
                                 .path("/auth/verify")
                                 .queryParam("verification", verification).toUriString(),
                         HttpMethod.GET,
                         new HttpEntity<>(null),
                         JwtTokenBundle.class);
-        return handleResponse(response);
+        return response.getBody();
     }
 }

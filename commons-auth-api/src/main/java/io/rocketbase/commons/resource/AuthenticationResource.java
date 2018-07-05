@@ -28,13 +28,6 @@ public class AuthenticationResource {
         return restTemplate;
     }
 
-    protected <R> R handleResponse(ResponseEntity<R> response) {
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return response.getBody();
-        }
-        return null;
-    }
-
     /**
      * login via username and password
      *
@@ -48,7 +41,7 @@ public class AuthenticationResource {
                         HttpMethod.POST,
                         new HttpEntity<>(login),
                         JwtTokenBundle.class);
-        return handleResponse(response);
+        return response.getBody();
     }
 
     /**
@@ -63,7 +56,7 @@ public class AuthenticationResource {
                         HttpMethod.GET,
                         null,
                         AppUserRead.class);
-        return handleResponse(response);
+        return response.getBody();
     }
 
     /**

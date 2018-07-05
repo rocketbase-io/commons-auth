@@ -14,19 +14,22 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class ValidationResource implements BaseRestResource {
 
     private String baseAuthApiUrl;
+    private RestTemplate restTemplate;
 
     public ValidationResource(String baseAuthApiUrl) {
         this.baseAuthApiUrl = baseAuthApiUrl;
     }
 
-    protected RestTemplate getDefaultRestTemplate() {
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setErrorHandler(new BasicResponseErrorHandler());
+    protected RestTemplate getRestTemplate() {
+        if (restTemplate == null) {
+            restTemplate = new RestTemplate();
+            restTemplate.setErrorHandler(new BasicResponseErrorHandler());
+        }
         return restTemplate;
     }
 
     public ValidationResponse<PasswordErrorCodes> validatePassword(String password) {
-        ResponseEntity<ValidationResponse<PasswordErrorCodes>> response = getDefaultRestTemplate()
+        ResponseEntity<ValidationResponse<PasswordErrorCodes>> response = getRestTemplate()
                 .exchange(UriComponentsBuilder.fromUriString(ensureEndsWithSlash(baseAuthApiUrl))
                                 .path("/auth/validate/password").toUriString(),
                         HttpMethod.POST,
@@ -37,7 +40,7 @@ public class ValidationResource implements BaseRestResource {
     }
 
     public ValidationResponse<UsernameErrorCodes> validateUsername(String username) {
-        ResponseEntity<ValidationResponse<UsernameErrorCodes>> response = getDefaultRestTemplate()
+        ResponseEntity<ValidationResponse<UsernameErrorCodes>> response = getRestTemplate()
                 .exchange(UriComponentsBuilder.fromUriString(ensureEndsWithSlash(baseAuthApiUrl))
                                 .path("/auth/validate/username").toUriString(),
                         HttpMethod.POST,
@@ -48,7 +51,7 @@ public class ValidationResource implements BaseRestResource {
     }
 
     public ValidationResponse<EmailErrorCodes> validateEmail(String email) {
-        ResponseEntity<ValidationResponse<EmailErrorCodes>> response = getDefaultRestTemplate()
+        ResponseEntity<ValidationResponse<EmailErrorCodes>> response = getRestTemplate()
                 .exchange(UriComponentsBuilder.fromUriString(ensureEndsWithSlash(baseAuthApiUrl))
                                 .path("/auth/validate/email").toUriString(),
                         HttpMethod.POST,

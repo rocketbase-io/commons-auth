@@ -25,13 +25,6 @@ public class AppUserResource implements BaseRestResource {
         this.restTemplate = restTemplate;
     }
 
-    protected <R> R handleResponse(ResponseEntity<R> response) {
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return response.getBody();
-        }
-        return null;
-    }
-
     @SneakyThrows
     public PageableResult<AppUserRead> find(int page, int pagesize) {
         ResponseEntity<PageableResult<AppUserRead>> response = restTemplate.exchange(appendParams(restTemplate.getBaseAuthApiBuilder(),
@@ -65,7 +58,7 @@ public class AppUserResource implements BaseRestResource {
                 new HttpEntity<>(create, createHeaderWithLanguage()),
                 AppUserRead.class);
 
-        return handleResponse(response);
+        return response.getBody();
     }
 
     @SneakyThrows
@@ -78,7 +71,7 @@ public class AppUserResource implements BaseRestResource {
                 new HttpEntity<>(update, createHeaderWithLanguage()),
                 AppUserRead.class);
 
-        return handleResponse(response);
+        return response.getBody();
     }
 
     @SneakyThrows

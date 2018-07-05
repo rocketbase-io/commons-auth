@@ -11,19 +11,22 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class ForgotPasswordResource implements BaseRestResource {
 
     private String baseAuthApiUrl;
+    private RestTemplate restTemplate;
 
     public ForgotPasswordResource(String baseAuthApiUrl) {
         this.baseAuthApiUrl = baseAuthApiUrl;
     }
 
-    protected RestTemplate getDefaultRestTemplate() {
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setErrorHandler(new BasicResponseErrorHandler());
+    protected RestTemplate getRestTemplate() {
+        if (restTemplate == null) {
+            restTemplate = new RestTemplate();
+            restTemplate.setErrorHandler(new BasicResponseErrorHandler());
+        }
         return restTemplate;
     }
 
     public void forgotPassword(ForgotPasswordRequest forgotPassword) {
-        ResponseEntity<Void> response = getDefaultRestTemplate()
+        ResponseEntity<Void> response = getRestTemplate()
                 .exchange(UriComponentsBuilder.fromUriString(ensureEndsWithSlash(baseAuthApiUrl))
                                 .path("/auth/forgot-password").toUriString(),
                         HttpMethod.PUT,
@@ -32,7 +35,7 @@ public class ForgotPasswordResource implements BaseRestResource {
     }
 
     public void resetPassword(PerformPasswordResetRequest performPasswordReset) {
-        ResponseEntity<Void> response = getDefaultRestTemplate()
+        ResponseEntity<Void> response = getRestTemplate()
                 .exchange(UriComponentsBuilder.fromUriString(ensureEndsWithSlash(baseAuthApiUrl))
                                 .path("/auth/reset-password").toUriString(),
                         HttpMethod.PUT,
