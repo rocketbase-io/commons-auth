@@ -14,17 +14,20 @@ import org.springframework.web.client.RestTemplate;
 
 public class AuthenticationResource {
 
-    protected JwtRestTemplate restTemplate;
+    protected JwtRestTemplate jwtRestTemplate;
+    protected RestTemplate restTemplate;
     protected String header = HttpHeaders.AUTHORIZATION;
     protected String tokenPrefix = "Bearer ";
 
-    public AuthenticationResource(JwtRestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public AuthenticationResource(JwtRestTemplate jwtRestTemplate) {
+        this.jwtRestTemplate = jwtRestTemplate;
     }
 
-    protected RestTemplate getDefaultRestTemplate() {
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setErrorHandler(new BasicResponseErrorHandler());
+    protected RestTemplate getRestTemplate() {
+        if (restTemplate == null) {
+            restTemplate = new RestTemplate();
+            restTemplate.setErrorHandler(new BasicResponseErrorHandler());
+        }
         return restTemplate;
     }
 
@@ -35,8 +38,8 @@ public class AuthenticationResource {
      * @return token bundle with access- and refresh-token
      */
     public JwtTokenBundle login(LoginRequest login) {
-        ResponseEntity<JwtTokenBundle> response = getDefaultRestTemplate()
-                .exchange(restTemplate.getBaseAuthApiBuilder()
+        ResponseEntity<JwtTokenBundle> response = getRestTemplate()
+                .exchange(jwtRestTemplate.getBaseAuthApiBuilder()
                                 .path("/auth/login").toUriString(),
                         HttpMethod.POST,
                         new HttpEntity<>(login),
@@ -50,8 +53,8 @@ public class AuthenticationResource {
      * @return user details
      */
     public AppUserRead getAuthenticated() {
-        ResponseEntity<AppUserRead> response = restTemplate
-                .exchange(restTemplate.getBaseAuthApiBuilder()
+        ResponseEntity<AppUserRead> response = jwtRestTemplate
+                .exchange(jwtRestTemplate.getBaseAuthApiBuilder()
                                 .path("/auth/me").toUriString(),
                         HttpMethod.GET,
                         null,
@@ -65,8 +68,8 @@ public class AuthenticationResource {
      * @param passwordChange change request
      */
     public void changePassword(PasswordChangeRequest passwordChange) {
-        restTemplate
-                .exchange(restTemplate.getBaseAuthApiBuilder()
+        jwtRestTemplate
+                .exchange(jwtRestTemplate.getBaseAuthApiBuilder()
                                 .path("/auth/change-password").toUriString(),
                         HttpMethod.PUT,
                         new HttpEntity<>(passwordChange),
@@ -79,8 +82,8 @@ public class AuthenticationResource {
      * @param updateProfile change request
      */
     public void updateProfile(UpdateProfileRequest updateProfile) {
-        restTemplate
-                .exchange(restTemplate.getBaseAuthApiBuilder()
+        jwtRestTemplate
+                .exchange(jwtRestTemplate.getBaseAuthApiBuilder()
                                 .path("/auth/update-profile").toUriString(),
                         HttpMethod.PUT,
                         new HttpEntity<>(updateProfile),
@@ -92,15 +95,15 @@ public class AuthenticationResource {
      */
     public void refreshToken() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add(header, String.format("%s%s", tokenPrefix, restTemplate.getTokenProvider().getRefreshToken()));
+        headers.add(header, String.format("%s%s", tokenPrefix, jwtRestTemplate.getTokenProvider().getRefreshToken()));
 
-        ResponseEntity<String> response = getDefaultRestTemplate().exchange(restTemplate.getBaseAuthApiBuilder()
+        ResponseEntity<String> response = getRestTemplate().exchange(jwtRestTemplate.getBaseAuthApiBuilder()
                         .path("/auth/refresh").toUriString(),
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
                 String.class);
 
-        restTemplate.getTokenProvider().setToken(response.getBody());
+        jwtRestTemplate.getTokenProvider().setToken(response.getBody());
     }
 
 }
