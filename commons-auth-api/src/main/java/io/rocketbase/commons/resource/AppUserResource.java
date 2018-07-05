@@ -11,19 +11,17 @@ import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.appuser.AppUserUpdate;
 import io.rocketbase.commons.request.PageableRequest;
 import lombok.SneakyThrows;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
-public class AppUserResource extends AbstractRestResource {
+public class AppUserResource implements BaseRestResource {
 
     public static final String API_USER = "/api/user/";
     protected JwtRestTemplate restTemplate;
 
     public AppUserResource(JwtRestTemplate restTemplate) {
-        super(new ObjectMapper()
-                .registerModule(new JavaTimeModule())
-                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES));
         this.restTemplate = restTemplate;
     }
 
@@ -36,27 +34,26 @@ public class AppUserResource extends AbstractRestResource {
 
     @SneakyThrows
     public PageableResult<AppUserRead> find(int page, int pagesize) {
-        ResponseEntity<String> response = restTemplate.exchange(appendParams(restTemplate.getBaseAuthApiBuilder(),
+        ResponseEntity<PageableResult<AppUserRead>> response = restTemplate.exchange(appendParams(restTemplate.getBaseAuthApiBuilder(),
                 new PageableRequest(page, pagesize, null))
                         .path(API_USER)
                         .toUriString(),
                 HttpMethod.GET,
                 new HttpEntity<>(createHeaderWithLanguage()),
-                String.class);
-
-        return renderResponse(response, createPagedTypeReference());
+                createPagedTypeReference());
+        return response.getBody();
     }
 
     @SneakyThrows
     public PageableResult<AppUserRead> find(PageableRequest request) {
-        ResponseEntity<String> response = restTemplate.exchange(appendParams(restTemplate.getBaseAuthApiBuilder(), request)
+        ResponseEntity<PageableResult<AppUserRead>> response = restTemplate.exchange(appendParams(restTemplate.getBaseAuthApiBuilder(), request)
                         .path(API_USER)
                         .toUriString(),
                 HttpMethod.GET,
                 new HttpEntity<>(createHeaderWithLanguage()),
-                String.class);
+                createPagedTypeReference());
 
-        return renderResponse(response, createPagedTypeReference());
+        return response.getBody();
     }
 
     @SneakyThrows
@@ -95,8 +92,8 @@ public class AppUserResource extends AbstractRestResource {
                 AppUserRead.class);
     }
 
-    protected TypeReference<PageableResult<AppUserRead>> createPagedTypeReference() {
-        return new TypeReference<PageableResult<AppUserRead>>() {
+    protected ParameterizedTypeReference<PageableResult<AppUserRead>> createPagedTypeReference() {
+        return new ParameterizedTypeReference<PageableResult<AppUserRead>>() {
         };
     }
 }

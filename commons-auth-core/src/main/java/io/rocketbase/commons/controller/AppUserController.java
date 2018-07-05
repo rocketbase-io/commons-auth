@@ -12,6 +12,7 @@ import io.rocketbase.commons.service.AppUserService;
 import io.rocketbase.commons.service.ValidationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +42,7 @@ public class AppUserController implements BaseController {
     @RequestMapping(method = RequestMethod.GET, path = "/api/user")
     @ResponseBody
     public PageableResult<AppUserRead> find(@RequestParam(required = false) MultiValueMap<String, String> params) {
-        Page<AppUser> entities = appUserPersistenceService.findAll(parsePageRequest(params));
+        Page<AppUser> entities = appUserPersistenceService.findAll(parsePageRequest(params, Sort.by("username")));
         return PageableResult.contentPage(appUserConverter.fromEntities(entities.getContent()), entities);
     }
 
