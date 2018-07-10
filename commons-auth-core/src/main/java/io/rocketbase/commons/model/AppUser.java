@@ -102,4 +102,20 @@ public abstract class AppUser implements UserDetails {
         Assert.hasLength(value, "Value must not be empty");
         Assert.state(value.length() <= 4000, "Value is too long - at least 4000 chars");
     }
+
+    /**
+     * convert current instance to a simple reference copy
+     *
+     * @return fresh created reference based on this {@link AppUser}
+     */
+    public AppUserReference toReference() {
+        return AppUserReference.builder()
+                .id(getId())
+                .username(getUsername())
+                .firstName(getFirstName())
+                .lastName(getLastName())
+                .email(getEmail())
+                .avatar(getAvatar())
+                .build();
+    }
 }
