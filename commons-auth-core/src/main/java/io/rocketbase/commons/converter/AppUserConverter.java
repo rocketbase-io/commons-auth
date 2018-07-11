@@ -31,7 +31,7 @@ public abstract class AppUserConverter {
                 .build();
     }
 
-    private Map<String, String> filterInvisibleKeys(Map<String, String> keyValues) {
+    public static Map<String, String> filterInvisibleKeys(Map<String, String> keyValues) {
         if (keyValues == null) {
             return null;
         }
