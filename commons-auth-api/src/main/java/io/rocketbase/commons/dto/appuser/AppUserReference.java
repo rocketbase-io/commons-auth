@@ -1,12 +1,15 @@
-package io.rocketbase.commons.model;
+package io.rocketbase.commons.dto.appuser;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 /**
- * simplified {@link AppUser} without keyValues pairs, password etc...<br>
- * used to store a simple representation as a copy of {@link AppUser}
+ * simplified AppUser without keyValues, password, audit etc...<br>
+ * used to store a simple representation as a copy of AppUser
  */
 @Getter
 @Builder

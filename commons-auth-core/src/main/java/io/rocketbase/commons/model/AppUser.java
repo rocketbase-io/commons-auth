@@ -1,5 +1,6 @@
 package io.rocketbase.commons.model;
 
+import io.rocketbase.commons.dto.appuser.AppUserReference;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
