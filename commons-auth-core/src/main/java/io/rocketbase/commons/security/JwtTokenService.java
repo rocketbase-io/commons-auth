@@ -9,11 +9,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import javax.annotation.Resource;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -23,16 +25,19 @@ public class JwtTokenService implements Serializable {
 
     final JwtProperties jwtProperties;
 
+    @Resource
+    CustomAuthoritiesProvider customAuthoritiesProvider;
+
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
-    public Collection<? extends GrantedAuthority> getAuthoritiesFromToken(String token) {
+    public Collection<GrantedAuthority> getAuthoritiesFromToken(String token) {
         Claims claims = getAllClaimsFromToken(token);
         List roles = (List) claims.getOrDefault("scopes", Collections.emptyList());
         List<GrantedAuthority> result = new ArrayList<>();
         for (Object r : roles) {
-            result.add(new SimpleGrantedAuthority(String.format("ROLE_%s", String.valueOf(r))));
+            result.add(new SimpleGrantedAuthority(String.valueOf(r)));
         }
         return result;
     }
@@ -59,22 +64,29 @@ public class JwtTokenService implements Serializable {
                 .getBody();
     }
 
-    public JwtTokenBundle generateTokenBundle(AppUser user) {
+    public JwtTokenBundle generateTokenBundle(AppUser appUser) {
+        return generateTokenBundle(appUser.getUsername(), appUser.getAuthorities());
+    }
+
+    public JwtTokenBundle generateTokenBundle(String username, Collection<? extends GrantedAuthority> authorities) {
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
-        return new JwtTokenBundle(generateAccessToken(now, user),
-                prepareBuilder(now, jwtProperties.getRefreshTokenExpiration(), user.getUsername())
+        return new JwtTokenBundle(generateAccessToken(now, username, authorities),
+                prepareBuilder(now, jwtProperties.getRefreshTokenExpiration(), username)
                         .claim("scopes", Arrays.asList(REFRESH_TOKEN))
                         .compact());
     }
 
-
-    public String generateAccessToken(AppUser user) {
-        return generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), user);
+    public String generateAccessToken(String username, Collection<? extends GrantedAuthority> authorities) {
+        return generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), username, authorities);
     }
 
-    protected String generateAccessToken(LocalDateTime ldt, AppUser user) {
-        return prepareBuilder(ldt, jwtProperties.getAccessTokenExpiration(), user.getUsername())
-                .claim("scopes", user.getRoles())
+    protected String generateAccessToken(LocalDateTime ldt, String username, Collection<? extends GrantedAuthority> authorities) {
+        List<GrantedAuthority> scopes = new ArrayList<>();
+        scopes.addAll(authorities);
+        scopes.addAll(customAuthoritiesProvider.getExtraTokenAuthorities(username));
+
+        return prepareBuilder(ldt, jwtProperties.getAccessTokenExpiration(), username)
+                .claim("scopes", scopes.stream().map(a -> a.getAuthority()).collect(Collectors.toSet()))
                 .compact();
     }
 

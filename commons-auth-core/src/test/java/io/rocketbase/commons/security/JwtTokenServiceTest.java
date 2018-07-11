@@ -25,6 +25,7 @@ public class JwtTokenServiceTest {
         JwtProperties config = new JwtProperties();
         config.setSecret("YSZESjg5aiZ0ZHszcSc1R0BEOiY5PFgp");
         JwtTokenService service = new JwtTokenService(config);
+        service.customAuthoritiesProvider = new EmptyCustomAuthoritiesProvider();
         return service;
     }
 
@@ -41,7 +42,8 @@ public class JwtTokenServiceTest {
     @Test
     public void getUsernameFromToken() {
         // given
-        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), genAppUser());
+        AppUser appUser = genAppUser();
+        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), appUser.getUsername(), appUser.getAuthorities());
 
         // when
         String username = getInstance().getUsernameFromToken(token);
@@ -55,7 +57,8 @@ public class JwtTokenServiceTest {
     @Test
     public void getAuthoritiesFromToken() {
         // given
-        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), genAppUser());
+        AppUser appUser = genAppUser();
+        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), appUser.getUsername(), appUser.getAuthorities());
 
         // when
         Collection<? extends GrantedAuthority> authorities = getInstance().getAuthoritiesFromToken(token);
@@ -70,7 +73,8 @@ public class JwtTokenServiceTest {
     public void getIssuedAtDateFromToken() {
         // given
         LocalDateTime beforeCreate = LocalDateTime.now(UTC).minusSeconds(2);
-        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), genAppUser());
+        AppUser appUser = genAppUser();
+        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), appUser.getUsername(), appUser.getAuthorities());
         LocalDateTime afterCreate = LocalDateTime.now(UTC).plusSeconds(2);
 
         // when
@@ -86,7 +90,8 @@ public class JwtTokenServiceTest {
     public void getExpirationDateFromToken() {
         // given
         LocalDateTime beforeCreate = LocalDateTime.now(UTC).minusSeconds(2);
-        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), genAppUser());
+        AppUser appUser = genAppUser();
+        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), appUser.getUsername(), appUser.getAuthorities());
 
         // when
         LocalDateTime expired = getInstance().getExpirationDateFromToken(token);
@@ -103,9 +108,10 @@ public class JwtTokenServiceTest {
     @Test
     public void validateToken() {
         // given
+        AppUser appUser = genAppUser();
 
         // when
-        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), genAppUser());
+        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), appUser.getUsername(), appUser.getAuthorities());
 
         // then
         assertThat(getInstance().validateToken(token, genAppUser()), equalTo(true));

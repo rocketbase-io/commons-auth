@@ -32,9 +32,6 @@ public class AppUserForgotPasswordService implements FeedbackActionService {
     private EmailService emailService;
 
     @Resource
-    private ValidationService validationService;
-
-    @Resource
     private ApplicationEventPublisher applicationEventPublisher;
 
     public AppUser requestPasswordReset(ForgotPasswordRequest forgotPassword, String baseUrl) {

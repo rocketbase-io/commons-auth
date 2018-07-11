@@ -5,6 +5,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.rocketbase.commons.config.JwtProperties;
 import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.security.CustomAuthoritiesProvider;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.AppUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Resource
     private JwtProperties jwtProperties;
+
+    @Resource
+    private CustomAuthoritiesProvider customAuthoritiesProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
@@ -82,7 +86,8 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
             if (jwtTokenService.validateToken(authToken, user)) {
 
-                Collection<? extends GrantedAuthority> authorities = jwtTokenService.getAuthoritiesFromToken(authToken);
+                Collection<GrantedAuthority> authorities = jwtTokenService.getAuthoritiesFromToken(authToken);
+                authorities.addAll(customAuthoritiesProvider.getExtraSecurityContextAuthorities(username));
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, "", authorities);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 if (log.isTraceEnabled()) {

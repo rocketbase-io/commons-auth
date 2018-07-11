@@ -1,5 +1,7 @@
 package io.rocketbase.commons.config;
 
+import io.rocketbase.commons.security.CustomAuthoritiesProvider;
+import io.rocketbase.commons.security.EmptyCustomAuthoritiesProvider;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.*;
 import io.rocketbase.commons.service.email.EmailService;
@@ -11,7 +13,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
 import javax.mail.internet.InternetAddress;
 
@@ -48,6 +49,12 @@ public class BeanConfiguration {
     @Bean
     public AppUserForgotPasswordService appUserForgotPasswordService() {
         return new AppUserForgotPasswordService(authProperties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public CustomAuthoritiesProvider customAuthoritiesProvider() {
+        return new EmptyCustomAuthoritiesProvider();
     }
 
     @Bean

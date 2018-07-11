@@ -63,7 +63,7 @@ public class AuthenticationController {
 
         applicationEventPublisher.publishEvent(new LoginEvent(this, user));
 
-        return ResponseEntity.ok(jwtTokenService.generateTokenBundle(user));
+        return ResponseEntity.ok(jwtTokenService.generateTokenBundle(user.getUsername(), user.getAuthorities()));
     }
 
     @RequestMapping(value = "/auth/me", method = RequestMethod.GET)
@@ -112,14 +112,15 @@ public class AuthenticationController {
     @RequestMapping(value = "/auth/refresh", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<String> refreshToken(Authentication authentication) {
-        if (authentication == null || !(authentication.getPrincipal() instanceof AppUser)) {
+        if (authentication == null || !(authentication.getPrincipal() instanceof UserDetails)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         if (authentication.getAuthorities() == null || !authentication.getAuthorities()
-                .contains(new SimpleGrantedAuthority(String.format("ROLE_%s", JwtTokenService.REFRESH_TOKEN)))) {
+                .contains(new SimpleGrantedAuthority(JwtTokenService.REFRESH_TOKEN))) {
             return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
         }
+        UserDetails user = ((UserDetails) authentication.getPrincipal());
 
-        return ResponseEntity.ok(jwtTokenService.generateAccessToken((AppUser) authentication.getPrincipal()));
+        return ResponseEntity.ok(jwtTokenService.generateAccessToken(user.getUsername(), user.getAuthorities()));
     }
 }

@@ -45,6 +45,6 @@ public class RegistrationController implements BaseController {
     public ResponseEntity<JwtTokenBundle> verify(@RequestParam("verification") String verification) {
         AppUser entity = appUserRegistrationService.verifyRegistration(verification);
 
-        return ResponseEntity.ok(jwtTokenService.generateTokenBundle(entity));
+        return ResponseEntity.ok(jwtTokenService.generateTokenBundle(entity.getUsername(), entity.getAuthorities()));
     }
 }
