@@ -36,11 +36,18 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        final String requestHeader = request.getHeader(jwtProperties.getHeader());
+        String authToken = getAuthToken(request);
+        String username = getValidatedUsername(authToken);
 
-        String username = null;
+        setAuthenticationIfValid(authToken, username, request);
+
+        chain.doFilter(request, response);
+    }
+
+    protected String getAuthToken(HttpServletRequest request) {
         String authToken = null;
 
+        final String requestHeader = request.getHeader(jwtProperties.getHeader());
         if (requestHeader != null && requestHeader.startsWith(jwtProperties.getTokenPrefix())) {
             // check header
             authToken = requestHeader.substring(jwtProperties.getTokenPrefix().length());
@@ -48,10 +55,13 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             // check uiParam
             authToken = request.getParameter(jwtProperties.getUriParam());
         }
+        return authToken;
+    }
 
+    protected String getValidatedUsername(String authToken) {
         if (authToken != null) {
             try {
-                username = jwtTokenService.getUsernameFromToken(authToken);
+                return jwtTokenService.getUsernameFromToken(authToken);
             } catch (IllegalArgumentException e) {
                 log.error("an error occured during getting username from token. {}", e.getMessage());
             } catch (ExpiredJwtException e) {
@@ -62,10 +72,12 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 log.error("other token exception: {}", e.getMessage());
             }
         }
+        return null;
+    }
 
+    protected void setAuthenticationIfValid(String authToken, String username, HttpServletRequest request) {
         if (username != null && SecurityContextHolder.getContext()
                 .getAuthentication() == null) {
-
             AppUser user = (AppUser) appUserService.loadUserByUsername(username);
 
             if (jwtTokenService.validateToken(authToken, user)) {
@@ -80,7 +92,5 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                         .setAuthentication(authentication);
             }
         }
-
-        chain.doFilter(request, response);
     }
 }
