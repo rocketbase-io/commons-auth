@@ -21,6 +21,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -76,11 +77,11 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/auth/change-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> changePassword(@RequestBody @NotNull @Validated PasswordChangeRequest passwordChange, Authentication authentication) {
-        if (authentication == null || !(authentication.getPrincipal() instanceof AppUser)) {
+        if (authentication == null || !(authentication.getPrincipal() instanceof UserDetails)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        String username = ((AppUser) authentication.getPrincipal()).getUsername();
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
         // check old password otherwise it throws errors
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, passwordChange.getCurrentPassword())
@@ -95,11 +96,11 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/auth/update-profile", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateProfile(@RequestBody @NotNull @Validated UpdateProfileRequest updateProfile, Authentication authentication) {
-        if (authentication == null || !(authentication.getPrincipal() instanceof AppUser)) {
+        if (authentication == null || !(authentication.getPrincipal() instanceof UserDetails)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        String username = ((AppUser) authentication.getPrincipal()).getUsername();
+        String username = ((UserDetails) authentication.getPrincipal()).getUsername();
 
         appUserService.updateProfile(username, updateProfile.getFirstName(), updateProfile.getLastName(), updateProfile.getAvatar(), updateProfile.getKeyValues());
 
