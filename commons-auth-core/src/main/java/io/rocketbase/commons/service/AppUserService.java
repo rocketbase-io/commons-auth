@@ -83,6 +83,10 @@ public class AppUserService implements UserDetailsService, ValidationUserLookupS
         return appUserPersistenceService.findByEmail(email.toLowerCase());
     }
 
+    public Optional<AppUser> findById(String id) {
+        return appUserPersistenceService.findById(id);
+    }
+
     public AppUser updateLastLogin(String username) {
         AppUser entity = getEntityByUsername(username);
         entity.updateLastLogin();
