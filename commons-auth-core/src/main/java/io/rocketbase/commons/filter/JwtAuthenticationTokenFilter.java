@@ -10,6 +10,7 @@ import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.AppUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -43,7 +44,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         String authToken = getAuthToken(request);
         String username = getValidatedUsername(authToken);
 
-        setAuthenticationIfValid(authToken, username, request);
+        tryToAuthenticate(authToken, username, request);
 
         chain.doFilter(request, response);
     }
@@ -79,7 +80,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         return null;
     }
 
-    protected void setAuthenticationIfValid(String authToken, String username, HttpServletRequest request) {
+    protected Authentication tryToAuthenticate(String authToken, String username, HttpServletRequest request) {
         if (username != null && SecurityContextHolder.getContext()
                 .getAuthentication() == null) {
             AppUser user = (AppUser) appUserService.loadUserByUsername(username);
@@ -87,7 +88,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             if (jwtTokenService.validateToken(authToken, user)) {
 
                 Collection<GrantedAuthority> authorities = jwtTokenService.getAuthoritiesFromToken(authToken);
-                authorities.addAll(customAuthoritiesProvider.getExtraSecurityContextAuthorities(username));
+                authorities.addAll(customAuthoritiesProvider.getExtraSecurityContextAuthorities(user, request));
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, "", authorities);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 if (log.isTraceEnabled()) {
@@ -95,7 +96,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 }
                 SecurityContextHolder.getContext()
                         .setAuthentication(authentication);
+                return authentication;
             }
         }
+        return null;
     }
 }

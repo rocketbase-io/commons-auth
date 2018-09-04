@@ -1,7 +1,9 @@
 package io.rocketbase.commons.security;
 
+import io.rocketbase.commons.model.AppUser;
 import org.springframework.security.core.GrantedAuthority;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 
 /**
@@ -26,5 +28,5 @@ public interface CustomAuthoritiesProvider {
      *
      * @return a not nullable list of extra authorities / could also be an empty list
      */
-    Collection<? extends GrantedAuthority> getExtraSecurityContextAuthorities(String username);
+    Collection<? extends GrantedAuthority> getExtraSecurityContextAuthorities(AppUser user, HttpServletRequest request);
 }
