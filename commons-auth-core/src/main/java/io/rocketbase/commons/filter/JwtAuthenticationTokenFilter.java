@@ -4,11 +4,13 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.rocketbase.commons.config.JwtProperties;
+import io.rocketbase.commons.dto.ErrorResponse;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.security.CustomAuthoritiesProvider;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.AppUserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -44,9 +46,15 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         String authToken = getAuthToken(request);
         String username = getValidatedUsername(authToken);
 
-        tryToAuthenticate(authToken, username, request);
-
-        chain.doFilter(request, response);
+        try {
+            tryToAuthenticate(authToken, username, request);
+            chain.doFilter(request, response);
+        } catch (Exception e) {
+            int status = HttpStatus.BAD_REQUEST.value();
+            response.setStatus(status);
+            response.getWriter().write(String.format("{\"status\": %d, \"message\": \"%s\"}", status,
+                    e.getMessage().replace("\"", "\\")));
+        }
     }
 
     protected String getAuthToken(HttpServletRequest request) {
