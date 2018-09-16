@@ -41,7 +41,7 @@ public class CustomAuthoritiesProviderTest extends BaseIntegrationTest {
         List<GrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
 
         JwtProperties config = new JwtProperties();
-        config.setSecret("YSZESjg5aiZ0ZHszcSc1R0BEOiY5PFgp");
+        config.setSecret("NHU3eCFBJUQqRy1LYU5kUmdVa1hwMnM1djh5L0I/RShIK01iUWVTaFZtWXEzdDZ3OXokQyZGKUpATmNSZlVqVw==");
         JwtTokenService service = new JwtTokenService(config);
         service.customAuthoritiesProvider = myOwnImplementation();
         // when
