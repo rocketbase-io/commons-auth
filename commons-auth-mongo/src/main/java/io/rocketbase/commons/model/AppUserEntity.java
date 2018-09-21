@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,12 +63,12 @@ public class AppUserEntity extends AppUser {
 
     @Override
     public void updateLastLogin() {
-        this.lastLogin = LocalDateTime.now();
+        this.lastLogin = LocalDateTime.now(ZoneOffset.UTC);
     }
 
     @Override
     public void updateLastTokenInvalidation() {
-        this.lastTokenInvalidation = LocalDateTime.now();
+        this.lastTokenInvalidation = LocalDateTime.now(ZoneOffset.UTC);
     }
 
     @Override

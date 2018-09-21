@@ -53,12 +53,26 @@ public abstract class AppUser implements UserDetails {
 
     public abstract LocalDateTime getCreated();
 
+    /**
+     * @return null or date of last login with TimeZone UTC
+     */
     public abstract LocalDateTime getLastLogin();
 
+    /**
+     * used for analytics of inactive user xyz<br>
+     * should update lastLogin with TimeZone UTC
+     */
     public abstract void updateLastLogin();
 
+    /**
+     * @return null or date of last token invalidation with TimeZone UTC
+     */
     public abstract LocalDateTime getLastTokenInvalidation();
 
+    /**
+     * used to mark token that are issued before as invalid<br>
+     * should update lastTokenInvalidation with TimeZone UTC
+     */
     public abstract void updateLastTokenInvalidation();
 
     /**

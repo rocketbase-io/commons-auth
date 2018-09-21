@@ -116,4 +116,20 @@ public class JwtTokenServiceTest {
         // then
         assertThat(getInstance().validateToken(token, genAppUser()), equalTo(true));
     }
+
+    @Test
+    public void validateIssued() throws Exception {
+        // given
+        AppUser appUser = genAppUser();
+        appUser.updateLastTokenInvalidation();
+        Thread.sleep(1001);
+
+        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), appUser.getUsername(), appUser.getAuthorities());
+
+        // when
+        Boolean validateToken = getInstance().validateToken(token, appUser);
+
+        // then
+        assertThat(validateToken, equalTo(true));
+    }
 }
