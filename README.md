@@ -60,7 +60,7 @@ The required security for password could be configured by the following properti
 | auth.password.lowercase  | 1       | at least X chars of lowercase                                |
 | auth.password.uppercase  | 1       | at least X chars of uppercase                                |
 | auth.password.digit      | 1       | at least X chars of digit                                    |
-| auth.password.digit      | 1       | at least X chars of special<br />!"#$%&'()*+,-./:;<=>?@[\]^_`{\|}~ |
+| auth.password.special    | 1       | at least X chars of special<br />!"#$%&'()*+,-./:;<=>?@[\]^_`{\|}~ |
 
 You can also configure the setup ot the username:
 
