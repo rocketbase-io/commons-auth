@@ -8,6 +8,7 @@ import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.authentication.LoginRequest;
 import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
 import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
+import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.resource.AuthenticationResource;
 import io.rocketbase.commons.test.AppUserPersistenceTestService;
@@ -199,8 +200,12 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
                     .newPassword("r0cketB@ase")
                     .build());
             // then
-            Assert.fail("should have thrown UNAUTHORIZED");
-        } catch (HttpClientErrorException e) {
+            Assert.fail("should have thrown PasswordValidationException");
+        } catch (BadRequestException e) {
+            assertThat(e.getErrorResponse(), notNullValue());
+            assertThat(e.getErrorResponse().getFields(), notNullValue());
+            assertThat(e.getErrorResponse().getFields().containsKey("password"), equalTo(true));
+            assertThat(e.getErrorResponse().getFields().get("password"), equalTo("INVALID_CURRENT_PASSWORD"));
         }
     }
 

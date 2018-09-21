@@ -1,14 +1,17 @@
 package io.rocketbase.commons.controller;
 
+import com.google.common.collect.Sets;
 import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.authentication.LoginRequest;
 import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
 import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
+import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
 import io.rocketbase.commons.event.ChangePasswordEvent;
 import io.rocketbase.commons.event.LoginEvent;
 import io.rocketbase.commons.event.UpdateProfileEvent;
+import io.rocketbase.commons.exception.PasswordValidationException;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.AppUserService;
@@ -19,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -83,9 +87,13 @@ public class AuthenticationController {
 
         String username = ((UserDetails) authentication.getPrincipal()).getUsername();
         // check old password otherwise it throws errors
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, passwordChange.getCurrentPassword())
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, passwordChange.getCurrentPassword())
+            );
+        } catch (AuthenticationException e) {
+            throw new PasswordValidationException(Sets.newHashSet(PasswordErrorCodes.INVALID_CURRENT_PASSWORD));
+        }
 
         appUserService.updatePassword(username, passwordChange.getNewPassword());
 
