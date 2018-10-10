@@ -1,8 +1,8 @@
 package io.rocketbase.commons.test;
 
 import io.rocketbase.commons.config.AuthProperties;
-import io.rocketbase.commons.model.AppUserTestEntity;
 import io.rocketbase.commons.service.AppUserPersistenceService;
+import io.rocketbase.commons.test.model.AppUserTestEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;

@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,8 +41,7 @@ public class CustomAuthoritiesProviderTest extends BaseIntegrationTest {
 
         JwtProperties config = new JwtProperties();
         config.setSecret("NHU3eCFBJUQqRy1LYU5kUmdVa1hwMnM1djh5L0I/RShIK01iUWVTaFZtWXEzdDZ3OXokQyZGKUpATmNSZlVqVw==");
-        JwtTokenService service = new JwtTokenService(config);
-        service.customAuthoritiesProvider = myOwnImplementation();
+        JwtTokenService service = new JwtTokenService(config, myOwnImplementation());
         // when
         JwtTokenBundle jwtTokenBundle = service.generateTokenBundle(username, authorities);
         // then

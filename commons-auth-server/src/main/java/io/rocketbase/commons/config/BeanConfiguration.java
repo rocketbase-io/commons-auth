@@ -4,11 +4,13 @@ import io.rocketbase.commons.security.CustomAuthoritiesProvider;
 import io.rocketbase.commons.security.EmptyCustomAuthoritiesProvider;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.*;
+import io.rocketbase.commons.service.email.DefaultEmailService;
 import io.rocketbase.commons.service.email.EmailService;
 import io.rocketbase.commons.service.email.MailContentConfig;
 import io.rocketbase.commons.service.email.SimpleMailContentConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -35,10 +37,11 @@ public class BeanConfiguration {
         return new SimpleMailContentConfig(emailProperties);
     }
 
-    @SneakyThrows
     @Bean
+    @ConditionalOnMissingBean
+    @SneakyThrows
     public EmailService emailService() {
-        return new EmailService(new InternetAddress(emailProperties.getFromEmail(), emailProperties.getServiceName()));
+        return new DefaultEmailService(new InternetAddress(emailProperties.getFromEmail(), emailProperties.getServiceName()));
     }
 
     @Bean
@@ -58,8 +61,8 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public JwtTokenService jwtTokenService() {
-        return new JwtTokenService(jwtProperties);
+    public JwtTokenService jwtTokenService(@Autowired CustomAuthoritiesProvider customAuthoritiesProvider) {
+        return new JwtTokenService(jwtProperties, customAuthoritiesProvider);
     }
 
     @Bean

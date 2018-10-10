@@ -14,7 +14,7 @@ import javax.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
 
 @RequiredArgsConstructor
-public class EmailService {
+public class DefaultEmailService implements EmailService {
 
     @Getter
     final InternetAddress from;
@@ -25,6 +25,7 @@ public class EmailService {
     @Resource
     private MailContentConfig mailContentConfig;
 
+    @Override
     @SneakyThrows
     public void sentRegistrationEmail(AppUser user, String verificationUrl) {
         HtmlTextEmail htmlTextEmail = mailContentConfig.register(user, verificationUrl);
@@ -32,6 +33,7 @@ public class EmailService {
         sentEmail(new InternetAddress(user.getEmail()), mailContentConfig.registerSubject(user), htmlTextEmail);
     }
 
+    @Override
     @SneakyThrows
     public void sentForgotPasswordEmail(AppUser user, String verificationUrl) {
         HtmlTextEmail htmlTextEmail = mailContentConfig.forgotPassword(user, verificationUrl);
@@ -39,10 +41,12 @@ public class EmailService {
         sentEmail(new InternetAddress(user.getEmail()), mailContentConfig.forgotPasswordSubject(user), htmlTextEmail);
     }
 
+    @Override
     public void sentEmail(InternetAddress to, String subject, HtmlTextEmail htmlTextEmail) {
         sentEmail(to, subject, htmlTextEmail, getFrom());
     }
 
+    @Override
     @SneakyThrows
     public void sentEmail(InternetAddress to, String subject, HtmlTextEmail htmlTextEmail, InternetAddress from) {
         MimeMessage message = emailSender.createMimeMessage();

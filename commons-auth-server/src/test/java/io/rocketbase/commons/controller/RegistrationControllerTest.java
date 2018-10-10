@@ -6,11 +6,11 @@ import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.AuthErrorCodes;
 import io.rocketbase.commons.exception.BadRequestException;
-import io.rocketbase.commons.model.AppUserTestEntity;
 import io.rocketbase.commons.resource.RegistrationResource;
 import io.rocketbase.commons.service.AppUserService;
 import io.rocketbase.commons.test.AppUserPersistenceTestService;
 import io.rocketbase.commons.test.BaseIntegrationTest;
+import io.rocketbase.commons.test.model.AppUserTestEntity;
 import org.junit.Assert;
 import org.junit.Test;
 

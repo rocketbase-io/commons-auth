@@ -3,20 +3,14 @@ package io.rocketbase.commons.converter;
 import com.google.common.collect.ImmutableMap;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.model.AppUser;
-import io.rocketbase.commons.model.AppUserTestEntity;
-import io.rocketbase.commons.test.BaseIntegrationTest;
+import io.rocketbase.commons.test.model.AppUserTestEntity;
 import org.junit.Test;
-
-import javax.annotation.Resource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
-public class AppUserConverterTest extends BaseIntegrationTest {
-
-    @Resource
-    private AppUserConverter appUserConverter;
+public class AppUserConverterTest {
 
     @Test
     public void fromEntity() {
@@ -31,7 +25,7 @@ public class AppUserConverterTest extends BaseIntegrationTest {
                 .build();
 
         // when
-        AppUserRead appUserRead = appUserConverter.fromEntity(entity);
+        AppUserRead appUserRead = new AppUserConverterImpl().fromEntity(entity);
 
         // then
         assertThat(appUserRead, notNullValue());

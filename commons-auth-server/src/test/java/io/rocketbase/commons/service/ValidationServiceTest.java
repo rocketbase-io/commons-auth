@@ -6,7 +6,7 @@ import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
 import io.rocketbase.commons.dto.validation.UsernameErrorCodes;
 import io.rocketbase.commons.exception.RegistrationException;
 import io.rocketbase.commons.model.AppUser;
-import io.rocketbase.commons.model.AppUserTestEntity;
+import io.rocketbase.commons.test.model.AppUserTestEntity;
 import org.junit.Test;
 
 import java.util.Optional;

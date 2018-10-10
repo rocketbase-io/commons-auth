@@ -1,6 +1,7 @@
-package io.rocketbase.commons.model;
+package io.rocketbase.commons.test.model;
 
 import com.google.common.collect.ImmutableMap;
+import io.rocketbase.commons.model.AppUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

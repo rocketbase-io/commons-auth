@@ -41,8 +41,10 @@ SOFTWARE.
     <modules>
         <module>commons-auth-api</module>
         <module>commons-auth-core</module>
+        <module>commons-auth-server</module>
         <module>commons-auth-mongo</module>
         <module>commons-auth-jpa</module>
+        <module>commons-auth-test</module>
     </modules>
 
     <licenses>

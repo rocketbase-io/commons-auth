@@ -24,9 +24,7 @@ public class JwtTokenService implements Serializable {
     public static final String REFRESH_TOKEN = "REFRESH_TOKEN";
 
     final JwtProperties jwtProperties;
-
-    @Resource
-    CustomAuthoritiesProvider customAuthoritiesProvider;
+    final CustomAuthoritiesProvider customAuthoritiesProvider;
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);

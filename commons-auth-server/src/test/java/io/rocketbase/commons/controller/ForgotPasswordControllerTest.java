@@ -4,7 +4,6 @@ import io.rocketbase.commons.config.EmailProperties;
 import io.rocketbase.commons.dto.forgot.ForgotPasswordRequest;
 import io.rocketbase.commons.resource.ForgotPasswordResource;
 import io.rocketbase.commons.service.AppUserService;
-import io.rocketbase.commons.test.AppUserPersistenceTestService;
 import io.rocketbase.commons.test.BaseIntegrationTest;
 import org.junit.Assert;
 import org.junit.Test;

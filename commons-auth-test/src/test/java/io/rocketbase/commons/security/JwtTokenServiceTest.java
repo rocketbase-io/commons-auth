@@ -2,7 +2,7 @@ package io.rocketbase.commons.security;
 
 import io.rocketbase.commons.config.JwtProperties;
 import io.rocketbase.commons.model.AppUser;
-import io.rocketbase.commons.model.AppUserTestEntity;
+import io.rocketbase.commons.test.model.AppUserTestEntity;
 import org.junit.Test;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -24,8 +24,7 @@ public class JwtTokenServiceTest {
     private JwtTokenService getInstance() {
         JwtProperties config = new JwtProperties();
         config.setSecret("NHU3eCFBJUQqRy1LYU5kUmdVa1hwMnM1djh5L0I/RShIK01iUWVTaFZtWXEzdDZ3OXokQyZGKUpATmNSZlVqVw==");
-        JwtTokenService service = new JwtTokenService(config);
-        service.customAuthoritiesProvider = new EmptyCustomAuthoritiesProvider();
+        JwtTokenService service = new JwtTokenService(config, new EmptyCustomAuthoritiesProvider());
         return service;
     }
 
