@@ -24,7 +24,8 @@ This module provides the DTOs and a client to communicate with the authenticatio
 
 ## commons-auth-core
 
-Containing an implementation for Token-Generators, UserManagement, Filters and many more...
+Containing an implementation for Token-Generators, Interfaces, Filters and many more...
+
 
 ### configuration properties
 
@@ -112,6 +113,10 @@ To send emails the is used. This needs also some configurations:
 | spring.mail.properties.mail.smtp.auth            | *required* |
 | spring.mail.properties.mail.smtp.starttls.enable | *required* |
 
+
+## commons-auth-server
+
+Containing mainly the spring rest-controller + services for sending emails etc.
 
 
 ### configure spring-security
@@ -240,6 +245,9 @@ In order to get it running you need to add the following annotations to your pro
 @EntityScan({"io.rocketbase.commons", "YOUR_PACKAGE"})
 ```
 
+## commons-auth-test
+
+Some base test classes and configurations.
 
 
 ### The MIT License (MIT)
