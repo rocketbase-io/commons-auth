@@ -39,7 +39,7 @@ SOFTWARE.
     <dependencies>
         <dependency>
             <groupId>io.rocketbase.commons</groupId>
-            <artifactId>commons-auth-core</artifactId>
+            <artifactId>commons-auth-server</artifactId>
             <version>${project.version}</version>
         </dependency>
 
