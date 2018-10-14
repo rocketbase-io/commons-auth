@@ -3,10 +3,7 @@ package io.rocketbase.commons.controller;
 import com.google.common.collect.Sets;
 import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
-import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
-import io.rocketbase.commons.dto.authentication.LoginRequest;
-import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
-import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
+import io.rocketbase.commons.dto.authentication.*;
 import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
 import io.rocketbase.commons.event.ChangePasswordEvent;
 import io.rocketbase.commons.event.LoginEvent;
@@ -55,7 +52,7 @@ public class AuthenticationController {
 
     @RequestMapping(method = RequestMethod.POST, path = "/auth/login", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<JwtTokenBundle> login(@RequestBody @NotNull @Validated LoginRequest login) {
+    public ResponseEntity<LoginResponse> login(@RequestBody @NotNull @Validated LoginRequest login) {
         // Perform the security
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(login.getUsername().toLowerCase(), login.getPassword())
@@ -67,7 +64,8 @@ public class AuthenticationController {
 
         applicationEventPublisher.publishEvent(new LoginEvent(this, user));
 
-        return ResponseEntity.ok(jwtTokenService.generateTokenBundle(user.getUsername(), user.getAuthorities()));
+        JwtTokenBundle jwtTokenBundle = jwtTokenService.generateTokenBundle(user.getUsername(), user.getAuthorities());
+        return ResponseEntity.ok(new LoginResponse(jwtTokenBundle, appUserConverter.fromEntity(user)));
     }
 
     @RequestMapping(value = "/auth/me", method = RequestMethod.GET)

@@ -4,10 +4,7 @@ import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.adapters.JwtTokenProvider;
 import io.rocketbase.commons.adapters.SimpleJwtTokenProvider;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
-import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
-import io.rocketbase.commons.dto.authentication.LoginRequest;
-import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
-import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
+import io.rocketbase.commons.dto.authentication.*;
 import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.resource.AuthenticationResource;
@@ -46,13 +43,13 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
                 .build();
 
         // when
-        ResponseEntity<JwtTokenBundle> response = authenticationController.login(login);
+        ResponseEntity<LoginResponse> response = authenticationController.login(login);
 
         // then
-        JwtTokenBundle jwtTokenBundle = response.getBody();
-        assertThat(jwtTokenBundle, notNullValue());
-        assertThat(jwtTokenBundle.getRefreshToken(), notNullValue());
-        assertThat(jwtTokenBundle.getToken(), notNullValue());
+        LoginResponse loginResponse = response.getBody();
+        assertThat(loginResponse, notNullValue());
+        assertThat(loginResponse.getJwtTokenBundle().getRefreshToken(), notNullValue());
+        assertThat(loginResponse.getJwtTokenBundle().getToken(), notNullValue());
     }
 
     @Test
@@ -65,7 +62,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
 
         // when
         try {
-            ResponseEntity<JwtTokenBundle> response = authenticationController.login(login);
+            ResponseEntity<LoginResponse> response = authenticationController.login(login);
             // then
             Assert.fail("should have thrown BadRequestException");
         } catch (Exception e) {
@@ -83,12 +80,12 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
         // when
         SimpleJwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl());
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
-        JwtTokenBundle response = resource.login(login);
+        LoginResponse response = resource.login(login);
 
         // then
         assertThat(response, notNullValue());
-        assertThat(response.getRefreshToken(), notNullValue());
-        assertThat(response.getToken(), notNullValue());
+        assertThat(response.getJwtTokenBundle().getRefreshToken(), notNullValue());
+        assertThat(response.getJwtTokenBundle().getToken(), notNullValue());
     }
 
     @Test

@@ -2,8 +2,8 @@ package io.rocketbase.commons.resource;
 
 import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
-import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.authentication.LoginRequest;
+import io.rocketbase.commons.dto.authentication.LoginResponse;
 import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
 import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
 import org.springframework.http.HttpEntity;
@@ -35,15 +35,15 @@ public class AuthenticationResource {
      * login via username and password
      *
      * @param login credentials
-     * @return token bundle with access- and refresh-token
+     * @return token bundle with access- and refresh-token + user details
      */
-    public JwtTokenBundle login(LoginRequest login) {
-        ResponseEntity<JwtTokenBundle> response = getRestTemplate()
+    public LoginResponse login(LoginRequest login) {
+        ResponseEntity<LoginResponse> response = getRestTemplate()
                 .exchange(jwtRestTemplate.getBaseAuthApiBuilder()
                                 .path("/auth/login").toUriString(),
                         HttpMethod.POST,
                         new HttpEntity<>(login),
-                        JwtTokenBundle.class);
+                        LoginResponse.class);
         return response.getBody();
     }
 
