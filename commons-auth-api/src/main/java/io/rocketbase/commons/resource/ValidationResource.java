@@ -10,7 +10,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 public class ValidationResource implements BaseRestResource {
 
@@ -37,7 +36,7 @@ public class ValidationResource implements BaseRestResource {
 
     public ValidationResponse<PasswordErrorCodes> validatePassword(String password) {
         ResponseEntity<ValidationResponse<PasswordErrorCodes>> response = getRestTemplate()
-                .exchange(UriComponentsBuilder.fromUriString(ensureEndsWithSlash(baseAuthApiUrl))
+                .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/validate/password").toUriString(),
                         HttpMethod.POST,
                         new HttpEntity<>(password),
@@ -48,7 +47,7 @@ public class ValidationResource implements BaseRestResource {
 
     public ValidationResponse<UsernameErrorCodes> validateUsername(String username) {
         ResponseEntity<ValidationResponse<UsernameErrorCodes>> response = getRestTemplate()
-                .exchange(UriComponentsBuilder.fromUriString(ensureEndsWithSlash(baseAuthApiUrl))
+                .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/validate/username").toUriString(),
                         HttpMethod.POST,
                         new HttpEntity<>(username),
@@ -59,7 +58,7 @@ public class ValidationResource implements BaseRestResource {
 
     public ValidationResponse<EmailErrorCodes> validateEmail(String email) {
         ResponseEntity<ValidationResponse<EmailErrorCodes>> response = getRestTemplate()
-                .exchange(UriComponentsBuilder.fromUriString(ensureEndsWithSlash(baseAuthApiUrl))
+                .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/validate/email").toUriString(),
                         HttpMethod.POST,
                         new HttpEntity<>(email),

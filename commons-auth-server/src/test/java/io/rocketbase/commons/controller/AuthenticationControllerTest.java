@@ -8,6 +8,7 @@ import io.rocketbase.commons.dto.authentication.*;
 import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.resource.AuthenticationResource;
+import io.rocketbase.commons.resource.LoginResource;
 import io.rocketbase.commons.test.AppUserPersistenceTestService;
 import io.rocketbase.commons.test.BaseIntegrationTest;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
@@ -78,8 +79,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
                 .build();
 
         // when
-        SimpleJwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl());
-        AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
+        LoginResource resource = new LoginResource(getBaseUrl());
         LoginResponse response = resource.login(login);
 
         // then
@@ -160,8 +160,8 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
         TimeUnit.SECONDS.sleep(2);
 
         // when
-        AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
-        resource.refreshToken();
+        LoginResource resource = new LoginResource(getBaseUrl());
+        resource.refreshAccessToken(tokenProvider);
 
         // the
         assertThat(token.equals(tokenProvider.getToken()), equalTo(false));

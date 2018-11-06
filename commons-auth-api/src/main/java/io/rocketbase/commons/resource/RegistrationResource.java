@@ -35,7 +35,7 @@ public class RegistrationResource implements BaseRestResource {
 
     public AppUserRead register(RegistrationRequest registration) {
         ResponseEntity<AppUserRead> response = getRestTemplate()
-                .exchange(UriComponentsBuilder.fromUriString(ensureEndsWithSlash(baseAuthApiUrl))
+                .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/register").toUriString(),
                         HttpMethod.POST,
                         new HttpEntity<>(registration),
@@ -45,7 +45,7 @@ public class RegistrationResource implements BaseRestResource {
 
     public JwtTokenBundle verify(String verification) {
         ResponseEntity<JwtTokenBundle> response = getRestTemplate()
-                .exchange(UriComponentsBuilder.fromUriString(ensureEndsWithSlash(baseAuthApiUrl))
+                .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/verify")
                                 .queryParam("verification", verification).toUriString(),
                         HttpMethod.GET,

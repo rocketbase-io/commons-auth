@@ -1,9 +1,5 @@
 package io.rocketbase.commons.resource;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.dto.PageableResult;
 import io.rocketbase.commons.dto.appuser.AppUserCreate;
@@ -15,19 +11,29 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Assert;
+import org.springframework.web.client.RestTemplate;
 
 public class AppUserResource implements BaseRestResource {
 
     public static final String API_USER = "/api/user/";
-    protected JwtRestTemplate restTemplate;
+    protected RestTemplate restTemplate;
+    protected String baseAuthApiUrl;
+
+    public AppUserResource(RestTemplate restTemplate, String baseAuthApiUrl) {
+        Assert.hasText(baseAuthApiUrl, "baseAuthApiUrl is required");
+        this.restTemplate = restTemplate;
+        this.baseAuthApiUrl = baseAuthApiUrl;
+    }
 
     public AppUserResource(JwtRestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+        this.baseAuthApiUrl = restTemplate.getTokenProvider().getBaseAuthApiUrl();
     }
 
     @SneakyThrows
     public PageableResult<AppUserRead> find(int page, int pagesize) {
-        ResponseEntity<PageableResult<AppUserRead>> response = restTemplate.exchange(appendParams(restTemplate.getBaseAuthApiBuilder(),
+        ResponseEntity<PageableResult<AppUserRead>> response = restTemplate.exchange(appendParams(createUriComponentsBuilder(baseAuthApiUrl),
                 new PageableRequest(page, pagesize, null))
                         .path(API_USER)
                         .toUriString(),
@@ -39,7 +45,7 @@ public class AppUserResource implements BaseRestResource {
 
     @SneakyThrows
     public PageableResult<AppUserRead> find(PageableRequest request) {
-        ResponseEntity<PageableResult<AppUserRead>> response = restTemplate.exchange(appendParams(restTemplate.getBaseAuthApiBuilder(), request)
+        ResponseEntity<PageableResult<AppUserRead>> response = restTemplate.exchange(appendParams(createUriComponentsBuilder(baseAuthApiUrl), request)
                         .path(API_USER)
                         .toUriString(),
                 HttpMethod.GET,
@@ -51,7 +57,7 @@ public class AppUserResource implements BaseRestResource {
 
     @SneakyThrows
     public AppUserRead create(AppUserCreate create) {
-        ResponseEntity<AppUserRead> response = restTemplate.exchange(restTemplate.getBaseAuthApiBuilder()
+        ResponseEntity<AppUserRead> response = restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
                         .path(API_USER)
                         .toUriString(),
                 HttpMethod.POST,
@@ -63,7 +69,7 @@ public class AppUserResource implements BaseRestResource {
 
     @SneakyThrows
     public AppUserRead patch(String id, AppUserUpdate update) {
-        ResponseEntity<AppUserRead> response = restTemplate.exchange(restTemplate.getBaseAuthApiBuilder()
+        ResponseEntity<AppUserRead> response = restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
                         .path(API_USER)
                         .path(id)
                         .toUriString(),
@@ -76,7 +82,7 @@ public class AppUserResource implements BaseRestResource {
 
     @SneakyThrows
     public void delete(String id) {
-        restTemplate.exchange(restTemplate.getBaseAuthApiBuilder()
+        restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
                         .path(API_USER)
                         .path(id)
                         .toUriString(),
