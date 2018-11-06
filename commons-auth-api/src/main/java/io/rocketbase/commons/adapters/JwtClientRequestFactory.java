@@ -1,5 +1,6 @@
 package io.rocketbase.commons.adapters;
 
+import io.rocketbase.commons.resource.BaseRestResource;
 import io.rocketbase.commons.util.JwtTokenDecoder;
 import io.rocketbase.commons.util.JwtTokenDecoder.JwtTokenBody;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @Slf4j
-public class JwtClientRequestFactory extends HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory {
+public class JwtClientRequestFactory extends HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory, BaseRestResource {
 
     protected String header = HttpHeaders.AUTHORIZATION;
     protected String tokenPrefix = "Bearer ";
@@ -48,7 +49,7 @@ public class JwtClientRequestFactory extends HttpComponentsClientHttpRequestFact
         }
     }
 
-    private boolean checkTokenProvidedNeedsRefresh() {
+    protected boolean checkTokenProvidedNeedsRefresh() {
         if (tokenProvider.getToken() != null && tokenProvider.getRefreshToken() != null) {
             if (lastToken == null || !tokenProvider.getToken().equals(lastToken)) {
                 JwtTokenBody tokenBody = JwtTokenDecoder.decodeTokenBody(tokenProvider.getToken());
@@ -67,9 +68,9 @@ public class JwtClientRequestFactory extends HttpComponentsClientHttpRequestFact
         return false;
     }
 
-    private void refreshToken() {
+    protected void refreshToken() {
         try {
-            String uri = tokenProvider.getBaseAuthApiUrl() + (tokenProvider.getBaseAuthApiUrl().endsWith("/") ? "" : "/") + "auth/refresh";
+            String uri = ensureEndsWithSlash(tokenProvider.getBaseAuthApiUrl()) + "auth/refresh";
 
             HttpUriRequest uriRequest = RequestBuilder.get()
                     .setUri(uri)
