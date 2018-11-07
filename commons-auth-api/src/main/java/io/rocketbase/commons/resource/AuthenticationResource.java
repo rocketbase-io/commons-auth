@@ -2,8 +2,6 @@ package io.rocketbase.commons.resource;
 
 import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
-import io.rocketbase.commons.dto.authentication.LoginRequest;
-import io.rocketbase.commons.dto.authentication.LoginResponse;
 import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
 import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
 import org.springframework.http.HttpEntity;
@@ -11,11 +9,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
-import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
-public class AuthenticationResource implements BaseRestResource{
+public class AuthenticationResource implements BaseRestResource {
 
     protected String baseAuthApiUrl;
     protected RestTemplate restTemplate;
@@ -23,7 +19,7 @@ public class AuthenticationResource implements BaseRestResource{
     protected String tokenPrefix = "Bearer ";
 
 
-    public AuthenticationResource(RestTemplate restTemplate, String baseAuthApiUrl) {
+    public AuthenticationResource(String baseAuthApiUrl, RestTemplate restTemplate) {
         Assert.hasText(baseAuthApiUrl, "baseAuthApiUrl is required");
         this.restTemplate = restTemplate;
         this.baseAuthApiUrl = baseAuthApiUrl;
@@ -33,6 +29,7 @@ public class AuthenticationResource implements BaseRestResource{
         this.baseAuthApiUrl = jwtRestTemplate.getTokenProvider().getBaseAuthApiUrl();
         this.restTemplate = jwtRestTemplate;
     }
+
     /**
      * get details of logged in user
      *

@@ -20,7 +20,7 @@ public class AppUserResource implements BaseRestResource {
     protected RestTemplate restTemplate;
     protected String baseAuthApiUrl;
 
-    public AppUserResource(RestTemplate restTemplate, String baseAuthApiUrl) {
+    public AppUserResource(String baseAuthApiUrl, RestTemplate restTemplate) {
         Assert.hasText(baseAuthApiUrl, "baseAuthApiUrl is required");
         this.restTemplate = restTemplate;
         this.baseAuthApiUrl = baseAuthApiUrl;
