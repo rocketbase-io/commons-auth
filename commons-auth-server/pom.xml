@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>io.rocketbase.commons</groupId>
-            <artifactId>commons-auth-core</artifactId>
+            <artifactId>commons-auth-adapter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

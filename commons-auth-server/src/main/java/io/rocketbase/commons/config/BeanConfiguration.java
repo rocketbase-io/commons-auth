@@ -19,12 +19,11 @@ import org.springframework.context.annotation.Configuration;
 import javax.mail.internet.InternetAddress;
 
 @Configuration
-@EnableConfigurationProperties({AuthProperties.class, JwtProperties.class, EmailProperties.class, RegistrationProperties.class, GravatarProperties.class, UsernameProperties.class, PasswordProperties.class})
+@EnableConfigurationProperties({AuthProperties.class, EmailProperties.class, RegistrationProperties.class, GravatarProperties.class, UsernameProperties.class, PasswordProperties.class})
 @RequiredArgsConstructor
 public class BeanConfiguration {
 
     private final AuthProperties authProperties;
-    private final JwtProperties jwtProperties;
     private final EmailProperties emailProperties;
     private final RegistrationProperties registrationProperties;
     private final GravatarProperties gravatarProperties;
@@ -52,17 +51,6 @@ public class BeanConfiguration {
     @Bean
     public AppUserForgotPasswordService appUserForgotPasswordService() {
         return new AppUserForgotPasswordService(authProperties);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public CustomAuthoritiesProvider customAuthoritiesProvider() {
-        return new EmptyCustomAuthoritiesProvider();
-    }
-
-    @Bean
-    public JwtTokenService jwtTokenService(@Autowired CustomAuthoritiesProvider customAuthoritiesProvider) {
-        return new JwtTokenService(jwtProperties, customAuthoritiesProvider);
     }
 
     @Bean

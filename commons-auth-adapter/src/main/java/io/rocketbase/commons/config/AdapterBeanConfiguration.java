@@ -1,52 +1,38 @@
 package io.rocketbase.commons.config;
 
-import io.rocketbase.commons.adapters.AuthClientRequestFactory;
-import io.rocketbase.commons.adapters.AuthRestTemplate;
-import io.rocketbase.commons.resource.*;
+import io.rocketbase.commons.security.CustomAuthoritiesProvider;
+import io.rocketbase.commons.security.EmptyCustomAuthoritiesProvider;
+import io.rocketbase.commons.security.JwtTokenService;
+import io.rocketbase.commons.security.TokenAuthenticationProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@EnableConfigurationProperties({JwtProperties.class})
+@RequiredArgsConstructor
 public class AdapterBeanConfiguration {
 
-    @Value("${auth.api.baseUrl}")
-    private String baseAuthApiUrl;
+    private final JwtProperties jwtProperties;
 
     @Bean
-    public AuthRestTemplate authRestTemplate() {
-        return new AuthRestTemplate(new AuthClientRequestFactory());
+    @ConditionalOnMissingBean
+    public CustomAuthoritiesProvider customAuthoritiesProvider() {
+        return new EmptyCustomAuthoritiesProvider();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public LoginResource loginResource() {
-        return new LoginResource(baseAuthApiUrl);
+    public JwtTokenService jwtTokenService(@Autowired CustomAuthoritiesProvider customAuthoritiesProvider) {
+        return new JwtTokenService(jwtProperties, customAuthoritiesProvider);
     }
 
     @Bean
-    @ConditionalOnMissingBean
-    public RegistrationResource registrationResource() {
-        return new RegistrationResource(baseAuthApiUrl);
+    public TokenAuthenticationProvider tokenAuthenticationProvider() {
+        return new TokenAuthenticationProvider();
     }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public ValidationResource validationResource() {
-        return new ValidationResource(baseAuthApiUrl);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public ForgotPasswordResource forgotPasswordResource() {
-        return new ForgotPasswordResource(baseAuthApiUrl);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public AuthenticationResource authenticationResource(@Autowired AuthRestTemplate authRestTemplate) {
-        return new AuthenticationResource(baseAuthApiUrl, authRestTemplate);
-    }
 }

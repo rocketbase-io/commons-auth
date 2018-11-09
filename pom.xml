@@ -45,6 +45,7 @@ SOFTWARE.
         <module>commons-auth-mongo</module>
         <module>commons-auth-jpa</module>
         <module>commons-auth-test</module>
+        <module>commons-auth-adapter</module>
     </modules>
 
     <licenses>
