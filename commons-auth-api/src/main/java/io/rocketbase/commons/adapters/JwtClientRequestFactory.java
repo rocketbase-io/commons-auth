@@ -16,6 +16,7 @@ import javax.validation.constraints.NotNull;
 @Slf4j
 public class JwtClientRequestFactory extends HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory, BaseRestResource {
 
+    protected JwtTokenProvider tokenProvider;
     protected JwtTokenStore jwtTokenStore;
 
     public JwtClientRequestFactory(@NotNull JwtTokenProvider tokenProvider) {
@@ -23,6 +24,7 @@ public class JwtClientRequestFactory extends HttpComponentsClientHttpRequestFact
                 .disableCookieManagement()
                 .build()
         );
+        this.tokenProvider = tokenProvider;
         jwtTokenStore = new JwtTokenStore(tokenProvider.getBaseAuthApiUrl(), new JwtTokenBundle(tokenProvider.getToken(), tokenProvider.getRefreshToken()));
     }
 
@@ -34,6 +36,8 @@ public class JwtClientRequestFactory extends HttpComponentsClientHttpRequestFact
         }
         if (jwtTokenStore.checkTokenNeedsRefresh()) {
             jwtTokenStore.refreshToken();
+            // update token in JwtTokenProvider
+            tokenProvider.setToken(jwtTokenStore.getTokenBundle().getToken());
         }
         if (request.getFirstHeader(jwtTokenStore.getHeaderName()) == null) {
             request.addHeader(jwtTokenStore.getHeaderName(), jwtTokenStore.getTokenHeader());

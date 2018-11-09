@@ -5,7 +5,6 @@ import io.rocketbase.commons.exception.TokenRefreshException;
 import io.rocketbase.commons.resource.BaseRestResource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -35,11 +34,23 @@ public class JwtTokenStore implements Serializable, BaseRestResource {
 
     private HttpClient httpClient;
 
+    /**
+     * creates a refreshable TokenStore
+     */
     public JwtTokenStore(String baseAuthApiUrl, JwtTokenBundle tokenBundle) {
         Assert.hasText(baseAuthApiUrl, "baseAuthApiUrl is required");
         Assert.notNull(tokenBundle, "tokenBundle is required");
 
         this.refreshUri = ensureEndsWithSlash(baseAuthApiUrl) + "auth/refresh";
+        this.tokenBundle = tokenBundle;
+    }
+
+    /**
+     * creates a not refreshable TokenStore
+     */
+    public JwtTokenStore(JwtTokenBundle tokenBundle) {
+        Assert.notNull(tokenBundle, "tokenBundle is required");
+        this.refreshUri = null;
         this.tokenBundle = tokenBundle;
     }
 
@@ -78,6 +89,9 @@ public class JwtTokenStore implements Serializable, BaseRestResource {
      * will perform a token refresh by using the
      */
     public void refreshToken() throws TokenRefreshException {
+        if (refreshUri == null)
+            return;
+
         try {
             HttpUriRequest uriRequest = RequestBuilder.get()
                     .setUri(refreshUri)
