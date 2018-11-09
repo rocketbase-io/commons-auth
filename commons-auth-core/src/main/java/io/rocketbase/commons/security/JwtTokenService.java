@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import javax.annotation.Resource;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;

@@ -11,7 +11,6 @@ import io.rocketbase.commons.event.UpdateProfileEvent;
 import io.rocketbase.commons.exception.PasswordValidationException;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.security.CommonsAuthenticationToken;
-import io.rocketbase.commons.security.CommonsPrincipal;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.AppUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +23,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 

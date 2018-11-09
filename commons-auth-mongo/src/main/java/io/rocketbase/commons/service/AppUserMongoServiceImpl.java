@@ -39,7 +39,8 @@ public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUse
         if (entity != null) {
             return Optional.of(entity);
         }
-        return Optional.empty();    }
+        return Optional.empty();
+    }
 
     @Override
     public Page<AppUserEntity> findAll(Pageable pageable) {
@@ -62,7 +63,8 @@ public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUse
         if (entity != null) {
             return Optional.of(entity);
         }
-        return Optional.empty();    }
+        return Optional.empty();
+    }
 
     @Override
     public long count() {

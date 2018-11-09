@@ -14,7 +14,6 @@ import io.rocketbase.commons.service.AppUserService;
 import io.rocketbase.commons.util.JwtTokenStore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -105,7 +104,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
                 authorities.addAll(customAuthoritiesProvider.getExtraSecurityContextAuthorities(user, request));
 
                 // UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, "", authorities);
-                 CommonsAuthenticationToken authentication = new CommonsAuthenticationToken(authorities, appUserConverter.fromEntity(user),
+                CommonsAuthenticationToken authentication = new CommonsAuthenticationToken(authorities, appUserConverter.fromEntity(user),
                         new JwtTokenStore(new JwtTokenBundle(authToken, null)));
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 if (log.isTraceEnabled()) {
