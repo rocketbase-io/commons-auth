@@ -2,6 +2,7 @@ package io.rocketbase.commons;
 
 import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.filter.JwtAuthenticationTokenFilter;
+import io.rocketbase.commons.security.TokenAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,8 +42,9 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Autowired
-    public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+    public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder, TokenAuthenticationProvider tokenAuthenticationProvider) throws Exception {
         authenticationManagerBuilder
+                .authenticationProvider(tokenAuthenticationProvider)
                 .userDetailsService(this.userDetailsService)
                 .passwordEncoder(passwordEncoder());
     }
@@ -54,7 +56,8 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+        AuthenticationManager authenticationManager = super.authenticationManagerBean();
+        return authenticationManager;
     }
 
     @Bean

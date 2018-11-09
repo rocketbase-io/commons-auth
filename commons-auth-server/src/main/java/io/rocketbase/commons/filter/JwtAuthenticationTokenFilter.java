@@ -4,11 +4,14 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.rocketbase.commons.config.JwtProperties;
-import io.rocketbase.commons.dto.ErrorResponse;
+import io.rocketbase.commons.converter.AppUserConverter;
+import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.security.CommonsAuthenticationToken;
 import io.rocketbase.commons.security.CustomAuthoritiesProvider;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.AppUserService;
+import io.rocketbase.commons.util.JwtTokenStore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,6 +34,9 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
     @Resource
     private AppUserService appUserService;
+
+    @Resource
+    private AppUserConverter appUserConverter;
 
     @Resource
     private JwtTokenService jwtTokenService;
@@ -97,7 +103,10 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
                 Collection<GrantedAuthority> authorities = jwtTokenService.getAuthoritiesFromToken(authToken);
                 authorities.addAll(customAuthoritiesProvider.getExtraSecurityContextAuthorities(user, request));
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, "", authorities);
+
+                // UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, "", authorities);
+                 CommonsAuthenticationToken authentication = new CommonsAuthenticationToken(authorities, appUserConverter.fromEntity(user),
+                        new JwtTokenStore(new JwtTokenBundle(authToken, null)));
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 if (log.isTraceEnabled()) {
                     log.trace("authenticated user {} with {}, setting security context", username, authorities);
