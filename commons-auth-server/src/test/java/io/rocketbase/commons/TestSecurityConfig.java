@@ -3,6 +3,8 @@ package io.rocketbase.commons;
 import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.filter.JwtAuthenticationTokenFilter;
 import io.rocketbase.commons.security.TokenAuthenticationProvider;
+import io.rocketbase.commons.service.AppUserPersistenceService;
+import io.rocketbase.commons.test.AppUserPersistenceTestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -68,6 +70,11 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public JwtAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
         return new JwtAuthenticationTokenFilter();
+    }
+
+    @Bean
+    public AppUserPersistenceService appUserPersistenceService() {
+        return new AppUserPersistenceTestService();
     }
 
     @Override
