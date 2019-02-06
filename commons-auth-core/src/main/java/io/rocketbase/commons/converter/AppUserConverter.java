@@ -2,15 +2,13 @@ package io.rocketbase.commons.converter;
 
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.model.AppUser;
-import org.mapstruct.Mapper;
-import org.mapstruct.ReportingPolicy;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.ERROR, componentModel = "spring")
-public abstract class AppUserConverter {
+public class AppUserConverter {
 
     public static Map<String, String> filterInvisibleKeys(Map<String, String> keyValues) {
         if (keyValues == null) {
@@ -42,6 +40,13 @@ public abstract class AppUserConverter {
                 .build();
     }
 
-    public abstract List<AppUserRead> fromEntities(List<AppUser> entities);
+    public List<AppUserRead> fromEntities(List<AppUser> entities) {
+        if (entities == null) {
+            return null;
+        }
+        return entities.stream()
+                .map(e -> fromEntity(e))
+                .collect(Collectors.toList());
+    }
 
 }

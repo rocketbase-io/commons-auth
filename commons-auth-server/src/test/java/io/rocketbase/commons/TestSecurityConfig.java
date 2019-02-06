@@ -44,9 +44,9 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Autowired
-    public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder, TokenAuthenticationProvider tokenAuthenticationProvider) throws Exception {
+    public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder
-                .authenticationProvider(tokenAuthenticationProvider)
+                .authenticationProvider(new TokenAuthenticationProvider())
                 .userDetailsService(this.userDetailsService)
                 .passwordEncoder(passwordEncoder());
     }

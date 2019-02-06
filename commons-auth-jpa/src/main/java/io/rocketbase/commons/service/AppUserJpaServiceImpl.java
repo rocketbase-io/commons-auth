@@ -2,22 +2,19 @@ package io.rocketbase.commons.service;
 
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.repository.AppUserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
-@Service
+@RequiredArgsConstructor
 public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserEntity> {
 
-    @Resource
-    private AppUserRepository repository;
-
+    private final AppUserRepository repository;
 
     @Override
     public Optional<AppUserEntity> findByUsername(String username) {

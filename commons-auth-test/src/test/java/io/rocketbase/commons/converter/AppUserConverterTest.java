@@ -25,7 +25,7 @@ public class AppUserConverterTest {
                 .build();
 
         // when
-        AppUserRead appUserRead = new AppUserConverterImpl().fromEntity(entity);
+        AppUserRead appUserRead = new AppUserConverter().fromEntity(entity);
 
         // then
         assertThat(appUserRead, notNullValue());
