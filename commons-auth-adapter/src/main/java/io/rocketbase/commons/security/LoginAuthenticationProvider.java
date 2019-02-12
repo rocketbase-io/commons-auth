@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 
 import java.util.Collection;
 
@@ -32,10 +33,12 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
             return new CommonsAuthenticationToken(authorities, login.getUser(), new JwtTokenStore(baseAuthApiUrl, login.getJwtTokenBundle()));
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode().equals(HttpStatus.FORBIDDEN)) {
-                throw new BadCredentialsException("wrong username/password");
+                throw new BadCredentialsException("wrong username/password", e);
             } else {
-                throw new InternalAuthenticationServiceException("got error http error with status: " + e.getRawStatusCode());
+                throw new InternalAuthenticationServiceException("got http error with status: " + e.getRawStatusCode(), e);
             }
+        } catch (RestClientException e) {
+            throw new InternalAuthenticationServiceException("service is not available?", e);
         }
     }
 
