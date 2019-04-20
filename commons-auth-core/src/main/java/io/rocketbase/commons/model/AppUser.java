@@ -1,10 +1,12 @@
 package io.rocketbase.commons.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.rocketbase.commons.dto.appuser.AppUserReference;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -123,6 +125,7 @@ public abstract class AppUser implements UserDetails {
      *
      * @return fresh created reference based on this {@link AppUser}
      */
+    @JsonIgnore
     public AppUserReference toReference() {
         return AppUserReference.builder()
                 .id(getId())
@@ -132,5 +135,35 @@ public abstract class AppUser implements UserDetails {
                 .email(getEmail())
                 .avatar(getAvatar())
                 .build();
+    }
+
+    /**
+     * combines first + last name
+     */
+    @JsonIgnore
+    public String getFullName() {
+        boolean emptyFirstName = StringUtils.isEmpty(getFirstName());
+        boolean emptyLastName = StringUtils.isEmpty(getLastName());
+        if (emptyFirstName && emptyLastName) {
+            return null;
+        } else if (!emptyFirstName && !emptyLastName) {
+            return String.format("%s %s", getFirstName(), getLastName());
+        } else if (!emptyFirstName) {
+            return getFirstName();
+        } else {
+            return getLastName();
+        }
+    }
+
+    /**
+     * fullname fallback if null use username
+     */
+    @JsonIgnore
+    public String getDisplayName() {
+        String fullName = getFullName();
+        if (fullName == null) {
+            return getUsername();
+        }
+        return fullName;
     }
 }
