@@ -5,9 +5,10 @@ import io.rocketbase.commons.dto.PageableResult;
 import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.appuser.AppUserUpdate;
-import io.rocketbase.commons.request.PageableRequest;
 import lombok.SneakyThrows;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class AppUserResource implements BaseRestResource {
     @SneakyThrows
     public PageableResult<AppUserRead> find(int page, int pagesize) {
         ResponseEntity<PageableResult<AppUserRead>> response = restTemplate.exchange(appendParams(createUriComponentsBuilder(baseAuthApiUrl),
-                new PageableRequest(page, pagesize, null))
+                PageRequest.of(page, pagesize))
                         .path(API_USER)
                         .toUriString(),
                 HttpMethod.GET,
@@ -44,8 +45,8 @@ public class AppUserResource implements BaseRestResource {
     }
 
     @SneakyThrows
-    public PageableResult<AppUserRead> find(PageableRequest request) {
-        ResponseEntity<PageableResult<AppUserRead>> response = restTemplate.exchange(appendParams(createUriComponentsBuilder(baseAuthApiUrl), request)
+    public PageableResult<AppUserRead> find(Pageable pageable) {
+        ResponseEntity<PageableResult<AppUserRead>> response = restTemplate.exchange(appendParams(createUriComponentsBuilder(baseAuthApiUrl), pageable)
                         .path(API_USER)
                         .toUriString(),
                 HttpMethod.GET,
