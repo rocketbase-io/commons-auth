@@ -1,20 +1,18 @@
 package io.rocketbase.commons.dto.appuser;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 
 /**
  * simplified AppUser without keyValues, password, audit etc...<br>
- * used to store a simple representation as a copy of AppUser
+ * used to store a simple representation as a copy of AppUser in mongo or elsewhere
  */
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class AppUserReference implements Serializable {
 
     private String id;

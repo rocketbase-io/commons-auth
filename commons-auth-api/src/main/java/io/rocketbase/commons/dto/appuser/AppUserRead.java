@@ -1,9 +1,7 @@
 package io.rocketbase.commons.dto.appuser;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -14,6 +12,7 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class AppUserRead implements Serializable {
 
     private String id;
@@ -37,5 +36,17 @@ public class AppUserRead implements Serializable {
     private LocalDateTime created;
 
     private LocalDateTime lastLogin;
+
+    @JsonIgnore
+    public AppUserReference toReference() {
+        return AppUserReference.builder()
+                .id(getId())
+                .username(getUsername())
+                .firstName(getFirstName())
+                .lastName(getLastName())
+                .email(getEmail())
+                .avatar(getAvatar())
+                .build();
+    }
 
 }
