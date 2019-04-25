@@ -5,7 +5,7 @@
 [![Build Status](https://travis-ci.org/rocketbase-io/commons-auth.svg?branch=master)](https://travis-ci.org/rocketbase-io/commons-auth)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.rocketbase.commons/commons-auth/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.rocketbase.commons/commons-auth)
 
-Add the missing auth service to your spring-boot applications. We [@rocketbase.io](https://www.rocketbase.io) develop many microservices and tried many tools and projects. All of them didn't matched our needs or were too enterprise for smaller projects .
+Adds auth services to your spring-boot applications. We at [rocketbase.io](https://www.rocketbase.io) develop many microservices and tried different tools and projects. All of them didn't matched our needs or were too bloated for smaller projects.
 
 The implementation bases on spring-boot: mainly on **spring-mvc**, **spring-data**, **javax.mail** and **jjwt**
 
@@ -26,6 +26,9 @@ This module provides the DTOs and a client to communicate with the authenticatio
 
 Containing an implementation for Token-Generators, Interfaces, Filters and many more...
 
+## commons-auth-adapter
+
+Containing spring security beans for an easy use within other spring application that are connected to a commons-auth backend...
 
 ### configuration properties
 
@@ -146,10 +149,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(passwordEncoder());
     }
 
-    /**
-     * a bit confusing but needed
-     * https://github.com/spring-projects/spring-boot/issues/11136
-     */
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -220,17 +219,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 }
 ```
 
-Furthermore you need to add the package "io.rocketbase.commons" to your componentscan - otherwise all  provided beans will not get found
-
-```java
-@ComponentScan(basePackages = {"io.rocketbase.commons", "YOUR_PACKAGE"})
-```
 
 ## commons-auth-mongo
 
 Containing the persistence layer for user via spring-data-mongo
 
-Will create on collection with name of **user**
+Will create a collection with name of **user**
 
 ## commons-auth-jpa
 
@@ -251,7 +245,7 @@ Some base test classes and configurations.
 
 
 ### The MIT License (MIT)
-Copyright (c) 2018 rocketbase.io
+Copyright (c) 2019 rocketbase.io
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
