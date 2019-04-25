@@ -1,6 +1,7 @@
 package io.rocketbase.commons.test;
 
 import io.rocketbase.commons.config.AuthProperties;
+import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.service.AppUserPersistenceService;
 import io.rocketbase.commons.test.model.AppUserTestEntity;
 import org.springframework.data.domain.Page;
@@ -16,7 +17,7 @@ import java.util.*;
 public class AppUserPersistenceTestService implements AppUserPersistenceService<AppUserTestEntity> {
 
     private Map<String, AppUserTestEntity> userMap = new HashMap<>();
-    
+
     @Resource
     private PasswordEncoder passwordEncoder;
 
@@ -66,6 +67,11 @@ public class AppUserPersistenceTestService implements AppUserPersistenceService<
 
     @Override
     public Page findAll(Pageable pageable) {
+        return new PageImpl(new ArrayList(userMap.values()), pageable, userMap.size());
+    }
+
+    @Override
+    public Page<AppUserTestEntity> findAll(QueryAppUser query, Pageable pageable) {
         return new PageImpl(new ArrayList(userMap.values()), pageable, userMap.size());
     }
 

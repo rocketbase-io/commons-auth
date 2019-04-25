@@ -8,12 +8,14 @@ import io.rocketbase.commons.dto.PageableResult;
 import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.appuser.AppUserUpdate;
+import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.resource.AppUserResource;
 import io.rocketbase.commons.test.AppUserPersistenceTestService;
 import io.rocketbase.commons.test.BaseIntegrationTest;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
 import org.junit.Test;
+import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
 
@@ -43,6 +45,23 @@ public class AppUserControllerTest extends BaseIntegrationTest {
         assertThat(response, notNullValue());
         assertThat(response.getTotalPages(), equalTo(1));
         assertThat(response.getPageSize(), equalTo(100));
+        assertThat(response.getTotalElements(), greaterThan(2L));
+    }
+
+    @Test
+    public void findQuery() {
+        // given
+        AppUser user = getAppUser("admin");
+        JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), modifiedJwtTokenService.generateTokenBundle(user));
+
+        // when
+        AppUserResource appUserResource = new AppUserResource(new JwtRestTemplate(tokenProvider));
+        PageableResult<AppUserRead> response = appUserResource.find(QueryAppUser.builder().email("ISBALED").build(), PageRequest.of(0,10));
+
+        // then
+        assertThat(response, notNullValue());
+        assertThat(response.getTotalPages(), equalTo(1));
+        assertThat(response.getPageSize(), equalTo(10));
         assertThat(response.getTotalElements(), greaterThan(2L));
     }
 

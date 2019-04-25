@@ -1,5 +1,6 @@
 package io.rocketbase.commons.service;
 
+import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.model.AppUserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -42,10 +43,37 @@ public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUse
 
     @Override
     public Page<AppUserEntity> findAll(Pageable pageable) {
-        List<AppUserEntity> entities = mongoTemplate.find(new Query().with(pageable), AppUserEntity.class);
-        long total = mongoTemplate.count(new Query(), AppUserEntity.class);
+        return findAll(null, pageable);
+    }
+
+    @Override
+    public Page<AppUserEntity> findAll(QueryAppUser query, Pageable pageable) {
+        List<AppUserEntity> entities = mongoTemplate.find(getQuery(query).with(pageable), AppUserEntity.class);
+        long total = mongoTemplate.count(getQuery(query), AppUserEntity.class);
 
         return new PageImpl<>(entities, pageable, total);
+    }
+
+    private Query getQuery(QueryAppUser query) {
+        Query result = new Query();
+        if (query != null) {
+            if (query.getUsername() != null) {
+                result.addCriteria(Criteria.where("username").regex(query.getUsername(), "i"));
+            }
+            if (query.getFirstName() != null) {
+                result.addCriteria(Criteria.where("firstName").regex(query.getFirstName(), "i"));
+            }
+            if (query.getLastName() != null) {
+                result.addCriteria(Criteria.where("lastName").regex(query.getLastName(), "i"));
+            }
+            if (query.getEmail() != null) {
+                result.addCriteria(Criteria.where("email").regex(query.getEmail(), "i"));
+            }
+            if (query.getEnabled() != null) {
+                result.addCriteria(Criteria.where("enabled").is(query.getEnabled()));
+            }
+        }
+        return result;
     }
 
     @Override

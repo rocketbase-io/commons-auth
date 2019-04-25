@@ -1,5 +1,6 @@
 package io.rocketbase.commons.controller;
 
+import io.rocketbase.commons.convert.QueryAppUserConverter;
 import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.dto.PageableResult;
 import io.rocketbase.commons.dto.appuser.AppUserCreate;
@@ -39,10 +40,14 @@ public class AppUserController implements BaseController {
     @Resource
     private ValidationService validationService;
 
+    private QueryAppUserConverter queryConverter = new QueryAppUserConverter();
+
     @RequestMapping(method = RequestMethod.GET, path = "/api/user")
     @ResponseBody
     public PageableResult<AppUserRead> find(@RequestParam(required = false) MultiValueMap<String, String> params) {
-        Page<AppUser> entities = appUserPersistenceService.findAll(parsePageRequest(params, Sort.by("username")));
+        Page<AppUser> entities = appUserPersistenceService.findAll(queryConverter.fromParams(params),
+                parsePageRequest(params, Sort.by("username")));
+
         return PageableResult.contentPage(appUserConverter.fromEntities(entities.getContent()), entities);
     }
 

@@ -1,8 +1,12 @@
 package io.rocketbase.commons.service;
 
+import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.repository.AppUserRepository;
+import io.rocketbase.commons.util.Nulls;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -29,6 +33,28 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserE
     @Override
     public Page<AppUserEntity> findAll(Pageable pageable) {
         return repository.findAll(pageable);
+    }
+
+    @Override
+    public Page<AppUserEntity> findAll(QueryAppUser query, Pageable pageable) {
+        AppUserEntity example = new AppUserEntity();
+        example.setKeyValueMap(null);
+        example.setEnabled(true);
+        if (query != null) {
+            example.setUsername(query.getUsername());
+            example.setFirstName(query.getFirstName());
+            example.setLastName(query.getLastName());
+            example.setEmail(query.getEmail());
+            example.setEnabled(Nulls.notNull(query.getEnabled(), true));
+        }
+        ExampleMatcher matcherConfig = ExampleMatcher.matchingAny()
+                .withMatcher("username", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
+                .withMatcher("firstName", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
+                .withMatcher("lastName", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
+                .withMatcher("email", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
+                .withMatcher("enabled", ExampleMatcher.GenericPropertyMatchers.exact())
+                .withIgnoreNullValues();
+        return repository.findAll(Example.of(example, matcherConfig), pageable);
     }
 
     @Override

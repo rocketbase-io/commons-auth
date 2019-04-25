@@ -1,5 +1,6 @@
 package io.rocketbase.commons.service;
 
+import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.model.AppUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,8 @@ public interface AppUserPersistenceService<S extends AppUser> {
     Optional<S> findByEmail(String email);
 
     Page<S> findAll(Pageable pageable);
+
+    Page<S> findAll(QueryAppUser query, Pageable pageable);
 
     S save(S entity);
 

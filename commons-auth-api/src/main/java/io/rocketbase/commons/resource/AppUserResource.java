@@ -5,6 +5,7 @@ import io.rocketbase.commons.dto.PageableResult;
 import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.appuser.AppUserUpdate;
+import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import lombok.SneakyThrows;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class AppUserResource implements BaseRestResource {
 
@@ -34,21 +36,37 @@ public class AppUserResource implements BaseRestResource {
 
     @SneakyThrows
     public PageableResult<AppUserRead> find(int page, int pagesize) {
-        ResponseEntity<PageableResult<AppUserRead>> response = restTemplate.exchange(appendParams(createUriComponentsBuilder(baseAuthApiUrl),
-                PageRequest.of(page, pagesize))
-                        .path(API_USER)
-                        .toUriString(),
-                HttpMethod.GET,
-                new HttpEntity<>(createHeaderWithLanguage()),
-                createPagedTypeReference());
-        return response.getBody();
+        return find(PageRequest.of(page, pagesize));
     }
 
     @SneakyThrows
     public PageableResult<AppUserRead> find(Pageable pageable) {
-        ResponseEntity<PageableResult<AppUserRead>> response = restTemplate.exchange(appendParams(createUriComponentsBuilder(baseAuthApiUrl), pageable)
-                        .path(API_USER)
-                        .toUriString(),
+        return find(null, pageable);
+    }
+
+    @SneakyThrows
+    public PageableResult<AppUserRead> find(QueryAppUser query, Pageable pageable) {
+        UriComponentsBuilder uriBuilder = appendParams(createUriComponentsBuilder(baseAuthApiUrl), pageable)
+                .path(API_USER);
+        if (query != null) {
+            if (query.getUsername() != null) {
+                uriBuilder.queryParam("username", query.getUsername());
+            }
+            if (query.getFirstName() != null) {
+                uriBuilder.queryParam("firstName", query.getFirstName());
+            }
+            if (query.getLastName() != null) {
+                uriBuilder.queryParam("lastName", query.getLastName());
+            }
+            if (query.getEmail() != null) {
+                uriBuilder.queryParam("email", query.getEmail());
+            }
+            if (query.getEnabled() != null) {
+                uriBuilder.queryParam("enabled", query.getEnabled());
+            }
+        }
+
+        ResponseEntity<PageableResult<AppUserRead>> response = restTemplate.exchange(uriBuilder.toUriString(),
                 HttpMethod.GET,
                 new HttpEntity<>(createHeaderWithLanguage()),
                 createPagedTypeReference());
