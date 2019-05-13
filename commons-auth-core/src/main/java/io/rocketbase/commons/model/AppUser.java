@@ -88,6 +88,10 @@ public abstract class AppUser implements UserDetails {
 
     public abstract void removeKeyValue(String key);
 
+    public abstract boolean hasKeyValue(String key);
+
+    public abstract String getKeyValue(String key);
+
     /**
      * @return an immutable map so that changes should only be done by add/remove KeyValue
      */

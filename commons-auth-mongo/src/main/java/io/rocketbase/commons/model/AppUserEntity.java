@@ -87,4 +87,14 @@ public class AppUserEntity extends AppUser {
     public Map<String, String> getKeyValues() {
         return ImmutableMap.copyOf(keyValueMap);
     }
+
+    @Override
+    public boolean hasKeyValue(String key) {
+        return keyValueMap != null && key != null && keyValueMap.containsKey(key.toLowerCase());
+    }
+
+    @Override
+    public String getKeyValue(String key) {
+        return keyValueMap != null && key != null ? keyValueMap.getOrDefault(key.toLowerCase() , null) : null;
+    }
 }
