@@ -31,7 +31,7 @@ public class CommonsPrincipal extends AppUserRead implements Principal {
      * @return the value of the given key when user is logged in and key exists<br>
      * key is stored internally in lowercase so that this function also lowers the given key...
      */
-    public String getCurrentKeyValue(String key) {
+    public static String getCurrentKeyValue(String key) {
         CommonsPrincipal current = getCurrent();
         if (current != null) {
             return current.getKeyValues() != null ? current.getKeyValues().getOrDefault(key.toLowerCase(), null) : null;

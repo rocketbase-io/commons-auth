@@ -49,4 +49,11 @@ public class AppUserRead implements Serializable {
                 .build();
     }
 
+    public boolean hasKeyValue(String key) {
+        return keyValues != null && key != null && keyValues.containsKey(key.toLowerCase());
+    }
+
+    public String getKeyValue(String key) {
+        return keyValues != null && key != null ? keyValues.getOrDefault(key.toLowerCase() , null) : null;
+    }
 }
