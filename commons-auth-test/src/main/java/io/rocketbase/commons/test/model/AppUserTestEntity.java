@@ -103,6 +103,6 @@ public class AppUserTestEntity extends AppUser {
 
     @Override
     public String getKeyValue(String key) {
-        return keyValueMap != null && key != null ? keyValueMap.getOrDefault(key.toLowerCase() , null) : null;
+        return keyValueMap != null && key != null ? keyValueMap.getOrDefault(key.toLowerCase(), null) : null;
     }
 }

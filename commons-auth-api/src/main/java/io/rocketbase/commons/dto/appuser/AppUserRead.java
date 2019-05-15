@@ -54,6 +54,6 @@ public class AppUserRead implements Serializable {
     }
 
     public String getKeyValue(String key) {
-        return keyValues != null && key != null ? keyValues.getOrDefault(key.toLowerCase() , null) : null;
+        return keyValues != null && key != null ? keyValues.getOrDefault(key.toLowerCase(), null) : null;
     }
 }

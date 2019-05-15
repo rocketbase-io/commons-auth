@@ -6,6 +6,7 @@ import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
 import io.rocketbase.commons.dto.validation.UsernameErrorCodes;
 import io.rocketbase.commons.exception.RegistrationException;
 import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.service.validation.DefaultValidationService;
 import io.rocketbase.commons.test.model.AppUserTestEntity;
 import org.junit.Test;
 
@@ -16,7 +17,7 @@ import static io.rocketbase.commons.dto.validation.PasswordErrorCodes.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
-public class ValidationServiceTest {
+public class DefaultValidationServiceTest {
 
 
     private final ValidationUserLookupService takenUserLookupService = new ValidationUserLookupService() {
@@ -56,7 +57,7 @@ public class ValidationServiceTest {
     @Test
     public void getPasswordValidationDetailsValid() {
         // given
-        ValidationService service = new ValidationService(new UsernameProperties(), new PasswordProperties(), unkownUserLookupService);
+        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), unkownUserLookupService);
         String password = "r0cketB@se";
         // when
         Set<PasswordErrorCodes> result = service.getPasswordValidationDetails(password);
@@ -69,7 +70,7 @@ public class ValidationServiceTest {
     @Test
     public void getPasswordValidationDetailsInvalid() {
         // given
-        ValidationService service = new ValidationService(new UsernameProperties(), new PasswordProperties(), unkownUserLookupService);
+        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), unkownUserLookupService);
         String password = "rock";
         // when
         Set<PasswordErrorCodes> result = service.getPasswordValidationDetails(password);
@@ -83,7 +84,7 @@ public class ValidationServiceTest {
     @Test
     public void getUsernameValidationDetailsValid() {
         // given
-        ValidationService service = new ValidationService(new UsernameProperties(), new PasswordProperties(), unkownUserLookupService);
+        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), unkownUserLookupService);
         String username = "newuser";
         // when
         Set<UsernameErrorCodes> result = service.getUsernameValidationDetails(username);
@@ -96,7 +97,7 @@ public class ValidationServiceTest {
     @Test
     public void getUsernameValidationDetailsInvalid() {
         // given
-        ValidationService service = new ValidationService(new UsernameProperties(), new PasswordProperties(), takenUserLookupService);
+        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), takenUserLookupService);
         String username = "kno@wnuer";
         // when
         Set<UsernameErrorCodes> result = service.getUsernameValidationDetails(username);
@@ -110,7 +111,7 @@ public class ValidationServiceTest {
     @Test
     public void getUsernameValidationDetailsTooShort() {
         // given
-        ValidationService service = new ValidationService(new UsernameProperties(), new PasswordProperties(), takenUserLookupService);
+        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), takenUserLookupService);
         String username = "kn";
         // when
         Set<UsernameErrorCodes> result = service.getUsernameValidationDetails(username);
@@ -124,7 +125,7 @@ public class ValidationServiceTest {
     @Test
     public void getUsernameValidationDetailsTooLong() {
         // given
-        ValidationService service = new ValidationService(new UsernameProperties(), new PasswordProperties(), unkownUserLookupService);
+        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), unkownUserLookupService);
         String username = "kn32188931983210310334dsfkodfdasdas3q4239";
         // when
         Set<UsernameErrorCodes> result = service.getUsernameValidationDetails(username);
@@ -138,7 +139,7 @@ public class ValidationServiceTest {
     @Test
     public void validateRegistrationValid() {
         // given
-        ValidationService service = new ValidationService(new UsernameProperties(), new PasswordProperties(), unkownUserLookupService);
+        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), unkownUserLookupService);
         // when
         boolean result = service.validateRegistration("user123", "r0cketB@se", "test@email.com");
         // then
@@ -148,7 +149,7 @@ public class ValidationServiceTest {
     @Test
     public void validateRegistrationInvalid() {
         // given
-        ValidationService service = new ValidationService(new UsernameProperties(), new PasswordProperties(), knownEmailUserLookupService);
+        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), knownEmailUserLookupService);
         // when
         try {
             service.validateRegistration("user123", "rock", "test@email.com");

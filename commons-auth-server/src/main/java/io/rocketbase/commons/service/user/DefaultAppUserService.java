@@ -1,4 +1,4 @@
-package io.rocketbase.commons.service;
+package io.rocketbase.commons.service.user;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -9,11 +9,13 @@ import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.EmailValidationException;
 import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.service.AppUserPersistenceService;
+import io.rocketbase.commons.service.avatar.AvatarService;
+import io.rocketbase.commons.service.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -28,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
-public class AppUserService implements UserDetailsService, ValidationUserLookupService {
+public class DefaultAppUserService implements AppUserService {
 
     public static String REGISTRATION_KV = "_registration";
     public static String FORGOTPW_KV = "_forgotpw";
@@ -37,19 +39,18 @@ public class AppUserService implements UserDetailsService, ValidationUserLookupS
     final RegistrationProperties registrationProperties;
 
     @Resource
-    private AppUserPersistenceService appUserPersistenceService;
+    protected AppUserPersistenceService appUserPersistenceService;
 
     @Resource
-    private GravatarService gravatarService;
+    protected AvatarService avatarService;
 
     @Resource
-    private PasswordEncoder passwordEncoder;
+    protected PasswordEncoder passwordEncoder;
 
     @Resource
-    private ValidationService validationService;
+    protected ValidationService validationService;
 
-    private LoadingCache<String, Optional<AppUser>> cache;
-
+    protected LoadingCache<String, Optional<AppUser>> cache;
 
     @PostConstruct
     public void postConstruct() {
@@ -65,6 +66,7 @@ public class AppUserService implements UserDetailsService, ValidationUserLookupS
         }
     }
 
+    @Override
     @SneakyThrows
     public AppUser getByUsername(String username) {
         Optional<AppUser> userEntity = null;
@@ -79,14 +81,17 @@ public class AppUserService implements UserDetailsService, ValidationUserLookupS
         return null;
     }
 
+    @Override
     public Optional<AppUser> findByEmail(String email) {
         return appUserPersistenceService.findByEmail(email.toLowerCase());
     }
 
+    @Override
     public Optional<AppUser> findById(String id) {
         return appUserPersistenceService.findById(id);
     }
 
+    @Override
     public AppUser updateLastLogin(String username) {
         AppUser entity = getEntityByUsername(username);
         entity.updateLastLogin();
@@ -95,6 +100,7 @@ public class AppUserService implements UserDetailsService, ValidationUserLookupS
         return entity;
     }
 
+    @Override
     public void updatePassword(String username, String newPassword) {
         validationService.passwordIsValid(newPassword);
 
@@ -106,6 +112,7 @@ public class AppUserService implements UserDetailsService, ValidationUserLookupS
         refreshUsername(username);
     }
 
+    @Override
     public void updateProfile(String username, String firstName, String lastName, String avatar, Map<String, String> keyValues) {
         AppUser entity = getEntityByUsername(username);
         entity.setFirstName(firstName);
@@ -117,6 +124,7 @@ public class AppUserService implements UserDetailsService, ValidationUserLookupS
         refreshUsername(username);
     }
 
+    @Override
     public void updateKeyValues(String username, Map<String, String> keyValues) {
         AppUser entity = getEntityByUsername(username);
         handleKeyValues(entity, keyValues);
@@ -126,7 +134,7 @@ public class AppUserService implements UserDetailsService, ValidationUserLookupS
     }
 
     @Nonnull
-    private AppUser getEntityByUsername(String username) {
+    protected AppUser getEntityByUsername(String username) {
         Optional<AppUser> optional = appUserPersistenceService.findByUsername(username);
         if (!optional.isPresent()) {
             throw new NotFoundException();
@@ -134,6 +142,7 @@ public class AppUserService implements UserDetailsService, ValidationUserLookupS
         return optional.get();
     }
 
+    @Override
     public void refreshUsername(String username) {
         if (cache != null) {
             cache.invalidate(username);
@@ -149,6 +158,7 @@ public class AppUserService implements UserDetailsService, ValidationUserLookupS
         return entity;
     }
 
+    @Override
     public AppUser initializeUserIfNotExists(String username, String password, String email, boolean admin) {
         AppUser result = getByUsername(username);
         if (result == null) {
@@ -164,6 +174,7 @@ public class AppUserService implements UserDetailsService, ValidationUserLookupS
      * @param admin    should user get created as admin or normale user
      * @return initialized user
      */
+    @Override
     public AppUser initializeUser(String username, String password, String email, boolean admin) throws UsernameNotFoundException, EmailValidationException {
         validationService.usernameIsValid(username);
         validationService.emailIsValid(email);
@@ -174,8 +185,8 @@ public class AppUserService implements UserDetailsService, ValidationUserLookupS
         instance.setPassword(passwordEncoder.encode(password));
         instance.setRoles(Arrays.asList(admin ? authProperties.getRoleAdmin() : authProperties.getRoleUser()));
         instance.setEnabled(true);
-        if (gravatarService.isEnabled()) {
-            instance.setAvatar(gravatarService.getAvatar(email));
+        if (avatarService.isEnabled()) {
+            instance.setAvatar(avatarService.getAvatar(email));
         }
 
         AppUser entity = appUserPersistenceService.save(instance);
@@ -183,6 +194,7 @@ public class AppUserService implements UserDetailsService, ValidationUserLookupS
         return entity;
     }
 
+    @Override
     public AppUser registerUser(RegistrationRequest registration) {
         validationService.validateRegistration(registration.getUsername(), registration.getPassword(), registration.getEmail());
 
@@ -194,8 +206,8 @@ public class AppUserService implements UserDetailsService, ValidationUserLookupS
         instance.setPassword(passwordEncoder.encode(registration.getPassword()));
         instance.setRoles(Arrays.asList(registrationProperties.getRole()));
         instance.setEnabled(!registrationProperties.isVerification());
-        if (gravatarService.isEnabled()) {
-            instance.setAvatar(gravatarService.getAvatar(registration.getEmail()));
+        if (avatarService.isEnabled()) {
+            instance.setAvatar(avatarService.getAvatar(registration.getEmail()));
         }
         handleKeyValues(instance, registration.getKeyValues());
 
@@ -204,6 +216,7 @@ public class AppUserService implements UserDetailsService, ValidationUserLookupS
         return entity;
     }
 
+    @Override
     public void handleKeyValues(AppUser user, Map<String, String> keyValues) {
         if (keyValues != null) {
             keyValues.forEach((key, value) -> {
@@ -216,6 +229,7 @@ public class AppUserService implements UserDetailsService, ValidationUserLookupS
         }
     }
 
+    @Override
     public void processRegistrationVerification(String username) {
         AppUser entity = getByUsername(username);
         if (entity == null) {
@@ -234,6 +248,7 @@ public class AppUserService implements UserDetailsService, ValidationUserLookupS
         refreshUsername(entity.getUsername());
     }
 
+    @Override
     public void delete(AppUser user) {
         appUserPersistenceService.delete(user);
         refreshUsername(user.getUsername());

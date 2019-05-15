@@ -56,7 +56,7 @@ public class AppUserControllerTest extends BaseIntegrationTest {
 
         // when
         AppUserResource appUserResource = new AppUserResource(new JwtRestTemplate(tokenProvider));
-        PageableResult<AppUserRead> response = appUserResource.find(QueryAppUser.builder().email("ISBALED").build(), PageRequest.of(0,10));
+        PageableResult<AppUserRead> response = appUserResource.find(QueryAppUser.builder().email("ISBALED").build(), PageRequest.of(0, 10));
 
         // then
         assertThat(response, notNullValue());

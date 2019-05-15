@@ -1,4 +1,4 @@
-package io.rocketbase.commons.service;
+package io.rocketbase.commons.service.avatar;
 
 import io.rocketbase.commons.config.GravatarProperties;
 import lombok.RequiredArgsConstructor;
@@ -9,10 +9,11 @@ import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 
 @RequiredArgsConstructor
-public class GravatarService {
+public class GravatarService implements AvatarService {
 
     final GravatarProperties gravatarProperties;
 
+    @Override
     public String getAvatar(String email) {
         if (email == null) {
             return null;
@@ -35,6 +36,7 @@ public class GravatarService {
         return DatatypeConverter.printHexBinary(md.digest()).toLowerCase();
     }
 
+    @Override
     public boolean isEnabled() {
         return gravatarProperties.isEnabled();
     }

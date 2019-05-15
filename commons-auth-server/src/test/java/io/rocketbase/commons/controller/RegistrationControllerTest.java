@@ -7,7 +7,7 @@ import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.AuthErrorCodes;
 import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.resource.RegistrationResource;
-import io.rocketbase.commons.service.AppUserService;
+import io.rocketbase.commons.service.user.DefaultAppUserService;
 import io.rocketbase.commons.test.AppUserPersistenceTestService;
 import io.rocketbase.commons.test.BaseIntegrationTest;
 import io.rocketbase.commons.test.model.AppUserTestEntity;
@@ -40,7 +40,7 @@ public class RegistrationControllerTest extends BaseIntegrationTest {
         assertThat(response, notNullValue());
         AppUserTestEntity appUser = appUserPersistenceTestService.findByUsername("new-user").get();
         assertThat(appUser.isEnabled(), equalTo(!new RegistrationProperties().isVerification()));
-        assertThat(appUser.getKeyValueMap().getOrDefault(AppUserService.REGISTRATION_KV, null), notNullValue());
+        assertThat(appUser.getKeyValueMap().getOrDefault(DefaultAppUserService.REGISTRATION_KV, null), notNullValue());
     }
 
     @Test
@@ -56,7 +56,7 @@ public class RegistrationControllerTest extends BaseIntegrationTest {
 
         // when
         AppUserTestEntity appUser = appUserPersistenceTestService.findByUsername("new-user").get();
-        String verification = appUser.getKeyValueMap().get(AppUserService.REGISTRATION_KV);
+        String verification = appUser.getKeyValueMap().get(DefaultAppUserService.REGISTRATION_KV);
         JwtTokenBundle response = resource.verify(verification);
         // then
         assertThat(response, notNullValue());

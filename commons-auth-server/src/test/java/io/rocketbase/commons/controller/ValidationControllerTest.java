@@ -5,7 +5,7 @@ import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
 import io.rocketbase.commons.dto.validation.UsernameErrorCodes;
 import io.rocketbase.commons.dto.validation.ValidationResponse;
 import io.rocketbase.commons.resource.ValidationResource;
-import io.rocketbase.commons.service.AppUserService;
+import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.test.BaseIntegrationTest;
 import org.junit.Test;
 

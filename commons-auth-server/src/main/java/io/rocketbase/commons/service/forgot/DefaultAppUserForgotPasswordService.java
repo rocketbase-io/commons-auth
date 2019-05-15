@@ -1,4 +1,4 @@
-package io.rocketbase.commons.service;
+package io.rocketbase.commons.service.forgot;
 
 import com.google.common.collect.ImmutableMap;
 import io.rocketbase.commons.config.AuthProperties;
@@ -9,18 +9,20 @@ import io.rocketbase.commons.event.ResetPasswordEvent;
 import io.rocketbase.commons.exception.UnknownUserException;
 import io.rocketbase.commons.exception.VerificationException;
 import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.service.SimpleTokenService;
 import io.rocketbase.commons.service.SimpleTokenService.Token;
 import io.rocketbase.commons.service.email.EmailService;
+import io.rocketbase.commons.service.user.AppUserService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 
 import javax.annotation.Resource;
 
-import static io.rocketbase.commons.service.AppUserService.FORGOTPW_KV;
+import static io.rocketbase.commons.service.user.DefaultAppUserService.FORGOTPW_KV;
 
 @RequiredArgsConstructor
-public class AppUserForgotPasswordService implements FeedbackActionService {
+public class DefaultAppUserForgotPasswordService implements AppUserForgotPasswordService {
 
     @Getter
     final AuthProperties authProperties;
@@ -34,6 +36,7 @@ public class AppUserForgotPasswordService implements FeedbackActionService {
     @Resource
     private ApplicationEventPublisher applicationEventPublisher;
 
+    @Override
     public AppUser requestPasswordReset(ForgotPasswordRequest forgotPassword, String baseUrl) {
         AppUser appUser = null;
         if (forgotPassword.getUsername() != null) {
@@ -54,6 +57,7 @@ public class AppUserForgotPasswordService implements FeedbackActionService {
         return appUser;
     }
 
+    @Override
     public AppUser resetPassword(PerformPasswordResetRequest performPasswordReset) {
         Token token = SimpleTokenService.parseToken(performPasswordReset.getVerification());
         if (!token.isValid()) {

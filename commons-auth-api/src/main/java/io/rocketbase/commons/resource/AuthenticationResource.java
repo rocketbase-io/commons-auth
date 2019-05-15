@@ -5,7 +5,6 @@ import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
 import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
@@ -15,8 +14,6 @@ public class AuthenticationResource implements BaseRestResource {
 
     protected String baseAuthApiUrl;
     protected RestTemplate restTemplate;
-    protected String header = HttpHeaders.AUTHORIZATION;
-    protected String tokenPrefix = "Bearer ";
 
 
     public AuthenticationResource(String baseAuthApiUrl, RestTemplate restTemplate) {

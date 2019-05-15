@@ -12,7 +12,7 @@ import io.rocketbase.commons.exception.PasswordValidationException;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.security.CommonsAuthenticationToken;
 import io.rocketbase.commons.security.JwtTokenService;
-import io.rocketbase.commons.service.AppUserService;
+import io.rocketbase.commons.service.user.AppUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;

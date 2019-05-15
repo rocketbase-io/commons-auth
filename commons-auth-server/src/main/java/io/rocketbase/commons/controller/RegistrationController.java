@@ -6,7 +6,7 @@ import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.model.AppUser;
 import io.rocketbase.commons.security.JwtTokenService;
-import io.rocketbase.commons.service.AppUserRegistrationService;
+import io.rocketbase.commons.service.registration.RegistrationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class RegistrationController implements BaseController {
 
     @Resource
-    private AppUserRegistrationService appUserRegistrationService;
+    private RegistrationService registrationService;
 
     @Resource
     private AppUserConverter appUserConverter;
@@ -36,14 +36,14 @@ public class RegistrationController implements BaseController {
     @RequestMapping(method = RequestMethod.POST, path = "/auth/register", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<AppUserRead> register(HttpServletRequest request, @RequestBody @NotNull @Validated RegistrationRequest registration) {
-        AppUser entity = appUserRegistrationService.register(registration, getBaseUrl(request));
+        AppUser entity = registrationService.register(registration, getBaseUrl(request));
         return ResponseEntity.ok(appUserConverter.fromEntity(entity));
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/verify")
     @ResponseBody
     public ResponseEntity<JwtTokenBundle> verify(@RequestParam("verification") String verification) {
-        AppUser entity = appUserRegistrationService.verifyRegistration(verification);
+        AppUser entity = registrationService.verifyRegistration(verification);
 
         return ResponseEntity.ok(jwtTokenService.generateTokenBundle(entity.getUsername(), entity.getAuthorities()));
     }

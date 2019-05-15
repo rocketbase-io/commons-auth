@@ -3,7 +3,7 @@ package io.rocketbase.commons.controller;
 
 import io.rocketbase.commons.dto.forgot.ForgotPasswordRequest;
 import io.rocketbase.commons.dto.forgot.PerformPasswordResetRequest;
-import io.rocketbase.commons.service.AppUserForgotPasswordService;
+import io.rocketbase.commons.service.forgot.DefaultAppUserForgotPasswordService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class ForgotPasswordController implements BaseController {
 
     @Resource
-    private AppUserForgotPasswordService appUserForgotPasswordService;
+    private DefaultAppUserForgotPasswordService appUserForgotPasswordService;
 
     @RequestMapping(value = "/auth/forgot-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> forgotPassword(HttpServletRequest request, @RequestBody @NotNull @Validated ForgotPasswordRequest forgotPassword) {

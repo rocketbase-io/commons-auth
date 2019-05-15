@@ -1,4 +1,4 @@
-package io.rocketbase.commons.service;
+package io.rocketbase.commons.service.registration;
 
 import com.google.common.collect.ImmutableMap;
 import io.rocketbase.commons.config.AuthProperties;
@@ -8,18 +8,20 @@ import io.rocketbase.commons.event.RegistrationEvent;
 import io.rocketbase.commons.event.VerificationEvent;
 import io.rocketbase.commons.exception.VerificationException;
 import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.service.SimpleTokenService;
 import io.rocketbase.commons.service.SimpleTokenService.Token;
 import io.rocketbase.commons.service.email.EmailService;
+import io.rocketbase.commons.service.user.AppUserService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 
 import javax.annotation.Resource;
 
-import static io.rocketbase.commons.service.AppUserService.REGISTRATION_KV;
+import static io.rocketbase.commons.service.user.DefaultAppUserService.REGISTRATION_KV;
 
 @RequiredArgsConstructor
-public class AppUserRegistrationService implements FeedbackActionService {
+public class DefaultRegistrationService implements RegistrationService {
 
     @Getter
     final AuthProperties authProperties;
@@ -30,9 +32,6 @@ public class AppUserRegistrationService implements FeedbackActionService {
 
     @Resource
     private EmailService emailService;
-
-    @Resource
-    private ValidationService validationService;
 
     @Resource
     private ApplicationEventPublisher applicationEventPublisher;

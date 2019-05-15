@@ -1,4 +1,4 @@
-package io.rocketbase.commons.service;
+package io.rocketbase.commons.service.validation;
 
 
 import io.rocketbase.commons.config.PasswordProperties;
@@ -11,6 +11,7 @@ import io.rocketbase.commons.exception.PasswordValidationException;
 import io.rocketbase.commons.exception.RegistrationException;
 import io.rocketbase.commons.exception.UsernameValidationException;
 import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.service.ValidationUserLookupService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.passay.*;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
-public class ValidationService {
+public class DefaultValidationService implements io.rocketbase.commons.service.validation.ValidationService {
 
     final UsernameProperties usernameProperties;
     final PasswordProperties passwordProperties;
@@ -35,7 +36,7 @@ public class ValidationService {
     private Pattern userMatcher;
     private PasswordValidator passwordValidator;
 
-    PasswordValidator getPasswordValidator() {
+    protected PasswordValidator getPasswordValidator() {
         if (passwordValidator == null) {
             List<Rule> rules = new ArrayList<>();
             rules.add(new LengthRule(passwordProperties.getMinLength(), passwordProperties.getMaxLength()));
@@ -56,9 +57,7 @@ public class ValidationService {
         return passwordValidator;
     }
 
-    // ALREADY_TAKEN, TOO_SHORT, TOO_LONG, NOT_ALLOWED_CHAR;
-
-    private Pattern getUserMatcher() {
+    protected Pattern getUserMatcher() {
         if (userMatcher == null) {
             StringBuffer patternStr = new StringBuffer();
             patternStr.append("^[a-z0-9");
@@ -73,15 +72,17 @@ public class ValidationService {
         return userMatcher;
     }
 
-    private RuleResult runPasswordValidation(String password) {
+    protected RuleResult runPasswordValidation(String password) {
         return getPasswordValidator()
                 .validate(new PasswordData(password != null ? password : ""));
     }
 
+    @Override
     public boolean isPasswordValid(String password) {
         return runPasswordValidation(password).isValid();
     }
 
+    @Override
     public void passwordIsValid(String password) throws PasswordValidationException {
         Set<PasswordErrorCodes> errorCodes = getPasswordValidationDetails(password);
         if (!errorCodes.isEmpty()) {
@@ -93,16 +94,19 @@ public class ValidationService {
         }
     }
 
+    @Override
     public Set<PasswordErrorCodes> getPasswordValidationDetails(String password) {
         return runPasswordValidation(password).getDetails().stream()
                 .map(d -> PasswordErrorCodes.valueOf(d.getErrorCode()))
                 .collect(Collectors.toSet());
     }
 
+    @Override
     public boolean isUsernameValid(String username) {
         return getUsernameValidationDetails(username).isEmpty();
     }
 
+    @Override
     public void usernameIsValid(String username) throws UsernameValidationException {
         Set<UsernameErrorCodes> errorCodes = getUsernameValidationDetails(username);
         if (!errorCodes.isEmpty()) {
@@ -114,6 +118,7 @@ public class ValidationService {
         }
     }
 
+    @Override
     public Set<UsernameErrorCodes> getUsernameValidationDetails(String username) {
         Set<UsernameErrorCodes> errorCodes = new HashSet<>();
         String notNullUsername = username != null ? username : "";
@@ -133,10 +138,12 @@ public class ValidationService {
         return errorCodes;
     }
 
+    @Override
     public boolean isEmailValid(String email) {
         return getEmailValidationDetails(email).isEmpty();
     }
 
+    @Override
     public Set<EmailErrorCodes> getEmailValidationDetails(String email) {
         Set<EmailErrorCodes> errorCodes = new HashSet<>();
         try {
@@ -151,6 +158,7 @@ public class ValidationService {
         return errorCodes;
     }
 
+    @Override
     public void emailIsValid(String email) {
         Set<EmailErrorCodes> errorCodes = getEmailValidationDetails(email);
         if (!errorCodes.isEmpty()) {
@@ -162,6 +170,7 @@ public class ValidationService {
         }
     }
 
+    @Override
     public boolean validateRegistration(String username, String password, String email) {
         Set<UsernameErrorCodes> usernameErrorCodes = getUsernameValidationDetails(username);
         Set<PasswordErrorCodes> passwordErrorCodes = getPasswordValidationDetails(password);

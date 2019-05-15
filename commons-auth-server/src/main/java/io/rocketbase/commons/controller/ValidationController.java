@@ -5,7 +5,7 @@ import io.rocketbase.commons.dto.validation.EmailErrorCodes;
 import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
 import io.rocketbase.commons.dto.validation.UsernameErrorCodes;
 import io.rocketbase.commons.dto.validation.ValidationResponse;
-import io.rocketbase.commons.service.ValidationService;
+import io.rocketbase.commons.service.validation.ValidationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;

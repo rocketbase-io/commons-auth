@@ -1,6 +1,7 @@
 package io.rocketbase.commons.service;
 
 import io.rocketbase.commons.config.GravatarProperties;
+import io.rocketbase.commons.service.avatar.GravatarService;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.*;

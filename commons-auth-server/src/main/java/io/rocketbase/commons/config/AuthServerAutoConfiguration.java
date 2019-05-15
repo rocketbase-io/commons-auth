@@ -2,14 +2,24 @@ package io.rocketbase.commons.config;
 
 import io.rocketbase.commons.controller.*;
 import io.rocketbase.commons.controller.exceptionhandler.*;
-import io.rocketbase.commons.service.*;
+import io.rocketbase.commons.service.avatar.AvatarService;
+import io.rocketbase.commons.service.avatar.GravatarService;
 import io.rocketbase.commons.service.email.DefaultEmailService;
 import io.rocketbase.commons.service.email.EmailService;
 import io.rocketbase.commons.service.email.MailContentConfig;
 import io.rocketbase.commons.service.email.SimpleMailContentConfig;
+import io.rocketbase.commons.service.forgot.AppUserForgotPasswordService;
+import io.rocketbase.commons.service.forgot.DefaultAppUserForgotPasswordService;
+import io.rocketbase.commons.service.registration.DefaultRegistrationService;
+import io.rocketbase.commons.service.registration.RegistrationService;
+import io.rocketbase.commons.service.user.AppUserService;
+import io.rocketbase.commons.service.user.DefaultAppUserService;
+import io.rocketbase.commons.service.validation.DefaultValidationService;
+import io.rocketbase.commons.service.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -45,38 +55,32 @@ public class AuthServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AppUserRegistrationService appUserRegistrationService() {
-        return new AppUserRegistrationService(authProperties, registrationProperties);
+    public RegistrationService registrationService() {
+        return new DefaultRegistrationService(authProperties, registrationProperties);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public AppUserForgotPasswordService appUserForgotPasswordService() {
-        return new AppUserForgotPasswordService(authProperties);
+        return new DefaultAppUserForgotPasswordService(authProperties);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public AppUserService appUserService() {
-        return new AppUserService(authProperties, registrationProperties);
+        return new DefaultAppUserService(authProperties, registrationProperties);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public GravatarService gravatarService() {
+    public AvatarService avatarService() {
         return new GravatarService(gravatarProperties);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public TokenizerService tokenizerService() {
-        return new TokenizerService(authProperties.getTokenSecret());
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
     public ValidationService validationService() {
-        return new ValidationService(usernameProperties, passwordProperties, appUserService());
+        return new DefaultValidationService(usernameProperties, passwordProperties, appUserService());
     }
 
     // -------------------------------------------------------
@@ -103,6 +107,7 @@ public class AuthServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    @ConditionalOnExpression(value = "${auth.registration.enabled:true}")
     public RegistrationController registrationController() {
         return new RegistrationController();
     }
