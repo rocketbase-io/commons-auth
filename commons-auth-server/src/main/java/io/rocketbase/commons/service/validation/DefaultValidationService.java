@@ -174,10 +174,10 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
     public boolean validateRegistration(String username, String password, String email) {
         Set<UsernameErrorCodes> usernameErrorCodes = getUsernameValidationDetails(username);
         Set<PasswordErrorCodes> passwordErrorCodes = getPasswordValidationDetails(password);
-        Set<EmailErrorCodes> errorCodes = getEmailValidationDetails(email);
+        Set<EmailErrorCodes> emailErrorCodes = getEmailValidationDetails(email);
 
-        if (!usernameErrorCodes.isEmpty() || !passwordErrorCodes.isEmpty() || !errorCodes.isEmpty()) {
-            RegistrationException exception = new RegistrationException(usernameErrorCodes, passwordErrorCodes, errorCodes);
+        if (!usernameErrorCodes.isEmpty() || !passwordErrorCodes.isEmpty() || !emailErrorCodes.isEmpty()) {
+            RegistrationException exception = new RegistrationException(usernameErrorCodes, passwordErrorCodes, emailErrorCodes);
             if (log.isDebugEnabled()) {
                 log.debug("validateRegistration(username: {}, password: {}, email: {}): {}", username, password, email, exception.toString());
             }
