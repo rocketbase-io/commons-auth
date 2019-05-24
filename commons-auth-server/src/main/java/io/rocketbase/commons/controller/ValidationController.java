@@ -1,10 +1,9 @@
 package io.rocketbase.commons.controller;
 
 
-import io.rocketbase.commons.dto.validation.EmailErrorCodes;
-import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
-import io.rocketbase.commons.dto.validation.UsernameErrorCodes;
-import io.rocketbase.commons.dto.validation.ValidationResponse;
+import com.google.common.collect.Sets;
+import io.rocketbase.commons.dto.validation.*;
+import io.rocketbase.commons.service.SimpleTokenService;
 import io.rocketbase.commons.service.validation.ValidationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.Set;
 
 @Slf4j
@@ -39,5 +39,11 @@ public class ValidationController implements BaseController {
     public ResponseEntity<ValidationResponse<EmailErrorCodes>> validateEmail(@RequestBody String email) {
         Set<EmailErrorCodes> emailErrorCodes = validationService.getEmailValidationDetails(email);
         return ResponseEntity.ok(new ValidationResponse<>(emailErrorCodes.isEmpty(), emailErrorCodes));
+    }
+
+    @RequestMapping(value = "/auth/validate/token", method = RequestMethod.POST)
+    public ResponseEntity<ValidationResponse<TokenErrorCodes>> validateToken(@RequestBody String token) {
+        boolean valid = SimpleTokenService.parseToken(token).isValid();
+        return ResponseEntity.ok(new ValidationResponse<>(valid, valid ? Collections.emptySet() : Sets.newHashSet(TokenErrorCodes.EXPIRED)));
     }
 }

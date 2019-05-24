@@ -1,10 +1,8 @@
 package io.rocketbase.commons.controller;
 
-import io.rocketbase.commons.dto.validation.EmailErrorCodes;
-import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
-import io.rocketbase.commons.dto.validation.UsernameErrorCodes;
-import io.rocketbase.commons.dto.validation.ValidationResponse;
+import io.rocketbase.commons.dto.validation.*;
 import io.rocketbase.commons.resource.ValidationResource;
+import io.rocketbase.commons.service.SimpleTokenService;
 import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.test.BaseIntegrationTest;
 import org.junit.Test;
@@ -108,6 +106,31 @@ public class ValidationControllerTest extends BaseIntegrationTest {
         assertThat(response, notNullValue());
         assertThat(response.isValid(), equalTo(false));
         assertThat(response.getErrorCodes(), containsInAnyOrder(PasswordErrorCodes.INSUFFICIENT_SPECIAL, PasswordErrorCodes.INSUFFICIENT_UPPERCASE, PasswordErrorCodes.TOO_SHORT));
+    }
+
+    @Test
+    public void validateToken() {
+        // given
+        String token = SimpleTokenService.generateToken("test", 10);
+        // when
+        ValidationResponse<TokenErrorCodes> response = new ValidationResource(getBaseUrl()).validateToken(token);
+
+        // then
+        assertThat(response, notNullValue());
+        assertThat(response.isValid(), equalTo(true));
+    }
+
+    @Test
+    public void validateTokenExpired() {
+        // given
+        String token = SimpleTokenService.generateToken("test", -1L);
+        // when
+        ValidationResponse<TokenErrorCodes> response = new ValidationResource(getBaseUrl()).validateToken(token);
+
+        // then
+        assertThat(response, notNullValue());
+        assertThat(response.isValid(), equalTo(false));
+        assertThat(response.getErrorCodes(), containsInAnyOrder(TokenErrorCodes.EXPIRED));
     }
 
 }

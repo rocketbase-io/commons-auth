@@ -18,7 +18,8 @@ import java.util.Set;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = UsernameErrorCodes.class, name = "username"),
         @JsonSubTypes.Type(value = PasswordErrorCodes.class, name = "password"),
-        @JsonSubTypes.Type(value = EmailErrorCodes.class, name = "email")})
+        @JsonSubTypes.Type(value = EmailErrorCodes.class, name = "email"),
+        @JsonSubTypes.Type(value = TokenErrorCodes.class, name = "token")})
 public class ValidationResponse<T extends Enum> implements Serializable {
 
     private boolean valid;

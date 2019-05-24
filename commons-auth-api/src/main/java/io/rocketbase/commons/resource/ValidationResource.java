@@ -1,9 +1,6 @@
 package io.rocketbase.commons.resource;
 
-import io.rocketbase.commons.dto.validation.EmailErrorCodes;
-import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
-import io.rocketbase.commons.dto.validation.UsernameErrorCodes;
-import io.rocketbase.commons.dto.validation.ValidationResponse;
+import io.rocketbase.commons.dto.validation.*;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -63,6 +60,17 @@ public class ValidationResource implements BaseRestResource {
                         HttpMethod.POST,
                         new HttpEntity<>(email),
                         new ParameterizedTypeReference<ValidationResponse<EmailErrorCodes>>() {
+                        });
+        return response.getBody();
+    }
+
+    public ValidationResponse<TokenErrorCodes> validateToken(String token) {
+        ResponseEntity<ValidationResponse<TokenErrorCodes>> response = getRestTemplate()
+                .exchange(createUriComponentsBuilder(baseAuthApiUrl)
+                                .path("/auth/validate/token").toUriString(),
+                        HttpMethod.POST,
+                        new HttpEntity<>(token),
+                        new ParameterizedTypeReference<ValidationResponse<TokenErrorCodes>>() {
                         });
         return response.getBody();
     }

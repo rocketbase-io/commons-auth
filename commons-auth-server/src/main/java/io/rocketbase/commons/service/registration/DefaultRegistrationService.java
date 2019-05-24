@@ -14,12 +14,14 @@ import io.rocketbase.commons.service.email.EmailService;
 import io.rocketbase.commons.service.user.AppUserService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 
 import javax.annotation.Resource;
 
 import static io.rocketbase.commons.service.user.DefaultAppUserService.REGISTRATION_KV;
 
+@Slf4j
 @RequiredArgsConstructor
 public class DefaultRegistrationService implements RegistrationService {
 
@@ -45,6 +47,7 @@ public class DefaultRegistrationService implements RegistrationService {
 
                 emailService.sentRegistrationEmail(entity, buildActionUrl(baseUrl, ActionType.VERIFICATION, token));
             } catch (Exception e) {
+                log.error("couldn't sent email. please check your configuration. {}", e.getMessage());
                 appUserService.delete(entity);
                 throw e;
             }

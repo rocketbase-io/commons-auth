@@ -23,13 +23,13 @@ public class RegistrationExceptionHandler extends BaseExceptionHandler {
     public ErrorResponse handleRegistrationException(HttpServletRequest request, RegistrationException e) {
         ErrorResponse response = new ErrorResponse(AuthErrorCodes.REGISTRATION.getStatus(), translate(request, "error.registration", "Registation not possible"));
         response.setFields(new HashMap<>());
-        if (e.getUsernameErrors() != null) {
+        if (e.getUsernameErrors() != null && !e.getUsernameErrors().isEmpty()) {
             response.getFields().put("username", Joiner.on(", ").join(e.getUsernameErrors()));
         }
-        if (e.getPasswordErrors() != null) {
+        if (e.getPasswordErrors() != null && !e.getPasswordErrors().isEmpty()) {
             response.getFields().put("password", Joiner.on(", ").join(e.getPasswordErrors()));
         }
-        if (e.getEmailErrors() != null) {
+        if (e.getEmailErrors() != null && !e.getEmailErrors().isEmpty()) {
             response.getFields().put("email", Joiner.on(", ").join(e.getEmailErrors()));
         }
         return response;
