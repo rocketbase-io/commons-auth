@@ -17,6 +17,7 @@ The implementation bases on spring-boot: mainly on **spring-mvc**, **spring-data
 * optional key values pairs to hold custom properties to user
 * password forgot/reset flow
 * admin endpoints to crud users
+* forms to register/fogot-password etc.
 
 ## commons-auth-api
 
@@ -115,6 +116,13 @@ To send emails the is used. This needs also some configurations:
 | spring.mail.password                             | *required* |
 | spring.mail.properties.mail.smtp.auth            | *required* |
 | spring.mail.properties.mail.smtp.starttls.enable | *required* |
+
+Forms configuration:
+
+| property                                            | default    |
+| --------------------------------------------------- | ---------- |
+| auth.forms.title                                    | commons-auth |
+| auth.forms.logo-src                                 | ./assets/rocketbase.svg |
 
 
 ## commons-auth-server
@@ -219,6 +227,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 }
 ```
 
+
+## commons-auth-forms
+
+Containing all forms for login, logout, forgot-password, register, email-verifaction etc.
+
+It's based on Thymeleaf and uses [Bulma](http://bulma.io) from CDN.
 
 ## commons-auth-mongo
 
