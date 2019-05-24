@@ -1,9 +1,11 @@
 package io.rocketbase.commons.config;
 
 import io.rocketbase.commons.controller.AuthFormsController;
+import io.rocketbase.commons.controller.RegistrationFormsController;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +23,15 @@ public class AuthFormAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AuthFormsController loginFormController(@Value("${auth.api.baseUrl}") String apiBaseUrl) {
-        return new AuthFormsController(apiBaseUrl, authProperties, formsProperties, registrationProperties);
+    public AuthFormsController authFormsController(@Value("${auth.api.baseUrl}") String apiBaseUrl) {
+        return new AuthFormsController(apiBaseUrl, formsProperties, registrationProperties, authProperties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(name = "auth.registration.enabled", matchIfMissing = true)
+    public RegistrationFormsController registrationFormsController(@Value("${auth.api.baseUrl}") String apiBaseUrl) {
+        return new RegistrationFormsController(apiBaseUrl, formsProperties, registrationProperties);
     }
 
 }

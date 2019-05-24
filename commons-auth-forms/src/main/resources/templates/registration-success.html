@@ -22,7 +22,7 @@
 
                     <h2>Successfully registered *Yeah*</h2>
                     <div class="notification is-warning" th:if="${needsVerification}">
-                        You need to verify your email. Please check your mailbox!
+                        You need to verify your email. Please check your mailbox! Via the link you can confirm your registration within <span th:text="${expiresAfter}"></span> minutes.
                     </div>
                     <div class="notification" th:unless="${needsVerification}">
                         You can now <a th:href="@{/login}">login</a> to the application.

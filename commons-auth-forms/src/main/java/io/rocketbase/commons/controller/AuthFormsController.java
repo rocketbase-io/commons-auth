@@ -3,14 +3,10 @@ package io.rocketbase.commons.controller;
 import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.config.FormsProperties;
 import io.rocketbase.commons.config.RegistrationProperties;
-import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.forgot.ForgotPasswordRequest;
 import io.rocketbase.commons.dto.forgot.PerformPasswordResetRequest;
-import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.resource.ForgotPasswordResource;
-import io.rocketbase.commons.resource.RegistrationResource;
-import io.rocketbase.commons.resource.ValidationResource;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -26,32 +22,22 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.Map;
 
 @Slf4j
 @Controller
-@RequiredArgsConstructor
-public class AuthFormsController {
+public class AuthFormsController extends AbstractFormsController {
 
-    private final String apiBaseUrl;
     private final AuthProperties authProperties;
-    private final FormsProperties formsProperties;
-    private final RegistrationProperties registrationProperties;
+    private final ForgotPasswordResource forgotPasswordResource;
 
-    private ValidationResource validationResource;
-    private RegistrationResource registrationResource;
-    private ForgotPasswordResource forgotPasswordResource;
-
-    @PostConstruct
-    public void postConstruct() {
-        validationResource = new ValidationResource(apiBaseUrl);
-        registrationResource = new RegistrationResource(apiBaseUrl);
+    public AuthFormsController(String apiBaseUrl, FormsProperties formsProperties, RegistrationProperties registrationProperties, AuthProperties authProperties) {
+        super(apiBaseUrl, formsProperties, registrationProperties);
+        this.authProperties = authProperties;
         forgotPasswordResource = new ForgotPasswordResource(apiBaseUrl);
     }
 
@@ -67,45 +53,6 @@ public class AuthFormsController {
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
         return "redirect:/login?logout";
-    }
-
-    @GetMapping("/registration")
-    public String registration(Model model) {
-        model.addAttribute("registrationForm", new RegistrationForm());
-        return "registration";
-    }
-
-    @PostMapping("/registration")
-    public String registrationSubmit(@ModelAttribute("registrationForm") @Validated RegistrationForm registration,
-                                     BindingResult bindingResult, Model model) {
-
-        if (!bindingResult.hasErrors()) {
-            if (!registration.getPassword().equals(registration.getPasswordRepeat())) {
-                model.addAttribute("passwordErrors", "password not the same!");
-            } else {
-                try {
-                    AppUserRead user = registrationResource.register(registration.toRequest());
-                    model.addAttribute("needsVerification", !user.isEnabled());
-                    return "registration-success";
-                } catch (BadRequestException badRequest) {
-                    Map<String, String> fields = badRequest.getErrorResponse().getFields();
-                    if (fields.containsKey("username")) {
-                        model.addAttribute("usernameErrors", fields.get("username"));
-                    }
-                    if (fields.containsKey("email")) {
-                        model.addAttribute("emailErrors", fields.get("email"));
-                    }
-                    if (fields.containsKey("password")) {
-                        model.addAttribute("passwordErrors", fields.get("password"));
-                    }
-                } catch (Exception e) {
-                    log.error("problem with the registration flow. {}", e.getMessage());
-                }
-            }
-        }
-        registration.setPassword("");
-        registration.setPasswordRepeat("");
-        return "registration";
     }
 
     @GetMapping("/forgot")
@@ -139,7 +86,7 @@ public class AuthFormsController {
     public String resetPasswordForm(@RequestParam(value = "verification", required = false) String verification, Model model) {
         model.addAttribute("resetPasswordForm", ResetPasswordForm.builder().verification(verification).build());
         try {
-            validationResource.validateToken(verification);
+            getValidationResource().validateToken(verification);
             model.addAttribute("verificationValid", true);
         } catch (Exception e) {
             model.addAttribute("verificationValid", false);
@@ -168,58 +115,6 @@ public class AuthFormsController {
             }
         }
         return "reset-password";
-    }
-
-    @GetMapping("/verification")
-    public String verification(@RequestParam(value = "verification", required = false) String verification, Model model) {
-        try {
-            registrationResource.verify(verification);
-            model.addAttribute("successfull", true);
-        } catch (Exception e) {
-            model.addAttribute("successfull", false);
-        }
-        return "registration-verification";
-    }
-
-    @ModelAttribute
-    public void populateDefaults(Model model) {
-        model.addAttribute("title", formsProperties.getTitle());
-        model.addAttribute("logoSrc", formsProperties.getLogoSrc());
-        model.addAttribute("registrationEnabled", registrationProperties.isEnabled());
-    }
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @ToString(exclude = {"password", "passwordRepeat"})
-    public static class RegistrationForm implements Serializable {
-
-        @NotEmpty
-        private String username;
-
-        private String firstName;
-
-        private String lastName;
-
-        @NotEmpty
-        @Email
-        private String email;
-
-        @NotEmpty
-        private String password;
-
-        private String passwordRepeat;
-
-        public RegistrationRequest toRequest() {
-            return RegistrationRequest.builder()
-                    .username(username)
-                    .firstName(firstName)
-                    .lastName(lastName)
-                    .email(email)
-                    .password(password)
-                    .build();
-        }
     }
 
     @Data
