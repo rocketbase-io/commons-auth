@@ -42,7 +42,7 @@ You can configure the behaviour of the service by following properties
 | auth.token-secret              | *fixed 32chars* | **should get changed for production**<br>used to generate reset + verification tokens |
 | auth.use-cache-time            | 30              | time in minutes - 0 means disabled                           |
 | auth.verification-url          | null            | full qualified url to a custom UI that proceed the verification<br />?verification=VALUE will get append |
-| auth.password-reset-url        | Null            | full qualified url to a custom UI that proceed the password reset<br />?verification=VALUE will get append |
+| auth.password-reset-url        | null            | full qualified url to a custom UI that proceed the password reset<br />?verification=VALUE will get append |
 | auth.password-reset-expiration | 60              | time in minutes - after this period the token is invalid     |
 
 For handling the JWT-Tokens and it's expirations you can use these properties:
@@ -197,6 +197,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             ).permitAll()
             // configure auth endpoint
             .antMatchers("/auth/login", "/auth/refresh", "/auth/validate/**").permitAll()
+            // in case you activate registration
+            .antMatchers("/auth/register", "/auth/verify").permitAll()
+            // in case you activate registration
+            .antMatchers("/auth/register", "/auth/verify").permitAll()
+            // for the forms module
+            .antMatchers("/login", "/logout", "/registration", "/forgot", "/reset-password", "/verification").permitAll()
+            // allow to get loggedIn users information
             .antMatchers("/auth/me/**").authenticated()
             // user-management is only allowed by ADMINS
             .antMatchers("/api/user/**").hasRole("ADMIN")

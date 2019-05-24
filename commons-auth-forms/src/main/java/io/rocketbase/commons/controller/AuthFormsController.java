@@ -1,9 +1,11 @@
 package io.rocketbase.commons.controller;
 
+import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.config.FormsProperties;
 import io.rocketbase.commons.config.RegistrationProperties;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.forgot.ForgotPasswordRequest;
+import io.rocketbase.commons.dto.forgot.PerformPasswordResetRequest;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.resource.ForgotPasswordResource;
@@ -38,6 +40,7 @@ import java.util.Map;
 public class AuthFormsController {
 
     private final String apiBaseUrl;
+    private final AuthProperties authProperties;
     private final FormsProperties formsProperties;
     private final RegistrationProperties registrationProperties;
 
@@ -60,7 +63,7 @@ public class AuthFormsController {
     @GetMapping("/logout")
     public String logoutForm(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null){
+        if (auth != null) {
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
         return "redirect:/login?logout";
@@ -110,21 +113,72 @@ public class AuthFormsController {
         return "forgot";
     }
 
-    @GetMapping("/reset-password")
-    public String resetPasswordForm(@RequestParam(value="token",required=false) String token) {
-        return "forgot";
-    }
-
     @PostMapping("/forgot")
     public String forgotSubmit(@ModelAttribute("forgotForm") @Validated ForgotPasswordRequest forgot,
                                BindingResult bindingResult, Model model) {
         if (!bindingResult.hasErrors()) {
             if (StringUtils.isEmpty(forgot.getEmail()) && StringUtils.isEmpty(forgot.getUsername())) {
                 model.addAttribute("usernameOrEmailRequired", true);
+            } else {
+                try {
+                    forgotPasswordResource.forgotPassword(forgot);
+                    model.addAttribute("expiresAfter", authProperties.getPasswordResetExpiration());
+                    return "forgot-submitted";
+                } catch (BadRequestException badRequest) {
+                    model.addAttribute("serviceException", badRequest.getErrorResponse().getMessage());
+                } catch (Exception e) {
+                    log.error("forgot password request - unexpected service exception: {}", e.getMessage());
+                    model.addAttribute("serviceException", "unexpected service exception");
+                }
             }
-
         }
         return "forgot";
+    }
+
+    @GetMapping("/reset-password")
+    public String resetPasswordForm(@RequestParam(value = "verification", required = false) String verification, Model model) {
+        model.addAttribute("resetPasswordForm", ResetPasswordForm.builder().verification(verification).build());
+        try {
+            validationResource.validateToken(verification);
+            model.addAttribute("verificationValid", true);
+        } catch (Exception e) {
+            model.addAttribute("verificationValid", false);
+        }
+        return "reset-password";
+    }
+
+    @PostMapping("/reset-password")
+    public String resetPasswordSubmit(@ModelAttribute("resetPasswordForm") @Validated ResetPasswordForm resetPassword,
+                                      BindingResult bindingResult, Model model) {
+        if (!bindingResult.hasErrors()) {
+            if (!resetPassword.getPassword().equals(resetPassword.getPasswordRepeat())) {
+                model.addAttribute("passwordErrors", "password not the same!");
+            } else {
+                try {
+                    forgotPasswordResource.resetPassword(resetPassword.toRequest());
+                    return "reset-password-success";
+                } catch (BadRequestException badRequest) {
+                    Map<String, String> fields = badRequest.getErrorResponse().getFields();
+                    if (fields.containsKey("password")) {
+                        model.addAttribute("passwordErrors", fields.get("password"));
+                    }
+                } catch (Exception e) {
+                    log.error("problem with the password-reset flow. {}", e.getMessage());
+                }
+            }
+        }
+        return "reset-password";
+    }
+
+    @GetMapping("/verification")
+    public String verification(@RequestParam(value = "verification", required = false) String verification, Model model) {
+        try {
+            registrationResource.verify(verification);
+            model.addAttribute("successfull", true);
+        } catch (Exception e) {
+            model.addAttribute("successfull", false);
+        }
+        return "registration-verification";
     }
 
     @ModelAttribute
@@ -166,6 +220,31 @@ public class AuthFormsController {
                     .password(password)
                     .build();
         }
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString(exclude = {"password", "passwordRepeat"})
+    public static class ResetPasswordForm implements Serializable {
+
+        private String verification;
+
+        @NotEmpty
+        private String password;
+
+        @NotEmpty
+        private String passwordRepeat;
+
+
+        public PerformPasswordResetRequest toRequest() {
+            return PerformPasswordResetRequest.builder()
+                    .verification(verification)
+                    .password(password)
+                    .build();
+        }
+
     }
 
 

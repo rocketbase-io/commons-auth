@@ -2,6 +2,7 @@ package io.rocketbase.commons.service;
 
 import io.rocketbase.commons.config.AuthProperties;
 import lombok.Getter;
+import org.springframework.util.StringUtils;
 
 public interface FeedbackActionService {
 
@@ -20,7 +21,7 @@ public interface FeedbackActionService {
         }
 
         String result;
-        if (configuredUrl != null) {
+        if (!StringUtils.isEmpty(configuredUrl)) {
             // in case of configured url this will have a full qualified url to a custom UI
             result = configuredUrl;
         } else {
@@ -40,7 +41,7 @@ public interface FeedbackActionService {
 
     enum ActionType {
 
-        VERIFICATION("/auth/verify"), PASSWORD_RESET(("/auth/reset-password/index.html"));
+        VERIFICATION("/verification"), PASSWORD_RESET("/reset-password");
 
         @Getter
         private String apiPath;

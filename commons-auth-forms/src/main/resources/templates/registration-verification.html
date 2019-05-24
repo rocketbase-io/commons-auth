@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta name="msapplication-TileColor" content="#ffffff"/>
     <meta name="theme-color" content="#ffffff"/>
-    <title th:text="${title} + ' - Registered'"></title>
+    <title th:text="${title} + ' - Verification'"></title>
     <link href="/assets/commons-auth.css" rel="stylesheet">
 </head>
 <body>
@@ -20,12 +20,13 @@
                         <img th:src="${logoSrc}" class="image is-128x128">
                     </figure>
 
-                    <h2>Successfully registered *Yeah*</h2>
-                    <div class="notification is-warning" th:if="${needsVerification}">
-                        You need to verify your email. Please check your mailbox!
+                    <div th:if="${successfull}">
+                    <h2>Successfully verified *Yeah*</h2>
+                    <p>You can start using the app. Goto <a th:href="@{/login}">Login</a></p>
                     </div>
-                    <div class="notification" th:unless="${needsVerification}">
-                        You can now <a th:href="@{/login}">login</a> to the application.
+                    <div th:unless="${successfull}">
+                    <h2 class="is-danger">Could not verify your registration</h2>
+                    <p>Please retry or contact the adminstrator :/</p>
                     </div>
                 </div>
             </div>

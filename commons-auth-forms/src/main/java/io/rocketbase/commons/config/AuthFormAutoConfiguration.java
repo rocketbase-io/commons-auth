@@ -9,9 +9,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@EnableConfigurationProperties({FormsProperties.class, RegistrationProperties.class})
+@EnableConfigurationProperties({AuthProperties.class, FormsProperties.class, RegistrationProperties.class})
 @RequiredArgsConstructor
 public class AuthFormAutoConfiguration {
+
+    private final AuthProperties authProperties;
 
     private final FormsProperties formsProperties;
 
@@ -20,7 +22,7 @@ public class AuthFormAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public AuthFormsController loginFormController(@Value("${auth.api.baseUrl}") String apiBaseUrl) {
-        return new AuthFormsController(apiBaseUrl, formsProperties, registrationProperties);
+        return new AuthFormsController(apiBaseUrl, authProperties, formsProperties, registrationProperties);
     }
 
 }
