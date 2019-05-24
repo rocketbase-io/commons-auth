@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="msapplication-TileColor" content="#ffffff"/>
+    <meta name="theme-color" content="#ffffff"/>
+    <title th:text="${title} + ' - Login'"></title>
+    <link href="/assets/commons-auth.css" rel="stylesheet">
+</head>
+<body>
+
+<section class="hero is-fullheight">
+    <div class="hero-body">
+        <div class="container has-text-centered">
+            <div class="column is-4 is-offset-4">
+                <div class="box">
+                    <figure class="avatar">
+                        <img th:src="${logoSrc}" class="image is-128x128">
+                    </figure>
+
+                    <article class="message is-danger" th:if="${param.error}">
+                        <div class="message-body">
+                            Username or Password are wrong!
+                        </div>
+                    </article>
+                    <article class="message is-success" th:if="${param.logout}">
+                        <div class="message-body">
+                            Logout successfully!
+                        </div>
+                    </article>
+
+                    <form name="f" th:action="@{/login}" method="post">
+                        <div class="field">
+                            <div class="control">
+                                <input class="input is-large" type="text" name="username"
+                                       placeholder="Your Username" autofocus/>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="control">
+                                <input class="input is-large" type="password" autocomplete="on"
+                                       name="password"
+                                       placeholder="Your Password"/>
+                            </div>
+                        </div>
+                        <button class="button is-block is-info is-large is-fullwidth" type="submit">Login
+                        </button>
+                    </form>
+                </div>
+                <p class="has-text-grey">
+                    <a th:href="@{/registration}" th:if="${registrationEnabled}">Registration</a>
+                    <span th:if="${registrationEnabled}"> · </span>
+                    <a th:href="@{/forgot}">Forgot Password</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+</body>
+</html>

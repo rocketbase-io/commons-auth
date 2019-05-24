@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="msapplication-TileColor" content="#ffffff"/>
+    <meta name="theme-color" content="#ffffff"/>
+    <title th:text="${title} + ' - Registered'"></title>
+    <link href="/assets/commons-auth.css" rel="stylesheet">
+</head>
+<body>
+
+<section class="hero is-fullheight">
+    <div class="hero-body">
+        <div class="container has-text-centered">
+            <div class="column is-4 is-offset-4">
+                <div class="box">
+                    <figure class="avatar">
+                        <img th:src="${logoSrc}" class="image is-128x128">
+                    </figure>
+
+                    <h2>Successfully registered *Yeah*</h2>
+                    <div class="notification is-warning" th:if="${needsVerification}">
+                        You need to verify your email. Please check your mailbox!
+                    </div>
+                    <div class="notification" th:unless="${needsVerification}">
+                        You can now <a href="/login">login</a> to the application.
+                    </div>
+                </div>
+            </div>
+        </div>
+</section>
+
+
+</body>
+</html>

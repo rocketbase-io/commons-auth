@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="msapplication-TileColor" content="#ffffff"/>
+    <meta name="theme-color" content="#ffffff"/>
+    <title th:text="${title} + ' - Forgot'"></title>
+    <link href="/assets/commons-auth.css" rel="stylesheet">
+</head>
+<body>
+
+<section class="hero is-fullheight">
+    <div class="hero-body">
+        <div class="container has-text-centered">
+            <div class="column is-4 is-offset-4">
+                <div class="box">
+                    <figure class="avatar">
+                        <img th:src="${logoSrc}" class="image is-128x128">
+                    </figure>
+
+
+                    <div class="notification" th:classappend="${usernameOrEmailRequired} != null ? 'is-danger'">
+                        One is required - Username or Email.
+                    </div>
+
+                    <form name="f" th:action="@{/forgot-password}" th:object="${forgotForm}" method="post">
+                        <div class="field">
+                            <div class="control">
+                                <input class="input is-large" type="text" th:field="*{username}"
+                                       placeholder="Your Username" autofocus/>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="control">
+                                <input class="input is-large" type="email" th:field="*{email}"
+                                       placeholder="Your Email"/>
+                            </div>
+                        </div>
+                        <button class="button is-block is-info is-large is-fullwidth" type="submit">Request reset</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+</body>
+</html>
