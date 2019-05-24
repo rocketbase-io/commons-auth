@@ -31,7 +31,7 @@ public class AppUserRead implements Serializable {
 
     private Map<String, String> keyValues;
 
-    private Boolean enabled;
+    private boolean enabled;
 
     private LocalDateTime created;
 

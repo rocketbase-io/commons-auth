@@ -12,7 +12,7 @@ public class CommonsPrincipal extends AppUserRead implements Principal {
 
     public CommonsPrincipal(AppUserRead user) {
         super(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmail(),
-                user.getAvatar(), user.getRoles(), user.getKeyValues(), user.getEnabled(), user.getCreated(), user.getLastLogin());
+                user.getAvatar(), user.getRoles(), user.getKeyValues(), user.isEnabled(), user.getCreated(), user.getLastLogin());
     }
 
     /**
