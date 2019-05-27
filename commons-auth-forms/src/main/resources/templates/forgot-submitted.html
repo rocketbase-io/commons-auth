@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta name="msapplication-TileColor" content="#ffffff"/>
     <meta name="theme-color" content="#ffffff"/>
-    <title th:text="${title} + ' - Forgot'"></title>
+    <title th:text="#{auth.forgotPassword.title(${title})}"></title>
     <link href="/assets/commons-auth.css" rel="stylesheet">
 </head>
 <body>
@@ -20,13 +20,17 @@
                         <img th:src="${logoSrc}" class="image is-128x128">
                     </figure>
 
-                    <h2>Successfully requested password reset</h2>
-                    <div class="notification is-warning">
-                        You need to check your mailbox. Via the link you can change your password within <span th:text="${expiresAfter}"></span> minutes.
+                    <h2 th:text="#{auth.forgotPassword.success}">Successfully requested password reset</h2>
+                    <div class="notification is-warning" th:text="#{auth.forgotPassword.checkMailbox(${expiresAfter})}">
+                        You need to check your mailbox. Via the link you can change your password within X minutes.
                     </div>
                 </div>
+                <p class="has-text-grey">
+                    <a th:href="@{/login}" th:text="#{auth.login}">Login</a>
+                </p>
             </div>
         </div>
+    </div>
 </section>
 
 

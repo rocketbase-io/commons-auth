@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta name="msapplication-TileColor" content="#ffffff"/>
     <meta name="theme-color" content="#ffffff"/>
-    <title th:text="${title} + ' - Registered'"></title>
+    <title th:text="#{auth.registration.title(${title})}"></title>
     <link href="/assets/commons-auth.css" rel="stylesheet">
 </head>
 <body>
@@ -14,22 +14,26 @@
 <section class="hero is-fullheight">
     <div class="hero-body">
         <div class="container has-text-centered">
-            <div class="column is-4 is-offset-4">
+            <div class="column is-6 is-offset-3">
                 <div class="box">
                     <figure class="avatar">
                         <img th:src="${logoSrc}" class="image is-128x128">
                     </figure>
 
-                    <h2>Successfully registered *Yeah*</h2>
-                    <div class="notification is-warning" th:if="${needsVerification}">
-                        You need to verify your email. Please check your mailbox! Via the link you can confirm your registration within <span th:text="${expiresAfter}"></span> minutes.
+                    <h2 th:text="#{auth.registration.success}">Successfully registered *Yeah*</h2>
+                    <div class="notification is-warning" th:if="${needsVerification}" th:text="#{auth.registration.needsVerification(${expiresAfter})}">
+                        You need to verify your email. Please check your mailbox! Via the link you can confirm your registration within X minutes.
                     </div>
-                    <div class="notification" th:unless="${needsVerification}">
-                        You can now <a th:href="@{/login}">login</a> to the application.
+                    <div class="notification" th:unless="${needsVerification}" th:text="#{auth.registration.noVerification}">
+                        You can now to the application.
                     </div>
                 </div>
+                <p class="has-text-grey">
+                    <a th:href="@{/login}" th:text="#{auth.login}">Login</a>
+                </p>
             </div>
         </div>
+    </div>
 </section>
 
 

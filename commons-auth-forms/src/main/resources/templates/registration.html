@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta name="msapplication-TileColor" content="#ffffff"/>
     <meta name="theme-color" content="#ffffff"/>
-    <title th:text="${title} + ' - Registration'"></title>
+    <title th:text="#{auth.registration.title(${title})}"></title>
     <link href="/assets/commons-auth.css" rel="stylesheet">
 </head>
 <body>
@@ -14,7 +14,7 @@
 <section class="hero is-fullheight">
     <div class="hero-body">
         <div class="container has-text-centered">
-            <div class="column is-4 is-offset-4">
+            <div class="column is-6 is-offset-3">
                 <div class="box">
                     <figure class="avatar">
                         <img th:src="${logoSrc}" class="image is-128x128">
@@ -24,26 +24,24 @@
                         <div class="field">
                             <div class="control">
                                 <input class="input is-large" th:classappend="(${#fields.hasErrors('username')} OR ${usernameErrors} != null) ? 'is-danger'" type="text" th:field="*{username}"
-                                       placeholder="Your Username" autofocus/>
-                                <p th:if="${#fields.hasErrors('username')}" th:error="*{username}" class="help is-danger">Username is invalid</p>
+                                       th:attr="placeholder=#{auth.username.placeholder}" autofocus/>
+                                <p th:if="${#fields.hasErrors('username')}" th:error="*{username}" class="help is-danger" th:text="#{auth.username.invalid}">Username is invalid</p>
                                 <p th:if="${usernameErrors} != null" class="help is-danger" th:text="${usernameErrors}"></p>
                             </div>
                         </div>
 
-                        <div class="columns">
-                            <div class="column">
+                        <div class="field is-horizontal">
+                            <div class="field-body">
                                 <div class="field">
                                     <div class="control">
                                         <input class="input is-large" type="text" th:field="*{firstName}"
-                                               placeholder="Your FirstName" />
+                                               th:attr="placeholder=#{auth.firstName.placeholder}" />
                                     </div>
                                 </div>
-                            </div>
-                            <div class="column">
                                 <div class="field">
                                     <div class="control">
                                         <input class="input is-large" type="text" th:field="*{lastName}"
-                                               placeholder="Your Lastname" />
+                                               th:attr="placeholder=#{auth.lastName.placeholder}" />
                                     </div>
                                 </div>
                             </div>
@@ -51,8 +49,8 @@
                         <div class="field">
                             <div class="control">
                                 <input class="input is-large" th:classappend="(${#fields.hasErrors('email')}  OR ${emailErrors} != null)? 'is-danger'" type="email" th:field="*{email}"
-                                       placeholder="Your Email"/>
-                                <p th:if="${#fields.hasErrors('email')}" th:error="*{email}" class="help is-danger">Email is invalid</p>
+                                       th:attr="placeholder=#{auth.email.placeholder}"/>
+                                <p th:if="${#fields.hasErrors('email')}" th:error="*{email}" class="help is-danger" th:text="#{auth.email.invalid}">Email is invalid</p>
                                 <p th:if="${emailErrors} != null" class="help is-danger" th:text="${emailErrors}"></p>
                             </div>
                         </div>
@@ -60,8 +58,8 @@
                         <div class="field">
                             <div class="control">
                                 <input class="input is-large" th:classappend="(${#fields.hasErrors('password')} OR ${passwordErrors} != null)? 'is-danger'" type="password" th:field="*{password}"
-                                       placeholder="Your Password"/>
-                                <p th:if="${#fields.hasErrors('password')}" th:error="*{password}" class="help is-danger">Password is invalid</p>
+                                       th:attr="placeholder=#{auth.password.placeholder}"/>
+                                <p th:if="${#fields.hasErrors('password')}" th:error="*{password}" class="help is-danger" th:text="#{auth.password.invalid}">Password is invalid</p>
                                 <p th:if="${passwordErrors} != null" class="help is-danger" th:text="${passwordErrors}"></p>
                             </div>
                         </div>
@@ -69,10 +67,10 @@
                         <div class="field">
                             <div class="control">
                                 <input class="input is-large" th:classappend="(${#fields.hasErrors('password')} OR ${passwordErrors} != null)? 'is-danger'" type="password" th:field="*{passwordRepeat}"
-                                       placeholder="Repeat Password"/>
+                                       th:attr="placeholder=#{auth.passwordRepeat.placeholder}"/>
                             </div>
                         </div>
-                        <button class="button is-block is-info is-large is-fullwidth" type="submit">Sign up</button>
+                        <button class="button is-block is-info is-large is-fullwidth" type="submit" th:text="#{auth.registration.submit}">Register</button>
                     </form>
                 </div>
             </div>

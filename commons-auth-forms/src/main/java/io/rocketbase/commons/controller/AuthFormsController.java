@@ -56,7 +56,8 @@ public class AuthFormsController extends AbstractFormsController {
     }
 
     @GetMapping("/forgot")
-    public String forgotForm() {
+    public String forgotForm(Model model) {
+        model.addAttribute("forgotForm", new ForgotPasswordRequest());
         return "forgot";
     }
 

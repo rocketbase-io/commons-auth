@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta name="msapplication-TileColor" content="#ffffff"/>
     <meta name="theme-color" content="#ffffff"/>
-    <title th:text="${title} + ' - Verification'"></title>
+    <title th:text="#{auth.verification.title(${title})}"></title>
     <link href="/assets/commons-auth.css" rel="stylesheet">
 </head>
 <body>
@@ -14,23 +14,27 @@
 <section class="hero is-fullheight">
     <div class="hero-body">
         <div class="container has-text-centered">
-            <div class="column is-4 is-offset-4">
+            <div class="column is-6 is-offset-3">
                 <div class="box">
                     <figure class="avatar">
                         <img th:src="${logoSrc}" class="image is-128x128">
                     </figure>
 
                     <div th:if="${successfull}">
-                    <h2>Successfully verified *Yeah*</h2>
-                    <p>You can start using the app. Goto <a th:href="@{/login}">Login</a></p>
+                    <h2 th:text="#{auth.verification.success.headline}">Successfully verified *Yeah*</h2>
+                    <p th:text="#{auth.verification.success.info}">You can start using the app.</p>
                     </div>
                     <div th:unless="${successfull}">
-                    <h2 class="is-danger">Could not verify your registration</h2>
-                    <p>Please retry or contact the adminstrator :/</p>
+                    <h2 class="is-danger" th:text="#{auth.verification.error.headline}">Could not verify your registration.</h2>
+                    <p  th:text="#{auth.verification.error.info}">Please retry or contact the adminstrator./</p>
                     </div>
                 </div>
+                <p class="has-text-grey">
+                    <a th:href="@{/login}" th:text="#{auth.login}">Login</a>
+                </p>
             </div>
         </div>
+    </div>
 </section>
 
 

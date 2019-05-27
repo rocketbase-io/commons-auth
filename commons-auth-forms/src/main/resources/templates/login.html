@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta name="msapplication-TileColor" content="#ffffff"/>
     <meta name="theme-color" content="#ffffff"/>
-    <title th:text="${title} + ' - Login'"></title>
+    <title th:text="#{auth.login.title(${title})}"></title>
     <link href="/assets/commons-auth.css" rel="stylesheet">
 </head>
 <body>
@@ -21,12 +21,12 @@
                     </figure>
 
                     <article class="message is-danger" th:if="${param.error}">
-                        <div class="message-body">
+                        <div class="message-body" th:text="#{auth.login.error}">
                             Username or Password are wrong!
                         </div>
                     </article>
                     <article class="message is-success" th:if="${param.logout}">
-                        <div class="message-body">
+                        <div class="message-body" th:text="#{auth.logout.success}">
                             Logout successfully!
                         </div>
                     </article>
@@ -34,26 +34,23 @@
                     <form name="f" th:action="@{/login}" method="post">
                         <div class="field">
                             <div class="control">
-                                <input class="input is-large" type="text" name="username"
-                                       placeholder="Your Username" autofocus/>
+                                <input class="input is-large" type="text" name="username" th:attr="placeholder=#{auth.username.placeholder}" autofocus/>
                             </div>
                         </div>
 
                         <div class="field">
                             <div class="control">
                                 <input class="input is-large" type="password" autocomplete="on"
-                                       name="password"
-                                       placeholder="Your Password"/>
+                                       name="password" th:attr="placeholder=#{auth.password.placeholder}"/>
                             </div>
                         </div>
-                        <button class="button is-block is-info is-large is-fullwidth" type="submit">Login
-                        </button>
+                        <button class="button is-block is-info is-large is-fullwidth" type="submit" th:text="#{auth.login.submit}">Login</button>
                     </form>
                 </div>
                 <p class="has-text-grey">
-                    <a th:href="@{/registration}" th:if="${registrationEnabled}">Registration</a>
+                    <a th:href="@{/registration}" th:if="${registrationEnabled}" th:text="#{auth.registration}">Registration</a>
                     <span th:if="${registrationEnabled}"> · </span>
-                    <a th:href="@{/forgot}">Forgot Password</a>
+                    <a th:href="@{/forgot}" th:text="#{auth.forgotPassword}">Forgot Password</a>
                 </p>
             </div>
         </div>
