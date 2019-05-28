@@ -16,8 +16,8 @@
         <div class="container has-text-centered">
             <div class="column is-4 is-offset-4">
                 <div class="box">
-                    <figure class="avatar">
-                        <img th:src="${logoSrc}" class="image is-128x128">
+                    <figure class="image avatar is-128x128">
+                        <img th:src="${logoSrc}" class="is-rounded">
                     </figure>
 
                     <article class="message is-danger" th:if="${param.error}">
