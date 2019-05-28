@@ -22,10 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -97,11 +94,11 @@ public class DefaultAppUserService implements AppUserService {
         entity.updateLastLogin();
         appUserPersistenceService.save(entity);
         refreshUsername(username);
-        return entity;
+        return getByUsername(username);
     }
 
     @Override
-    public void updatePassword(String username, String newPassword) {
+    public AppUser updatePassword(String username, String newPassword) {
         validationService.passwordIsValid(newPassword);
 
         AppUser entity = getEntityByUsername(username);
@@ -109,11 +106,11 @@ public class DefaultAppUserService implements AppUserService {
         entity.updateLastTokenInvalidation();
 
         appUserPersistenceService.save(entity);
-        refreshUsername(username);
+        return refreshUsername(username);
     }
 
     @Override
-    public void updateProfile(String username, String firstName, String lastName, String avatar, Map<String, String> keyValues) {
+    public AppUser updateProfile(String username, String firstName, String lastName, String avatar, Map<String, String> keyValues) {
         AppUser entity = getEntityByUsername(username);
         entity.setFirstName(firstName);
         entity.setLastName(lastName);
@@ -121,16 +118,16 @@ public class DefaultAppUserService implements AppUserService {
         handleKeyValues(entity, keyValues);
 
         appUserPersistenceService.save(entity);
-        refreshUsername(username);
+        return refreshUsername(username);
     }
 
     @Override
-    public void updateKeyValues(String username, Map<String, String> keyValues) {
+    public AppUser updateKeyValues(String username, Map<String, String> keyValues) {
         AppUser entity = getEntityByUsername(username);
         handleKeyValues(entity, keyValues);
 
         appUserPersistenceService.save(entity);
-        refreshUsername(username);
+        return refreshUsername(username);
     }
 
     @Nonnull
@@ -143,10 +140,11 @@ public class DefaultAppUserService implements AppUserService {
     }
 
     @Override
-    public void refreshUsername(String username) {
+    public AppUser refreshUsername(String username) {
         if (cache != null) {
             cache.invalidate(username);
         }
+        return getByUsername(username);
     }
 
     @Override
@@ -167,15 +165,13 @@ public class DefaultAppUserService implements AppUserService {
         return result;
     }
 
-    /**
-     * @param username will get verified
-     * @param password will not get verified
-     * @param email    will get verified
-     * @param admin    should user get created as admin or normale user
-     * @return initialized user
-     */
     @Override
     public AppUser initializeUser(String username, String password, String email, boolean admin) throws UsernameNotFoundException, EmailValidationException {
+        return initializeUser(username, password, email, Arrays.asList(admin ? authProperties.getRoleAdmin() : authProperties.getRoleUser()));
+    }
+
+    @Override
+    public AppUser initializeUser(String username, String password, String email, List<String> roles) throws UsernameNotFoundException, EmailValidationException {
         validationService.usernameIsValid(username);
         validationService.emailIsValid(email);
 
@@ -183,15 +179,23 @@ public class DefaultAppUserService implements AppUserService {
         instance.setUsername(username.toLowerCase());
         instance.setEmail(email.toLowerCase());
         instance.setPassword(passwordEncoder.encode(password));
-        instance.setRoles(Arrays.asList(admin ? authProperties.getRoleAdmin() : authProperties.getRoleUser()));
+        instance.setRoles(roles);
         instance.setEnabled(true);
         if (avatarService.isEnabled()) {
             instance.setAvatar(avatarService.getAvatar(email));
         }
-
         AppUser entity = appUserPersistenceService.save(instance);
         refreshUsername(entity.getUsername());
         return entity;
+    }
+
+    @Override
+    public AppUser updateRoles(String username, List<String> roles) {
+        AppUser entity = getEntityByUsername(username);
+        entity.setRoles(roles);
+        entity.updateLastTokenInvalidation();
+        appUserPersistenceService.save(entity);
+        return refreshUsername(username);
     }
 
     @Override

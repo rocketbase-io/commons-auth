@@ -9,6 +9,7 @@ import io.rocketbase.commons.exception.UsernameValidationException;
 import java.util.Set;
 
 public interface ValidationService {
+
     boolean isPasswordValid(String password);
 
     void passwordIsValid(String password) throws PasswordValidationException;
@@ -28,4 +29,5 @@ public interface ValidationService {
     void emailIsValid(String email);
 
     boolean validateRegistration(String username, String password, String email);
+
 }
