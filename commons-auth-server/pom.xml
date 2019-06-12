@@ -23,6 +23,13 @@
             <artifactId>commons-rest-server</artifactId>
             <version>${commons-rest.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.rocketbase.commons</groupId>
+            <artifactId>commons-rest-errorpage</artifactId>
+            <version>${commons-rest.version}</version>
+        </dependency>
+        
         <dependency>
             <groupId>io.rocketbase.commons</groupId>
             <artifactId>email-template-builder</artifactId>
