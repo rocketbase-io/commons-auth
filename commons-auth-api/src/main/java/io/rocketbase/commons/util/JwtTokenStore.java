@@ -67,6 +67,16 @@ public class JwtTokenStore implements Serializable, BaseRestResource {
      * @return true if token is valid for at least 60 sec
      */
     public boolean checkTokenNeedsRefresh() {
+        return checkTokenNeedsRefresh(60);
+    }
+
+    /**
+     * will check token's expiration date
+     *
+     * @param seconds how long token should be valid
+     * @return true if token is valid for at least 60 sec
+     */
+    public boolean checkTokenNeedsRefresh(long seconds) {
         if (tokenBundle.getRefreshToken() != null) {
             if (lastToken == null || !tokenBundle.getToken().equals(lastToken)) {
                 JwtTokenDecoder.JwtTokenBody tokenBody = JwtTokenDecoder.decodeTokenBody(tokenBundle.getToken());
@@ -79,7 +89,7 @@ public class JwtTokenStore implements Serializable, BaseRestResource {
             }
 
             return LocalDateTime.now(ZoneOffset.UTC)
-                    .plusSeconds(60)
+                    .plusSeconds(seconds)
                     .isAfter(exp);
         }
         return false;
