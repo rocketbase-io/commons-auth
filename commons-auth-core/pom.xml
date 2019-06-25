@@ -75,7 +75,10 @@ SOFTWARE.
             <version>${jjwt.version}</version>
             <scope>runtime</scope>
         </dependency>
-
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+        </dependency>
         <!-- tests -->
         <dependency>
             <groupId>junit</groupId>
