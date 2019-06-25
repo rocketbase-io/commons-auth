@@ -4,7 +4,7 @@ import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
-import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.registration.RegistrationService;
 import lombok.extern.slf4j.Slf4j;
@@ -36,15 +36,15 @@ public class RegistrationController implements BaseController {
     @RequestMapping(method = RequestMethod.POST, path = "/auth/register", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<AppUserRead> register(HttpServletRequest request, @RequestBody @NotNull @Validated RegistrationRequest registration) {
-        AppUser entity = registrationService.register(registration, getBaseUrl(request));
+        AppUserEntity entity = registrationService.register(registration, getBaseUrl(request));
         return ResponseEntity.ok(appUserConverter.fromEntity(entity));
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/verify")
     @ResponseBody
     public ResponseEntity<JwtTokenBundle> verify(@RequestParam("verification") String verification) {
-        AppUser entity = registrationService.verifyRegistration(verification);
+        AppUserEntity entity = registrationService.verifyRegistration(verification);
 
-        return ResponseEntity.ok(jwtTokenService.generateTokenBundle(entity.getUsername(), entity.getAuthorities()));
+        return ResponseEntity.ok(jwtTokenService.generateTokenBundle(entity));
     }
 }

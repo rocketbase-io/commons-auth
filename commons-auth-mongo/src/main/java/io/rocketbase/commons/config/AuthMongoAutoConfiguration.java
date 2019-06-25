@@ -1,6 +1,6 @@
 package io.rocketbase.commons.config;
 
-import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.model.AppUserMongoEntity;
 import io.rocketbase.commons.service.AppUserMongoServiceImpl;
 import io.rocketbase.commons.service.AppUserPersistenceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ public class AuthMongoAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AppUserPersistenceService<AppUserEntity> appUserPersistenceService(@Autowired MongoTemplate mongoTemplate) {
+    public AppUserPersistenceService<AppUserMongoEntity> appUserPersistenceService(@Autowired MongoTemplate mongoTemplate) {
         return new AppUserMongoServiceImpl(mongoTemplate);
     }
 }

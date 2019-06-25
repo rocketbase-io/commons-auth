@@ -4,7 +4,7 @@ import io.rocketbase.commons.config.EmailProperties;
 import io.rocketbase.commons.email.EmailTemplateBuilder;
 import io.rocketbase.commons.email.model.HtmlTextEmail;
 import io.rocketbase.commons.email.template.ColorStyle;
-import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.model.AppUserEntity;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -13,7 +13,7 @@ public class SimpleMailContentConfig implements MailContentConfig {
     final EmailProperties emailProperties;
 
     @Override
-    public HtmlTextEmail register(AppUser user, String actionUrl) {
+    public HtmlTextEmail register(AppUserEntity user, String actionUrl) {
         return EmailTemplateBuilder.builder()
                 .header("Verify Your Account").and()
                 .addText(String.format("Hi %s,", user.getUsername())).and()
@@ -27,12 +27,12 @@ public class SimpleMailContentConfig implements MailContentConfig {
     }
 
     @Override
-    public String registerSubject(AppUser user) {
+    public String registerSubject(AppUserEntity user) {
         return String.format("%s Verify Your Account", emailProperties.getSubjectPrefix()).trim();
     }
 
     @Override
-    public HtmlTextEmail forgotPassword(AppUser user, String actionUrl) {
+    public HtmlTextEmail forgotPassword(AppUserEntity user, String actionUrl) {
         return EmailTemplateBuilder.builder()
                 .header("You have submitted a password change request!").color(new ColorStyle("fff", "E63946")).and()
                 .addText(String.format("Hi %s,", user.getUsername())).and()
@@ -46,7 +46,7 @@ public class SimpleMailContentConfig implements MailContentConfig {
     }
 
     @Override
-    public String forgotPasswordSubject(AppUser user) {
+    public String forgotPasswordSubject(AppUserEntity user) {
         return String.format("%s Reset Password", emailProperties.getSubjectPrefix()).trim();
     }
 }

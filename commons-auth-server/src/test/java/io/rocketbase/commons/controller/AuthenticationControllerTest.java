@@ -6,7 +6,7 @@ import io.rocketbase.commons.adapters.SimpleJwtTokenProvider;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.*;
 import io.rocketbase.commons.exception.BadRequestException;
-import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.resource.AuthenticationResource;
 import io.rocketbase.commons.resource.LoginResource;
 import io.rocketbase.commons.test.AppUserPersistenceTestService;
@@ -91,7 +91,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
     @Test
     public void getAuthenticated() {
         // given
-        AppUser user = getAppUser();
+        AppUserEntity user = getAppUser();
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
 
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
@@ -110,7 +110,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
     @Test
     public void getAuthenticatedUserRefreshToken() {
         // given
-        AppUser user = getAppUser();
+        AppUserEntity user = getAppUser();
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
 
         SimpleJwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl());
@@ -132,7 +132,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
     @Test
     public void getAuthenticatedWithInvalidRefreshToken() {
         // given
-        AppUser user = getAppUser();
+        AppUserEntity user = getAppUser();
         SimpleJwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl());
         tokenProvider.setRefreshToken("---");
         tokenProvider.setToken(modifiedJwtTokenService.generateExpiredToken(user));
@@ -151,7 +151,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
     @Test
     public void refreshToken() throws InterruptedException {
         // given
-        AppUser user = getAppUser();
+        AppUserEntity user = getAppUser();
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
         String token = tokenBundle.getToken();
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
@@ -170,7 +170,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
     @Test
     public void changePasswordSuccess() {
         // given
-        AppUser user = getAppUser();
+        AppUserEntity user = getAppUser();
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
@@ -185,7 +185,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
     @Test
     public void changePasswordFailure() {
         // given
-        AppUser user = getAppUser();
+        AppUserEntity user = getAppUser();
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
@@ -210,7 +210,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
     @Test
     public void updateProfile() {
         // given
-        AppUser user = getAppUser();
+        AppUserEntity user = getAppUser();
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));

@@ -1,7 +1,7 @@
 package io.rocketbase.commons.converter;
 
 import io.rocketbase.commons.dto.appuser.AppUserRead;
-import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.model.AppUserEntity;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +21,7 @@ public class AppUserConverter {
         return map;
     }
 
-    public AppUserRead fromEntity(AppUser entity) {
+    public AppUserRead fromEntity(AppUserEntity entity) {
         if (entity == null) {
             return null;
         }
@@ -40,7 +40,7 @@ public class AppUserConverter {
                 .build();
     }
 
-    public List<AppUserRead> fromEntities(List<AppUser> entities) {
+    public List<AppUserRead> fromEntities(List<AppUserEntity> entities) {
         if (entities == null) {
             return null;
         }

@@ -7,7 +7,7 @@ import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.event.RegistrationEvent;
 import io.rocketbase.commons.event.VerificationEvent;
 import io.rocketbase.commons.exception.VerificationException;
-import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.service.SimpleTokenService;
 import io.rocketbase.commons.service.SimpleTokenService.Token;
 import io.rocketbase.commons.service.email.EmailService;
@@ -38,8 +38,8 @@ public class DefaultRegistrationService implements RegistrationService {
     @Resource
     private ApplicationEventPublisher applicationEventPublisher;
 
-    public AppUser register(RegistrationRequest registration, String baseUrl) {
-        AppUser entity = appUserService.registerUser(registration);
+    public AppUserEntity register(RegistrationRequest registration, String baseUrl) {
+        AppUserEntity entity = appUserService.registerUser(registration);
         if (registrationProperties.isVerification()) {
             try {
                 String token = SimpleTokenService.generateToken(registration.getUsername(), registrationProperties.getVerificationExpiration());
@@ -57,12 +57,12 @@ public class DefaultRegistrationService implements RegistrationService {
         return entity;
     }
 
-    public AppUser verifyRegistration(String verification) {
+    public AppUserEntity verifyRegistration(String verification) {
         Token token = SimpleTokenService.parseToken(verification);
         if (!token.isValid()) {
             throw new VerificationException();
         }
-        AppUser entity = appUserService.getByUsername(token.getUsername());
+        AppUserEntity entity = appUserService.getByUsername(token.getUsername());
         String dbRegistrationToken = entity.getKeyValues().getOrDefault(REGISTRATION_KV, null);
 
         if (!verification.equals(dbRegistrationToken)) {

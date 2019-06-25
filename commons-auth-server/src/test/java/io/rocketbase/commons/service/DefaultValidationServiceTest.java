@@ -5,7 +5,7 @@ import io.rocketbase.commons.config.UsernameProperties;
 import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
 import io.rocketbase.commons.dto.validation.UsernameErrorCodes;
 import io.rocketbase.commons.exception.RegistrationException;
-import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.service.validation.DefaultValidationService;
 import io.rocketbase.commons.test.model.AppUserTestEntity;
 import org.junit.Test;
@@ -22,34 +22,34 @@ public class DefaultValidationServiceTest {
 
     private final ValidationUserLookupService takenUserLookupService = new ValidationUserLookupService() {
         @Override
-        public AppUser getByUsername(String username) {
+        public AppUserEntity getByUsername(String username) {
             return AppUserTestEntity.builder().username(username).build();
         }
 
         @Override
-        public Optional<AppUser> findByEmail(String email) {
+        public Optional<AppUserEntity> findByEmail(String email) {
             return Optional.empty();
         }
     };
     private final ValidationUserLookupService unkownUserLookupService = new ValidationUserLookupService() {
         @Override
-        public AppUser getByUsername(String username) {
+        public AppUserEntity getByUsername(String username) {
             return null;
         }
 
         @Override
-        public Optional<AppUser> findByEmail(String email) {
+        public Optional<AppUserEntity> findByEmail(String email) {
             return Optional.empty();
         }
     };
     private final ValidationUserLookupService knownEmailUserLookupService = new ValidationUserLookupService() {
         @Override
-        public AppUser getByUsername(String username) {
+        public AppUserEntity getByUsername(String username) {
             return null;
         }
 
         @Override
-        public Optional<AppUser> findByEmail(String email) {
+        public Optional<AppUserEntity> findByEmail(String email) {
             return Optional.of(AppUserTestEntity.builder().username("found").build());
         }
     };

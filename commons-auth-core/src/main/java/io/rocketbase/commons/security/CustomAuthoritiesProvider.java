@@ -1,6 +1,6 @@
 package io.rocketbase.commons.security;
 
-import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.model.AppUserToken;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,7 +18,7 @@ public interface CustomAuthoritiesProvider {
      *
      * @return a not nullable list of extra authorities / could also be an empty list
      */
-    Collection<? extends GrantedAuthority> getExtraTokenAuthorities(String username);
+    Collection<? extends GrantedAuthority> getExtraTokenAuthorities(AppUserToken user);
 
     /**
      * will get injected in case of SecurityContext initialization<br>
@@ -28,5 +28,5 @@ public interface CustomAuthoritiesProvider {
      *
      * @return a not nullable list of extra authorities / could also be an empty list
      */
-    Collection<? extends GrantedAuthority> getExtraSecurityContextAuthorities(AppUser user, HttpServletRequest request);
+    Collection<? extends GrantedAuthority> getExtraSecurityContextAuthorities(AppUserToken user, HttpServletRequest request);
 }

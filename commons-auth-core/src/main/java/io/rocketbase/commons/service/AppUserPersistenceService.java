@@ -1,13 +1,13 @@
 package io.rocketbase.commons.service;
 
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
-import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.model.AppUserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
-public interface AppUserPersistenceService<S extends AppUser> {
+public interface AppUserPersistenceService<S extends AppUserEntity> {
 
     Optional<S> findByUsername(String username);
 

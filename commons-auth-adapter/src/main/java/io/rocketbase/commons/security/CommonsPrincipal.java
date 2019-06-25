@@ -1,23 +1,26 @@
 package io.rocketbase.commons.security;
 
-import io.rocketbase.commons.dto.appuser.AppUserRead;
+import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.util.JwtTokenStore;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.security.Principal;
+import java.util.List;
+import java.util.Map;
 
 /**
  * within the security context the Authentication should be an instance of {@link CommonsAuthenticationToken} and it's principal is an instance of {@link CommonsPrincipal}<br>
  * this class provides some convenient static helps that simply the handling of the {@link SecurityContextHolder}
  */
 @NoArgsConstructor
-public class CommonsPrincipal extends AppUserRead implements Principal {
+public class CommonsPrincipal implements AppUserToken, Principal {
 
-    public CommonsPrincipal(AppUserRead user) {
-        super(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getEmail(),
-                user.getAvatar(), user.getRoles(), user.getKeyValues(), user.isEnabled(), user.getCreated(), user.getLastLogin());
+    private AppUserToken user;
+
+    public CommonsPrincipal(AppUserToken user) {
+        this.user = user;
     }
 
     /**
@@ -72,7 +75,48 @@ public class CommonsPrincipal extends AppUserRead implements Principal {
     }
 
     @Override
+    public String getId() {
+        return user != null ? user.getId() : null;
+    }
+
+    @Override
+    public String getUsername() {
+        return user != null ? user.getUsername() : null;
+    }
+
+    @Override
+    public String getFirstName() {
+        return user != null ? user.getFirstName() : null;
+    }
+
+    @Override
+    public String getLastName() {
+        return user != null ? user.getLastName() : null;
+    }
+
+    @Override
+    public String getEmail() {
+        return user != null ? user.getEmail() : null;
+    }
+
+    @Override
+    public String getAvatar() {
+        return user != null ? user.getAvatar() : null;
+    }
+
+    @Override
+    public List<String> getRoles() {
+        return user != null ? user.getRoles() : null;
+    }
+
+    @Override
+    public Map<String, String> getKeyValues() {
+        return user != null ? user.getKeyValues() : null;
+    }
+
+    @Override
     public String getName() {
         return getUsername();
     }
+
 }

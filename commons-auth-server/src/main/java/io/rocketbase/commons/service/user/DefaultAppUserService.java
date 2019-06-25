@@ -8,7 +8,7 @@ import io.rocketbase.commons.config.RegistrationProperties;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.EmailValidationException;
 import io.rocketbase.commons.exception.NotFoundException;
-import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.service.AppUserPersistenceService;
 import io.rocketbase.commons.service.avatar.AvatarService;
 import io.rocketbase.commons.service.validation.ValidationService;
@@ -19,7 +19,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.*;
@@ -47,16 +46,16 @@ public class DefaultAppUserService implements AppUserService {
     @Resource
     protected ValidationService validationService;
 
-    protected LoadingCache<String, Optional<AppUser>> cache;
+    protected LoadingCache<String, Optional<AppUserEntity>> cache;
 
     @PostConstruct
     public void postConstruct() {
         if (authProperties.getUserCacheTime() > 0) {
             cache = CacheBuilder.newBuilder()
                     .expireAfterAccess(authProperties.getUserCacheTime(), TimeUnit.MINUTES)
-                    .build(new CacheLoader<String, Optional<AppUser>>() {
+                    .build(new CacheLoader<String, Optional<AppUserEntity>>() {
                         @Override
-                        public Optional<AppUser> load(String key) {
+                        public Optional<AppUserEntity> load(String key) {
                             return appUserPersistenceService.findByUsername(key);
                         }
                     });
@@ -65,8 +64,8 @@ public class DefaultAppUserService implements AppUserService {
 
     @Override
     @SneakyThrows
-    public AppUser getByUsername(String username) {
-        Optional<AppUser> userEntity = null;
+    public AppUserEntity getByUsername(String username) {
+        Optional<AppUserEntity> userEntity = null;
         if (cache != null) {
             userEntity = cache.get(username);
         } else {
@@ -79,18 +78,18 @@ public class DefaultAppUserService implements AppUserService {
     }
 
     @Override
-    public Optional<AppUser> findByEmail(String email) {
+    public Optional<AppUserEntity> findByEmail(String email) {
         return appUserPersistenceService.findByEmail(email.toLowerCase());
     }
 
     @Override
-    public Optional<AppUser> findById(String id) {
+    public Optional<AppUserEntity> findById(String id) {
         return appUserPersistenceService.findById(id);
     }
 
     @Override
-    public AppUser updateLastLogin(String username) {
-        AppUser entity = getEntityByUsername(username);
+    public AppUserEntity updateLastLogin(String username) {
+        AppUserEntity entity = getEntityByUsername(username);
         entity.updateLastLogin();
         appUserPersistenceService.save(entity);
         refreshUsername(username);
@@ -98,10 +97,10 @@ public class DefaultAppUserService implements AppUserService {
     }
 
     @Override
-    public AppUser updatePassword(String username, String newPassword) {
+    public AppUserEntity updatePassword(String username, String newPassword) {
         validationService.passwordIsValid(newPassword);
 
-        AppUser entity = getEntityByUsername(username);
+        AppUserEntity entity = getEntityByUsername(username);
         entity.setPassword(passwordEncoder.encode(newPassword));
         entity.updateLastTokenInvalidation();
 
@@ -110,8 +109,8 @@ public class DefaultAppUserService implements AppUserService {
     }
 
     @Override
-    public AppUser updateProfile(String username, String firstName, String lastName, String avatar, Map<String, String> keyValues) {
-        AppUser entity = getEntityByUsername(username);
+    public AppUserEntity updateProfile(String username, String firstName, String lastName, String avatar, Map<String, String> keyValues) {
+        AppUserEntity entity = getEntityByUsername(username);
         entity.setFirstName(firstName);
         entity.setLastName(lastName);
         entity.setAvatar(avatar);
@@ -122,17 +121,16 @@ public class DefaultAppUserService implements AppUserService {
     }
 
     @Override
-    public AppUser updateKeyValues(String username, Map<String, String> keyValues) {
-        AppUser entity = getEntityByUsername(username);
+    public AppUserEntity updateKeyValues(String username, Map<String, String> keyValues) {
+        AppUserEntity entity = getEntityByUsername(username);
         handleKeyValues(entity, keyValues);
 
         appUserPersistenceService.save(entity);
         return refreshUsername(username);
     }
 
-    @Nonnull
-    protected AppUser getEntityByUsername(String username) {
-        Optional<AppUser> optional = appUserPersistenceService.findByUsername(username);
+    protected AppUserEntity getEntityByUsername(String username) {
+        Optional<AppUserEntity> optional = appUserPersistenceService.findByUsername(username);
         if (!optional.isPresent()) {
             throw new NotFoundException();
         }
@@ -140,7 +138,7 @@ public class DefaultAppUserService implements AppUserService {
     }
 
     @Override
-    public AppUser refreshUsername(String username) {
+    public AppUserEntity refreshUsername(String username) {
         if (cache != null) {
             cache.invalidate(username);
         }
@@ -149,7 +147,7 @@ public class DefaultAppUserService implements AppUserService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUser entity = getByUsername(username);
+        AppUserEntity entity = getByUsername(username);
         if (entity == null) {
             throw new UsernameNotFoundException(String.format("user: %s not found", username));
         }
@@ -157,8 +155,8 @@ public class DefaultAppUserService implements AppUserService {
     }
 
     @Override
-    public AppUser initializeUserIfNotExists(String username, String password, String email, boolean admin) {
-        AppUser result = getByUsername(username);
+    public AppUserEntity initializeUserIfNotExists(String username, String password, String email, boolean admin) {
+        AppUserEntity result = getByUsername(username);
         if (result == null) {
             result = initializeUser(username, password, email, admin);
         }
@@ -166,16 +164,16 @@ public class DefaultAppUserService implements AppUserService {
     }
 
     @Override
-    public AppUser initializeUser(String username, String password, String email, boolean admin) throws UsernameNotFoundException, EmailValidationException {
+    public AppUserEntity initializeUser(String username, String password, String email, boolean admin) throws UsernameNotFoundException, EmailValidationException {
         return initializeUser(username, password, email, Arrays.asList(admin ? authProperties.getRoleAdmin() : authProperties.getRoleUser()));
     }
 
     @Override
-    public AppUser initializeUser(String username, String password, String email, List<String> roles) throws UsernameNotFoundException, EmailValidationException {
+    public AppUserEntity initializeUser(String username, String password, String email, List<String> roles) throws UsernameNotFoundException, EmailValidationException {
         validationService.usernameIsValid(username);
         validationService.emailIsValid(email);
 
-        AppUser instance = appUserPersistenceService.initNewInstance();
+        AppUserEntity instance = appUserPersistenceService.initNewInstance();
         instance.setUsername(username.toLowerCase());
         instance.setEmail(email.toLowerCase());
         instance.setPassword(passwordEncoder.encode(password));
@@ -184,14 +182,14 @@ public class DefaultAppUserService implements AppUserService {
         if (avatarService.isEnabled()) {
             instance.setAvatar(avatarService.getAvatar(email));
         }
-        AppUser entity = appUserPersistenceService.save(instance);
+        AppUserEntity entity = appUserPersistenceService.save(instance);
         refreshUsername(entity.getUsername());
         return entity;
     }
 
     @Override
-    public AppUser updateRoles(String username, List<String> roles) {
-        AppUser entity = getEntityByUsername(username);
+    public AppUserEntity updateRoles(String username, List<String> roles) {
+        AppUserEntity entity = getEntityByUsername(username);
         entity.setRoles(roles);
         entity.updateLastTokenInvalidation();
         appUserPersistenceService.save(entity);
@@ -199,10 +197,10 @@ public class DefaultAppUserService implements AppUserService {
     }
 
     @Override
-    public AppUser registerUser(RegistrationRequest registration) {
+    public AppUserEntity registerUser(RegistrationRequest registration) {
         validationService.validateRegistration(registration.getUsername(), registration.getPassword(), registration.getEmail());
 
-        AppUser instance = appUserPersistenceService.initNewInstance();
+        AppUserEntity instance = appUserPersistenceService.initNewInstance();
         instance.setUsername(registration.getUsername().toLowerCase());
         instance.setEmail(registration.getEmail().toLowerCase());
         instance.setFirstName(registration.getFirstName());
@@ -215,13 +213,13 @@ public class DefaultAppUserService implements AppUserService {
         }
         handleKeyValues(instance, registration.getKeyValues());
 
-        AppUser entity = appUserPersistenceService.save(instance);
+        AppUserEntity entity = appUserPersistenceService.save(instance);
         refreshUsername(entity.getUsername());
         return entity;
     }
 
     @Override
-    public void handleKeyValues(AppUser user, Map<String, String> keyValues) {
+    public void handleKeyValues(AppUserEntity user, Map<String, String> keyValues) {
         if (keyValues != null) {
             keyValues.forEach((key, value) -> {
                 if (value != null) {
@@ -235,7 +233,7 @@ public class DefaultAppUserService implements AppUserService {
 
     @Override
     public void processRegistrationVerification(String username) {
-        AppUser entity = getByUsername(username);
+        AppUserEntity entity = getByUsername(username);
         if (entity == null) {
             throw new NotFoundException();
         }
@@ -253,7 +251,7 @@ public class DefaultAppUserService implements AppUserService {
     }
 
     @Override
-    public void delete(AppUser user) {
+    public void delete(AppUserEntity user) {
         appUserPersistenceService.delete(user);
         refreshUsername(user.getUsername());
     }

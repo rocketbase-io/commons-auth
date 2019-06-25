@@ -2,7 +2,7 @@ package io.rocketbase.commons.converter;
 
 import com.google.common.collect.ImmutableMap;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
-import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.test.model.AppUserTestEntity;
 import org.junit.Test;
 
@@ -15,7 +15,7 @@ public class AppUserConverterTest {
     @Test
     public void fromEntity() {
         // given
-        AppUser entity = AppUserTestEntity.builder()
+        AppUserEntity entity = AppUserTestEntity.builder()
                 .id("id")
                 .email("email@test.io")
                 .keyValueMap(ImmutableMap.<String, String>builder()

@@ -2,8 +2,12 @@ package io.rocketbase.commons.security;
 
 import io.jsonwebtoken.*;
 import io.rocketbase.commons.config.JwtProperties;
+import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
-import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.model.AppUserToken;
+import io.rocketbase.commons.model.SimpleAppUserToken;
+import io.rocketbase.commons.util.RolesAuthoritiesConverter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,13 +18,19 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
 public class JwtTokenService implements Serializable {
 
     public static final String REFRESH_TOKEN = "REFRESH_TOKEN";
+    public static final String ROLES_KEY = "scopes";
+    public static final String USER_ID_KEY = "user_id";
+    public static final String FIRST_NAME_KEY = "given_name";
+    public static final String LAST_NAME_KEY = "family_name";
+    public static final String EMAIL_KEY = "email";
+    public static final String AVATAR_KEY = "picture";
+    public static final String KEY_VALUE_PREFIX = "kv_";
 
     final JwtProperties jwtProperties;
     final CustomAuthoritiesProvider customAuthoritiesProvider;
@@ -31,7 +41,7 @@ public class JwtTokenService implements Serializable {
 
     public Collection<GrantedAuthority> getAuthoritiesFromToken(String token) {
         Claims claims = getAllClaimsFromToken(token);
-        List roles = (List) claims.getOrDefault("scopes", Collections.emptyList());
+        List roles = (List) claims.getOrDefault(ROLES_KEY, Collections.emptyList());
         List<GrantedAuthority> result = new ArrayList<>();
         for (Object r : roles) {
             result.add(new SimpleGrantedAuthority(String.valueOf(r)));
@@ -61,30 +71,64 @@ public class JwtTokenService implements Serializable {
                 .getBody();
     }
 
-    public JwtTokenBundle generateTokenBundle(AppUser appUser) {
-        return generateTokenBundle(appUser.getUsername(), appUser.getAuthorities());
+    public AppUserToken parseToken(String token) {
+        Claims claims = getAllClaimsFromToken(token);
+        Map<String, String> keyValues = null;
+        for (String key : claims.keySet()) {
+            if (key.startsWith(KEY_VALUE_PREFIX)) {
+                if (keyValues == null) {
+                    keyValues = new HashMap<>();
+                }
+                keyValues.put(key.replaceAll("^" + KEY_VALUE_PREFIX, ""), claims.get(key, String.class));
+            }
+        }
+
+        return SimpleAppUserToken.builder()
+                .id(claims.get(USER_ID_KEY, String.class))
+                .username(claims.getSubject())
+                .firstName(claims.get(FIRST_NAME_KEY, String.class))
+                .lastName(claims.get(LAST_NAME_KEY, String.class))
+                .email(claims.get(EMAIL_KEY, String.class))
+                .avatar(claims.get(AVATAR_KEY, String.class))
+                .roles((List) claims.getOrDefault(ROLES_KEY, Collections.emptyList()))
+                .keyValueMap(keyValues)
+                .build();
     }
 
-    public JwtTokenBundle generateTokenBundle(String username, Collection<? extends GrantedAuthority> authorities) {
+
+    public JwtTokenBundle generateTokenBundle(AppUserToken appUserToken) {
         LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
-        return new JwtTokenBundle(generateAccessToken(now, username, authorities),
-                prepareBuilder(now, jwtProperties.getRefreshTokenExpiration(), username)
-                        .claim("scopes", Arrays.asList(REFRESH_TOKEN))
+        return new JwtTokenBundle(generateAccessToken(now, appUserToken),
+                prepareBuilder(now, jwtProperties.getRefreshTokenExpiration(), appUserToken.getUsername())
+                        .claim(USER_ID_KEY, appUserToken.getId())
+                        .claim(ROLES_KEY, Arrays.asList(REFRESH_TOKEN))
                         .compact());
     }
 
-    public String generateAccessToken(String username, Collection<? extends GrantedAuthority> authorities) {
-        return generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), username, authorities);
+    public String generateAccessToken(AppUserToken appUserToken) {
+        return generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), appUserToken);
     }
 
-    protected String generateAccessToken(LocalDateTime ldt, String username, Collection<? extends GrantedAuthority> authorities) {
+    protected String generateAccessToken(LocalDateTime ldt, AppUserToken appUserToken) {
         List<GrantedAuthority> scopes = new ArrayList<>();
-        scopes.addAll(authorities);
-        scopes.addAll(customAuthoritiesProvider.getExtraTokenAuthorities(username));
+        scopes.addAll(RolesAuthoritiesConverter.convert(appUserToken.getRoles()));
+        scopes.addAll(customAuthoritiesProvider.getExtraTokenAuthorities(appUserToken));
 
-        return prepareBuilder(ldt, jwtProperties.getAccessTokenExpiration(), username)
-                .claim("scopes", scopes.stream().map(a -> a.getAuthority()).collect(Collectors.toSet()))
-                .compact();
+        JwtBuilder jwtBuilder = prepareBuilder(ldt, jwtProperties.getAccessTokenExpiration(), appUserToken.getUsername())
+                .claim(ROLES_KEY, RolesAuthoritiesConverter.convert(scopes))
+                .claim(USER_ID_KEY, appUserToken.getId())
+                .claim(FIRST_NAME_KEY, appUserToken.getFirstName())
+                .claim(LAST_NAME_KEY, appUserToken.getLastName())
+                .claim(EMAIL_KEY, appUserToken.getEmail())
+                .claim(AVATAR_KEY, appUserToken.getAvatar());
+
+        Map<String, String> keyValues = AppUserConverter.filterInvisibleKeys(appUserToken.getKeyValues());
+        if (keyValues != null) {
+            for (Map.Entry<String, String> entry : keyValues.entrySet()) {
+                jwtBuilder.claim(KEY_VALUE_PREFIX + entry.getKey(), entry.getValue());
+            }
+        }
+        return jwtBuilder.compact();
     }
 
     private JwtBuilder prepareBuilder(LocalDateTime ldt, long expirationMinutes, String username) {
@@ -100,7 +144,15 @@ public class JwtTokenService implements Serializable {
                 .toInstant());
     }
 
-    public Boolean validateToken(String token, AppUser user) {
+    /**
+     * check if token string is valid and fit expected username
+     *
+     * @param token
+     * @param username
+     * @param lastTokenInvalidation
+     * @return true in case of valid
+     */
+    public Boolean validateToken(String token, String username, LocalDateTime lastTokenInvalidation) {
         try {
             getAllClaimsFromToken(token);
         } catch (JwtException e) {
@@ -110,22 +162,26 @@ public class JwtTokenService implements Serializable {
             }
             return false;
         }
-        if (!getUsernameFromToken(token).equals(user.getUsername())) {
+        if (!getUsernameFromToken(token).equals(username)) {
             // username not fitting
             if (log.isTraceEnabled()) {
                 log.trace("token username differs");
             }
             return false;
         }
-        if (user.getLastTokenInvalidation() == null) {
+        if (lastTokenInvalidation == null) {
             return true;
         } else {
             // check if token creation is newer then last token invalidation
-            boolean validIssued = user.getLastTokenInvalidation().isBefore(getIssuedAtDateFromToken(token));
+            boolean validIssued = lastTokenInvalidation.isBefore(getIssuedAtDateFromToken(token));
             if (log.isTraceEnabled() && !validIssued) {
-                log.trace("token is issued {} before lastTokenInvalidation {}", getIssuedAtDateFromToken(token), user.getLastTokenInvalidation());
+                log.trace("token is issued {} before lastTokenInvalidation {}", getIssuedAtDateFromToken(token), lastTokenInvalidation);
             }
             return validIssued;
         }
+    }
+
+    public Boolean validateToken(String token, AppUserEntity user) {
+        return validateToken(token, user.getUsername(), user.getLastTokenInvalidation());
     }
 }

@@ -1,8 +1,8 @@
 package io.rocketbase.commons.service;
 
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
-import io.rocketbase.commons.model.AppUserEntity;
-import io.rocketbase.commons.repository.AppUserRepository;
+import io.rocketbase.commons.model.AppUserJpaEntity;
+import io.rocketbase.commons.repository.AppUserJpaRepository;
 import io.rocketbase.commons.util.Nulls;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
@@ -16,28 +16,28 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserEntity> {
+public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJpaEntity> {
 
-    private final AppUserRepository repository;
+    private final AppUserJpaRepository repository;
 
     @Override
-    public Optional<AppUserEntity> findByUsername(String username) {
+    public Optional<AppUserJpaEntity> findByUsername(String username) {
         return repository.findByUsername(username);
     }
 
     @Override
-    public Optional<AppUserEntity> findByEmail(String email) {
+    public Optional<AppUserJpaEntity> findByEmail(String email) {
         return repository.findByEmail(email);
     }
 
     @Override
-    public Page<AppUserEntity> findAll(Pageable pageable) {
+    public Page<AppUserJpaEntity> findAll(Pageable pageable) {
         return repository.findAll(pageable);
     }
 
     @Override
-    public Page<AppUserEntity> findAll(QueryAppUser query, Pageable pageable) {
-        AppUserEntity example = new AppUserEntity();
+    public Page<AppUserJpaEntity> findAll(QueryAppUser query, Pageable pageable) {
+        AppUserJpaEntity example = new AppUserJpaEntity();
         example.setKeyValueMap(null);
         example.setEnabled(true);
         if (query != null) {
@@ -58,12 +58,12 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserE
     }
 
     @Override
-    public AppUserEntity save(AppUserEntity entity) {
+    public AppUserJpaEntity save(AppUserJpaEntity entity) {
         return repository.save(entity);
     }
 
     @Override
-    public Optional<AppUserEntity> findById(String id) {
+    public Optional<AppUserJpaEntity> findById(String id) {
         return repository.findById(id);
     }
 
@@ -73,7 +73,7 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserE
     }
 
     @Override
-    public void delete(AppUserEntity entity) {
+    public void delete(AppUserJpaEntity entity) {
         repository.delete(entity);
     }
 
@@ -83,8 +83,8 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserE
     }
 
     @Override
-    public AppUserEntity initNewInstance() {
-        return AppUserEntity.builder()
+    public AppUserJpaEntity initNewInstance() {
+        return AppUserJpaEntity.builder()
                 .id(UUID.randomUUID().toString())
                 .created(LocalDateTime.now())
                 .roles(new ArrayList<>())

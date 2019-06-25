@@ -1,6 +1,9 @@
 package io.rocketbase.commons.dto.appuser;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.rocketbase.commons.model.AppUserReference;
+import io.rocketbase.commons.model.AppUserToken;
+import io.rocketbase.commons.model.SimpleAppUserReference;
 import lombok.*;
 
 import java.io.Serializable;
@@ -13,7 +16,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class AppUserRead implements Serializable {
+public class AppUserRead implements AppUserToken, Serializable {
 
     private String id;
 
@@ -39,7 +42,7 @@ public class AppUserRead implements Serializable {
 
     @JsonIgnore
     public AppUserReference toReference() {
-        return AppUserReference.builder()
+        return SimpleAppUserReference.builder()
                 .id(getId())
                 .username(getUsername())
                 .firstName(getFirstName())

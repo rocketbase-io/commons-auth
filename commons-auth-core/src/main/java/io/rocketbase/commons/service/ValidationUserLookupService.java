@@ -1,12 +1,13 @@
 package io.rocketbase.commons.service;
 
-import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.model.AppUserToken;
 
 import java.util.Optional;
 
 public interface ValidationUserLookupService {
 
-    AppUser getByUsername(String username);
+    AppUserToken getByUsername(String username);
 
-    Optional<AppUser> findByEmail(String email);
+    Optional<AppUserEntity> findByEmail(String email);
 }

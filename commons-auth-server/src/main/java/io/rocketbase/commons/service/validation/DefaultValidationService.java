@@ -10,7 +10,7 @@ import io.rocketbase.commons.exception.EmailValidationException;
 import io.rocketbase.commons.exception.PasswordValidationException;
 import io.rocketbase.commons.exception.RegistrationException;
 import io.rocketbase.commons.exception.UsernameValidationException;
-import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.service.ValidationUserLookupService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -131,7 +131,7 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
         if (!getUserMatcher().matcher(notNullUsername).matches()) {
             errorCodes.add(UsernameErrorCodes.NOT_ALLOWED_CHAR);
         }
-        AppUser found = userLookupService.getByUsername(notNullUsername);
+        AppUserToken found = userLookupService.getByUsername(notNullUsername);
         if (found != null) {
             errorCodes.add(UsernameErrorCodes.ALREADY_TAKEN);
         }

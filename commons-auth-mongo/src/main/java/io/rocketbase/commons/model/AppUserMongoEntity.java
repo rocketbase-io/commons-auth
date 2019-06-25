@@ -1,6 +1,6 @@
 package io.rocketbase.commons.model;
 
-import com.google.common.collect.ImmutableMap;
+import io.rocketbase.commons.util.RolesAuthoritiesConverter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,11 +9,13 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.security.core.GrantedAuthority;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +26,7 @@ import java.util.Map;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AppUserEntity extends AppUser {
+public class AppUserMongoEntity implements AppUserEntity {
 
     @Id
     private String id;
@@ -61,7 +63,6 @@ public class AppUserEntity extends AppUser {
     @Builder.Default
     private Map<String, String> keyValueMap = new HashMap<>();
 
-    @Override
     public void updateLastLogin() {
         this.lastLogin = LocalDateTime.now(ZoneOffset.UTC);
     }
@@ -72,29 +73,12 @@ public class AppUserEntity extends AppUser {
     }
 
     @Override
-    public AppUser addKeyValue(String key, String value) {
-        checkKeyValue(key, value);
-        keyValueMap.put(key.toLowerCase(), value);
-        return this;
-    }
-
-    @Override
-    public void removeKeyValue(String key) {
-        keyValueMap.remove(key.toLowerCase());
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return RolesAuthoritiesConverter.convert(getRoles());
     }
 
     @Override
     public Map<String, String> getKeyValues() {
-        return ImmutableMap.copyOf(keyValueMap);
-    }
-
-    @Override
-    public boolean hasKeyValue(String key) {
-        return keyValueMap != null && key != null && keyValueMap.containsKey(key.toLowerCase());
-    }
-
-    @Override
-    public String getKeyValue(String key) {
-        return keyValueMap != null && key != null ? keyValueMap.getOrDefault(key.toLowerCase(), null) : null;
+        return keyValueMap;
     }
 }

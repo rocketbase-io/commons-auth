@@ -1,6 +1,6 @@
 package io.rocketbase.commons.config;
 
-import io.rocketbase.commons.repository.AppUserRepository;
+import io.rocketbase.commons.repository.AppUserJpaRepository;
 import io.rocketbase.commons.service.AppUserJpaServiceImpl;
 import io.rocketbase.commons.service.AppUserPersistenceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,7 @@ public class AuthJpaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AppUserPersistenceService appUserPersistenceService(@Autowired AppUserRepository appUserRepository) {
-        return new AppUserJpaServiceImpl(appUserRepository);
+    public AppUserPersistenceService appUserPersistenceService(@Autowired AppUserJpaRepository appUserJpaRepository) {
+        return new AppUserJpaServiceImpl(appUserJpaRepository);
     }
 }

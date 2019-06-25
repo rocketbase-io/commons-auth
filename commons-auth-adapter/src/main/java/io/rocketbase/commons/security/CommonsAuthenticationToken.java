@@ -1,6 +1,6 @@
 package io.rocketbase.commons.security;
 
-import io.rocketbase.commons.dto.appuser.AppUserRead;
+import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.util.JwtTokenStore;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,9 +22,9 @@ public class CommonsAuthenticationToken extends AbstractAuthenticationToken {
     @Setter
     private WebAuthenticationDetails details;
 
-    public CommonsAuthenticationToken(Collection<? extends GrantedAuthority> authorities, AppUserRead principal, JwtTokenStore jwtTokenStore) {
+    public CommonsAuthenticationToken(Collection<? extends GrantedAuthority> authorities, AppUserToken appUserToken, JwtTokenStore jwtTokenStore) {
         super(authorities);
-        this.principal = new CommonsPrincipal(principal);
+        this.principal = new CommonsPrincipal(appUserToken);
         this.jwtTokenStore = jwtTokenStore;
     }
 

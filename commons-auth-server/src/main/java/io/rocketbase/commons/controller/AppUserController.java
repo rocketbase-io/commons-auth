@@ -7,7 +7,7 @@ import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.appuser.AppUserUpdate;
 import io.rocketbase.commons.exception.NotFoundException;
-import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.service.AppUserPersistenceService;
 import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.service.validation.ValidationService;
@@ -45,7 +45,7 @@ public class AppUserController implements BaseController {
     @RequestMapping(method = RequestMethod.GET, path = "/api/user")
     @ResponseBody
     public PageableResult<AppUserRead> find(@RequestParam(required = false) MultiValueMap<String, String> params) {
-        Page<AppUser> entities = appUserPersistenceService.findAll(queryConverter.fromParams(params),
+        Page<AppUserEntity> entities = appUserPersistenceService.findAll(queryConverter.fromParams(params),
                 parsePageRequest(params, Sort.by("username")));
 
         return PageableResult.contentPage(appUserConverter.fromEntities(entities.getContent()), entities);
@@ -56,7 +56,7 @@ public class AppUserController implements BaseController {
     public AppUserRead create(@RequestBody @NotNull @Validated AppUserCreate create) {
         validationService.validateRegistration(create.getUsername(), create.getPassword(), create.getEmail());
 
-        AppUser entity = appUserService.initializeUser(create.getUsername(), create.getPassword(), create.getEmail(), create.getAdmin());
+        AppUserEntity entity = appUserService.initializeUser(create.getUsername(), create.getPassword(), create.getEmail(), create.getAdmin());
         if (create.getFirstName() != null || create.getLastName() != null || create.getAvatar() != null || create.getKeyValues() != null) {
             String avatar = create.getAvatar() != null ? create.getAvatar() : entity.getAvatar();
             appUserService.updateProfile(entity.getUsername(), create.getFirstName(), create.getLastName(), avatar, create.getKeyValues());
@@ -67,7 +67,7 @@ public class AppUserController implements BaseController {
     @RequestMapping(method = RequestMethod.PATCH, path = "/api/user/{id}", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public AppUserRead patch(@PathVariable("id") String id, @RequestBody @NotNull @Validated AppUserUpdate update) {
-        AppUser entity = getById(id);
+        AppUserEntity entity = getById(id);
         if (shouldPatch(update.getFirstName())) {
             entity.setFirstName(update.getFirstName());
         }
@@ -96,14 +96,14 @@ public class AppUserController implements BaseController {
 
     @RequestMapping(method = RequestMethod.DELETE, path = "/api/user/{id}")
     public void delete(@PathVariable("id") String id) {
-        AppUser entity = getById(id);
+        AppUserEntity entity = getById(id);
         appUserPersistenceService.delete(entity);
         appUserService.refreshUsername(entity.getUsername());
     }
 
 
-    private AppUser getById(String id) {
-        Optional<AppUser> optionalAppUser = appUserPersistenceService.findById(id);
+    private AppUserEntity getById(String id) {
+        Optional<AppUserEntity> optionalAppUser = appUserPersistenceService.findById(id);
         if (!optionalAppUser.isPresent()) {
             throw new NotFoundException();
         }

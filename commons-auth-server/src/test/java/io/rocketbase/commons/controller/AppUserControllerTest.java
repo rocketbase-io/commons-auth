@@ -9,7 +9,7 @@ import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.appuser.AppUserUpdate;
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
-import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.resource.AppUserResource;
 import io.rocketbase.commons.test.AppUserPersistenceTestService;
 import io.rocketbase.commons.test.BaseIntegrationTest;
@@ -34,7 +34,7 @@ public class AppUserControllerTest extends BaseIntegrationTest {
     @Test
     public void find() {
         // given
-        AppUser user = getAppUser("admin");
+        AppUserEntity user = getAppUser("admin");
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), modifiedJwtTokenService.generateTokenBundle(user));
 
         // when
@@ -51,7 +51,7 @@ public class AppUserControllerTest extends BaseIntegrationTest {
     @Test
     public void findQuery() {
         // given
-        AppUser user = getAppUser("admin");
+        AppUserEntity user = getAppUser("admin");
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), modifiedJwtTokenService.generateTokenBundle(user));
 
         // when
@@ -68,7 +68,7 @@ public class AppUserControllerTest extends BaseIntegrationTest {
     @Test
     public void create() {
         // given
-        AppUser user = getAppUser("admin");
+        AppUserEntity user = getAppUser("admin");
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), modifiedJwtTokenService.generateTokenBundle(user));
 
         // when
@@ -90,7 +90,7 @@ public class AppUserControllerTest extends BaseIntegrationTest {
     @Test
     public void patch() {
         // given
-        AppUser user = getAppUser("admin");
+        AppUserEntity user = getAppUser("admin");
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), modifiedJwtTokenService.generateTokenBundle(user));
 
         // when
@@ -109,7 +109,7 @@ public class AppUserControllerTest extends BaseIntegrationTest {
     @Test
     public void delete() {
         // given
-        AppUser user = getAppUser("admin");
+        AppUserEntity user = getAppUser("admin");
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), modifiedJwtTokenService.generateTokenBundle(user));
 
         // when

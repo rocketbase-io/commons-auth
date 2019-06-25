@@ -8,7 +8,7 @@ import io.rocketbase.commons.event.ForgotPasswordEvent;
 import io.rocketbase.commons.event.ResetPasswordEvent;
 import io.rocketbase.commons.exception.UnknownUserException;
 import io.rocketbase.commons.exception.VerificationException;
-import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.service.SimpleTokenService;
 import io.rocketbase.commons.service.SimpleTokenService.Token;
 import io.rocketbase.commons.service.email.EmailService;
@@ -37,8 +37,8 @@ public class DefaultAppUserForgotPasswordService implements AppUserForgotPasswor
     private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    public AppUser requestPasswordReset(ForgotPasswordRequest forgotPassword, String baseUrl) {
-        AppUser appUser = null;
+    public AppUserEntity requestPasswordReset(ForgotPasswordRequest forgotPassword, String baseUrl) {
+        AppUserEntity appUser = null;
         if (forgotPassword.getUsername() != null) {
             appUser = appUserService.getByUsername(forgotPassword.getUsername());
         } else if (forgotPassword.getEmail() != null) {
@@ -58,12 +58,12 @@ public class DefaultAppUserForgotPasswordService implements AppUserForgotPasswor
     }
 
     @Override
-    public AppUser resetPassword(PerformPasswordResetRequest performPasswordReset) {
+    public AppUserEntity resetPassword(PerformPasswordResetRequest performPasswordReset) {
         Token token = SimpleTokenService.parseToken(performPasswordReset.getVerification());
         if (!token.isValid()) {
             throw new VerificationException();
         }
-        AppUser user = appUserService.getByUsername(token.getUsername());
+        AppUserEntity user = appUserService.getByUsername(token.getUsername());
         if (user == null || !user.isEnabled()) {
             throw new UnknownUserException();
         }

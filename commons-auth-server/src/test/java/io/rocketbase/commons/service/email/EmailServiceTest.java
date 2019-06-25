@@ -1,7 +1,7 @@
 package io.rocketbase.commons.service.email;
 
 import io.rocketbase.commons.config.EmailProperties;
-import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.test.BaseIntegrationTest;
 import org.junit.Test;
 
@@ -22,7 +22,7 @@ public class EmailServiceTest extends BaseIntegrationTest {
     @Test
     public void simpleSendRegistrationEmail() throws Exception {
         // given
-        AppUser user = getAppUser();
+        AppUserEntity user = getAppUser();
 
         EmailProperties emailProperties = new EmailProperties();
 

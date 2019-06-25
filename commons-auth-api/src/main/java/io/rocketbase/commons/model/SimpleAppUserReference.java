@@ -1,8 +1,6 @@
-package io.rocketbase.commons.dto.appuser;
+package io.rocketbase.commons.model;
 
 import lombok.*;
-
-import java.io.Serializable;
 
 /**
  * simplified AppUser without keyValues, password, audit etc...<br>
@@ -13,7 +11,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class AppUserReference implements Serializable {
+public class SimpleAppUserReference implements AppUserReference {
 
     private String id;
 

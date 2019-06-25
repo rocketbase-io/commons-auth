@@ -1,7 +1,7 @@
 package io.rocketbase.commons.security;
 
 import io.rocketbase.commons.config.JwtProperties;
-import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.test.model.AppUserTestEntity;
 import org.junit.Test;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,7 +28,7 @@ public class JwtTokenServiceTest {
         return service;
     }
 
-    private AppUser genAppUser() {
+    private AppUserEntity genAppUser() {
         return AppUserTestEntity.builder()
                 .id(UUID.randomUUID().toString())
                 .username("user")
@@ -41,8 +41,8 @@ public class JwtTokenServiceTest {
     @Test
     public void getUsernameFromToken() {
         // given
-        AppUser appUser = genAppUser();
-        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), appUser.getUsername(), appUser.getAuthorities());
+        AppUserEntity appUser = genAppUser();
+        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), appUser);
 
         // when
         String username = getInstance().getUsernameFromToken(token);
@@ -56,8 +56,8 @@ public class JwtTokenServiceTest {
     @Test
     public void getAuthoritiesFromToken() {
         // given
-        AppUser appUser = genAppUser();
-        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), appUser.getUsername(), appUser.getAuthorities());
+        AppUserEntity appUser = genAppUser();
+        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), appUser);
 
         // when
         Collection<? extends GrantedAuthority> authorities = getInstance().getAuthoritiesFromToken(token);
@@ -72,8 +72,8 @@ public class JwtTokenServiceTest {
     public void getIssuedAtDateFromToken() {
         // given
         LocalDateTime beforeCreate = LocalDateTime.now(UTC).minusSeconds(2);
-        AppUser appUser = genAppUser();
-        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), appUser.getUsername(), appUser.getAuthorities());
+        AppUserEntity appUser = genAppUser();
+        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), appUser);
         LocalDateTime afterCreate = LocalDateTime.now(UTC).plusSeconds(2);
 
         // when
@@ -89,8 +89,8 @@ public class JwtTokenServiceTest {
     public void getExpirationDateFromToken() {
         // given
         LocalDateTime beforeCreate = LocalDateTime.now(UTC).minusSeconds(2);
-        AppUser appUser = genAppUser();
-        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), appUser.getUsername(), appUser.getAuthorities());
+        AppUserEntity appUser = genAppUser();
+        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), appUser);
 
         // when
         LocalDateTime expired = getInstance().getExpirationDateFromToken(token);
@@ -107,10 +107,10 @@ public class JwtTokenServiceTest {
     @Test
     public void validateToken() {
         // given
-        AppUser appUser = genAppUser();
+        AppUserEntity appUser = genAppUser();
 
         // when
-        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), appUser.getUsername(), appUser.getAuthorities());
+        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), appUser);
 
         // then
         assertThat(getInstance().validateToken(token, genAppUser()), equalTo(true));
@@ -119,11 +119,11 @@ public class JwtTokenServiceTest {
     @Test
     public void validateIssued() throws Exception {
         // given
-        AppUser appUser = genAppUser();
+        AppUserEntity appUser = genAppUser();
         appUser.updateLastTokenInvalidation();
         Thread.sleep(1001);
 
-        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), appUser.getUsername(), appUser.getAuthorities());
+        String token = getInstance().generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), appUser);
 
         // when
         Boolean validateToken = getInstance().validateToken(token, appUser);

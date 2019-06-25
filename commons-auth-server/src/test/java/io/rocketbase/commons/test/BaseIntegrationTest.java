@@ -1,7 +1,7 @@
 package io.rocketbase.commons.test;
 
 
-import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.model.AppUserEntity;
 import lombok.Getter;
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,12 +29,12 @@ public abstract class BaseIntegrationTest {
     @Resource
     private AppUserPersistenceTestService appUserPersistenceTestService;
 
-    protected AppUser getAppUser() {
+    protected AppUserEntity getAppUser() {
         return getAppUser("user");
     }
 
-    protected AppUser getAppUser(String username) {
-        return (AppUser) appUserPersistenceTestService.findByUsername(username).get();
+    protected AppUserEntity getAppUser(String username) {
+        return appUserPersistenceTestService.findByUsername(username).get();
     }
 
     @Before

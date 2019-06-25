@@ -1,14 +1,17 @@
 package io.rocketbase.commons.test.model;
 
 import com.google.common.collect.ImmutableMap;
-import io.rocketbase.commons.model.AppUser;
+import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.util.RolesAuthoritiesConverter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +22,7 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AppUserTestEntity extends AppUser {
+public class AppUserTestEntity implements AppUserEntity {
 
     private String id;
 
@@ -80,7 +83,7 @@ public class AppUserTestEntity extends AppUser {
     }
 
     @Override
-    public AppUser addKeyValue(String key, String value) {
+    public AppUserEntity addKeyValue(String key, String value) {
         checkKeyValue(key, value);
         keyValueMap.put(key.toLowerCase(), value);
         return this;
@@ -104,5 +107,10 @@ public class AppUserTestEntity extends AppUser {
     @Override
     public String getKeyValue(String key) {
         return keyValueMap != null && key != null ? keyValueMap.getOrDefault(key.toLowerCase(), null) : null;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return RolesAuthoritiesConverter.convert(getRoles());
     }
 }
