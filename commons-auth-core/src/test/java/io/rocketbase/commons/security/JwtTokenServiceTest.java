@@ -26,7 +26,7 @@ public class JwtTokenServiceTest {
                 .lastName("lastName")
                 .email("sample@rocketbase.io")
                 .avatar("https://i.pravatar.cc/300")
-                .roles(Arrays.asList("USER"))
+                .roles(Arrays.asList("ROLE_USER"))
                 .keyValueMap(ImmutableMap.of("special", "v1", "clientId", "1233"))
                 .build();
 

@@ -18,7 +18,7 @@ public final class RolesAuthoritiesConverter {
     public static Collection<? extends GrantedAuthority> convert(List<String> roles) {
         return roles != null ?
                 roles.stream()
-                        .map(r -> new SimpleGrantedAuthority(String.format("ROLE_%s", r)))
+                        .map(r -> new SimpleGrantedAuthority(String.format("ROLE_%s", r.replaceAll("^ROLE_", ""))))
                         .collect(Collectors.toList()) :
                 Collections.emptyList();
     }
