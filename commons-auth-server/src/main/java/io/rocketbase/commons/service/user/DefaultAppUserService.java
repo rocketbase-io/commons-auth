@@ -35,7 +35,7 @@ public class DefaultAppUserService implements AppUserService {
     final RegistrationProperties registrationProperties;
 
     @Resource
-    protected AppUserPersistenceService appUserPersistenceService;
+    protected AppUserPersistenceService<AppUserEntity> appUserPersistenceService;
 
     @Resource
     protected AvatarService avatarService;
@@ -65,16 +65,13 @@ public class DefaultAppUserService implements AppUserService {
     @Override
     @SneakyThrows
     public AppUserEntity getByUsername(String username) {
-        Optional<AppUserEntity> userEntity = null;
+        Optional<AppUserEntity> userEntity;
         if (cache != null) {
             userEntity = cache.get(username);
         } else {
             userEntity = appUserPersistenceService.findByUsername(username);
         }
-        if (userEntity.isPresent()) {
-            return userEntity.get();
-        }
-        return null;
+        return userEntity.orElse(null);
     }
 
     @Override
@@ -129,7 +126,7 @@ public class DefaultAppUserService implements AppUserService {
         return refreshUsername(username);
     }
 
-    protected AppUserEntity getEntityByUsername(String username) {
+    private AppUserEntity getEntityByUsername(String username) {
         Optional<AppUserEntity> optional = appUserPersistenceService.findByUsername(username);
         if (!optional.isPresent()) {
             throw new NotFoundException();
@@ -165,7 +162,7 @@ public class DefaultAppUserService implements AppUserService {
 
     @Override
     public AppUserEntity initializeUser(String username, String password, String email, boolean admin) throws UsernameNotFoundException, EmailValidationException {
-        return initializeUser(username, password, email, Arrays.asList(admin ? authProperties.getRoleAdmin() : authProperties.getRoleUser()));
+        return initializeUser(username, password, email, Collections.singletonList(admin ? authProperties.getRoleAdmin() : authProperties.getRoleUser()));
     }
 
     @Override
@@ -206,7 +203,7 @@ public class DefaultAppUserService implements AppUserService {
         instance.setFirstName(registration.getFirstName());
         instance.setLastName(registration.getLastName());
         instance.setPassword(passwordEncoder.encode(registration.getPassword()));
-        instance.setRoles(Arrays.asList(registrationProperties.getRole()));
+        instance.setRoles(Collections.singletonList(registrationProperties.getRole()));
         instance.setEnabled(!registrationProperties.isVerification());
         if (avatarService.isEnabled()) {
             instance.setAvatar(avatarService.getAvatar(registration.getEmail()));
