@@ -4,6 +4,8 @@
 
 [![Build Status](https://travis-ci.org/rocketbase-io/commons-auth.svg?branch=master)](https://travis-ci.org/rocketbase-io/commons-auth)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.rocketbase.commons/commons-auth/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.rocketbase.commons/commons-auth)
+[![Maintainability](https://api.codeclimate.com/v1/badges/341f43fec3b1d060c58c/maintainability)](https://codeclimate.com/github/rocketbase-io/commons-auth/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/341f43fec3b1d060c58c/test_coverage)](https://codeclimate.com/github/rocketbase-io/commons-auth/test_coverage)
 
 Adds auth services to your spring-boot applications. We at [rocketbase.io](https://www.rocketbase.io) develop many microservices and tried different tools and projects. All of them didn't matched our needs or were too bloated for smaller projects.
 
