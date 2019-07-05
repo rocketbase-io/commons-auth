@@ -13,8 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -54,22 +53,22 @@ public class AppUserMongoEntity implements AppUserEntity {
     private boolean enabled;
 
     @CreatedDate
-    private LocalDateTime created;
+    private Instant created;
 
-    private LocalDateTime lastLogin;
+    private Instant lastLogin;
 
-    private LocalDateTime lastTokenInvalidation;
+    private Instant lastTokenInvalidation;
 
     @Builder.Default
     private Map<String, String> keyValueMap = new HashMap<>();
 
     public void updateLastLogin() {
-        this.lastLogin = LocalDateTime.now(ZoneOffset.UTC);
+        this.lastLogin = Instant.now();
     }
 
     @Override
     public void updateLastTokenInvalidation() {
-        this.lastTokenInvalidation = LocalDateTime.now(ZoneOffset.UTC);
+        this.lastTokenInvalidation = Instant.now();
     }
 
     @Override

@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -112,7 +112,7 @@ public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUse
     public AppUserMongoEntity initNewInstance() {
         return AppUserMongoEntity.builder()
                 .id(UUID.randomUUID().toString())
-                .created(LocalDateTime.now())
+                .created(Instant.now())
                 .roles(new ArrayList<>())
                 .build();
     }

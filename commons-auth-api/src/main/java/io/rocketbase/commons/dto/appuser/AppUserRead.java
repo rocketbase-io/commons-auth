@@ -7,7 +7,7 @@ import io.rocketbase.commons.model.SimpleAppUserReference;
 import lombok.*;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -36,9 +36,9 @@ public class AppUserRead implements AppUserToken, Serializable {
 
     private boolean enabled;
 
-    private LocalDateTime created;
+    private Instant created;
 
-    private LocalDateTime lastLogin;
+    private Instant lastLogin;
 
     @JsonIgnore
     public AppUserReference toReference() {

@@ -10,7 +10,7 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
@@ -86,7 +86,7 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJ
     public AppUserJpaEntity initNewInstance() {
         return AppUserJpaEntity.builder()
                 .id(UUID.randomUUID().toString())
-                .created(LocalDateTime.now())
+                .created(Instant.now())
                 .roles(new ArrayList<>())
                 .build();
     }

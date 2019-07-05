@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.Assert;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 public interface AppUserEntity extends UserDetails, AppUserToken {
@@ -17,10 +17,8 @@ public interface AppUserEntity extends UserDetails, AppUserToken {
 
     void setPassword(String password);
 
-
     void setFirstName(String firstName);
-
-
+    
     void setLastName(String lastName);
 
     void setEmail(String email);
@@ -31,12 +29,12 @@ public interface AppUserEntity extends UserDetails, AppUserToken {
 
     void setEnabled(boolean enabled);
 
-    LocalDateTime getCreated();
+    Instant getCreated();
 
     /**
      * @return null or date of last login with TimeZone UTC
      */
-    LocalDateTime getLastLogin();
+    Instant getLastLogin();
 
     /**
      * used for analytics of inactive user xyz<br>
@@ -47,7 +45,7 @@ public interface AppUserEntity extends UserDetails, AppUserToken {
     /**
      * @return null or date of last token invalidation with TimeZone UTC
      */
-    LocalDateTime getLastTokenInvalidation();
+    Instant getLastTokenInvalidation();
 
     /**
      * used to mark token that are issued before as invalid<br>

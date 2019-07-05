@@ -1,12 +1,12 @@
 package io.rocketbase.commons.util;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
 
@@ -30,8 +30,6 @@ public final class JwtTokenDecoder {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class JwtTokenBody {
 
-        private static final ZoneId ZONE_UTC = ZoneId.of("+0");
-
         /**
          * token creation date
          */
@@ -44,6 +42,10 @@ public final class JwtTokenDecoder {
          * username
          */
         private String sub;
+
+        @Getter
+        @JsonProperty("user_id")
+        private String userId;
         /**
          * roles
          */
@@ -51,21 +53,21 @@ public final class JwtTokenDecoder {
 
         public boolean isExpired() {
             if (exp != null) {
-                return getExpiration().isBefore(LocalDateTime.now(ZONE_UTC));
+                return getExpiration().isBefore(Instant.now());
             }
             return false;
         }
 
-        public LocalDateTime getExpiration() {
+        public Instant getExpiration() {
             if (exp != null) {
-                return LocalDateTime.ofEpochSecond(exp, 0, ZoneOffset.UTC);
+                return Instant.ofEpochSecond(exp, 0);
             }
             return null;
         }
 
-        public LocalDateTime getIssuedAt() {
+        public Instant getIssuedAt() {
             if (iat != null) {
-                return LocalDateTime.ofEpochSecond(iat, 0, ZoneOffset.UTC);
+                return Instant.ofEpochSecond(iat, 0);
             }
             return null;
         }
@@ -75,10 +77,9 @@ public final class JwtTokenDecoder {
         }
 
         public boolean hasRole(String name) {
-            return scopes != null ? scopes.stream()
+            return scopes != null && scopes.stream()
                     .filter(s -> s.equalsIgnoreCase(name))
-                    .findFirst().isPresent() :
-                    false;
+                    .findFirst().isPresent();
         }
     }
 }

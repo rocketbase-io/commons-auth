@@ -8,8 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
 
 @Slf4j
 @Component
@@ -21,6 +20,6 @@ public class ModifiedJwtTokenService extends JwtTokenService {
     }
 
     public String generateExpiredToken(AppUserEntity user) {
-        return generateAccessToken(LocalDateTime.now(ZoneOffset.UTC).minusDays(100), user);
+        return generateAccessToken(Instant.now().minusSeconds(60 * 60 * 24 * 100), user);
     }
 }

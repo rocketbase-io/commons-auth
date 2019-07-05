@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @Builder
@@ -21,13 +21,13 @@ public class JwtTokenBundle implements Serializable {
     private String refreshToken;
 
     @JsonIgnore
-    public LocalDateTime getAccessTokenExpiryDate() {
+    public Instant getAccessTokenExpiryDate() {
         JwtTokenDecoder.JwtTokenBody body = JwtTokenDecoder.decodeTokenBody(token);
         return body.getExpiration();
     }
 
     @JsonIgnore
-    public LocalDateTime getRefreshTokenExpiryDate() {
+    public Instant getRefreshTokenExpiryDate() {
         JwtTokenDecoder.JwtTokenBody body = JwtTokenDecoder.decodeTokenBody(refreshToken);
         return body.getExpiration();
     }

@@ -14,7 +14,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.*;
 import java.util.function.Function;
@@ -50,14 +50,14 @@ public class JwtTokenService implements Serializable {
         return result;
     }
 
-    public LocalDateTime getIssuedAtDateFromToken(String token) {
+    public Instant getIssuedAtDateFromToken(String token) {
         Date issuedAt = getClaimFromToken(token, Claims::getIssuedAt);
-        return LocalDateTime.ofInstant(issuedAt.toInstant(), ZoneOffset.UTC);
+        return Instant.ofEpochMilli(issuedAt.getTime());
     }
 
-    public LocalDateTime getExpirationDateFromToken(String token) {
+    public Instant getExpirationDateFromToken(String token) {
         Date expiration = getClaimFromToken(token, Claims::getExpiration);
-        return LocalDateTime.ofInstant(expiration.toInstant(), ZoneOffset.UTC);
+        return Instant.ofEpochMilli(expiration.getTime());
     }
 
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
@@ -98,7 +98,7 @@ public class JwtTokenService implements Serializable {
 
 
     public JwtTokenBundle generateTokenBundle(AppUserToken appUserToken) {
-        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        Instant now = Instant.now();
         return new JwtTokenBundle(generateAccessToken(now, appUserToken),
                 prepareBuilder(now, jwtProperties.getRefreshTokenExpiration(), appUserToken.getUsername())
                         .claim(USER_ID_KEY, appUserToken.getId())
@@ -107,10 +107,10 @@ public class JwtTokenService implements Serializable {
     }
 
     public String generateAccessToken(AppUserToken appUserToken) {
-        return generateAccessToken(LocalDateTime.now(ZoneOffset.UTC), appUserToken);
+        return generateAccessToken(Instant.now(), appUserToken);
     }
 
-    protected String generateAccessToken(LocalDateTime ldt, AppUserToken appUserToken) {
+    protected String generateAccessToken(Instant ldt, AppUserToken appUserToken) {
         List<GrantedAuthority> scopes = new ArrayList<>();
         scopes.addAll(RolesAuthoritiesConverter.convert(appUserToken.getRoles()));
         scopes.addAll(customAuthoritiesProvider.getExtraTokenAuthorities(appUserToken));
@@ -132,15 +132,15 @@ public class JwtTokenService implements Serializable {
         return jwtBuilder.compact();
     }
 
-    private JwtBuilder prepareBuilder(LocalDateTime ldt, long expirationMinutes, String username) {
+    private JwtBuilder prepareBuilder(Instant ldt, long expirationMinutes, String username) {
         return Jwts.builder()
                 .setIssuedAt(convert(ldt))
-                .setExpiration(convert(ldt.plusMinutes(expirationMinutes)))
+                .setExpiration(convert(ldt.plusSeconds(expirationMinutes*60)))
                 .signWith(SignatureAlgorithm.HS512, jwtProperties.getSecret())
                 .setSubject(username);
     }
 
-    private Date convert(LocalDateTime ldt) {
+    private Date convert(Instant ldt) {
         return Date.from(ldt.atZone(ZoneOffset.UTC)
                 .toInstant());
     }
@@ -153,7 +153,7 @@ public class JwtTokenService implements Serializable {
      * @param lastTokenInvalidation
      * @return true in case of valid
      */
-    public Boolean validateToken(String token, String username, LocalDateTime lastTokenInvalidation) {
+    public Boolean validateToken(String token, String username, Instant lastTokenInvalidation) {
         try {
             getAllClaimsFromToken(token);
         } catch (JwtException e) {

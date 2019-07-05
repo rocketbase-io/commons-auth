@@ -15,8 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
 
 @Slf4j
 public class JwtTokenStore implements Serializable, BaseRestResource {
@@ -30,7 +29,7 @@ public class JwtTokenStore implements Serializable, BaseRestResource {
     protected String tokenPrefix = "Bearer ";
 
     protected String lastToken;
-    protected LocalDateTime exp;
+    protected Instant exp;
 
     private HttpClient httpClient;
 
@@ -88,7 +87,7 @@ public class JwtTokenStore implements Serializable, BaseRestResource {
                 lastToken = tokenBundle.getToken();
             }
 
-            return LocalDateTime.now(ZoneOffset.UTC)
+            return Instant.now()
                     .plusSeconds(seconds)
                     .isAfter(exp);
         }

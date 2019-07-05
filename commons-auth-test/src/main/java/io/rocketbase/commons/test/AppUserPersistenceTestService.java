@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.*;
 
 public class AppUserPersistenceTestService implements AppUserPersistenceService<AppUserTestEntity> {
@@ -109,7 +109,7 @@ public class AppUserPersistenceTestService implements AppUserPersistenceService<
     public AppUserTestEntity initNewInstance() {
         return AppUserTestEntity.builder()
                 .id(UUID.randomUUID().toString())
-                .created(LocalDateTime.now())
+                .created(Instant.now())
                 .roles(new ArrayList<>())
                 .build();
     }

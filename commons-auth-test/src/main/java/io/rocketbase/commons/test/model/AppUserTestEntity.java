@@ -9,8 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -45,20 +44,20 @@ public class AppUserTestEntity implements AppUserEntity {
 
     private boolean enabled;
 
-    private LocalDateTime created;
+    private Instant created;
 
-    private LocalDateTime lastLogin;
+    private Instant lastLogin;
 
-    private LocalDateTime lastTokenInvalidation;
+    private Instant lastTokenInvalidation;
 
     @Override
     public void updateLastLogin() {
-        this.lastLogin = LocalDateTime.now(ZoneOffset.UTC);
+        this.lastLogin = Instant.now();
     }
 
     @Override
     public void updateLastTokenInvalidation() {
-        this.lastTokenInvalidation = LocalDateTime.now(ZoneOffset.UTC);
+        this.lastTokenInvalidation = Instant.now();
     }
 
 

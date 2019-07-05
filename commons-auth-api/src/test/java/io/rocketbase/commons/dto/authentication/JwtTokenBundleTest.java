@@ -2,7 +2,9 @@ package io.rocketbase.commons.dto.authentication;
 
 import org.junit.Test;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -19,11 +21,11 @@ public class JwtTokenBundleTest {
                 .refreshToken(null)
                 .build();
         // when
-        LocalDateTime result = jwtTokenBundle.getAccessTokenExpiryDate();
+        Instant result = jwtTokenBundle.getAccessTokenExpiryDate();
 
         // then
         LocalDateTime of = LocalDateTime.of(2019, 7, 4, 11, 55, 9);
-        assertThat(result, is(of));
+        assertThat(result.getEpochSecond(), is(of.toEpochSecond(ZoneOffset.UTC)));
     }
 
     @Test
@@ -36,11 +38,11 @@ public class JwtTokenBundleTest {
                 .refreshToken(refreshToken)
                 .build();
         // when
-        LocalDateTime result = jwtTokenBundle.getRefreshTokenExpiryDate();
+        Instant result = jwtTokenBundle.getRefreshTokenExpiryDate();
 
         // then
         LocalDateTime of = LocalDateTime.of(2019, 8, 3, 10, 55, 9);
-        assertThat(result, is(of));
+        assertThat(result.getEpochSecond(), is(of.toEpochSecond(ZoneOffset.UTC)));
     }
 
 }
