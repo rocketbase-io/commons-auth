@@ -78,12 +78,12 @@ public class JwtTokenStore implements Serializable, BaseRestResource {
     public boolean checkTokenNeedsRefresh(long seconds) {
         if (tokenBundle.getRefreshToken() != null) {
             if (lastToken == null || !tokenBundle.getToken().equals(lastToken)) {
-                JwtTokenDecoder.JwtTokenBody tokenBody = JwtTokenDecoder.decodeTokenBody(tokenBundle.getToken());
-                exp = tokenBody.getExpiration();
-                if (exp == null) {
+                JwtTokenBody tokenBody = JwtTokenDecoder.decodeTokenBody(tokenBundle.getToken());
+                if (tokenBody == null || tokenBody.getExpiration() == null) {
                     // in case of broken tokens
                     return true;
                 }
+                exp = tokenBody.getExpiration();
                 lastToken = tokenBundle.getToken();
             }
 

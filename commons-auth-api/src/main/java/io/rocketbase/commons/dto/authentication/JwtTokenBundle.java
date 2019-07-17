@@ -2,6 +2,7 @@ package io.rocketbase.commons.dto.authentication;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.rocketbase.commons.util.JwtTokenBody;
 import io.rocketbase.commons.util.JwtTokenDecoder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,13 +23,13 @@ public class JwtTokenBundle implements Serializable {
 
     @JsonIgnore
     public Instant getAccessTokenExpiryDate() {
-        JwtTokenDecoder.JwtTokenBody body = JwtTokenDecoder.decodeTokenBody(token);
+        JwtTokenBody body = JwtTokenDecoder.decodeTokenBody(token);
         return body.getExpiration();
     }
 
     @JsonIgnore
     public Instant getRefreshTokenExpiryDate() {
-        JwtTokenDecoder.JwtTokenBody body = JwtTokenDecoder.decodeTokenBody(refreshToken);
+        JwtTokenBody body = JwtTokenDecoder.decodeTokenBody(refreshToken);
         return body.getExpiration();
     }
 
