@@ -30,6 +30,3 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
-## disable emailing
-notifications:
-  email: false
