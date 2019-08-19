@@ -3,6 +3,7 @@ package io.rocketbase.commons.resource;
 import io.rocketbase.commons.adapters.JwtTokenProvider;
 import io.rocketbase.commons.dto.authentication.LoginRequest;
 import io.rocketbase.commons.dto.authentication.LoginResponse;
+import lombok.Getter;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -12,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 
 public class LoginResource implements BaseRestResource {
 
+    @Getter
     protected String baseAuthApiUrl;
     protected RestTemplate restTemplate;
     protected String header = HttpHeaders.AUTHORIZATION;

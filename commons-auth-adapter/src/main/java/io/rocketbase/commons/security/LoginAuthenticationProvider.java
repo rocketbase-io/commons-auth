@@ -21,7 +21,6 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class LoginAuthenticationProvider implements AuthenticationProvider {
 
-    private final String baseAuthApiUrl;
     private final LoginResource loginResource;
     private final JwtTokenService jwtTokenService;
 
@@ -30,7 +29,7 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
         try {
             LoginResponse login = loginResource.login(new LoginRequest(authentication.getName(), String.valueOf(authentication.getCredentials())));
             Collection<GrantedAuthority> authorities = jwtTokenService.getAuthoritiesFromToken(login.getJwtTokenBundle().getToken());
-            return new CommonsAuthenticationToken(authorities, login.getUser(), new JwtTokenStore(baseAuthApiUrl, login.getJwtTokenBundle()));
+            return new CommonsAuthenticationToken(authorities, login.getUser(), new JwtTokenStore(loginResource.getBaseAuthApiUrl(), login.getJwtTokenBundle()));
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode().equals(HttpStatus.FORBIDDEN)) {
                 throw new BadCredentialsException("wrong username/password", e);

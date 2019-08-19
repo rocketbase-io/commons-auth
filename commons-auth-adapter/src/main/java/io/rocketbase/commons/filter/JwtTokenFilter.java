@@ -4,7 +4,6 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.rocketbase.commons.config.JwtProperties;
-import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.security.CommonsAuthenticationToken;
@@ -29,10 +28,6 @@ import java.util.Collection;
 
 @Slf4j
 public class JwtTokenFilter extends OncePerRequestFilter {
-
-
-    @Resource
-    private AppUserConverter appUserConverter;
 
     @Resource
     private JwtTokenService jwtTokenService;
