@@ -14,6 +14,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -49,20 +50,23 @@ public class AppUserResource implements BaseRestResource {
         UriComponentsBuilder uriBuilder = appendParams(createUriComponentsBuilder(baseAuthApiUrl), pageable)
                 .path(API_USER);
         if (query != null) {
-            if (query.getUsername() != null) {
+            if (!StringUtils.isEmpty(query.getUsername())) {
                 uriBuilder.queryParam("username", query.getUsername());
             }
-            if (query.getFirstName() != null) {
+            if (!StringUtils.isEmpty(query.getFirstName())) {
                 uriBuilder.queryParam("firstName", query.getFirstName());
             }
-            if (query.getLastName() != null) {
+            if (!StringUtils.isEmpty(query.getLastName())) {
                 uriBuilder.queryParam("lastName", query.getLastName());
             }
-            if (query.getEmail() != null) {
+            if (!StringUtils.isEmpty(query.getEmail())) {
                 uriBuilder.queryParam("email", query.getEmail());
             }
-            if (query.getEnabled() != null) {
+            if (!StringUtils.isEmpty(query.getEnabled())) {
                 uriBuilder.queryParam("enabled", query.getEnabled());
+            }
+            if (!StringUtils.isEmpty(query.getFreetext())) {
+                uriBuilder.queryParam("freetext", query.getFreetext());
             }
         }
 
