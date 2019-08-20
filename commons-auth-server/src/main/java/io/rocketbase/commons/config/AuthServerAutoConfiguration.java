@@ -114,6 +114,13 @@ public class AuthServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    @ConditionalOnExpression(value = "${auth.search.enabled:true}")
+    public UserSearchController userSearchController() {
+        return new UserSearchController();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public ValidationController validationController() {
         return new ValidationController();
     }
