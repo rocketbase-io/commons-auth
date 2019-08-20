@@ -2,6 +2,7 @@ package io.rocketbase.commons.service;
 
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.model.AppUserMongoEntity;
+import io.rocketbase.commons.util.Nulls;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -57,23 +59,35 @@ public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUse
     private Query getQuery(QueryAppUser query) {
         Query result = new Query();
         if (query != null) {
-            if (query.getUsername() != null) {
-                result.addCriteria(Criteria.where("username").regex(query.getUsername(), "i"));
+            if (!StringUtils.isEmpty(query.getUsername())) {
+                result.addCriteria(buildRegexCriteria("username", query.getUsername()));
             }
-            if (query.getFirstName() != null) {
-                result.addCriteria(Criteria.where("firstName").regex(query.getFirstName(), "i"));
+            if (!StringUtils.isEmpty(query.getFirstName())) {
+                result.addCriteria(buildRegexCriteria("firstName", query.getFirstName()));
             }
-            if (query.getLastName() != null) {
-                result.addCriteria(Criteria.where("lastName").regex(query.getLastName(), "i"));
+            if (!StringUtils.isEmpty(query.getLastName())) {
+                result.addCriteria(buildRegexCriteria("lastName", query.getLastName()));
             }
-            if (query.getEmail() != null) {
-                result.addCriteria(Criteria.where("email").regex(query.getEmail(), "i"));
+            if (!StringUtils.isEmpty(query.getEmail())) {
+                result.addCriteria(buildRegexCriteria("email", query.getEmail()));
             }
-            if (query.getEnabled() != null) {
-                result.addCriteria(Criteria.where("enabled").is(query.getEnabled()));
+            if (!StringUtils.isEmpty(query.getFreetext())) {
+                result.addCriteria(new Criteria().orOperator(buildRegexCriteria("username", query.getFreetext()),
+                        buildRegexCriteria("firstName", query.getFreetext()),
+                        buildRegexCriteria("lastName", query.getFreetext()),
+                        buildRegexCriteria("email", query.getFreetext())));
             }
+            result.addCriteria(Criteria.where("enabled").is(Nulls.notNull(query.getEnabled(), true)));
         }
         return result;
+    }
+
+    private Criteria buildRegexCriteria(String where, String text) {
+        String pattern = text.trim() + "";
+        if (!pattern.contains(".*")) {
+            pattern = ".*" + pattern + ".*";
+        }
+        return Criteria.where(where).regex(pattern, "i");
     }
 
     @Override

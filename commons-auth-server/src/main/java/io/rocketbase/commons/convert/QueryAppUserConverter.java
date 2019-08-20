@@ -15,6 +15,7 @@ public class QueryAppUserConverter implements BaseController {
                 .firstName(params.containsKey("firstName") ? params.getFirst("firstName") : null)
                 .lastName(params.containsKey("lastName") ? params.getFirst("lastName") : null)
                 .email(params.containsKey("email") ? params.getFirst("email") : null)
+                .freetext(params.containsKey("freetext") ? params.getFirst("freetext") : null)
                 .enabled(parseBoolean(params, "enabled", null));
 
         return builder.build();

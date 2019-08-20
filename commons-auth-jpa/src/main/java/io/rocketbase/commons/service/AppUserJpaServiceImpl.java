@@ -9,6 +9,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -39,15 +40,22 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJ
     public Page<AppUserJpaEntity> findAll(QueryAppUser query, Pageable pageable) {
         AppUserJpaEntity example = new AppUserJpaEntity();
         example.setKeyValueMap(null);
-        example.setEnabled(true);
-        if (query != null) {
+        example.setEnabled(Nulls.notNull(query, QueryAppUser::getEnabled, true));
+
+        ExampleMatcher matcherConfig = ExampleMatcher.matchingAll();
+        if (query != null && StringUtils.isEmpty(query.getFreetext())) {
             example.setUsername(query.getUsername());
             example.setFirstName(query.getFirstName());
             example.setLastName(query.getLastName());
             example.setEmail(query.getEmail());
-            example.setEnabled(Nulls.notNull(query.getEnabled(), true));
+        } else {
+            matcherConfig = ExampleMatcher.matchingAny();
+            example.setUsername(query.getFreetext());
+            example.setFirstName(query.getFreetext());
+            example.setLastName(query.getFreetext());
+            example.setEmail(query.getFreetext());
         }
-        ExampleMatcher matcherConfig = ExampleMatcher.matchingAny()
+        matcherConfig
                 .withMatcher("username", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
                 .withMatcher("firstName", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
                 .withMatcher("lastName", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())

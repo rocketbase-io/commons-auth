@@ -21,5 +21,9 @@ public class QueryAppUser implements Serializable {
     private String firstName;
     private String lastName;
     private String email;
+    /**
+     * searches for all properties containing text
+     */
+    private String freetext;
     private Boolean enabled;
 }
