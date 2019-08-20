@@ -41,7 +41,7 @@ public class UserSearchController implements BaseController {
 
     @RequestMapping(method = RequestMethod.GET, path = "/api/user-search/{usernameOrId}")
     @ResponseBody
-    public AppUserReference findById(@PathVariable("usernameOrId") String usernameOrId) throws Throwable {
+    public AppUserReference findByUsernameOrId(@PathVariable("usernameOrId") String usernameOrId) throws Throwable {
         AppUserEntity byUsername = appUserService.getByUsername(usernameOrId);
         if (byUsername != null) {
             return byUsername.toReference();

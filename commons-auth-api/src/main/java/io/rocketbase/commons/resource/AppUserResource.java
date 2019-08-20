@@ -35,20 +35,7 @@ public class AppUserResource implements BaseRestResource {
         this.baseAuthApiUrl = restTemplate.getTokenProvider().getBaseAuthApiUrl();
     }
 
-    @SneakyThrows
-    public PageableResult<AppUserRead> find(int page, int pagesize) {
-        return find(PageRequest.of(page, pagesize));
-    }
-
-    @SneakyThrows
-    public PageableResult<AppUserRead> find(Pageable pageable) {
-        return find(null, pageable);
-    }
-
-    @SneakyThrows
-    public PageableResult<AppUserRead> find(QueryAppUser query, Pageable pageable) {
-        UriComponentsBuilder uriBuilder = appendParams(createUriComponentsBuilder(baseAuthApiUrl), pageable)
-                .path(API_USER);
+    public static void addQueryParams(QueryAppUser query, UriComponentsBuilder uriBuilder) {
         if (query != null) {
             if (!StringUtils.isEmpty(query.getUsername())) {
                 uriBuilder.queryParam("username", query.getUsername());
@@ -69,6 +56,23 @@ public class AppUserResource implements BaseRestResource {
                 uriBuilder.queryParam("freetext", query.getFreetext());
             }
         }
+    }
+
+    @SneakyThrows
+    public PageableResult<AppUserRead> find(int page, int pagesize) {
+        return find(PageRequest.of(page, pagesize));
+    }
+
+    @SneakyThrows
+    public PageableResult<AppUserRead> find(Pageable pageable) {
+        return find(null, pageable);
+    }
+
+    @SneakyThrows
+    public PageableResult<AppUserRead> find(QueryAppUser query, Pageable pageable) {
+        UriComponentsBuilder uriBuilder = appendParams(createUriComponentsBuilder(baseAuthApiUrl), pageable)
+                .path(API_USER);
+        addQueryParams(query, uriBuilder);
 
         ResponseEntity<PageableResult<AppUserRead>> response = restTemplate.exchange(uriBuilder.toUriString(),
                 HttpMethod.GET,
