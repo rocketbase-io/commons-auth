@@ -1,5 +1,6 @@
 package io.rocketbase.commons.controller;
 
+import io.rocketbase.commons.adapters.AuthRestTemplate;
 import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.adapters.JwtTokenProvider;
 import io.rocketbase.commons.adapters.SimpleJwtTokenProvider;
@@ -12,6 +13,8 @@ import io.rocketbase.commons.test.BaseIntegrationTest;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
 import org.junit.Test;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.util.Optional;
@@ -70,6 +73,34 @@ public class UserSearchControllerTest extends BaseIntegrationTest {
         // then
         assertThat(response, notNullValue());
         assertThat(response.isPresent(), equalTo(false));
+    }
+
+
+
+    @Test
+    public void testAuthRestTemplate() {
+        // given
+        AuthRestTemplate restTemplate = new AuthRestTemplate(getBaseUrl(), "user","pw");
+        UserSearchResource resource = new UserSearchResource(getBaseUrl(), restTemplate);
+
+        // when
+        PageableResult<AppUserReference> response = resource.search(new QueryAppUser(), PageRequest.of(0, 1));
+
+        // then
+        assertThat(response, notNullValue());
+    }
+
+
+
+    @Test(expected = HttpClientErrorException.class)
+    public void testInvalidAuthRestTemplate() {
+        // given
+        UserSearchResource resource = new UserSearchResource(getBaseUrl(), new RestTemplate());
+
+        // when
+        PageableResult<AppUserReference> response = resource.search(new QueryAppUser(), PageRequest.of(0, 1));
+
+        // then
     }
 
 }

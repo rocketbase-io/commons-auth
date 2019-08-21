@@ -102,6 +102,7 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/auth/me/**").authenticated()
             // user-management is only allowed by ADMINS
             .antMatchers("/api/user/**").hasRole(new AuthProperties().getRoleAdmin())
+            .antMatchers("/api/user-search/**").authenticated()
             // secure all other api-endpoints
             .antMatchers("/api/**").authenticated();
 
