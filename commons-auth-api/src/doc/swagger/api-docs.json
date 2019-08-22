@@ -30,6 +30,10 @@
     {
       "name": "admin",
       "description": "CRUD for user entities. Mainly used by users with admin rights."
+    },
+    {
+      "name": "user-search",
+      "description": "Query for users. Mainly used by services and ui to search for users and lookup by username/id."
     }
   ],
   "paths": {
@@ -662,31 +666,43 @@
             "name": "username",
             "in": "query",
             "required": false,
-            "type": "string"
+            "type": "string",
+            "description": "username containing case-insensitive"
           },
           {
             "name": "firstName",
             "in": "query",
             "required": false,
-            "type": "string"
+            "type": "string",
+            "description": "firstName containing case-insensitive"
           },
           {
             "name": "lastName",
             "in": "query",
             "required": false,
-            "type": "string"
+            "type": "string",
+            "description": "lastName containing case-insensitive"
           },
           {
             "name": "email",
             "in": "query",
             "required": false,
-            "type": "string"
+            "type": "string",
+            "description": "email containing case-insensitive"
+          },
+          {
+            "name": "freetext",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "searches in all properties containing (case-insensitive)"
           },
           {
             "name": "enabled",
             "in": "query",
             "required": false,
-            "type": "string"
+            "type": "string",
+            "description": "default true - to search for disabled you need to add to query"
           }
         ],
         "responses": {
@@ -841,6 +857,141 @@
         },
         "deprecated": false
       }
+    },
+    "/api/user-search": {
+      "get": {
+        "tags": [
+          "user-search"
+        ],
+        "summary": "search",
+        "description": "page thew users-list with filter parameters.",
+        "operationId": "searchGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "default 25 max is 200",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "default is 1",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "username containing case-insensitive"
+          },
+          {
+            "name": "firstName",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "firstName containing case-insensitive"
+          },
+          {
+            "name": "lastName",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "lastName containing case-insensitive"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "email containing case-insensitive"
+          },
+          {
+            "name": "freetext",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "searches in all properties containing (case-insensitive)"
+          },
+          {
+            "name": "enabled",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "default true - to search for disabled you need to add to query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/PageableResult-AppUserReference"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/user-search/{usernameOrId}": {
+      "get": {
+        "tags": [
+          "user-search"
+        ],
+        "summary": "findByUsernameOrId",
+        "description": "get details of a user",
+        "operationId": "findByUsernameOrIdGET",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "usernameOrId",
+            "in": "path",
+            "description": "username or id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AppUserReference"
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "deprecated": false
+      }
     }
   },
   "definitions": {
@@ -922,6 +1073,30 @@
           }
         },
         "username": {
+          "type": "string"
+        }
+      },
+      "title": "AppUserRead"
+    },
+    "AppUserReference": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "avatar": {
           "type": "string"
         }
       },
@@ -1015,6 +1190,34 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/AppUserRead"
+          }
+        },
+        "page": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "totalElements": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "totalPages": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "PageableResult-AppUserRead"
+    },
+    "PageableResult-AppUserReference": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AppUserReference"
           }
         },
         "page": {

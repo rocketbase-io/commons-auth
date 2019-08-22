@@ -21,7 +21,7 @@ The implementation bases on spring-boot: mainly on **spring-mvc**, **spring-data
 * admin endpoints to crud users
 * forms to register/fogot-password etc.
 
-I've added an swagger api-documentation. You can find it within [src](./commons-auth-api/src/doc/swagger) of [swaggerHub](https://app.swaggerhub.com/apis-docs/melistik/commons-auth/2.2.0)
+I've added an swagger api-documentation. You can find it within [src](./commons-auth-api/src/doc/swagger) of [swaggerHub](https://app.swaggerhub.com/apis-docs/melistik/commons-auth/)
 
 ## commons-auth-api
 
