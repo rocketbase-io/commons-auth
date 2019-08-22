@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "description": "Handles authentication + authorization with registration- and password-reset flows.",
-    "version": "2.2.0",
+    "version": "2.4.0",
     "title": "commons-auth api",
     "contact": {
       "name": "rocketbase.io",
