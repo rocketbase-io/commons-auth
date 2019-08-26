@@ -9,7 +9,7 @@ import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.model.AppUserReference;
 import io.rocketbase.commons.resource.UserSearchResource;
-import io.rocketbase.commons.test.BaseIntegrationTest;
+import io.rocketbase.commons.test.BaseUserIntegrationTest;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
 import org.junit.Test;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +22,7 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-public class UserSearchControllerTest extends BaseIntegrationTest {
+public class UserSearchControllerTest extends BaseUserIntegrationTest {
 
     @Resource
     private ModifiedJwtTokenService modifiedJwtTokenService;
@@ -35,6 +35,21 @@ public class UserSearchControllerTest extends BaseIntegrationTest {
 
         // when
         UserSearchResource userSearchResource = new UserSearchResource(new JwtRestTemplate(tokenProvider));
+        PageableResult<AppUserReference> response = userSearchResource.search(new QueryAppUser(), PageRequest.of(0, 10));
+
+        // then
+        assertThat(response, notNullValue());
+        assertThat(response.getTotalPages(), equalTo(1));
+        assertThat(response.getPageSize(), equalTo(10));
+        assertThat(response.getTotalElements(), greaterThan(2L));
+    }
+
+    @Test
+    public void findWithAuthRestTemplate() {
+        // given
+
+        // when
+        UserSearchResource userSearchResource = new UserSearchResource(getBaseUrl(), getAuthRestAdminTemplate());
         PageableResult<AppUserReference> response = userSearchResource.search(new QueryAppUser(), PageRequest.of(0, 10));
 
         // then
@@ -76,11 +91,10 @@ public class UserSearchControllerTest extends BaseIntegrationTest {
     }
 
 
-
     @Test
     public void testAuthRestTemplate() {
         // given
-        AuthRestTemplate restTemplate = new AuthRestTemplate(getBaseUrl(), "user","pw");
+        AuthRestTemplate restTemplate = new AuthRestTemplate(getBaseUrl(), "user", "pw");
         UserSearchResource resource = new UserSearchResource(getBaseUrl(), restTemplate);
 
         // when
@@ -89,7 +103,6 @@ public class UserSearchControllerTest extends BaseIntegrationTest {
         // then
         assertThat(response, notNullValue());
     }
-
 
 
     @Test(expected = HttpClientErrorException.class)

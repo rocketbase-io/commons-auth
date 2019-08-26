@@ -4,7 +4,7 @@ import io.rocketbase.commons.config.EmailProperties;
 import io.rocketbase.commons.dto.forgot.ForgotPasswordRequest;
 import io.rocketbase.commons.resource.ForgotPasswordResource;
 import io.rocketbase.commons.service.user.AppUserService;
-import io.rocketbase.commons.test.BaseIntegrationTest;
+import io.rocketbase.commons.test.BaseUserIntegrationTest;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
-public class ForgotPasswordControllerTest extends BaseIntegrationTest {
+public class ForgotPasswordControllerTest extends BaseUserIntegrationTest {
 
     @Resource
     private AppUserService appUserService;

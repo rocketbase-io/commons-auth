@@ -2,7 +2,7 @@ package io.rocketbase.commons.service.email;
 
 import io.rocketbase.commons.config.EmailProperties;
 import io.rocketbase.commons.model.AppUserEntity;
-import io.rocketbase.commons.test.BaseIntegrationTest;
+import io.rocketbase.commons.test.BaseUserIntegrationTest;
 import org.junit.Test;
 
 import javax.annotation.Resource;
@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
-public class EmailServiceTest extends BaseIntegrationTest {
+public class EmailServiceTest extends BaseUserIntegrationTest {
 
     @Resource
     private EmailService emailService;

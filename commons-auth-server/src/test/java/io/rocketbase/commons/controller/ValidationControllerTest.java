@@ -4,7 +4,7 @@ import io.rocketbase.commons.dto.validation.*;
 import io.rocketbase.commons.resource.ValidationResource;
 import io.rocketbase.commons.service.SimpleTokenService;
 import io.rocketbase.commons.service.user.AppUserService;
-import io.rocketbase.commons.test.BaseIntegrationTest;
+import io.rocketbase.commons.test.BaseUserIntegrationTest;
 import org.junit.Test;
 
 import javax.annotation.Resource;
@@ -12,7 +12,7 @@ import javax.annotation.Resource;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-public class ValidationControllerTest extends BaseIntegrationTest {
+public class ValidationControllerTest extends BaseUserIntegrationTest {
 
     @Resource
     private AppUserService appUserService;

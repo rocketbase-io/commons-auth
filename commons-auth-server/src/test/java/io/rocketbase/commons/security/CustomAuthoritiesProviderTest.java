@@ -4,7 +4,7 @@ import io.rocketbase.commons.config.JwtProperties;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.model.SimpleAppUserToken;
-import io.rocketbase.commons.test.BaseIntegrationTest;
+import io.rocketbase.commons.test.BaseUserIntegrationTest;
 import io.rocketbase.commons.util.RolesAuthoritiesConverter;
 import org.junit.Test;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
-public class CustomAuthoritiesProviderTest extends BaseIntegrationTest {
+public class CustomAuthoritiesProviderTest extends BaseUserIntegrationTest {
 
     public CustomAuthoritiesProvider myOwnImplementation() {
         return new CustomAuthoritiesProvider() {

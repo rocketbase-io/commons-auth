@@ -9,7 +9,7 @@ import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.resource.RegistrationResource;
 import io.rocketbase.commons.service.user.DefaultAppUserService;
 import io.rocketbase.commons.test.AppUserPersistenceTestService;
-import io.rocketbase.commons.test.BaseIntegrationTest;
+import io.rocketbase.commons.test.BaseUserIntegrationTest;
 import io.rocketbase.commons.test.model.AppUserTestEntity;
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,7 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
-public class RegistrationControllerTest extends BaseIntegrationTest {
+public class RegistrationControllerTest extends BaseUserIntegrationTest {
 
     @Resource
     private AppUserPersistenceTestService appUserPersistenceTestService;

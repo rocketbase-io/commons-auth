@@ -10,7 +10,7 @@ import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.resource.AuthenticationResource;
 import io.rocketbase.commons.resource.LoginResource;
 import io.rocketbase.commons.test.AppUserPersistenceTestService;
-import io.rocketbase.commons.test.BaseIntegrationTest;
+import io.rocketbase.commons.test.BaseUserIntegrationTest;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,7 +24,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
-public class AuthenticationControllerTest extends BaseIntegrationTest {
+public class AuthenticationControllerTest extends BaseUserIntegrationTest {
 
     @Resource
     private AuthenticationController authenticationController;

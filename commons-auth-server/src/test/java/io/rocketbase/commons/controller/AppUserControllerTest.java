@@ -12,7 +12,7 @@ import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.resource.AppUserResource;
 import io.rocketbase.commons.test.AppUserPersistenceTestService;
-import io.rocketbase.commons.test.BaseIntegrationTest;
+import io.rocketbase.commons.test.BaseUserIntegrationTest;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
 import org.junit.Test;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +22,7 @@ import javax.annotation.Resource;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-public class AppUserControllerTest extends BaseIntegrationTest {
+public class AppUserControllerTest extends BaseUserIntegrationTest {
 
 
     @Resource
