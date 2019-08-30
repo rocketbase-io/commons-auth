@@ -15,6 +15,7 @@ import io.rocketbase.commons.service.ValidationUserLookupService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.passay.*;
+import org.springframework.util.StringUtils;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -121,17 +122,20 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
     @Override
     public Set<UsernameErrorCodes> getUsernameValidationDetails(String username) {
         Set<UsernameErrorCodes> errorCodes = new HashSet<>();
-        String notNullUsername = username != null ? username : "";
-        if (notNullUsername.length() < usernameProperties.getMinLength()) {
+        if (StringUtils.isEmpty(username)) {
+            errorCodes.add(UsernameErrorCodes.TOO_SHORT);
+            return errorCodes;
+        }
+        if (username.length() < usernameProperties.getMinLength()) {
             errorCodes.add(UsernameErrorCodes.TOO_SHORT);
         }
-        if (notNullUsername.length() > usernameProperties.getMaxLength()) {
+        if (username.length() > usernameProperties.getMaxLength()) {
             errorCodes.add(UsernameErrorCodes.TOO_LONG);
         }
-        if (!getUserMatcher().matcher(notNullUsername).matches()) {
+        if (!getUserMatcher().matcher(username).matches()) {
             errorCodes.add(UsernameErrorCodes.NOT_ALLOWED_CHAR);
         }
-        AppUserToken found = userLookupService.getByUsername(notNullUsername);
+        AppUserToken found = userLookupService.getByUsername(username);
         if (found != null) {
             errorCodes.add(UsernameErrorCodes.ALREADY_TAKEN);
         }
@@ -146,6 +150,10 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
     @Override
     public Set<EmailErrorCodes> getEmailValidationDetails(String email) {
         Set<EmailErrorCodes> errorCodes = new HashSet<>();
+        if (StringUtils.isEmpty(email)) {
+            errorCodes.add(EmailErrorCodes.INVALID);
+            return errorCodes;
+        }
         try {
             InternetAddress emailAddr = new InternetAddress(email);
             emailAddr.validate();
@@ -154,6 +162,10 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
         }
         if (userLookupService.findByEmail(email).isPresent()) {
             errorCodes.add(EmailErrorCodes.ALREADY_TAKEN);
+        }
+        // max length within jpa entity
+        if (email.length() > 255) {
+            errorCodes.add(EmailErrorCodes.TOO_LONG);
         }
         return errorCodes;
     }
