@@ -19,9 +19,9 @@ import java.util.Map;
 
 
 @Entity
-@Table(name = "USER", uniqueConstraints = {
-        @UniqueConstraint(name = "UK_USER_USERNAME", columnNames = {"username"}),
-        @UniqueConstraint(name = "UK_USER_EMAIL", columnNames = {"email"})})
+@Table(name = "user", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_user_username", columnNames = {"username"}),
+        @UniqueConstraint(name = "uk_user_email", columnNames = {"email"})})
 @Data
 @Builder
 @AllArgsConstructor
@@ -53,22 +53,30 @@ public class AppUserJpaEntity implements AppUserEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
-            name = "USER_ROLES",
-            joinColumns = @JoinColumn(name = "id", referencedColumnName = "id")
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "id", referencedColumnName = "id"),
+            uniqueConstraints = @UniqueConstraint(name = "uk_user_roles", columnNames = {"id", "role"})
     )
-    @Column(name = "role")
+    @Column(name = "role", length = 20, nullable = false)
     private List<String> roles;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "USER_KEYVALUE_PAIRS", joinColumns = @JoinColumn(name = "id"))
-    @MapKeyColumn(name = "FIELD_KEY", length = 50)
-    @Column(name = "FIELD_VALUE", length = 4000)
+    @CollectionTable(
+            name = "user_keyvalue_pairs",
+            joinColumns = @JoinColumn(name = "id"),
+            uniqueConstraints = @UniqueConstraint(name = "uk_user_keyvalue_pairs", columnNames = {"id", "field_key"}),
+            indexes = @Index(name = "idx_user_keyvalue_pairs", columnList = "id")
+    )
+    @MapKeyColumn(name = "field_key", length = 50)
+    @Column(name = "field_value", length = 4000, nullable = false)
     @Builder.Default
     private Map<String, String> keyValueMap = new HashMap<>();
 
     private boolean enabled;
 
+    @NotNull
     @CreatedDate
+    @Column(nullable = false)
     private Instant created;
 
     private Instant lastLogin;
