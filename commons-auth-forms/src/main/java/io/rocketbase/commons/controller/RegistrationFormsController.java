@@ -1,5 +1,6 @@
 package io.rocketbase.commons.controller;
 
+import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.config.FormsProperties;
 import io.rocketbase.commons.config.RegistrationProperties;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
@@ -28,9 +29,9 @@ public class RegistrationFormsController extends AbstractFormsController {
 
     private final RegistrationResource registrationResource;
 
-    public RegistrationFormsController(String apiBaseUrl, FormsProperties formsProperties, RegistrationProperties registrationProperties) {
-        super(apiBaseUrl, formsProperties, registrationProperties);
-        registrationResource = new RegistrationResource(apiBaseUrl);
+    public RegistrationFormsController(AuthProperties authProperties, FormsProperties formsProperties, RegistrationProperties registrationProperties) {
+        super(authProperties, formsProperties, registrationProperties);
+        registrationResource = new RegistrationResource(authProperties.getBaseUrl());
     }
 
     @GetMapping("/registration")

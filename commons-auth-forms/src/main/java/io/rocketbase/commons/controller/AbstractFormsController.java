@@ -1,5 +1,6 @@
 package io.rocketbase.commons.controller;
 
+import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.config.FormsProperties;
 import io.rocketbase.commons.config.RegistrationProperties;
 import io.rocketbase.commons.resource.ValidationResource;
@@ -9,7 +10,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 public abstract class AbstractFormsController {
 
-    private final String apiBaseUrl;
+    @Getter
+    private final AuthProperties authProperties;
     @Getter
     private final FormsProperties formsProperties;
     @Getter
@@ -18,12 +20,12 @@ public abstract class AbstractFormsController {
     @Getter
     private ValidationResource validationResource;
 
-    public AbstractFormsController(String apiBaseUrl, FormsProperties formsProperties, RegistrationProperties registrationProperties) {
-        this.apiBaseUrl = apiBaseUrl;
+    public AbstractFormsController(AuthProperties authProperties, FormsProperties formsProperties, RegistrationProperties registrationProperties) {
+        this.authProperties = authProperties;
         this.formsProperties = formsProperties;
         this.registrationProperties = registrationProperties;
 
-        validationResource = new ValidationResource(apiBaseUrl);
+        validationResource = new ValidationResource(authProperties.getBaseUrl());
     }
 
     @ModelAttribute

@@ -32,13 +32,11 @@ import java.util.Map;
 @Controller
 public class AuthFormsController extends AbstractFormsController {
 
-    private final AuthProperties authProperties;
     private final ForgotPasswordResource forgotPasswordResource;
 
-    public AuthFormsController(String apiBaseUrl, FormsProperties formsProperties, RegistrationProperties registrationProperties, AuthProperties authProperties) {
-        super(apiBaseUrl, formsProperties, registrationProperties);
-        this.authProperties = authProperties;
-        forgotPasswordResource = new ForgotPasswordResource(apiBaseUrl);
+    public AuthFormsController(AuthProperties authProperties, FormsProperties formsProperties, RegistrationProperties registrationProperties) {
+        super(authProperties, formsProperties, registrationProperties);
+        forgotPasswordResource = new ForgotPasswordResource(authProperties.getBaseUrl());
     }
 
     @GetMapping("/login")
@@ -70,7 +68,7 @@ public class AuthFormsController extends AbstractFormsController {
             } else {
                 try {
                     forgotPasswordResource.forgotPassword(forgot);
-                    model.addAttribute("expiresAfter", authProperties.getPasswordResetExpiration());
+                    model.addAttribute("expiresAfter", getAuthProperties().getPasswordResetExpiration());
                     return "forgot-submitted";
                 } catch (BadRequestException badRequest) {
                     model.addAttribute("serviceException", badRequest.getErrorResponse().getMessage());

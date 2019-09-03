@@ -25,6 +25,8 @@ public class AuthProperties {
      */
     private int userCacheTime = 30;
 
+    private String baseUrl = "http://localhost:8080";
+
     /**
      * full qualified url to a custom UI that proceed the verification<br>
      * ?verification=VALUE will get append
