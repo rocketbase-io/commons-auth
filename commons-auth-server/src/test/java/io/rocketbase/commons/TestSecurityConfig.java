@@ -1,11 +1,14 @@
 package io.rocketbase.commons;
 
 import io.rocketbase.commons.config.AuthProperties;
+import io.rocketbase.commons.config.FormsProperties;
 import io.rocketbase.commons.filter.JwtAuthenticationTokenFilter;
 import io.rocketbase.commons.security.TokenAuthenticationProvider;
 import io.rocketbase.commons.service.AppUserPersistenceService;
 import io.rocketbase.commons.test.AppUserPersistenceTestService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -30,11 +33,14 @@ import javax.annotation.Resource;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableConfigurationProperties({AuthProperties.class})
+@RequiredArgsConstructor
 public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final AuthProperties authProperties;
 
     @Resource
     private UserDetailsService userDetailsService;
-
 
     @Bean
     public RoleHierarchy roleHierarchy() {
@@ -98,13 +104,15 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
                     "/favicon.ico"
             ).permitAll()
             // configure auth endpoint
-            .antMatchers("/auth/login", "/auth/refresh").permitAll()
-            .antMatchers("/auth/me/**").authenticated()
+            .antMatchers(AuthProperties.getAllPublicRestEndpointPaths(authProperties.getPrefix())).permitAll()
+            .antMatchers(FormsProperties.getAllPublicFormEndpointPaths(authProperties.getPrefix())).permitAll()
+            .antMatchers(authProperties.getPrefix()+"/auth/me/**").authenticated()
             // user-management is only allowed by ADMINS
-            .antMatchers("/api/user/**").hasRole(new AuthProperties().getRoleAdmin())
-            .antMatchers("/api/user-search/**").authenticated()
+            .antMatchers(authProperties.getPrefix()+"/api/user/**").hasRole(new AuthProperties().getRoleAdmin())
+            .antMatchers(authProperties.getPrefix()+"/api/user-search/**").authenticated()
             // secure all other api-endpoints
-            .antMatchers("/api/**").authenticated();
+            .antMatchers(authProperties.getPrefix()+"/api/**").authenticated()
+            .anyRequest().authenticated();
 
         // Custom JWT based security filter
         httpSecurity

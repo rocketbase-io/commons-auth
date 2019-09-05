@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @ConditionalOnExpression(value = "${auth.search.enabled:true}")
+@RequestMapping("${auth.prefix:}")
 public class UserSearchController implements BaseController {
 
     @Resource
@@ -30,7 +31,7 @@ public class UserSearchController implements BaseController {
 
     private QueryAppUserConverter queryConverter = new QueryAppUserConverter();
 
-    @RequestMapping(method = RequestMethod.GET, path = "${auth.prefix:}/api/user-search")
+    @RequestMapping(method = RequestMethod.GET, path = "/api/user-search")
     @ResponseBody
     public PageableResult<AppUserReference> search(@RequestParam(required = false) MultiValueMap<String, String> params) {
         Page<AppUserEntity> entities = appUserPersistenceService.findAll(queryConverter.fromParams(params),
@@ -39,7 +40,7 @@ public class UserSearchController implements BaseController {
         return PageableResult.contentPage(entities.stream().map(AppUserEntity::toReference).collect(Collectors.toList()), entities);
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "${auth.prefix:}/api/user-search/{usernameOrId}")
+    @RequestMapping(method = RequestMethod.GET, path = "/api/user-search/{usernameOrId}")
     @ResponseBody
     public AppUserReference findByUsernameOrId(@PathVariable("usernameOrId") String usernameOrId) throws Throwable {
         AppUserEntity byUsername = appUserService.getByUsername(usernameOrId);

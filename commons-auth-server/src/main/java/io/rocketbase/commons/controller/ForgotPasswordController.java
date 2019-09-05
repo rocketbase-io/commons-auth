@@ -21,18 +21,19 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 @RestController
+@RequestMapping("${auth.prefix:}")
 public class ForgotPasswordController implements BaseController {
 
     @Resource
     private DefaultAppUserForgotPasswordService appUserForgotPasswordService;
 
-    @RequestMapping(value = "${auth.prefix:}/auth/forgot-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/auth/forgot-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> forgotPassword(HttpServletRequest request, @RequestBody @NotNull @Validated ForgotPasswordRequest forgotPassword) {
         appUserForgotPasswordService.requestPasswordReset(forgotPassword, getBaseUrl(request));
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @RequestMapping(value = "${auth.prefix:}/auth/reset-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/auth/reset-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> resetPassword(@RequestBody @NotNull @Validated PerformPasswordResetRequest performPasswordReset) {
         appUserForgotPasswordService.resetPassword(performPasswordReset);
         return ResponseEntity.status(HttpStatus.OK).build();

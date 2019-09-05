@@ -47,4 +47,21 @@ public class AuthProperties {
      * in minutes
      */
     private long passwordResetExpiration = 60;
+
+    /**
+     * quick help to configure spring security
+     *
+     * @param prefix in case you've set a prefix
+     */
+    public static String[] getAllPublicRestEndpointPaths(String prefix) {
+        return new String[]{
+                prefix + "/auth/login",
+                prefix + "/auth/refresh",
+                prefix + "/auth/forgot-password",
+                prefix + "/auth/reset-password",
+                prefix + "/auth/validate/*",
+                prefix + "/auth/register",
+                prefix + "/auth/verify"
+        };
+    }
 }

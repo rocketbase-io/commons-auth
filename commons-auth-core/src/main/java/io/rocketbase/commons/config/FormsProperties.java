@@ -16,4 +16,19 @@ public class FormsProperties {
 
     private String logoSrc = "./assets/rocketbase.svg";
 
+    /**
+     * quick help to configure spring security
+     *
+     * @param prefix in case you've set a formsProperties.prefix
+     */
+    public static String[] getAllPublicFormEndpointPaths(String prefix) {
+        return new String[]{
+                prefix + "/login",
+                prefix + "/logout",
+                prefix + "/forgot",
+                prefix + "/reset-password",
+                prefix + "/registration",
+                prefix + "/verify"
+        };
+    }
 }

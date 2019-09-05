@@ -10,4 +10,8 @@ public abstract class BaseUserIntegrationTest extends BaseIntegrationTest {
     @Rule
     public SmtpServerRule smtpServerRule = new SmtpServerRule();
 
+    @Override
+    public String getBaseUrl() {
+        return super.getBaseUrl() + "/test";
+    }
 }

@@ -26,6 +26,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 @RestController
+@RequestMapping("${auth.prefix:}")
 public class AppUserController implements BaseController {
 
     @Resource
@@ -42,7 +43,7 @@ public class AppUserController implements BaseController {
 
     private QueryAppUserConverter queryConverter = new QueryAppUserConverter();
 
-    @RequestMapping(method = RequestMethod.GET, path = "${auth.prefix:}/api/user")
+    @RequestMapping(method = RequestMethod.GET, path = "/api/user")
     @ResponseBody
     public PageableResult<AppUserRead> find(@RequestParam(required = false) MultiValueMap<String, String> params) {
         Page<AppUserEntity> entities = appUserPersistenceService.findAll(queryConverter.fromParams(params),
@@ -51,7 +52,7 @@ public class AppUserController implements BaseController {
         return PageableResult.contentPage(appUserConverter.fromEntities(entities.getContent()), entities);
     }
 
-    @RequestMapping(method = RequestMethod.POST, path = "${auth.prefix:}/api/user", consumes = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.POST, path = "/api/user", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public AppUserRead create(@RequestBody @NotNull @Validated AppUserCreate create) {
         validationService.validateRegistration(create.getUsername(), create.getPassword(), create.getEmail());
@@ -64,7 +65,7 @@ public class AppUserController implements BaseController {
         return appUserConverter.fromEntity(entity);
     }
 
-    @RequestMapping(method = RequestMethod.PATCH, path = "${auth.prefix:}/api/user/{id}", consumes = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.PATCH, path = "/api/user/{id}", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public AppUserRead patch(@PathVariable("id") String id, @RequestBody @NotNull @Validated AppUserUpdate update) {
         AppUserEntity entity = getById(id);
@@ -94,7 +95,7 @@ public class AppUserController implements BaseController {
         return appUserConverter.fromEntity(entity);
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, path = "${auth.prefix:}/api/user/{id}")
+    @RequestMapping(method = RequestMethod.DELETE, path = "/api/user/{id}")
     public void delete(@PathVariable("id") String id) {
         AppUserEntity entity = getById(id);
         appUserPersistenceService.delete(entity);

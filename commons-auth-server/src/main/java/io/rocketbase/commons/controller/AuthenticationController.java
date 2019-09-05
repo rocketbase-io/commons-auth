@@ -33,6 +33,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 @RestController
+@RequestMapping("${auth.prefix:}")
 public class AuthenticationController {
 
     @Resource
@@ -50,7 +51,7 @@ public class AuthenticationController {
     @Resource
     private ApplicationEventPublisher applicationEventPublisher;
 
-    @RequestMapping(method = RequestMethod.POST, path = "${auth.prefix:}/auth/login", consumes = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.POST, path = "/auth/login", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<LoginResponse> login(@RequestBody @NotNull @Validated LoginRequest login) {
         // Perform the security
@@ -68,7 +69,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(new LoginResponse(jwtTokenBundle, appUserConverter.fromEntity(user)));
     }
 
-    @RequestMapping(value = "${auth.prefix:}/auth/me", method = RequestMethod.GET)
+    @RequestMapping(value = "/auth/me", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<AppUserRead> getAuthenticated(Authentication authentication) {
         if (authentication == null || !(CommonsAuthenticationToken.class.isAssignableFrom(authentication.getClass()))) {
@@ -78,7 +79,7 @@ public class AuthenticationController {
         return ResponseEntity.ok(appUserConverter.fromEntity(appUserService.getByUsername(authentication.getName())));
     }
 
-    @RequestMapping(value = "${auth.prefix:}/auth/change-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/auth/change-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> changePassword(@RequestBody @NotNull @Validated PasswordChangeRequest passwordChange, Authentication authentication) {
         if (authentication == null || !(CommonsAuthenticationToken.class.isAssignableFrom(authentication.getClass()))) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -101,7 +102,7 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @RequestMapping(value = "${auth.prefix:}/auth/update-profile", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/auth/update-profile", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateProfile(@RequestBody @NotNull @Validated UpdateProfileRequest updateProfile, Authentication authentication) {
         if (authentication == null || !(CommonsAuthenticationToken.class.isAssignableFrom(authentication.getClass()))) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -116,7 +117,7 @@ public class AuthenticationController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @RequestMapping(value = "${auth.prefix:}/auth/refresh", method = RequestMethod.GET)
+    @RequestMapping(value = "/auth/refresh", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<String> refreshToken(Authentication authentication) {
         if (authentication == null || !(CommonsAuthenticationToken.class.isAssignableFrom(authentication.getClass()))) {

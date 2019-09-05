@@ -18,30 +18,31 @@ import java.util.Set;
 
 @Slf4j
 @RestController
+@RequestMapping("${auth.prefix:}")
 public class ValidationController implements BaseController {
 
     @Resource
     private ValidationService validationService;
 
-    @RequestMapping(value = "${auth.prefix:}/auth/validate/password", method = RequestMethod.POST)
+    @RequestMapping(value = "/auth/validate/password", method = RequestMethod.POST)
     public ResponseEntity<ValidationResponse<PasswordErrorCodes>> validatePassword(@RequestBody String password) {
         Set<PasswordErrorCodes> passwordErrorCodes = validationService.getPasswordValidationDetails(password);
         return ResponseEntity.ok(new ValidationResponse<>(passwordErrorCodes.isEmpty(), passwordErrorCodes));
     }
 
-    @RequestMapping(value = "${auth.prefix:}/auth/validate/username", method = RequestMethod.POST)
+    @RequestMapping(value = "/auth/validate/username", method = RequestMethod.POST)
     public ResponseEntity<ValidationResponse<UsernameErrorCodes>> validateUsername(@RequestBody String username) {
         Set<UsernameErrorCodes> usernameErrorCodes = validationService.getUsernameValidationDetails(username);
         return ResponseEntity.ok(new ValidationResponse<>(usernameErrorCodes.isEmpty(), usernameErrorCodes));
     }
 
-    @RequestMapping(value = "${auth.prefix:}/auth/validate/email", method = RequestMethod.POST)
+    @RequestMapping(value = "/auth/validate/email", method = RequestMethod.POST)
     public ResponseEntity<ValidationResponse<EmailErrorCodes>> validateEmail(@RequestBody String email) {
         Set<EmailErrorCodes> emailErrorCodes = validationService.getEmailValidationDetails(email);
         return ResponseEntity.ok(new ValidationResponse<>(emailErrorCodes.isEmpty(), emailErrorCodes));
     }
 
-    @RequestMapping(value = "${auth.prefix:}/auth/validate/token", method = RequestMethod.POST)
+    @RequestMapping(value = "/auth/validate/token", method = RequestMethod.POST)
     public ResponseEntity<ValidationResponse<TokenErrorCodes>> validateToken(@RequestBody String token) {
         boolean valid = SimpleTokenService.parseToken(token).isValid();
         return ResponseEntity.ok(new ValidationResponse<>(valid, valid ? Collections.emptySet() : Sets.newHashSet(TokenErrorCodes.EXPIRED)));

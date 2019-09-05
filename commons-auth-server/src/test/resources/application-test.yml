@@ -33,3 +33,4 @@ auth:
   jwt:
     secret: 'P0UoSCtNYlBlU2hWbVlxM3Q2dzl6JEMmRilKQE5jUmZUalduWnI0dTd4IUElRCpHLUthUGRTZ1ZrWHAyczV2OA=='
   user-cache-time: 0
+  prefix: /test
