@@ -39,12 +39,12 @@ public class AuthFormsController extends AbstractFormsController {
         forgotPasswordResource = new ForgotPasswordResource(authProperties.getBaseUrl());
     }
 
-    @GetMapping("/login")
+    @GetMapping("${auth.forms.prefix:}/login")
     public String loginForm() {
         return "login";
     }
 
-    @GetMapping("/logout")
+    @GetMapping("${auth.forms.prefix:}/logout")
     public String logoutForm(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {
@@ -53,13 +53,13 @@ public class AuthFormsController extends AbstractFormsController {
         return "redirect:/login?logout";
     }
 
-    @GetMapping("/forgot")
+    @GetMapping("${auth.forms.prefix:}/forgot")
     public String forgotForm(Model model) {
         model.addAttribute("forgotForm", new ForgotPasswordRequest());
         return "forgot";
     }
 
-    @PostMapping("/forgot")
+    @PostMapping("${auth.forms.prefix:}/forgot")
     public String forgotSubmit(@ModelAttribute("forgotForm") @Validated ForgotPasswordRequest forgot,
                                BindingResult bindingResult, Model model) {
         if (!bindingResult.hasErrors()) {
@@ -81,7 +81,7 @@ public class AuthFormsController extends AbstractFormsController {
         return "forgot";
     }
 
-    @GetMapping("/reset-password")
+    @GetMapping("${auth.forms.prefix:}/reset-password")
     public String resetPasswordForm(@RequestParam(value = "verification", required = false) String verification, Model model) {
         model.addAttribute("resetPasswordForm", ResetPasswordForm.builder().verification(verification).build());
         try {
@@ -93,7 +93,7 @@ public class AuthFormsController extends AbstractFormsController {
         return "reset-password";
     }
 
-    @PostMapping("/reset-password")
+    @PostMapping("${auth.forms.prefix:}/reset-password")
     public String resetPasswordSubmit(@ModelAttribute("resetPasswordForm") @Validated ResetPasswordForm resetPassword,
                                       BindingResult bindingResult, Model model) {
         if (!bindingResult.hasErrors()) {

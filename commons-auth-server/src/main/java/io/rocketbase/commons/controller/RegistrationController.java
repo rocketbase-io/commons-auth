@@ -33,14 +33,14 @@ public class RegistrationController implements BaseController {
     @Resource
     private JwtTokenService jwtTokenService;
 
-    @RequestMapping(method = RequestMethod.POST, path = "/auth/register", consumes = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.POST, path = "${auth.prefix:}/auth/register", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<AppUserRead> register(HttpServletRequest request, @RequestBody @NotNull @Validated RegistrationRequest registration) {
         AppUserEntity entity = registrationService.register(registration, getBaseUrl(request));
         return ResponseEntity.ok(appUserConverter.fromEntity(entity));
     }
 
-    @RequestMapping(method = RequestMethod.GET, path = "/auth/verify")
+    @RequestMapping(method = RequestMethod.GET, path = "${auth.prefix:}/auth/verify")
     @ResponseBody
     public ResponseEntity<JwtTokenBundle> verify(@RequestParam("verification") String verification) {
         AppUserEntity entity = registrationService.verifyRegistration(verification);

@@ -28,6 +28,11 @@ public class AuthProperties {
     private String baseUrl = "http://localhost:8080";
 
     /**
+     * prefix for controllers
+     */
+    private String prefix = "";
+
+    /**
      * full qualified url to a custom UI that proceed the verification<br>
      * ?verification=VALUE will get append
      */

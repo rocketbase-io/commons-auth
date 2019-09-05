@@ -34,13 +34,13 @@ public class RegistrationFormsController extends AbstractFormsController {
         registrationResource = new RegistrationResource(authProperties.getBaseUrl());
     }
 
-    @GetMapping("/registration")
+    @GetMapping("${auth.forms.prefix:}/registration")
     public String registration(Model model) {
         model.addAttribute("registrationForm", new RegistrationForm());
         return "registration";
     }
 
-    @PostMapping("/registration")
+    @PostMapping("${auth.forms.prefix:}/registration")
     public String registrationSubmit(@ModelAttribute("registrationForm") @Validated RegistrationForm registration,
                                      BindingResult bindingResult, Model model) {
 
@@ -74,7 +74,7 @@ public class RegistrationFormsController extends AbstractFormsController {
         return "registration";
     }
 
-    @GetMapping("/verification")
+    @GetMapping("${auth.forms.prefix:}/verification")
     public String verification(@RequestParam(value = "verification", required = false) String verification, Model model) {
         try {
             registrationResource.verify(verification);
