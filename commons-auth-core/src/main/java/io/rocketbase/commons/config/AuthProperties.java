@@ -2,6 +2,7 @@ package io.rocketbase.commons.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -48,20 +49,61 @@ public class AuthProperties {
      */
     private long passwordResetExpiration = 60;
 
+    protected static String transferPrefix(String prefix) {
+        String result = "";
+        if (!StringUtils.isEmpty(prefix) && !prefix.equals("/")) {
+            result = prefix;
+            if (result.endsWith("/")) {
+                result = result.substring(0, result.length() - 1);
+            }
+            if (!result.startsWith("/")) {
+                result = "/" + result;
+            }
+        }
+        return result;
+    }
+
     /**
      * quick help to configure spring security
      *
      * @param prefix in case you've set a prefix
      */
     public static String[] getAllPublicRestEndpointPaths(String prefix) {
+        String prefixPath = transferPrefix(prefix);
         return new String[]{
-                prefix + "/auth/login",
-                prefix + "/auth/refresh",
-                prefix + "/auth/forgot-password",
-                prefix + "/auth/reset-password",
-                prefix + "/auth/validate/*",
-                prefix + "/auth/register",
-                prefix + "/auth/verify"
+                prefixPath + "/auth/login",
+                prefixPath + "/auth/forgot-password",
+                prefixPath + "/auth/reset-password",
+                prefixPath + "/auth/validate/*",
+                prefixPath + "/auth/register",
+                prefixPath + "/auth/verify"
+        };
+    }
+
+    /**
+     * quick help to configure spring security
+     *
+     * @param prefix in case you've set a prefix
+     */
+    public static String[] getAllAuthenticatedRestEndpointPaths(String prefix) {
+        String prefixPath = transferPrefix(prefix);
+        return new String[]{
+                prefixPath + "/auth/refresh",
+                prefixPath + "/auth/update-profile",
+                prefixPath + "/auth/change-password"
+        };
+    }
+
+    /**
+     * quick help to configure spring security
+     *
+     * @param prefix in case you've set a prefix
+     */
+    public static String[] getAllApiRestEndpointPaths(String prefix) {
+        String prefixPath = transferPrefix(prefix);
+        return new String[]{
+                prefixPath + "/api/user-search/*",
+                prefixPath + "/api/user/*"
         };
     }
 }
