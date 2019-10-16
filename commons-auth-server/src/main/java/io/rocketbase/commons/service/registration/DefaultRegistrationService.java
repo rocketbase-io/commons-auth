@@ -45,7 +45,7 @@ public class DefaultRegistrationService implements RegistrationService {
                 String token = SimpleTokenService.generateToken(registration.getUsername(), registrationProperties.getVerificationExpiration());
                 appUserService.updateKeyValues(entity.getUsername(), ImmutableMap.of(REGISTRATION_KV, token));
 
-                emailService.sentRegistrationEmail(entity, buildActionUrl(baseUrl, ActionType.VERIFICATION, token));
+                emailService.sentRegistrationEmail(entity, buildActionUrl(baseUrl, ActionType.VERIFICATION, token, registration.getVerificationUrl()));
             } catch (Exception e) {
                 log.error("couldn't sent email. please check your configuration. {}", e.getMessage());
                 appUserService.delete(entity);

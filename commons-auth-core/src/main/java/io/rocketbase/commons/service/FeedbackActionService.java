@@ -8,8 +8,15 @@ public interface FeedbackActionService {
 
     AuthProperties getAuthProperties();
 
-    default String buildActionUrl(String applicationBaseUrl, ActionType actionType, String token) {
+    default String buildActionUrl(String applicationBaseUrl, ActionType actionType, String token, String customUrl) {
+        String result = StringUtils.isEmpty(customUrl) ? buildBaseUrl(applicationBaseUrl, actionType) : customUrl;
 
+        result += result.contains("?") ? "&" : "?";
+        result += "verification=" + token;
+        return result;
+    }
+
+    default String buildBaseUrl(String applicationBaseUrl, ActionType actionType) {
         String configuredUrl = null;
         switch (actionType) {
             case VERIFICATION:
@@ -31,10 +38,6 @@ public interface FeedbackActionService {
             }
             result += actionType.getApiPath();
         }
-
-
-        result += result.contains("?") ? "&" : "?";
-        result += "verification=" + token;
         return result;
     }
 

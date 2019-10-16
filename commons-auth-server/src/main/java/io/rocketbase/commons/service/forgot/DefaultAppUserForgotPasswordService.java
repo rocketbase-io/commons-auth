@@ -50,7 +50,7 @@ public class DefaultAppUserForgotPasswordService implements AppUserForgotPasswor
         String token = SimpleTokenService.generateToken(appUser.getUsername(), authProperties.getPasswordResetExpiration());
         appUserService.updateKeyValues(appUser.getUsername(), ImmutableMap.of(FORGOTPW_KV, token));
 
-        emailService.sentForgotPasswordEmail(appUser, buildActionUrl(baseUrl, ActionType.PASSWORD_RESET, token));
+        emailService.sentForgotPasswordEmail(appUser, buildActionUrl(baseUrl, ActionType.PASSWORD_RESET, token, forgotPassword.getVerificationUrl()));
 
         applicationEventPublisher.publishEvent(new ForgotPasswordEvent(this, appUser));
 

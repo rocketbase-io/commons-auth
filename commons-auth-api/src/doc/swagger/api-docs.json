@@ -1143,6 +1143,11 @@
         },
         "username": {
           "type": "string"
+        },
+        "verificationUrl": {
+          "type": "string",
+          "description": "optional parameter to overwrite system default. full qualified url to a custom UI that proceed the verification. ?verification=VALUE will get append",
+          "example": "https://application.com/register"
         }
       },
       "title": "ForgotPasswordRequest"
@@ -1286,6 +1291,11 @@
         },
         "username": {
           "type": "string"
+        },
+        "verificationUrl": {
+          "type": "string",
+          "description": "optional parameter to overwrite system default. full qualified url to a custom UI that proceed the verification. ?verification=VALUE will get append",
+          "example": "https://application.com/register"
         }
       },
       "title": "RegistrationRequest"

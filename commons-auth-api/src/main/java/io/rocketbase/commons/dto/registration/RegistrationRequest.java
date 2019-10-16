@@ -29,4 +29,12 @@ public class RegistrationRequest implements Serializable {
     private String password;
 
     private Map<String, String> keyValues;
+
+    /**
+     * optional parameter to overwrite system default
+     * <p>
+     * full qualified url to a custom UI that proceed the verification<br>
+     * * ?verification=VALUE will get append
+     */
+    private String verificationUrl;
 }

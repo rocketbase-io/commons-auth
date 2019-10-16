@@ -19,7 +19,7 @@ public class FeedbackActionServiceTest {
         authProperties.setVerificationUrl(null);
 
         // when
-        String result = new FeedbackSampleActionService(authProperties).buildActionUrl(applicationBaseUrl, FeedbackActionService.ActionType.VERIFICATION, "token");
+        String result = new FeedbackSampleActionService(authProperties).buildActionUrl(applicationBaseUrl, FeedbackActionService.ActionType.VERIFICATION, "token", null);
 
         // then
         assertThat(result, startsWith(applicationBaseUrl + FeedbackActionService.ActionType.VERIFICATION.getApiPath()));
@@ -35,10 +35,26 @@ public class FeedbackActionServiceTest {
         authProperties.setVerificationUrl(configBaseUrl);
 
         // when
-        String result = new FeedbackSampleActionService(authProperties).buildActionUrl(applicationBaseUrl, FeedbackActionService.ActionType.VERIFICATION, "token");
+        String result = new FeedbackSampleActionService(authProperties).buildActionUrl(applicationBaseUrl, FeedbackActionService.ActionType.VERIFICATION, "token", null);
 
         // then
         assertThat(result, startsWith("https://api.rocketbase.io/?verification="));
+    }
+
+    @Test
+    public void buildActionUrlWithCustom() {
+        // given
+        String applicationBaseUrl = "http://localhost:9090";
+
+        String configBaseUrl = "https://api.rocketbase.io/";
+        AuthProperties authProperties = new AuthProperties();
+        authProperties.setVerificationUrl(configBaseUrl);
+
+        // when
+        String result = new FeedbackSampleActionService(authProperties).buildActionUrl(applicationBaseUrl, FeedbackActionService.ActionType.VERIFICATION, "token", "https://example.com/register");
+
+        // then
+        assertThat(result, startsWith("https://example.com/register?verification="));
     }
 
     @Test
@@ -51,7 +67,7 @@ public class FeedbackActionServiceTest {
         authProperties.setVerificationUrl(configBaseUrl);
 
         // when
-        String result = new FeedbackSampleActionService(authProperties).buildActionUrl(applicationBaseUrl, FeedbackActionService.ActionType.VERIFICATION, "token");
+        String result = new FeedbackSampleActionService(authProperties).buildActionUrl(applicationBaseUrl, FeedbackActionService.ActionType.VERIFICATION, "token", null);
 
         // then
         assertThat(result, startsWith("https://api.rocketbase.io/?action=submit&verification="));
