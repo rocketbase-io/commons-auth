@@ -66,11 +66,6 @@ public class AppUserPersistenceTestService implements AppUserPersistenceService<
     }
 
     @Override
-    public Page findAll(Pageable pageable) {
-        return new PageImpl(new ArrayList(userMap.values()), pageable, userMap.size());
-    }
-
-    @Override
     public Page<AppUserTestEntity> findAll(QueryAppUser query, Pageable pageable) {
         return new PageImpl(new ArrayList(userMap.values()), pageable, userMap.size());
     }
