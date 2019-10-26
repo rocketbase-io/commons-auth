@@ -32,18 +32,17 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJ
     }
 
     @Override
-    public Page<AppUserJpaEntity> findAll(Pageable pageable) {
-        return repository.findAll(pageable);
-    }
-
-    @Override
     public Page<AppUserJpaEntity> findAll(QueryAppUser query, Pageable pageable) {
+        if (query == null) {
+            return repository.findAll(pageable);
+        }
+
         AppUserJpaEntity example = new AppUserJpaEntity();
         example.setKeyValueMap(null);
         example.setEnabled(Nulls.notNull(query, QueryAppUser::getEnabled, true));
 
         ExampleMatcher matcherConfig = ExampleMatcher.matchingAll();
-        if (query != null && StringUtils.isEmpty(query.getFreetext())) {
+        if (StringUtils.isEmpty(query.getFreetext())) {
             example.setUsername(query.getUsername());
             example.setFirstName(query.getFirstName());
             example.setLastName(query.getLastName());

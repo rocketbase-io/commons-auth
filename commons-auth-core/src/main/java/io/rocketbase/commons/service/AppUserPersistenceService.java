@@ -13,8 +13,6 @@ public interface AppUserPersistenceService<S extends AppUserEntity> {
 
     Optional<S> findByEmail(String email);
 
-    Page<S> findAll(Pageable pageable);
-
     Page<S> findAll(QueryAppUser query, Pageable pageable);
 
     S save(S entity);

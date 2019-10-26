@@ -44,11 +44,6 @@ public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUse
     }
 
     @Override
-    public Page<AppUserMongoEntity> findAll(Pageable pageable) {
-        return findAll(null, pageable);
-    }
-
-    @Override
     public Page<AppUserMongoEntity> findAll(QueryAppUser query, Pageable pageable) {
         List<AppUserMongoEntity> entities = mongoTemplate.find(getQuery(query).with(pageable), AppUserMongoEntity.class);
         long total = mongoTemplate.count(getQuery(query), AppUserMongoEntity.class);
