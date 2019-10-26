@@ -93,7 +93,7 @@ SOFTWARE.
         <maven.compiler.target>1.8</maven.compiler.target>
         <spring-boot.version>2.2.0.RELEASE</spring-boot.version>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
-        <commons-rest.version>1.9.0</commons-rest.version>
+        <commons-rest.version>1.9.1</commons-rest.version>
         <jjwt.version>0.10.7</jjwt.version>
         <guava.version>28.1-jre</guava.version>
         <passay.version>1.0</passay.version>
