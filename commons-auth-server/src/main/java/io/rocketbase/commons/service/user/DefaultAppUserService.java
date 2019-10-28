@@ -150,7 +150,7 @@ public class DefaultAppUserService implements AppUserService {
     @Override
     public AppUserEntity refreshUsername(String username) {
         if (cache != null) {
-            cache.invalidate(username);
+            cache.invalidate(CacheFilter.builder().username(username).build());
         }
         return getByUsername(username);
     }
