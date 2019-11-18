@@ -3,15 +3,18 @@ package io.rocketbase.commons.controller;
 import com.google.common.collect.Sets;
 import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
-import io.rocketbase.commons.dto.authentication.*;
+import io.rocketbase.commons.dto.authentication.LoginRequest;
+import io.rocketbase.commons.dto.authentication.LoginResponse;
+import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
+import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
 import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
 import io.rocketbase.commons.event.ChangePasswordEvent;
-import io.rocketbase.commons.event.LoginEvent;
 import io.rocketbase.commons.event.UpdateProfileEvent;
 import io.rocketbase.commons.exception.PasswordValidationException;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.security.CommonsAuthenticationToken;
 import io.rocketbase.commons.security.JwtTokenService;
+import io.rocketbase.commons.service.auth.LoginService;
 import io.rocketbase.commons.service.user.AppUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -22,7 +25,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,22 +53,13 @@ public class AuthenticationController {
     @Resource
     private ApplicationEventPublisher applicationEventPublisher;
 
+    @Resource
+    private LoginService loginService;
+
     @RequestMapping(method = RequestMethod.POST, path = "/auth/login", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<LoginResponse> login(@RequestBody @NotNull @Validated LoginRequest login) {
-        // Perform the security
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(login.getUsername().toLowerCase(), login.getPassword())
-        );
-        SecurityContextHolder.getContext()
-                .setAuthentication(authentication);
-
-        AppUserEntity user = appUserService.updateLastLogin(login.getUsername().toLowerCase());
-
-        applicationEventPublisher.publishEvent(new LoginEvent(this, user));
-
-        JwtTokenBundle jwtTokenBundle = jwtTokenService.generateTokenBundle(user);
-        return ResponseEntity.ok(new LoginResponse(jwtTokenBundle, appUserConverter.fromEntity(user)));
+        return ResponseEntity.ok(loginService.performLogin(login.getUsername(), login.getPassword()));
     }
 
     @RequestMapping(value = "/auth/me", method = RequestMethod.GET)

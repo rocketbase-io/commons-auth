@@ -2,6 +2,8 @@ package io.rocketbase.commons.config;
 
 import io.rocketbase.commons.controller.*;
 import io.rocketbase.commons.controller.exceptionhandler.*;
+import io.rocketbase.commons.service.auth.DefaultLoginService;
+import io.rocketbase.commons.service.auth.LoginService;
 import io.rocketbase.commons.service.avatar.AvatarService;
 import io.rocketbase.commons.service.avatar.GravatarService;
 import io.rocketbase.commons.service.email.DefaultEmailService;
@@ -71,6 +73,13 @@ public class AuthServerAutoConfiguration {
         return new DefaultAppUserService(authProperties, registrationProperties);
     }
 
+
+    @Bean
+    @ConditionalOnMissingBean
+    public LoginService loginService() {
+        return new DefaultLoginService();
+    }
+
     @Bean
     @ConditionalOnMissingBean
     public AvatarService avatarService() {
@@ -91,6 +100,12 @@ public class AuthServerAutoConfiguration {
     @ConditionalOnMissingBean
     public AppUserController appUserController() {
         return new AppUserController();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public OAuthLoginRefreshController oAuthLoginRefreshController() {
+        return new OAuthLoginRefreshController();
     }
 
     @Bean
