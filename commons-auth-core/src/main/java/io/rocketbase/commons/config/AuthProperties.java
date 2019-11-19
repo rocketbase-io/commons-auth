@@ -72,6 +72,7 @@ public class AuthProperties {
         String prefixPath = transferPrefix(prefix);
         return new String[]{
                 prefixPath + "/auth/login",
+                prefixPath + "/auth/oauth2/token",
                 prefixPath + "/auth/forgot-password",
                 prefixPath + "/auth/reset-password",
                 prefixPath + "/auth/validate/*",
