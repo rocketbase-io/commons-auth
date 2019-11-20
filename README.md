@@ -142,6 +142,7 @@ Apart from the configuration properties to get it running you need to configure 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableConfigurationProperties({AuthProperties.class, FormsProperties.class})
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Resource
@@ -181,8 +182,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         // @formatter:off
         httpSecurity
-            // activate CorsConfigurationSource
-            .cors().and()
             // we don't need CSRF because our token is invulnerable
             .csrf().disable()
 
@@ -200,29 +199,39 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     "/favicon.ico"
             ).permitAll()
             // configure auth endpoint
-            .antMatchers("/auth/login", "/auth/refresh", "/auth/validate/**").permitAll()
-            // in case you activate registration
-            .antMatchers("/auth/register", "/auth/verify").permitAll()
-            // in case you activate registration
-            .antMatchers("/auth/register", "/auth/verify").permitAll()
-            // for the forms module
-            .antMatchers("/login", "/logout", "/registration", "/forgot", "/reset-password", "/verification").permitAll()
-            // allow to get loggedIn users information
-            .antMatchers("/auth/me/**").authenticated()
+            .antMatchers(authProperties.getAllPublicRestEndpointPaths()).permitAll()
+            // allow logged in users get profile details etc.
+            .antMatchers(authProperties.getAllAuthenticatedRestEndpointPaths()).authenticated()
+            // login/logout forms etc
+            .antMatchers(formsProperties.getFormEndpointPaths()).permitAll()
+            // registration form
+            .antMatchers(formsProperties.getRegistrationEndpointPaths()).permitAll()
             // user-management is only allowed by ADMINS
-            .antMatchers("/api/user/**").hasRole("ADMIN")
+            .antMatchers(authProperties.getApiRestEndpointPath()).hasRole(new AuthProperties().getRoleAdmin())
+            .antMatchers(authProperties.getUserSearchRestEndpointPath()).authenticated()
             // secure all other api-endpoints
-            .antMatchers("/api/**").authenticated();
+            .antMatchers(authProperties.getPrefix()+"/api/**").authenticated()
+            .anyRequest().authenticated();
 
         // Custom JWT based security filter
         httpSecurity
                 .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
 
-        // disable page cachingtemplates
+        // allow also basic auth (optional)
+        httpSecurity.httpBasic();
+
+        // disable page caching templates
         httpSecurity.headers().cacheControl().disable();
         // @formatter:on
     }
 
+    @Override
+    public void configure(WebSecurity web) {
+        // needed when basic auth is also set and oauth (with header auth is used)
+        web.ignoring().antMatchers(authProperties.getAuthRestEndpointPaths());
+    }
+
+    // cors allow all
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -235,6 +244,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
 }
 ```
 
