@@ -1,10 +1,13 @@
 package io.rocketbase.commons.config;
 
+import io.rocketbase.commons.util.UrlParts;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Data
 @ConfigurationProperties(prefix = "auth")
@@ -49,35 +52,16 @@ public class AuthProperties {
      */
     private long passwordResetExpiration = 60;
 
-    protected static String transferPrefix(String prefix) {
-        String result = "";
-        if (!StringUtils.isEmpty(prefix) && !prefix.equals("/")) {
-            result = prefix;
-            if (result.endsWith("/")) {
-                result = result.substring(0, result.length() - 1);
-            }
-            if (!result.startsWith("/")) {
-                result = "/" + result;
-            }
-        }
-        return result;
-    }
-
     /**
-     * quick help to configure spring security
+     * quick help to configure login spring security
      *
      * @param prefix in case you've set a prefix
      */
-    public static String[] getAllPublicRestEndpointPaths(String prefix) {
-        String prefixPath = transferPrefix(prefix);
+    public static String[] getAuthRestEndpointPaths(String prefix) {
+        String prefixPath = UrlParts.ensureStartsAndEndsWithSlash(prefix);
         return new String[]{
-                prefixPath + "/auth/login",
-                prefixPath + "/auth/oauth2/token",
-                prefixPath + "/auth/forgot-password",
-                prefixPath + "/auth/reset-password",
-                prefixPath + "/auth/validate/*",
-                prefixPath + "/auth/register",
-                prefixPath + "/auth/verify"
+                prefixPath + "auth/login",
+                prefixPath + "auth/oauth2/token"
         };
     }
 
@@ -86,12 +70,31 @@ public class AuthProperties {
      *
      * @param prefix in case you've set a prefix
      */
+    public static String[] getAllPublicRestEndpointPaths(String prefix) {
+        // normal login
+        List<String> result = new ArrayList<>();
+        result.addAll(Arrays.asList(getAllAuthenticatedRestEndpointPaths(prefix)));
+        // rest endpoints
+        String prefixPath = UrlParts.ensureStartsAndEndsWithSlash(prefix);
+        result.add(prefixPath + "auth/forgot-password");
+        result.add(prefixPath + "auth/reset-password");
+        result.add(prefixPath + "auth/validate/*");
+        result.add(prefixPath + "auth/register");
+        result.add(prefixPath + "auth/verify");
+        return result.toArray(new String[]{});
+    }
+
+    /**
+     * quick help to configure spring security
+     *
+     * @param prefix in case you've set a prefix
+     */
     public static String[] getAllAuthenticatedRestEndpointPaths(String prefix) {
-        String prefixPath = transferPrefix(prefix);
+        String prefixPath = UrlParts.ensureStartsAndEndsWithSlash(prefix);
         return new String[]{
-                prefixPath + "/auth/refresh",
-                prefixPath + "/auth/update-profile",
-                prefixPath + "/auth/change-password"
+                prefixPath + "auth/refresh",
+                prefixPath + "auth/update-profile",
+                prefixPath + "auth/change-password"
         };
     }
 
@@ -101,10 +104,10 @@ public class AuthProperties {
      * @param prefix in case you've set a prefix
      */
     public static String[] getAllApiRestEndpointPaths(String prefix) {
-        String prefixPath = transferPrefix(prefix);
+        String prefixPath = UrlParts.ensureStartsAndEndsWithSlash(prefix);
         return new String[]{
-                prefixPath + "/api/user-search/*",
-                prefixPath + "/api/user/*"
+                prefixPath + "api/user-search/*",
+                prefixPath + "api/user/*"
         };
     }
 }

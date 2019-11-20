@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.time.Instant;
 
-import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED_VALUE;
-
 @Slf4j
 @RestController
 @RequestMapping("${auth.prefix:}")
@@ -30,7 +28,7 @@ public class OAuthLoginRefreshController {
     @Resource
     private LoginService loginService;
 
-    @RequestMapping(method = RequestMethod.POST, path = "/auth/oauth2/token", consumes = APPLICATION_FORM_URLENCODED_VALUE)
+    @RequestMapping(method = RequestMethod.POST, path = "/auth/oauth2/token")
     @ResponseBody
     public ResponseEntity<OAuthLoginResponse> loginOAuth(@RequestParam MultiValueMap<String, String> paramMap) {
         OAuthRequest oAuthRequest = new OAuthRequest(paramMap);
