@@ -143,7 +143,12 @@ Apart from the configuration properties to get it running you need to configure 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableConfigurationProperties({AuthProperties.class, FormsProperties.class})
+@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final AuthProperties authProperties;
+
+    private final FormsProperties formsProperties;
 
     @Resource
     private UserDetailsService userDetailsService;
