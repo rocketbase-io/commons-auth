@@ -22,7 +22,6 @@ public class AuthProperties {
     @NotEmpty
     private String tokenSecret = "E*iqzFiW#kSmAo8rO^V8%DRlQ#1f&B$i";
 
-
     /**
      * cache time in minutes <br>
      * 0 means disabled
@@ -53,11 +52,10 @@ public class AuthProperties {
     private long passwordResetExpiration = 60;
 
     /**
-     * quick help to configure login spring security
-     *
-     * @param prefix in case you've set a prefix
+     * quick help to configure login spring security<br>
+     * endpoints login and oauth
      */
-    public static String[] getAuthRestEndpointPaths(String prefix) {
+    public String[] getAuthRestEndpointPaths() {
         String prefixPath = UrlParts.ensureStartsAndEndsWithSlash(prefix);
         return new String[]{
                 prefixPath + "auth/login",
@@ -66,14 +64,13 @@ public class AuthProperties {
     }
 
     /**
-     * quick help to configure spring security
-     *
-     * @param prefix in case you've set a prefix
+     * quick help to configure spring security<br>
+     * endpoints like login, forgot password, registration etc
      */
-    public static String[] getAllPublicRestEndpointPaths(String prefix) {
+    public String[] getAllPublicRestEndpointPaths() {
         // normal login
         List<String> result = new ArrayList<>();
-        result.addAll(Arrays.asList(getAllAuthenticatedRestEndpointPaths(prefix)));
+        result.addAll(Arrays.asList(getAllAuthenticatedRestEndpointPaths()));
         // rest endpoints
         String prefixPath = UrlParts.ensureStartsAndEndsWithSlash(prefix);
         result.add(prefixPath + "auth/forgot-password");
@@ -85,29 +82,33 @@ public class AuthProperties {
     }
 
     /**
-     * quick help to configure spring security
-     *
-     * @param prefix in case you've set a prefix
+     * quick help to configure spring security<br>
+     * endpoints for logged in users to interact with their data
      */
-    public static String[] getAllAuthenticatedRestEndpointPaths(String prefix) {
+    public String[] getAllAuthenticatedRestEndpointPaths() {
         String prefixPath = UrlParts.ensureStartsAndEndsWithSlash(prefix);
         return new String[]{
+                prefixPath + "auth/me",
                 prefixPath + "auth/refresh",
                 prefixPath + "auth/update-profile",
                 prefixPath + "auth/change-password"
         };
     }
 
+
     /**
-     * quick help to configure spring security
-     *
-     * @param prefix in case you've set a prefix
+     * quick help to configure spring security<br>
+     * endpoint to crud users (normally only allowed for admins)
      */
-    public static String[] getAllApiRestEndpointPaths(String prefix) {
-        String prefixPath = UrlParts.ensureStartsAndEndsWithSlash(prefix);
-        return new String[]{
-                prefixPath + "api/user-search/*",
-                prefixPath + "api/user/*"
-        };
+    public String getApiRestEndpointPath() {
+        return UrlParts.ensureStartsAndEndsWithSlash(prefix) + "api/user/*";
+    }
+
+    /**
+     * quick help to configure spring security<br>
+     * endpoint to search for users (normally allowed for all logged in users)
+     */
+    public String getUserSearchRestEndpointPath() {
+        return UrlParts.ensureStartsAndEndsWithSlash(prefix) + "api/user-search/*";
     }
 }

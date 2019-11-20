@@ -1,5 +1,6 @@
 package io.rocketbase.commons.config;
 
+import io.rocketbase.commons.util.UrlParts;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -18,17 +19,28 @@ public class FormsProperties {
 
     /**
      * quick help to configure spring security
-     *
-     * @param prefix in case you've set a formsProperties.prefix
      */
-    public static String[] getAllPublicFormEndpointPaths(String prefix) {
+    public String[] getFormEndpointPaths() {
+        String prefixPath = UrlParts.ensureStartsAndEndsWithSlash(prefix);
         return new String[]{
-                prefix + "/login",
-                prefix + "/logout",
-                prefix + "/forgot",
-                prefix + "/reset-password",
-                prefix + "/registration",
-                prefix + "/verify"
+                prefixPath + "login",
+                prefixPath + "logout",
+                prefixPath + "forgot",
+                prefixPath + "reset-password",
+                prefixPath + "registration",
+                prefixPath + "verification"
+        };
+    }
+
+    /**
+     * quick help to configure spring security
+     *
+     */
+    public String[] getRegistrationEndpointPaths() {
+        String prefixPath = UrlParts.ensureStartsAndEndsWithSlash(prefix);
+        return new String[]{
+                prefixPath + "registration",
+                prefixPath + "verification"
         };
     }
 }

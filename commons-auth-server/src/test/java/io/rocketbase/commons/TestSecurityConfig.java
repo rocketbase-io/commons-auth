@@ -26,18 +26,23 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsUtils;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.annotation.Resource;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@EnableConfigurationProperties({AuthProperties.class})
+@EnableConfigurationProperties({AuthProperties.class, FormsProperties.class})
 @RequiredArgsConstructor
 public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final AuthProperties authProperties;
+
+    private final FormsProperties formsProperties;
 
     @Resource
     private UserDetailsService userDetailsService;
@@ -104,12 +109,16 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
                     "/favicon.ico"
             ).permitAll()
             // configure auth endpoint
-            .antMatchers(AuthProperties.getAllPublicRestEndpointPaths(authProperties.getPrefix())).permitAll()
-            .antMatchers(FormsProperties.getAllPublicFormEndpointPaths(authProperties.getPrefix())).permitAll()
-            .antMatchers(authProperties.getPrefix()+"/auth/me/**").authenticated()
+            .antMatchers(authProperties.getAllPublicRestEndpointPaths()).permitAll()
+            // allow logged in users get profile details etc.
+            .antMatchers(authProperties.getAllAuthenticatedRestEndpointPaths()).authenticated()
+            // login/logout forms etc
+            .antMatchers(formsProperties.getFormEndpointPaths()).permitAll()
+            // registration form
+            .antMatchers(formsProperties.getRegistrationEndpointPaths()).permitAll()
             // user-management is only allowed by ADMINS
-            .antMatchers(authProperties.getPrefix()+"/api/user/**").hasRole(new AuthProperties().getRoleAdmin())
-            .antMatchers(authProperties.getPrefix()+"/api/user-search/**").authenticated()
+            .antMatchers(authProperties.getApiRestEndpointPath()).hasRole(new AuthProperties().getRoleAdmin())
+            .antMatchers(authProperties.getUserSearchRestEndpointPath()).authenticated()
             // secure all other api-endpoints
             .antMatchers(authProperties.getPrefix()+"/api/**").authenticated()
             .anyRequest().authenticated();
@@ -118,15 +127,31 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity
                 .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
 
-        // disable page cachingtemplates
+        // allow also basic auth (optional)
+        httpSecurity.httpBasic();
+
+        // disable page caching templates
         httpSecurity.headers().cacheControl().disable();
         // @formatter:on
     }
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring()
-                .antMatchers(HttpMethod.OPTIONS);
+        // needed when basic auth is also set and oauth (with header auth is used)
+        web.ignoring().antMatchers(authProperties.getAuthRestEndpointPaths());
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin(CorsConfiguration.ALL);
+        configuration.addAllowedMethod(CorsConfiguration.ALL);
+        configuration.addAllowedHeader(CorsConfiguration.ALL);
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(600L);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
 }
