@@ -5,9 +5,6 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @Data
 @ConfigurationProperties(prefix = "auth")
@@ -55,12 +52,8 @@ public class AuthProperties {
      * quick help to configure login spring security<br>
      * endpoints login and oauth
      */
-    public String[] getAuthRestEndpointPaths() {
-        String prefixPath = UrlParts.ensureStartsAndEndsWithSlash(prefix);
-        return new String[]{
-                prefixPath + "auth/login",
-                prefixPath + "auth/oauth2/token"
-        };
+    public String getOauthRestEndpointPaths() {
+        return UrlParts.ensureStartsAndEndsWithSlash(prefix) + "auth/oauth2/token";
     }
 
     /**
@@ -68,17 +61,16 @@ public class AuthProperties {
      * endpoints like login, forgot password, registration etc
      */
     public String[] getAllPublicRestEndpointPaths() {
-        // normal login
-        List<String> result = new ArrayList<>();
-        result.addAll(Arrays.asList(getAllAuthenticatedRestEndpointPaths()));
-        // rest endpoints
         String prefixPath = UrlParts.ensureStartsAndEndsWithSlash(prefix);
-        result.add(prefixPath + "auth/forgot-password");
-        result.add(prefixPath + "auth/reset-password");
-        result.add(prefixPath + "auth/validate/*");
-        result.add(prefixPath + "auth/register");
-        result.add(prefixPath + "auth/verify");
-        return result.toArray(new String[]{});
+        return new String[]{
+                getOauthRestEndpointPaths(),
+                prefixPath + "auth/login",
+                prefixPath + "auth/forgot-password",
+                prefixPath + "auth/reset-password",
+                prefixPath + "auth/validate/*",
+                prefixPath + "auth/register",
+                prefixPath + "auth/verify"
+        };
     }
 
     /**

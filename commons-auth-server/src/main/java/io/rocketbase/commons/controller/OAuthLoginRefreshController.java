@@ -28,6 +28,8 @@ public class OAuthLoginRefreshController {
     @Resource
     private LoginService loginService;
 
+    // activate cors in this way in order to work in combination with ignored security for this endpoint
+    @CrossOrigin(allowedHeaders = "*", origins = "*")
     @RequestMapping(method = RequestMethod.POST, path = "/auth/oauth2/token")
     @ResponseBody
     public ResponseEntity<OAuthLoginResponse> loginOAuth(@RequestParam MultiValueMap<String, String> paramMap) {

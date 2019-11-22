@@ -233,7 +233,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity web) {
         // needed when basic auth is also set and oauth (with header auth is used)
-        web.ignoring().antMatchers(authProperties.getAuthRestEndpointPaths());
+        web.ignoring().antMatchers(authProperties.getOauthRestEndpointPaths());
     }
 
     // cors allow all
@@ -244,7 +244,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         configuration.addAllowedMethod(CorsConfiguration.ALL);
         configuration.addAllowedHeader(CorsConfiguration.ALL);
         configuration.setAllowCredentials(true);
-        configuration.setMaxAge(600L);
+        configuration.setMaxAge(1800L);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
