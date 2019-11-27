@@ -25,6 +25,9 @@ public class OAuthLoginResponse implements Serializable {
     @JsonProperty("access_token")
     private String accessToken;
 
+    @JsonProperty("refresh_expires_in")
+    private Long refreshExpiresIn;
+
     @JsonProperty("refresh_token")
     private String refreshToken;
 

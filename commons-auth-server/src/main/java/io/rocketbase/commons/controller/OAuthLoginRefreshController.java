@@ -42,7 +42,8 @@ public class OAuthLoginRefreshController {
             LoginResponse loginResponse = loginService.performLogin(oAuthRequest.getUsername(), oAuthRequest.getPassword());
             response.accessToken(loginResponse.getJwtTokenBundle().getToken())
                     .refreshToken(loginResponse.getJwtTokenBundle().getRefreshToken())
-                    .expiresIn(getExpiresIn(loginResponse.getJwtTokenBundle().getToken()));
+                    .expiresIn(getExpiresIn(loginResponse.getJwtTokenBundle().getToken()))
+                    .refreshExpiresIn(getExpiresIn(loginResponse.getJwtTokenBundle().getRefreshToken()));
 
         } else if (oAuthRequest.getGrantType().equals(GrantType.REFRESH_TOKEN)) {
             AppUserToken appUserToken = jwtTokenService.parseToken(oAuthRequest.getRefreshToken());
@@ -51,7 +52,7 @@ public class OAuthLoginRefreshController {
             response.accessToken(accessToken)
                     .refreshToken(oAuthRequest.getRefreshToken())
                     .expiresIn(getExpiresIn(accessToken))
-                    .build();
+                    .refreshExpiresIn(getExpiresIn(oAuthRequest.getRefreshToken()));
         }
         return ResponseEntity.ok(response.build());
     }
