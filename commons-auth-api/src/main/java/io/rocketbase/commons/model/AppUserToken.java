@@ -1,8 +1,11 @@
 package io.rocketbase.commons.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import java.util.List;
 import java.util.Map;
 
+@JsonDeserialize(as = SimpleAppUserToken.class)
 public interface AppUserToken extends AppUserReference {
 
     List<String> getRoles();

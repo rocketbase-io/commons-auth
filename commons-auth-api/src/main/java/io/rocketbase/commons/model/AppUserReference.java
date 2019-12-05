@@ -1,10 +1,12 @@
 package io.rocketbase.commons.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
 
+@JsonDeserialize(as = SimpleAppUserReference.class)
 public interface AppUserReference extends Serializable {
 
     String getId();
