@@ -8,6 +8,8 @@ import lombok.Getter;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import javax.servlet.http.HttpServletRequest;
+
 public abstract class AbstractFormsController {
 
     @Getter
@@ -33,6 +35,26 @@ public abstract class AbstractFormsController {
         model.addAttribute("title", formsProperties.getTitle());
         model.addAttribute("logoSrc", formsProperties.getLogoSrc());
         model.addAttribute("registrationEnabled", registrationProperties.isEnabled());
+    }
+
+
+    /**
+     * get baseUrl without / at the end
+     *
+     * @param request current HttpServletRequest
+     * @return baseUrl without /
+     */
+    public String getBaseUrl(HttpServletRequest request) {
+        String result = request.getScheme() + "://" + request.getServerName();
+        int serverPort = request.getServerPort();
+        if (serverPort != 80 && serverPort != 443) {
+            result += ":" + serverPort;
+        }
+        result += request.getContextPath();
+        if (result.endsWith("/")) {
+            result = result.substring(0, result.length() - 1);
+        }
+        return result;
     }
 
 }

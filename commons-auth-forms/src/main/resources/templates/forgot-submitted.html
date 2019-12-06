@@ -20,7 +20,10 @@
                         <img th:src="${logoSrc}" class="is-rounded">
                     </figure>
 
-                    <h2 th:text="#{auth.forgotPassword.success}">Successfully requested password reset</h2>
+                    <article class="message is-success">
+                        <div class="message-body" th:text="#{auth.forgotPassword.success}">Successfully requested password reset</div>
+                    </article>
+
                     <div class="notification is-warning" th:text="#{auth.forgotPassword.checkMailbox(${expiresAfter})}">
                         You need to check your mailbox. Via the link you can change your password within X minutes.
                     </div>

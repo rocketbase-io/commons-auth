@@ -5,10 +5,14 @@ import io.rocketbase.commons.config.FormsProperties;
 import io.rocketbase.commons.config.RegistrationProperties;
 import io.rocketbase.commons.dto.forgot.ForgotPasswordRequest;
 import io.rocketbase.commons.dto.forgot.PerformPasswordResetRequest;
+import io.rocketbase.commons.dto.validation.TokenErrorCodes;
+import io.rocketbase.commons.dto.validation.ValidationResponse;
 import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.resource.ForgotPasswordResource;
+import io.rocketbase.commons.util.UrlParts;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -33,6 +37,8 @@ import java.util.Map;
 public class AuthFormsController extends AbstractFormsController {
 
     private final ForgotPasswordResource forgotPasswordResource;
+    @Value("${auth.forms.prefix:}")
+    private String formsPrefix;
 
     public AuthFormsController(AuthProperties authProperties, FormsProperties formsProperties, RegistrationProperties registrationProperties) {
         super(authProperties, formsProperties, registrationProperties);
@@ -61,12 +67,15 @@ public class AuthFormsController extends AbstractFormsController {
 
     @PostMapping("${auth.forms.prefix:}/forgot")
     public String forgotSubmit(@ModelAttribute("forgotForm") @Validated ForgotPasswordRequest forgot,
-                               BindingResult bindingResult, Model model) {
+                               BindingResult bindingResult, Model model,
+                               HttpServletRequest request) {
         if (!bindingResult.hasErrors()) {
             if (StringUtils.isEmpty(forgot.getEmail()) && StringUtils.isEmpty(forgot.getUsername())) {
                 model.addAttribute("usernameOrEmailRequired", true);
             } else {
                 try {
+                    String verificationUrl = getBaseUrl(request) + UrlParts.ensureStartsAndEndsWithSlash(formsPrefix) + "reset-password";
+                    forgot.setVerificationUrl(verificationUrl);
                     forgotPasswordResource.forgotPassword(forgot);
                     model.addAttribute("expiresAfter", getAuthProperties().getPasswordResetExpiration());
                     return "forgot-submitted";
@@ -83,14 +92,19 @@ public class AuthFormsController extends AbstractFormsController {
 
     @GetMapping("${auth.forms.prefix:}/reset-password")
     public String resetPasswordForm(@RequestParam(value = "verification", required = false) String verification, Model model) {
+        String v = model.containsAttribute("verification") ? String.valueOf(model.getAttribute("verification")) : verification;
+        prepareResetPasswordForm(model, v);
+        return "reset-password";
+    }
+
+    public void prepareResetPasswordForm(Model model, String verification) {
         model.addAttribute("resetPasswordForm", ResetPasswordForm.builder().verification(verification).build());
         try {
-            getValidationResource().validateToken(verification);
-            model.addAttribute("verificationValid", true);
+            ValidationResponse<TokenErrorCodes> response = getValidationResource().validateToken(verification);
+            model.addAttribute("verificationValid", response.isValid());
         } catch (Exception e) {
             model.addAttribute("verificationValid", false);
         }
-        return "reset-password";
     }
 
     @PostMapping("${auth.forms.prefix:}/reset-password")
@@ -104,6 +118,9 @@ public class AuthFormsController extends AbstractFormsController {
                     forgotPasswordResource.resetPassword(resetPassword.toRequest());
                     return "reset-password-success";
                 } catch (BadRequestException badRequest) {
+                    model.addAttribute("verification", resetPassword.getVerification());
+                    prepareResetPasswordForm(model, resetPassword.getVerification());
+
                     Map<String, String> fields = badRequest.getErrorResponse().getFields();
                     if (fields.containsKey("password")) {
                         model.addAttribute("passwordErrors", fields.get("password"));
