@@ -94,7 +94,7 @@ Gravatar is been used by default to fetch an avatar if nothing is provided.
 | property                       | default         | explanation                                                  |
 | ------------------------------ | --------------- | ------------------------------------------------------------ |
 | auth.gravatar.enabled          | true          | should the avatar been initially loaded via gravatar service |
-| auth.gravatar.size          | 160          | size of image |
+| auth.gravatar.size          | 256          | size of image |
 | auth.gravatar.image          | RETRO          | type of placeholder style<br />https://gravatar.com/site/implement/images/ |
 | auth.gravatar.rating          | null          | filter for spefic rating<br />https://gravatar.com/site/implement/images/ |
 

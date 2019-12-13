@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class GravatarProperties {
 
     private boolean enabled = true;
-    private Integer size = 160;
+    private Integer size = 265;
     private DefaultImage image = DefaultImage.RETRO;
     private ImageRating rating = null;
 
