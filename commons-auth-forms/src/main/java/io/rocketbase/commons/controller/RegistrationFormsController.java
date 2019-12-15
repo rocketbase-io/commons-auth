@@ -57,7 +57,7 @@ public class RegistrationFormsController extends AbstractFormsController {
             } else {
                 try {
                     RegistrationRequest registrationRequest = registration.toRequest();
-                    String verificationUrl = getBaseUrl(request) + UrlParts.ensureStartsAndEndsWithSlash(formsPrefix) + "verification";
+                    String verificationUrl = UrlParts.getBaseUrl(request) + UrlParts.ensureStartsAndEndsWithSlash(formsPrefix) + "verification";
                     registrationRequest.setVerificationUrl(verificationUrl);
 
                     AppUserRead user = registrationResource.register(registrationRequest);
