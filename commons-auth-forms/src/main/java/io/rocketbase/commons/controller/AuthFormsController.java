@@ -74,7 +74,7 @@ public class AuthFormsController extends AbstractFormsController {
                 model.addAttribute("usernameOrEmailRequired", true);
             } else {
                 try {
-                    String verificationUrl = getBaseUrl(request) + UrlParts.ensureStartsAndEndsWithSlash(formsPrefix) + "reset-password";
+                    String verificationUrl = UrlParts.getBaseUrl(request) + UrlParts.ensureStartsAndEndsWithSlash(formsPrefix) + "reset-password";
                     forgot.setVerificationUrl(verificationUrl);
                     forgotPasswordResource.forgotPassword(forgot);
                     model.addAttribute("expiresAfter", getAuthProperties().getPasswordResetExpiration());
