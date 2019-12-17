@@ -101,6 +101,6 @@ public class AuthProperties {
      * endpoint to search for users (normally allowed for all logged in users)
      */
     public String getUserSearchRestEndpointPath() {
-        return UrlParts.ensureStartsAndEndsWithSlash(prefix) + "api/user-search/*";
+        return UrlParts.ensureStartsAndEndsWithSlash(prefix) + "api/user-search";
     }
 }
