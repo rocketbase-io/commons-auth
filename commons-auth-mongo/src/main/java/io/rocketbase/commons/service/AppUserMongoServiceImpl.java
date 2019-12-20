@@ -13,10 +13,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.StringUtils;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUserMongoEntity> {
@@ -51,7 +49,7 @@ public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUse
         return new PageImpl<>(entities, pageable, total);
     }
 
-    private Query getQuery(QueryAppUser query) {
+    Query getQuery(QueryAppUser query) {
         Query result = new Query();
         if (query != null) {
             if (!StringUtils.isEmpty(query.getUsername())) {
@@ -73,14 +71,14 @@ public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUse
                         buildRegexCriteria("email", query.getFreetext())));
             }
             if (!StringUtils.isEmpty(query.getHasRole())) {
-                result.addCriteria(Criteria.where("roles").in(query.getHasRole()));
+                result.addCriteria(Criteria.where("roles").in(Arrays.asList(Pattern.compile(query.getHasRole(), Pattern.CASE_INSENSITIVE))));
             }
             result.addCriteria(Criteria.where("enabled").is(Nulls.notNull(query.getEnabled(), true)));
         }
         return result;
     }
 
-    private Criteria buildRegexCriteria(String where, String text) {
+    Criteria buildRegexCriteria(String where, String text) {
         String pattern = text.trim() + "";
         if (!pattern.contains(".*")) {
             pattern = ".*" + pattern + ".*";
