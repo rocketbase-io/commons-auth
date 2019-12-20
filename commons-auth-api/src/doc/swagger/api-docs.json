@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "description": "Handles authentication + authorization with registration- and password-reset flows.",
-    "version": "2.4.0",
+    "version": "2.7.5",
     "title": "commons-auth api",
     "contact": {
       "name": "rocketbase.io",
@@ -917,7 +917,7 @@
             "in": "query",
             "required": false,
             "type": "string",
-            "description": "searches in all properties containing (case-insensitive)"
+            "description": "searches in username, firstName, lastName and email containing (case-insensitive)"
           },
           {
             "name": "enabled",
@@ -925,6 +925,13 @@
             "required": false,
             "type": "string",
             "description": "default true - to search for disabled you need to add to query"
+          },
+          {
+            "name": "hasRole",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "has role case-insensitive"
           }
         ],
         "responses": {
