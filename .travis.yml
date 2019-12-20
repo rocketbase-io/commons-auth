@@ -20,9 +20,10 @@ after_script:
   - JACOCO_SOURCE_PATH=commons-auth-api/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.api.json commons-auth-api/target/site/jacoco/jacoco.xml
   - JACOCO_SOURCE_PATH=commons-auth-core/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.core.json commons-auth-core/target/site/jacoco/jacoco.xml
   - JACOCO_SOURCE_PATH=commons-auth-jpa/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.jpa.json commons-auth-jpa/target/site/jacoco/jacoco.xml
+  - JACOCO_SOURCE_PATH=commons-auth-mongo/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.mongo.json commons-auth-mongo/target/site/jacoco/jacoco.xml
   - JACOCO_SOURCE_PATH=commons-auth-server/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.server.json commons-auth-server/target/site/jacoco/jacoco.xml
   - JACOCO_SOURCE_PATH=commons-auth-test/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.test.json commons-auth-test/target/site/jacoco/jacoco.xml
-  - ./cc-test-reporter sum-coverage coverage/codeclimate.*.json -p 5
+  - ./cc-test-reporter sum-coverage coverage/codeclimate.*.json -p 6
   - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter upload-coverage; fi  # Upload coverage/codeclimate.json
 ## release on tag
 deploy:
