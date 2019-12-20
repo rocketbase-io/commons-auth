@@ -5,14 +5,18 @@ import io.rocketbase.commons.model.AppUserJpaEntity;
 import io.rocketbase.commons.repository.AppUserJpaRepository;
 import io.rocketbase.commons.util.Nulls;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,31 +41,57 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJ
             return repository.findAll(pageable);
         }
 
-        AppUserJpaEntity example = new AppUserJpaEntity();
-        example.setKeyValueMap(null);
-        example.setEnabled(Nulls.notNull(query, QueryAppUser::getEnabled, true));
+        Specification<AppUserJpaEntity> specification = new Specification<AppUserJpaEntity>() {
+            @Override
+            public Predicate toPredicate(Root<AppUserJpaEntity> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder cb) {
+                Predicate result = null;
+                List<Predicate> predicates = new ArrayList<>();
+                addToListIfNotEmpty(predicates, Nulls.notEmpty(query.getUsername(), query.getFreetext()), "username", root, cb);
+                addToListIfNotEmpty(predicates, Nulls.notEmpty(query.getFirstName(), query.getFreetext()), "firstName", root, cb);
+                addToListIfNotEmpty(predicates, Nulls.notEmpty(query.getLastName(), query.getFreetext()), "lastName", root, cb);
+                addToListIfNotEmpty(predicates, Nulls.notEmpty(query.getEmail(), query.getFreetext()), "email", root, cb);
+                if (!predicates.isEmpty()) {
+                    if (StringUtils.isEmpty(query.getFreetext())) {
+                        result = cb.and(predicates.toArray(new Predicate[]{}));
+                    } else {
+                        result = cb.or(predicates.toArray(new Predicate[]{}));
+                    }
+                }
 
-        ExampleMatcher matcherConfig = ExampleMatcher.matchingAll();
-        if (StringUtils.isEmpty(query.getFreetext())) {
-            example.setUsername(query.getUsername());
-            example.setFirstName(query.getFirstName());
-            example.setLastName(query.getLastName());
-            example.setEmail(query.getEmail());
-        } else {
-            matcherConfig = ExampleMatcher.matchingAny();
-            example.setUsername(query.getFreetext());
-            example.setFirstName(query.getFreetext());
-            example.setLastName(query.getFreetext());
-            example.setEmail(query.getFreetext());
+                if (query.getEnabled() != null) {
+                    Predicate enabled = cb.equal(root.get("enabled"), query.getEnabled());
+                    if (result != null) {
+                        result = cb.and(result, enabled);
+                    } else {
+                        result = enabled;
+                    }
+                }
+
+                if (!StringUtils.isEmpty(query.getHasRole())) {
+                    Predicate roles = cb.upper(root.join("roles")).in(query.getHasRole().toUpperCase());
+                    if (result != null) {
+                        result = cb.and(result, roles);
+                    } else {
+                        result = roles;
+                    }
+                }
+                return result;
+            }
+        };
+        return repository.findAll(specification, pageable);
+    }
+
+    protected void addToListIfNotEmpty(List<Predicate> list, String value, String path, Root<AppUserJpaEntity> root, CriteriaBuilder cb) {
+        if (!StringUtils.isEmpty(value)) {
+            list.add(cb.like(cb.lower(root.get(path)), buildLikeString(value)));
         }
-        matcherConfig
-                .withMatcher("username", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
-                .withMatcher("firstName", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
-                .withMatcher("lastName", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
-                .withMatcher("email", ExampleMatcher.GenericPropertyMatchers.contains().ignoreCase())
-                .withMatcher("enabled", ExampleMatcher.GenericPropertyMatchers.exact())
-                .withIgnoreNullValues();
-        return repository.findAll(Example.of(example, matcherConfig), pageable);
+    }
+
+    protected String buildLikeString(String value) {
+        if (value.contains("*")) {
+            return value.trim().toLowerCase().replace("*", "%");
+        }
+        return "%" + value.trim().toLowerCase() + "%";
     }
 
     @Override

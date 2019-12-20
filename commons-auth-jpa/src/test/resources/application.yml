@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+    username: sa
+    password: sa
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl:
+          import_files: import_user.sql
+
+hibernate:
+  dialect: org.hibernate.dialect.H2Dialect
+  hbm2ddl:
+    auto: create-drop
+  show_sql: true
+
+logging:
+  level:
+    io.rocketbase: DEBUG
+    org.hibernate:
+      SQL: TRACE
+      type.descriptor:.sql.BasicBinder: TRACE
