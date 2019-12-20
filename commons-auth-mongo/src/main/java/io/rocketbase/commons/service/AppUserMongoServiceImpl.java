@@ -72,6 +72,9 @@ public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUse
                         buildRegexCriteria("lastName", query.getFreetext()),
                         buildRegexCriteria("email", query.getFreetext())));
             }
+            if (!StringUtils.isEmpty(query.getHasRole())) {
+                result.addCriteria(Criteria.where("roles").in(query.getHasRole()));
+            }
             result.addCriteria(Criteria.where("enabled").is(Nulls.notNull(query.getEnabled(), true)));
         }
         return result;
