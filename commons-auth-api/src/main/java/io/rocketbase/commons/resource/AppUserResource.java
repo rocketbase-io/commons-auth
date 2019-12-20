@@ -55,6 +55,9 @@ public class AppUserResource implements BaseRestResource {
             if (!StringUtils.isEmpty(query.getFreetext())) {
                 uriBuilder.queryParam("freetext", query.getFreetext());
             }
+            if (!StringUtils.isEmpty(query.getHasRole())) {
+                uriBuilder.queryParam("hasRole", query.getHasRole());
+            }
         }
     }
 

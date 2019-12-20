@@ -25,5 +25,9 @@ public class QueryAppUser implements Serializable {
      * searches for all properties containing text
      */
     private String freetext;
+    /**
+     * used needs to have role ignore cases
+     */
+    private String hasRole;
     private Boolean enabled;
 }
