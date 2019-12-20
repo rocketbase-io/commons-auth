@@ -213,7 +213,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(formsProperties.getRegistrationEndpointPaths()).permitAll()
             // user-management is only allowed by ADMINS
             .antMatchers(authProperties.getApiRestEndpointPath()).hasRole(authProperties.getRoleAdmin())
-            .antMatchers(authProperties.getUserSearchRestEndpointPath()).authenticated()
+            .antMatchers(authProperties.getUserSearchRestEndpointPaths()).authenticated()
             // secure all other api-endpoints
             .antMatchers(authProperties.getPrefix()+"/api/**").authenticated()
             .anyRequest().authenticated();

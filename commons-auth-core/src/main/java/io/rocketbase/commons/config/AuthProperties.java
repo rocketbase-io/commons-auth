@@ -67,6 +67,7 @@ public class AuthProperties {
                 prefixPath + "auth/login",
                 prefixPath + "auth/forgot-password",
                 prefixPath + "auth/reset-password",
+                prefixPath + "auth/validate",
                 prefixPath + "auth/validate/*",
                 prefixPath + "auth/register",
                 prefixPath + "auth/verify"
@@ -100,7 +101,11 @@ public class AuthProperties {
      * quick help to configure spring security<br>
      * endpoint to search for users (normally allowed for all logged in users)
      */
-    public String getUserSearchRestEndpointPath() {
-        return UrlParts.ensureStartsAndEndsWithSlash(prefix) + "api/user-search";
+    public String[] getUserSearchRestEndpointPaths() {
+        String prefixPath = UrlParts.ensureStartsAndEndsWithSlash(prefix);
+        return new String[]{
+                prefixPath + "api/user-search",
+                prefixPath + "api/user-search/*"
+        };
     }
 }
