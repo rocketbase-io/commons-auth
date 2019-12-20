@@ -129,6 +129,13 @@ SOFTWARE.
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>${jacoco.version}</version>
+                    <configuration>
+                        <excludes>
+                            <exclude>**/*Repository.*</exclude>
+                            <exclude>**/config/*AutoConfiguration.*</exclude>
+                            <exclude>**/io/rocketbase/commons/test/**</exclude>
+                        </excludes>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
