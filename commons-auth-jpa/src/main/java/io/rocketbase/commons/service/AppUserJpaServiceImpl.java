@@ -68,13 +68,13 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJ
         return repository.findAll(specification, pageable);
     }
 
-    protected void addToListIfNotEmpty(List<Predicate> list, String value, String path, Root<AppUserJpaEntity> root, CriteriaBuilder cb) {
+    void addToListIfNotEmpty(List<Predicate> list, String value, String path, Root<AppUserJpaEntity> root, CriteriaBuilder cb) {
         if (!StringUtils.isEmpty(value)) {
             list.add(cb.like(cb.lower(root.get(path)), buildLikeString(value)));
         }
     }
 
-    protected String buildLikeString(String value) {
+    String buildLikeString(String value) {
         if (value.contains("*")) {
             return value.trim().toLowerCase().replace("*", "%");
         }

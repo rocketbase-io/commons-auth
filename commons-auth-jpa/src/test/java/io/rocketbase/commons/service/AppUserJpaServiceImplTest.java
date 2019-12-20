@@ -27,6 +27,20 @@ public class AppUserJpaServiceImplTest {
     private AppUserPersistenceService<AppUserJpaEntity> service;
 
     @Test
+    public void findAllNullQuery() {
+        // given
+        QueryAppUser query = null;
+
+        // when
+        Page<AppUserJpaEntity> result = service.findAll(query, PageRequest.of(0, 10));
+
+        // then
+        assertThat(result, notNullValue());
+        assertThat(result.getTotalElements(), equalTo(4L));
+    }
+
+
+    @Test
     public void findAllEmptyQuery() {
         // given
         QueryAppUser query = QueryAppUser.builder().build();
@@ -136,5 +150,24 @@ public class AppUserJpaServiceImplTest {
         assertThat(result, notNullValue());
         assertThat(result.getTotalElements(), equalTo(1L));
         assertThat(result.getContent().get(0).getUsername(), equalTo("marten"));
+    }
+
+    @Test
+    public void buildLikeString() {
+        // given
+        AppUserJpaServiceImpl appUserJpaService = new AppUserJpaServiceImpl(null);
+
+        // when
+        String simple = appUserJpaService.buildLikeString("simple");
+        String beginning = appUserJpaService.buildLikeString("*sim");
+        String ending = appUserJpaService.buildLikeString("sim*");
+        String lower = appUserJpaService.buildLikeString("LOWER");
+
+        // then
+        assertThat(simple, equalTo("%simple%"));
+        assertThat(beginning, equalTo("%sim"));
+        assertThat(ending, equalTo("sim%"));
+        assertThat(lower, equalTo("%lower%"));
+
     }
 }
