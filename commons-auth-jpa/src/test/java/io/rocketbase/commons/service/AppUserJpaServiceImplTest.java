@@ -36,7 +36,7 @@ public class AppUserJpaServiceImplTest {
 
         // then
         assertThat(result, notNullValue());
-        assertThat(result.getTotalElements(), equalTo(4L));
+        assertThat(result.getTotalElements(), equalTo(3L));
     }
 
     @Test
@@ -68,9 +68,8 @@ public class AppUserJpaServiceImplTest {
 
         // then
         assertThat(result, notNullValue());
-        assertThat(result.getTotalElements(), equalTo(2L));
+        assertThat(result.getTotalElements(), equalTo(1L));
         assertThat(result.getContent().get(0).getUsername(), equalTo("niels"));
-        assertThat(result.getContent().get(1).getUsername(), equalTo("sample"));
     }
 
     @Test
@@ -79,7 +78,7 @@ public class AppUserJpaServiceImplTest {
         QueryAppUser query = QueryAppUser.builder()
                 .username("s")
                 .lastName("S")
-                .enabled(true)
+                .enabled(false)
                 .build();
 
         // when
@@ -88,7 +87,7 @@ public class AppUserJpaServiceImplTest {
         // then
         assertThat(result, notNullValue());
         assertThat(result.getTotalElements(), equalTo(1L));
-        assertThat(result.getContent().get(0).getUsername(), equalTo("niels"));
+        assertThat(result.getContent().get(0).getUsername(), equalTo("sample"));
     }
 
     @Test

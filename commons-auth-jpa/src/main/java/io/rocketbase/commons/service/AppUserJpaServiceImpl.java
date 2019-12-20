@@ -44,7 +44,7 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJ
         Specification<AppUserJpaEntity> specification = new Specification<AppUserJpaEntity>() {
             @Override
             public Predicate toPredicate(Root<AppUserJpaEntity> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder cb) {
-                Predicate result = null;
+                Predicate result = cb.equal(root.get("enabled"), Nulls.notNull(query.getEnabled(), true));
                 List<Predicate> predicates = new ArrayList<>();
                 addToListIfNotEmpty(predicates, Nulls.notEmpty(query.getUsername(), query.getFreetext()), "username", root, cb);
                 addToListIfNotEmpty(predicates, Nulls.notEmpty(query.getFirstName(), query.getFreetext()), "firstName", root, cb);
@@ -52,28 +52,15 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJ
                 addToListIfNotEmpty(predicates, Nulls.notEmpty(query.getEmail(), query.getFreetext()), "email", root, cb);
                 if (!predicates.isEmpty()) {
                     if (StringUtils.isEmpty(query.getFreetext())) {
-                        result = cb.and(predicates.toArray(new Predicate[]{}));
+                        result = cb.and(result, cb.and(predicates.toArray(new Predicate[]{})));
                     } else {
-                        result = cb.or(predicates.toArray(new Predicate[]{}));
-                    }
-                }
-
-                if (query.getEnabled() != null) {
-                    Predicate enabled = cb.equal(root.get("enabled"), query.getEnabled());
-                    if (result != null) {
-                        result = cb.and(result, enabled);
-                    } else {
-                        result = enabled;
+                        result = cb.and(result, cb.or(predicates.toArray(new Predicate[]{})));
                     }
                 }
 
                 if (!StringUtils.isEmpty(query.getHasRole())) {
                     Predicate roles = cb.upper(root.join("roles")).in(query.getHasRole().toUpperCase());
-                    if (result != null) {
-                        result = cb.and(result, roles);
-                    } else {
-                        result = roles;
-                    }
+                    result = cb.and(result, roles);
                 }
                 return result;
             }
