@@ -18,7 +18,6 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -116,7 +115,7 @@ public class JwtTokenService implements Serializable {
         scopes.addAll(customAuthoritiesProvider.getExtraTokenAuthorities(appUserToken));
 
         JwtBuilder jwtBuilder = prepareBuilder(ldt, jwtProperties.getAccessTokenExpiration(), appUserToken.getUsername())
-                .claim(ROLES_KEY, scopes.stream().map(a -> a.getAuthority()).collect(Collectors.toSet()))
+                .claim(ROLES_KEY, RolesAuthoritiesConverter.convertToDtos(scopes))
                 .claim(USER_ID_KEY, appUserToken.getId())
                 .claim(FIRST_NAME_KEY, appUserToken.getFirstName())
                 .claim(LAST_NAME_KEY, appUserToken.getLastName())

@@ -84,7 +84,7 @@ public class AppUserControllerTest extends BaseUserIntegrationTest {
         // then
         assertThat(response, notNullValue());
         assertThat(response.getId(), notNullValue());
-        assertThat(response.getRoles(), containsInAnyOrder(new AuthProperties().getRoleUser()));
+        assertThat(response.getRoles(), containsInAnyOrder(String.format("ROLE_%s", new AuthProperties().getRoleUser())));
     }
 
     @Test
@@ -103,7 +103,7 @@ public class AppUserControllerTest extends BaseUserIntegrationTest {
         assertThat(response, notNullValue());
         assertThat(response.getFirstName(), equalTo("firstName"));
         assertThat(response.getLastName(), equalTo("lastName"));
-        assertThat(response.getRoles(), containsInAnyOrder(new AuthProperties().getRoleUser()));
+        assertThat(response.getRoles(), containsInAnyOrder(String.format("ROLE_%s", new AuthProperties().getRoleUser())));
     }
 
     @Test

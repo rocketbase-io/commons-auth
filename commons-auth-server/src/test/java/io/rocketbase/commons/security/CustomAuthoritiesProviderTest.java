@@ -47,7 +47,7 @@ public class CustomAuthoritiesProviderTest extends BaseUserIntegrationTest {
         // when
         JwtTokenBundle jwtTokenBundle = service.generateTokenBundle(SimpleAppUserToken.builder()
                 .username(username)
-                .roles(RolesAuthoritiesConverter.convert(authorities))
+                .roles(RolesAuthoritiesConverter.convertToDtos(authorities))
                 .build());
         // then
         assertThat(jwtTokenBundle, notNullValue());

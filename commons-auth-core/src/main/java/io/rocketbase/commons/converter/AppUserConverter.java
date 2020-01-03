@@ -2,6 +2,7 @@ package io.rocketbase.commons.converter;
 
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.util.RolesAuthoritiesConverter;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +33,7 @@ public class AppUserConverter {
                 .lastName(entity.getLastName())
                 .email(entity.getEmail())
                 .avatar(entity.getAvatar())
-                .roles(entity.getRoles())
+                .roles(RolesAuthoritiesConverter.convertRoles(entity.getRoles()))
                 .keyValues(filterInvisibleKeys(entity.getKeyValues()))
                 .enabled(entity.isEnabled())
                 .created(entity.getCreated())
