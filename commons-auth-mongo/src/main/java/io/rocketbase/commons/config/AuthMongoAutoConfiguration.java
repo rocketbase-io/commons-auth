@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 @Configuration
-@AutoConfigureBefore(AuthServerAutoConfiguration.class)
+@AutoConfigureBefore(AuthServiceAutoConfiguration.class)
 public class AuthMongoAutoConfiguration {
 
     @Bean

@@ -1,10 +1,11 @@
 package io.rocketbase.commons.convert;
 
-import io.rocketbase.commons.controller.BaseController;
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import org.springframework.util.MultiValueMap;
 
-public class QueryAppUserConverter implements BaseController {
+import static io.rocketbase.commons.util.QueryParamParser.parseBoolean;
+
+public class QueryAppUserConverter {
 
     public QueryAppUser fromParams(MultiValueMap<String, String> params) {
         if (params == null) {

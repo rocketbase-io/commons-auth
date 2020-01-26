@@ -39,7 +39,7 @@ SOFTWARE.
     <dependencies>
         <dependency>
             <groupId>io.rocketbase.commons</groupId>
-            <artifactId>commons-auth-server</artifactId>
+            <artifactId>commons-auth-service</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -50,8 +50,9 @@ SOFTWARE.
 
         <!-- tests -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
+            <groupId>io.rocketbase.commons</groupId>
+            <artifactId>commons-auth-test</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -62,12 +63,6 @@ SOFTWARE.
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
             <artifactId>de.flapdoodle.embed.mongo</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.rocketbase.commons</groupId>
-            <artifactId>commons-auth-test</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

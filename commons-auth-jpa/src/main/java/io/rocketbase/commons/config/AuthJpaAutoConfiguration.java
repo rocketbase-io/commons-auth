@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@AutoConfigureBefore(AuthServerAutoConfiguration.class)
+@AutoConfigureBefore(AuthServiceAutoConfiguration.class)
 public class AuthJpaAutoConfiguration {
 
     @Bean

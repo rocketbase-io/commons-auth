@@ -5,8 +5,6 @@ jdk:
 cache:
   directories:
     - $HOME/.m2
-services:
-  - mongodb
 ## gpg stuff
 before_install:
   - echo $GPG_SECRET_KEYS | base64 --decode | $GPG_EXECUTABLE --import
@@ -24,6 +22,7 @@ after_script:
   - JACOCO_SOURCE_PATH=commons-auth-core/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.core.json commons-auth-core/target/site/jacoco/jacoco.xml
   - JACOCO_SOURCE_PATH=commons-auth-jpa/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.jpa.json commons-auth-jpa/target/site/jacoco/jacoco.xml
   - JACOCO_SOURCE_PATH=commons-auth-mongo/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.mongo.json commons-auth-mongo/target/site/jacoco/jacoco.xml
+  - JACOCO_SOURCE_PATH=commons-auth-service/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.service.json commons-auth-service/target/site/jacoco/jacoco.xml
   - JACOCO_SOURCE_PATH=commons-auth-server/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.server.json commons-auth-server/target/site/jacoco/jacoco.xml
   - JACOCO_SOURCE_PATH=commons-auth-test/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.test.json commons-auth-test/target/site/jacoco/jacoco.xml
   - ./cc-test-reporter sum-coverage coverage/codeclimate.*.json -p 6
