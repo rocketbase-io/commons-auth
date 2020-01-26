@@ -87,7 +87,7 @@ public class AuthServiceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ValidationService validationService() {
-        return new DefaultValidationService(usernameProperties, passwordProperties, appUserService());
+    public ValidationService validationService(@Autowired MessageSource messageSource) {
+        return new DefaultValidationService(usernameProperties, passwordProperties, appUserService(), messageSource);
     }
 }

@@ -11,6 +11,7 @@ import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
 import io.rocketbase.commons.event.ChangePasswordEvent;
 import io.rocketbase.commons.event.UpdateProfileEvent;
 import io.rocketbase.commons.exception.PasswordValidationException;
+import io.rocketbase.commons.exception.ValidationErrorCode;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.security.CommonsAuthenticationToken;
 import io.rocketbase.commons.security.JwtTokenService;
@@ -18,6 +19,8 @@ import io.rocketbase.commons.service.auth.LoginService;
 import io.rocketbase.commons.service.user.AppUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -56,6 +59,9 @@ public class AuthenticationController {
     @Resource
     private LoginService loginService;
 
+    @Resource
+    private MessageSource messageSource;
+
     @RequestMapping(method = RequestMethod.POST, path = "/auth/login", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<LoginResponse> login(@RequestBody @NotNull @Validated LoginRequest login) {
@@ -85,7 +91,9 @@ public class AuthenticationController {
                     new UsernamePasswordAuthenticationToken(username, passwordChange.getCurrentPassword())
             );
         } catch (AuthenticationException e) {
-            throw new PasswordValidationException(Sets.newHashSet(PasswordErrorCodes.INVALID_CURRENT_PASSWORD));
+            ValidationErrorCode<PasswordErrorCodes> validationErrorCode = new ValidationErrorCode<>(PasswordErrorCodes.INVALID_CURRENT_PASSWORD,
+                    messageSource.getMessage(String.format("auth.error.%s", PasswordErrorCodes.INVALID_CURRENT_PASSWORD.getValue()), null, LocaleContextHolder.getLocale()));
+            throw new PasswordValidationException(Sets.newHashSet(validationErrorCode));
         }
 
         appUserService.updatePassword(username, passwordChange.getNewPassword());

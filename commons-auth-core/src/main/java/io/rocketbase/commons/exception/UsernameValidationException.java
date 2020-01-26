@@ -12,6 +12,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UsernameValidationException extends RuntimeException {
 
-    private final Set<UsernameErrorCodes> errors;
+    private final Set<ValidationErrorCode<UsernameErrorCodes>> errors;
 
 }

@@ -12,6 +12,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class PasswordValidationException extends RuntimeException {
 
-    private final Set<PasswordErrorCodes> errors;
+    private final Set<ValidationErrorCode<PasswordErrorCodes>> errors;
 
 }

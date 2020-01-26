@@ -201,8 +201,8 @@ public class AuthenticationControllerTest extends BaseUserIntegrationTest {
         } catch (BadRequestException e) {
             assertThat(e.getErrorResponse(), notNullValue());
             assertThat(e.getErrorResponse().getFields(), notNullValue());
-            assertThat(e.getErrorResponse().getFields().containsKey("password"), equalTo(true));
-            assertThat(e.getErrorResponse().getFields().get("password"), equalTo("INVALID_CURRENT_PASSWORD"));
+            assertThat(e.getErrorResponse().getFields().containsKey("password.invalidCurrentPassword"), equalTo(true));
+            assertThat(e.getErrorResponse().getFields().get("password.invalidCurrentPassword"), equalTo("invalid current password"));
         }
     }
 

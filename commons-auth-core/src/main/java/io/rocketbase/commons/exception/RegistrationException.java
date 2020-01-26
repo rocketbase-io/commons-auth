@@ -14,8 +14,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class RegistrationException extends RuntimeException {
 
-    private final Set<UsernameErrorCodes> usernameErrors;
-    private final Set<PasswordErrorCodes> passwordErrors;
-    private final Set<EmailErrorCodes> emailErrors;
+    private final Set<ValidationErrorCode<UsernameErrorCodes>> usernameErrors;
+    private final Set<ValidationErrorCode<PasswordErrorCodes>> passwordErrors;
+    private final Set<ValidationErrorCode<EmailErrorCodes>> emailErrors;
 
 }

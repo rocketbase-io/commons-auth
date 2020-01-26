@@ -5,11 +5,16 @@ import io.rocketbase.commons.config.UsernameProperties;
 import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
 import io.rocketbase.commons.dto.validation.UsernameErrorCodes;
 import io.rocketbase.commons.exception.RegistrationException;
+import io.rocketbase.commons.exception.ValidationErrorCode;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.service.validation.DefaultValidationService;
 import io.rocketbase.commons.test.model.AppUserTestEntity;
 import org.junit.Test;
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceResolvable;
+import org.springframework.context.NoSuchMessageException;
 
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 
@@ -53,14 +58,30 @@ public class DefaultValidationServiceTest {
             return Optional.of(AppUserTestEntity.builder().username("found").build());
         }
     };
+    private final MessageSource messageSource = new MessageSource() {
+        @Override
+        public String getMessage(String code, Object[] args, String defaultMessage, Locale locale) {
+            return code;
+        }
+
+        @Override
+        public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
+            return code;
+        }
+
+        @Override
+        public String getMessage(MessageSourceResolvable resolvable, Locale locale) throws NoSuchMessageException {
+            return "";
+        }
+    };
 
     @Test
     public void getPasswordValidationDetailsValid() {
         // given
-        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), unkownUserLookupService);
+        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), unkownUserLookupService, messageSource);
         String password = "r0cketB@se";
         // when
-        Set<PasswordErrorCodes> result = service.getPasswordValidationDetails(password);
+        Set<ValidationErrorCode<PasswordErrorCodes>> result = service.getPasswordValidationDetails(password);
         // then
         assertThat(result, notNullValue());
         assertThat(result.size(), equalTo(0));
@@ -70,24 +91,24 @@ public class DefaultValidationServiceTest {
     @Test
     public void getPasswordValidationDetailsInvalid() {
         // given
-        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), unkownUserLookupService);
+        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), unkownUserLookupService, messageSource);
         String password = "rock";
         // when
-        Set<PasswordErrorCodes> result = service.getPasswordValidationDetails(password);
+        Set<ValidationErrorCode<PasswordErrorCodes>> result = service.getPasswordValidationDetails(password);
         // then
         assertThat(result, notNullValue());
         assertThat(result.size(), equalTo(4));
-        assertThat(result, containsInAnyOrder(TOO_SHORT, INSUFFICIENT_UPPERCASE, INSUFFICIENT_DIGIT, INSUFFICIENT_SPECIAL));
+        assertThat(result, containsInAnyOrder(new ValidationErrorCode<>(TOO_SHORT), new ValidationErrorCode<>(INSUFFICIENT_UPPERCASE), new ValidationErrorCode<>(INSUFFICIENT_DIGIT), new ValidationErrorCode<>(INSUFFICIENT_SPECIAL)));
         assertThat(service.isPasswordValid(password), equalTo(false));
     }
 
     @Test
     public void getUsernameValidationDetailsValid() {
         // given
-        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), unkownUserLookupService);
+        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), unkownUserLookupService, messageSource);
         String username = "newuser";
         // when
-        Set<UsernameErrorCodes> result = service.getUsernameValidationDetails(username);
+        Set<ValidationErrorCode<UsernameErrorCodes>> result = service.getUsernameValidationDetails(username);
         // then
         assertThat(result, notNullValue());
         assertThat(result.size(), equalTo(0));
@@ -97,49 +118,49 @@ public class DefaultValidationServiceTest {
     @Test
     public void getUsernameValidationDetailsInvalid() {
         // given
-        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), takenUserLookupService);
+        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), takenUserLookupService, messageSource);
         String username = "kno@wnuer";
         // when
-        Set<UsernameErrorCodes> result = service.getUsernameValidationDetails(username);
+        Set<ValidationErrorCode<UsernameErrorCodes>> result = service.getUsernameValidationDetails(username);
         // then
         assertThat(result, notNullValue());
         assertThat(result.size(), equalTo(2));
-        assertThat(result, containsInAnyOrder(UsernameErrorCodes.ALREADY_TAKEN, UsernameErrorCodes.NOT_ALLOWED_CHAR));
+        assertThat(result, containsInAnyOrder(new ValidationErrorCode<>(UsernameErrorCodes.ALREADY_TAKEN), new ValidationErrorCode<>(UsernameErrorCodes.NOT_ALLOWED_CHAR)));
         assertThat(service.isUsernameValid(username), equalTo(false));
     }
 
     @Test
     public void getUsernameValidationDetailsTooShort() {
         // given
-        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), takenUserLookupService);
+        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), takenUserLookupService, messageSource);
         String username = "kn";
         // when
-        Set<UsernameErrorCodes> result = service.getUsernameValidationDetails(username);
+        Set<ValidationErrorCode<UsernameErrorCodes>> result = service.getUsernameValidationDetails(username);
         // then
         assertThat(result, notNullValue());
         assertThat(result.size(), equalTo(2));
-        assertThat(result, containsInAnyOrder(UsernameErrorCodes.TOO_SHORT, UsernameErrorCodes.ALREADY_TAKEN));
+        assertThat(result, containsInAnyOrder(new ValidationErrorCode<>(UsernameErrorCodes.TOO_SHORT), new ValidationErrorCode<>(UsernameErrorCodes.ALREADY_TAKEN)));
         assertThat(service.isUsernameValid(username), equalTo(false));
     }
 
     @Test
     public void getUsernameValidationDetailsTooLong() {
         // given
-        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), unkownUserLookupService);
+        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), unkownUserLookupService, messageSource);
         String username = "kn32188931983210310334dsfkodfdasdas3q4239";
         // when
-        Set<UsernameErrorCodes> result = service.getUsernameValidationDetails(username);
+        Set<ValidationErrorCode<UsernameErrorCodes>> result = service.getUsernameValidationDetails(username);
         // then
         assertThat(result, notNullValue());
         assertThat(result.size(), equalTo(1));
-        assertThat(result, containsInAnyOrder(UsernameErrorCodes.TOO_LONG));
+        assertThat(result, containsInAnyOrder(new ValidationErrorCode<>(UsernameErrorCodes.TOO_LONG)));
         assertThat(service.isUsernameValid(username), equalTo(false));
     }
 
     @Test
     public void validateRegistrationValid() {
         // given
-        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), unkownUserLookupService);
+        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), unkownUserLookupService, messageSource);
         // when
         boolean result = service.validateRegistration("user123", "r0cketB@se", "test@email.com");
         // then
@@ -149,7 +170,7 @@ public class DefaultValidationServiceTest {
     @Test
     public void validateRegistrationInvalid() {
         // given
-        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), knownEmailUserLookupService);
+        DefaultValidationService service = new DefaultValidationService(new UsernameProperties(), new PasswordProperties(), knownEmailUserLookupService, messageSource);
         // when
         try {
             service.validateRegistration("user123", "rock", "test@email.com");

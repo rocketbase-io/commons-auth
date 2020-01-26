@@ -6,15 +6,15 @@ import io.rocketbase.commons.config.UsernameProperties;
 import io.rocketbase.commons.dto.validation.EmailErrorCodes;
 import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
 import io.rocketbase.commons.dto.validation.UsernameErrorCodes;
-import io.rocketbase.commons.exception.EmailValidationException;
-import io.rocketbase.commons.exception.PasswordValidationException;
-import io.rocketbase.commons.exception.RegistrationException;
-import io.rocketbase.commons.exception.UsernameValidationException;
+import io.rocketbase.commons.exception.*;
 import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.service.ValidationUserLookupService;
+import io.rocketbase.commons.util.Nulls;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.passay.*;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.util.StringUtils;
 
 import javax.mail.internet.AddressException;
@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -30,9 +31,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DefaultValidationService implements io.rocketbase.commons.service.validation.ValidationService {
 
+    public static final int EMAIL_MAX_LENGTH = 255;
+
     final UsernameProperties usernameProperties;
     final PasswordProperties passwordProperties;
     final ValidationUserLookupService userLookupService;
+    final MessageSource messageSource;
 
     private Pattern userMatcher;
     private PasswordValidator passwordValidator;
@@ -75,7 +79,7 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
 
     protected RuleResult runPasswordValidation(String password) {
         return getPasswordValidator()
-                .validate(new PasswordData(password != null ? password : ""));
+                .validate(new PasswordData(Nulls.notNull(password)));
     }
 
     @Override
@@ -85,7 +89,7 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
 
     @Override
     public void passwordIsValid(String password) throws PasswordValidationException {
-        Set<PasswordErrorCodes> errorCodes = getPasswordValidationDetails(password);
+        Set<ValidationErrorCode<PasswordErrorCodes>> errorCodes = getPasswordValidationDetails(password);
         if (!errorCodes.isEmpty()) {
             PasswordValidationException exception = new PasswordValidationException(errorCodes);
             if (log.isDebugEnabled()) {
@@ -96,9 +100,27 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
     }
 
     @Override
-    public Set<PasswordErrorCodes> getPasswordValidationDetails(String password) {
+    public Set<ValidationErrorCode<PasswordErrorCodes>> getPasswordValidationDetails(String password) {
         return runPasswordValidation(password).getDetails().stream()
-                .map(d -> PasswordErrorCodes.valueOf(d.getErrorCode()))
+                .map(d -> {
+                    PasswordErrorCodes errorCode = PasswordErrorCodes.valueOf(d.getErrorCode());
+                    switch (errorCode) {
+                        case TOO_SHORT:
+                            return generateError(PasswordErrorCodes.TOO_SHORT, e -> e.getValue(), passwordProperties.getMinLength());
+                        case TOO_LONG:
+                            return generateError(PasswordErrorCodes.TOO_LONG, e -> e.getValue(), passwordProperties.getMaxLength());
+                        case INSUFFICIENT_LOWERCASE:
+                            return generateError(PasswordErrorCodes.INSUFFICIENT_LOWERCASE, e -> e.getValue(), passwordProperties.getLowercase());
+                        case INSUFFICIENT_UPPERCASE:
+                            return generateError(PasswordErrorCodes.INSUFFICIENT_UPPERCASE, e -> e.getValue(), passwordProperties.getUppercase());
+                        case INSUFFICIENT_DIGIT:
+                            return generateError(PasswordErrorCodes.INSUFFICIENT_DIGIT, e -> e.getValue(), passwordProperties.getDigit());
+                        case INSUFFICIENT_SPECIAL:
+                            return generateError(PasswordErrorCodes.INSUFFICIENT_SPECIAL, e -> e.getValue(), SpecialCharacterRule.CHARS, passwordProperties.getSpecial());
+                        default:
+                            return generateError(errorCode, e -> e.getValue());
+                    }
+                })
                 .collect(Collectors.toSet());
     }
 
@@ -109,7 +131,7 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
 
     @Override
     public void usernameIsValid(String username) throws UsernameValidationException {
-        Set<UsernameErrorCodes> errorCodes = getUsernameValidationDetails(username);
+        Set<ValidationErrorCode<UsernameErrorCodes>> errorCodes = getUsernameValidationDetails(username);
         if (!errorCodes.isEmpty()) {
             UsernameValidationException exception = new UsernameValidationException(errorCodes);
             if (log.isDebugEnabled()) {
@@ -120,24 +142,24 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
     }
 
     @Override
-    public Set<UsernameErrorCodes> getUsernameValidationDetails(String username) {
-        Set<UsernameErrorCodes> errorCodes = new HashSet<>();
+    public Set<ValidationErrorCode<UsernameErrorCodes>> getUsernameValidationDetails(String username) {
+        Set<ValidationErrorCode<UsernameErrorCodes>> errorCodes = new HashSet<>();
         if (StringUtils.isEmpty(username)) {
-            errorCodes.add(UsernameErrorCodes.TOO_SHORT);
+            errorCodes.add(generateError(UsernameErrorCodes.TOO_SHORT, e -> e.getValue(), usernameProperties.getMinLength()));
             return errorCodes;
         }
         if (username.length() < usernameProperties.getMinLength()) {
-            errorCodes.add(UsernameErrorCodes.TOO_SHORT);
+            errorCodes.add(generateError(UsernameErrorCodes.TOO_SHORT, e -> e.getValue(), usernameProperties.getMinLength()));
         }
         if (username.length() > usernameProperties.getMaxLength()) {
-            errorCodes.add(UsernameErrorCodes.TOO_LONG);
+            errorCodes.add(generateError(UsernameErrorCodes.TOO_LONG, e -> e.getValue(), usernameProperties.getMinLength()));
         }
         if (!getUserMatcher().matcher(username).matches()) {
-            errorCodes.add(UsernameErrorCodes.NOT_ALLOWED_CHAR);
+            errorCodes.add(generateError(UsernameErrorCodes.NOT_ALLOWED_CHAR, e -> e.getValue(), String.format("a-z, 0-9 and %s", usernameProperties.getSpecialCharacters())));
         }
         AppUserToken found = userLookupService.getByUsername(username);
         if (found != null) {
-            errorCodes.add(UsernameErrorCodes.ALREADY_TAKEN);
+            errorCodes.add(generateError(UsernameErrorCodes.ALREADY_TAKEN, e -> e.getValue()));
         }
         return errorCodes;
     }
@@ -148,31 +170,31 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
     }
 
     @Override
-    public Set<EmailErrorCodes> getEmailValidationDetails(String email) {
-        Set<EmailErrorCodes> errorCodes = new HashSet<>();
+    public Set<ValidationErrorCode<EmailErrorCodes>> getEmailValidationDetails(String email) {
+        Set<ValidationErrorCode<EmailErrorCodes>> errorCodes = new HashSet<>();
         if (StringUtils.isEmpty(email)) {
-            errorCodes.add(EmailErrorCodes.INVALID);
+            errorCodes.add(generateError(EmailErrorCodes.INVALID, e -> e.getValue()));
             return errorCodes;
         }
         try {
             InternetAddress emailAddr = new InternetAddress(email);
             emailAddr.validate();
         } catch (AddressException ex) {
-            errorCodes.add(EmailErrorCodes.INVALID);
+            errorCodes.add(generateError(EmailErrorCodes.INVALID, e -> e.getValue()));
         }
         if (userLookupService.findByEmail(email).isPresent()) {
-            errorCodes.add(EmailErrorCodes.ALREADY_TAKEN);
+            errorCodes.add(generateError(EmailErrorCodes.ALREADY_TAKEN, e -> e.getValue()));
         }
         // max length within jpa entity
-        if (email.length() > 255) {
-            errorCodes.add(EmailErrorCodes.TOO_LONG);
+        if (email.length() > EMAIL_MAX_LENGTH) {
+            errorCodes.add(generateError(EmailErrorCodes.TOO_LONG, e -> e.getValue(), EMAIL_MAX_LENGTH));
         }
         return errorCodes;
     }
 
     @Override
     public void emailIsValid(String email) {
-        Set<EmailErrorCodes> errorCodes = getEmailValidationDetails(email);
+        Set<ValidationErrorCode<EmailErrorCodes>> errorCodes = getEmailValidationDetails(email);
         if (!errorCodes.isEmpty()) {
             EmailValidationException exception = new EmailValidationException(errorCodes);
             if (log.isDebugEnabled()) {
@@ -184,9 +206,9 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
 
     @Override
     public boolean validateRegistration(String username, String password, String email) {
-        Set<UsernameErrorCodes> usernameErrorCodes = getUsernameValidationDetails(username);
-        Set<PasswordErrorCodes> passwordErrorCodes = getPasswordValidationDetails(password);
-        Set<EmailErrorCodes> emailErrorCodes = getEmailValidationDetails(email);
+        Set<ValidationErrorCode<UsernameErrorCodes>> usernameErrorCodes = getUsernameValidationDetails(username);
+        Set<ValidationErrorCode<PasswordErrorCodes>> passwordErrorCodes = getPasswordValidationDetails(password);
+        Set<ValidationErrorCode<EmailErrorCodes>> emailErrorCodes = getEmailValidationDetails(email);
 
         if (!usernameErrorCodes.isEmpty() || !passwordErrorCodes.isEmpty() || !emailErrorCodes.isEmpty()) {
             RegistrationException exception = new RegistrationException(usernameErrorCodes, passwordErrorCodes, emailErrorCodes);
@@ -196,5 +218,9 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
             throw exception;
         }
         return true;
+    }
+
+    private <T extends Enum<T>> ValidationErrorCode<T> generateError(T error, Function<T, String> errorCode, Object... args) {
+        return new ValidationErrorCode<T>(error, messageSource.getMessage(String.format("auth.error.%s", errorCode.apply(error)), args, LocaleContextHolder.getLocale()));
     }
 }

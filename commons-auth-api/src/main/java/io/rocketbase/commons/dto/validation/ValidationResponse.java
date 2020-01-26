@@ -2,13 +2,10 @@ package io.rocketbase.commons.dto.validation;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.Map;
 
 @Data
 @Builder
@@ -24,5 +21,6 @@ public class ValidationResponse<T extends Enum> implements Serializable {
 
     private boolean valid;
 
-    private Set<T> errorCodes;
+    @Singular
+    private Map<T, String> errorCodes;
 }

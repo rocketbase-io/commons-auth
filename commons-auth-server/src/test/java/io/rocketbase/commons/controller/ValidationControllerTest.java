@@ -39,7 +39,7 @@ public class ValidationControllerTest extends BaseUserIntegrationTest {
         // then
         assertThat(response, notNullValue());
         assertThat(response.isValid(), equalTo(false));
-        assertThat(response.getErrorCodes(), containsInAnyOrder(UsernameErrorCodes.TOO_SHORT, UsernameErrorCodes.NOT_ALLOWED_CHAR));
+        assertThat(response.getErrorCodes().keySet(), containsInAnyOrder(UsernameErrorCodes.TOO_SHORT, UsernameErrorCodes.NOT_ALLOWED_CHAR));
     }
 
     @Test
@@ -66,7 +66,7 @@ public class ValidationControllerTest extends BaseUserIntegrationTest {
         // then
         assertThat(response, notNullValue());
         assertThat(response.isValid(), equalTo(false));
-        assertThat(response.getErrorCodes(), containsInAnyOrder(EmailErrorCodes.ALREADY_TAKEN));
+        assertThat(response.getErrorCodes().keySet(), containsInAnyOrder(EmailErrorCodes.ALREADY_TAKEN));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class ValidationControllerTest extends BaseUserIntegrationTest {
         // then
         assertThat(response, notNullValue());
         assertThat(response.isValid(), equalTo(false));
-        assertThat(response.getErrorCodes(), containsInAnyOrder(EmailErrorCodes.INVALID));
+        assertThat(response.getErrorCodes().keySet(), containsInAnyOrder(EmailErrorCodes.INVALID));
     }
 
     @Test
@@ -105,7 +105,7 @@ public class ValidationControllerTest extends BaseUserIntegrationTest {
         // then
         assertThat(response, notNullValue());
         assertThat(response.isValid(), equalTo(false));
-        assertThat(response.getErrorCodes(), containsInAnyOrder(PasswordErrorCodes.INSUFFICIENT_SPECIAL, PasswordErrorCodes.INSUFFICIENT_UPPERCASE, PasswordErrorCodes.TOO_SHORT));
+        assertThat(response.getErrorCodes().keySet(), containsInAnyOrder(PasswordErrorCodes.INSUFFICIENT_SPECIAL, PasswordErrorCodes.INSUFFICIENT_UPPERCASE, PasswordErrorCodes.TOO_SHORT));
     }
 
     @Test
@@ -130,7 +130,7 @@ public class ValidationControllerTest extends BaseUserIntegrationTest {
         // then
         assertThat(response, notNullValue());
         assertThat(response.isValid(), equalTo(false));
-        assertThat(response.getErrorCodes(), containsInAnyOrder(TokenErrorCodes.EXPIRED));
+        assertThat(response.getErrorCodes().keySet(), containsInAnyOrder(TokenErrorCodes.EXPIRED));
     }
 
 }

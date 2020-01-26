@@ -12,5 +12,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class EmailValidationException extends RuntimeException {
 
-    private final Set<EmailErrorCodes> errors;
+    private final Set<ValidationErrorCode<EmailErrorCodes>> errors;
+
 }
