@@ -18,9 +18,11 @@ import io.rocketbase.commons.service.validation.DefaultValidationService;
 import io.rocketbase.commons.service.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -41,8 +43,8 @@ public class AuthServiceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public MailContentConfig mailContentConfig() {
-        return new SimpleMailContentConfig(emailProperties);
+    public MailContentConfig mailContentConfig(@Autowired MessageSource messageSource) {
+        return new SimpleMailContentConfig(emailProperties, messageSource);
     }
 
     @Bean
