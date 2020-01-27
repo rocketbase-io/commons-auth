@@ -11,6 +11,8 @@ import java.util.Set;
 
 public interface ValidationService {
 
+    int EMAIL_MAX_LENGTH = 255;
+
     boolean isPasswordValid(String password);
 
     void passwordIsValid(String password) throws PasswordValidationException;

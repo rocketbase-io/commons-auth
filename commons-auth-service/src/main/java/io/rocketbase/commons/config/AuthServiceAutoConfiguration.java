@@ -15,6 +15,7 @@ import io.rocketbase.commons.service.registration.RegistrationService;
 import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.service.user.DefaultAppUserService;
 import io.rocketbase.commons.service.validation.DefaultValidationService;
+import io.rocketbase.commons.service.validation.ValidationErrorCodeService;
 import io.rocketbase.commons.service.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -87,7 +88,13 @@ public class AuthServiceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ValidationService validationService(@Autowired MessageSource messageSource) {
-        return new DefaultValidationService(usernameProperties, passwordProperties, appUserService(), messageSource);
+    public ValidationErrorCodeService validationErrorCodeService(@Autowired MessageSource messageSource) {
+        return new ValidationErrorCodeService(usernameProperties, passwordProperties,  messageSource);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ValidationService validationService(ValidationErrorCodeService validationErrorCodeService) {
+        return new DefaultValidationService(usernameProperties, passwordProperties, appUserService(), validationErrorCodeService);
     }
 }
