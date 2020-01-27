@@ -8,6 +8,7 @@ import io.rocketbase.commons.config.RegistrationProperties;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.EmailValidationException;
 import io.rocketbase.commons.exception.NotFoundException;
+import io.rocketbase.commons.exception.RegistrationException;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.service.AppUserPersistenceService;
 import io.rocketbase.commons.service.avatar.AvatarService;
@@ -206,8 +207,8 @@ public class DefaultAppUserService implements AppUserService {
     }
 
     @Override
-    public AppUserEntity registerUser(RegistrationRequest registration) {
-        validationService.validateRegistration(registration.getUsername(), registration.getPassword(), registration.getEmail());
+    public AppUserEntity registerUser(RegistrationRequest registration) throws RegistrationException {
+        validationService.registrationIsValid(registration.getUsername(), registration.getPassword(), registration.getEmail());
 
         AppUserEntity instance = appUserPersistenceService.initNewInstance();
         instance.setUsername(registration.getUsername().toLowerCase());

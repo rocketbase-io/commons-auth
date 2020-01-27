@@ -78,11 +78,6 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
     }
 
     @Override
-    public boolean isPasswordValid(String password) {
-        return runPasswordValidation(password).isValid();
-    }
-
-    @Override
     public void passwordIsValid(String password) throws PasswordValidationException {
         Set<ValidationErrorCode<PasswordErrorCodes>> errorCodes = getPasswordValidationDetails(password);
         if (!errorCodes.isEmpty()) {
@@ -102,11 +97,6 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
                     return validationErrorCodeService.passwordError(errorCode);
                 })
                 .collect(Collectors.toSet());
-    }
-
-    @Override
-    public boolean isUsernameValid(String username) {
-        return getUsernameValidationDetails(username).isEmpty();
     }
 
     @Override
@@ -144,9 +134,17 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
         return validationErrorCodeService.usernameErrors(errorCodes.toArray(new UsernameErrorCodes[]{}));
     }
 
+
     @Override
-    public boolean isEmailValid(String email) {
-        return getEmailValidationDetails(email).isEmpty();
+    public void emailIsValid(String email) throws EmailValidationException {
+        Set<ValidationErrorCode<EmailErrorCodes>> errorCodes = getEmailValidationDetails(email);
+        if (!errorCodes.isEmpty()) {
+            EmailValidationException exception = new EmailValidationException(errorCodes);
+            if (log.isDebugEnabled()) {
+                log.debug("emailIsValid({}): {}", email, exception.toString());
+            }
+            throw exception;
+        }
     }
 
     @Override
@@ -173,19 +171,7 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
     }
 
     @Override
-    public void emailIsValid(String email) {
-        Set<ValidationErrorCode<EmailErrorCodes>> errorCodes = getEmailValidationDetails(email);
-        if (!errorCodes.isEmpty()) {
-            EmailValidationException exception = new EmailValidationException(errorCodes);
-            if (log.isDebugEnabled()) {
-                log.debug("emailIsValid({}): {}", email, exception.toString());
-            }
-            throw exception;
-        }
-    }
-
-    @Override
-    public boolean validateRegistration(String username, String password, String email) {
+    public void registrationIsValid(String username, String password, String email) throws RegistrationException {
         Set<ValidationErrorCode<UsernameErrorCodes>> usernameErrorCodes = getUsernameValidationDetails(username);
         Set<ValidationErrorCode<PasswordErrorCodes>> passwordErrorCodes = getPasswordValidationDetails(password);
         Set<ValidationErrorCode<EmailErrorCodes>> emailErrorCodes = getEmailValidationDetails(email);
@@ -193,10 +179,9 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
         if (!usernameErrorCodes.isEmpty() || !passwordErrorCodes.isEmpty() || !emailErrorCodes.isEmpty()) {
             RegistrationException exception = new RegistrationException(usernameErrorCodes, passwordErrorCodes, emailErrorCodes);
             if (log.isDebugEnabled()) {
-                log.debug("validateRegistration(username: {}, password: {}, email: {}): {}", username, password, email, exception.toString());
+                log.debug("validateRegistration(username: {}, password: {***}, email: {}): {}", username, email, exception.toString());
             }
             throw exception;
         }
-        return true;
     }
 }

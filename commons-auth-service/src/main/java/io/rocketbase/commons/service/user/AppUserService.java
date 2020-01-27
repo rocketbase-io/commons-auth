@@ -2,6 +2,7 @@ package io.rocketbase.commons.service.user;
 
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.EmailValidationException;
+import io.rocketbase.commons.exception.RegistrationException;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.service.ValidationUserLookupService;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -121,7 +122,7 @@ public interface AppUserService extends UserDetailsService, ValidationUserLookup
      * @param registration
      * @return
      */
-    AppUserEntity registerUser(RegistrationRequest registration);
+    AppUserEntity registerUser(RegistrationRequest registration) throws RegistrationException;
 
     /**
      * only update's the keyValues add a users<br>

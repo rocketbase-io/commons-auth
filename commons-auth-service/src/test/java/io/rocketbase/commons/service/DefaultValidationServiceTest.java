@@ -100,9 +100,9 @@ public class DefaultValidationServiceTest extends BaseUserIntegrationTest {
     public void validateRegistrationValid() {
         // given
         // when
-        boolean result = service.validateRegistration("user123", "r0cketB@se", "test@email.com");
+        service.registrationIsValid("user123", "r0cketB@se", "test@email.com");
         // then
-        assertThat(result, equalTo(true));
+        // don't throw error
     }
 
     @Test
@@ -110,7 +110,7 @@ public class DefaultValidationServiceTest extends BaseUserIntegrationTest {
         // given
         // when
         try {
-            service.validateRegistration("username", "rock", "invalid-email");
+            service.registrationIsValid("username", "rock", "invalid-email");
         } catch (RegistrationException e) {
             // then
             assertThat(e.getEmailErrors().size(), greaterThan(0));

@@ -3,9 +3,7 @@ package io.rocketbase.commons.service.validation;
 import io.rocketbase.commons.dto.validation.EmailErrorCodes;
 import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
 import io.rocketbase.commons.dto.validation.UsernameErrorCodes;
-import io.rocketbase.commons.exception.PasswordValidationException;
-import io.rocketbase.commons.exception.UsernameValidationException;
-import io.rocketbase.commons.exception.ValidationErrorCode;
+import io.rocketbase.commons.exception.*;
 
 import java.util.Set;
 
@@ -13,24 +11,39 @@ public interface ValidationService {
 
     int EMAIL_MAX_LENGTH = 255;
 
-    boolean isPasswordValid(String password);
+    default boolean isPasswordValid(String password) {
+        return getPasswordValidationDetails(password).isEmpty();
+    }
 
+    /**
+     * validate and throw error in case of errors
+     */
     void passwordIsValid(String password) throws PasswordValidationException;
 
     Set<ValidationErrorCode<PasswordErrorCodes>> getPasswordValidationDetails(String password);
 
-    boolean isUsernameValid(String username);
+    default boolean isUsernameValid(String username) {
+        return getUsernameValidationDetails(username).isEmpty();
+    }
 
+    /**
+     * validate and throw error in case of errors
+     */
     void usernameIsValid(String username) throws UsernameValidationException;
 
     Set<ValidationErrorCode<UsernameErrorCodes>> getUsernameValidationDetails(String username);
 
-    boolean isEmailValid(String email);
+    default boolean isEmailValid(String email) {
+        return getEmailValidationDetails(email).isEmpty();
+    }
 
     Set<ValidationErrorCode<EmailErrorCodes>> getEmailValidationDetails(String email);
 
-    void emailIsValid(String email);
+    /**
+     * validate and throw error in case of errors
+     */
+    void emailIsValid(String email) throws EmailValidationException;
 
-    boolean validateRegistration(String username, String password, String email);
+    void registrationIsValid(String username, String password, String email) throws RegistrationException;
 
 }
