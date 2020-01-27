@@ -48,7 +48,9 @@ You can configure the behaviour of the service by following properties
 | auth.verification-url          | null            | full qualified url to a custom UI that proceed the verification<br />?verification=VALUE will get append |
 | auth.password-reset-url        | null            | full qualified url to a custom UI that proceed the password reset<br />?verification=VALUE will get append |
 | auth.password-reset-expiration | 60              | time in minutes - after this period the token is invalid     |
+| auth.invite-expiration         | 10080           | time in minutes (default 7-days) - after this period the token is invalid     |
 | auth.base-url                  | http://localhost:8080 | required for authFormsController etc. need to specify correctly when you use it |
+| auth.invite.enabled            | true            | activate invite endpoints (for "admins" and "invited")  |
 For handling the JWT-Tokens and it's expirations you can use these properties:
 
 | property                       | default         | explanation                                                  |

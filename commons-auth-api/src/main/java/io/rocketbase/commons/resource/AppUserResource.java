@@ -2,6 +2,8 @@ package io.rocketbase.commons.resource;
 
 import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.dto.PageableResult;
+import io.rocketbase.commons.dto.appinvite.AppInviteRead;
+import io.rocketbase.commons.dto.appinvite.InviteRequest;
 import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.appuser.AppUserUpdate;
@@ -49,7 +51,7 @@ public class AppUserResource implements BaseRestResource {
             if (!StringUtils.isEmpty(query.getEmail())) {
                 uriBuilder.queryParam("email", query.getEmail());
             }
-            if (!StringUtils.isEmpty(query.getEnabled())) {
+            if (query.getEnabled() != null) {
                 uriBuilder.queryParam("enabled", query.getEnabled());
             }
             if (!StringUtils.isEmpty(query.getFreetext())) {
@@ -119,6 +121,19 @@ public class AppUserResource implements BaseRestResource {
                 HttpMethod.DELETE,
                 new HttpEntity<>(createHeaderWithLanguage()),
                 AppUserRead.class);
+    }
+
+    @SneakyThrows
+    public AppInviteRead invite(InviteRequest inviteRequest) {
+        ResponseEntity<AppInviteRead> response = restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
+                        .path(API_USER)
+                        .path("invite")
+                        .toUriString(),
+                HttpMethod.POST,
+                new HttpEntity<>(inviteRequest, createHeaderWithLanguage()),
+                AppInviteRead.class);
+
+        return response.getBody();
     }
 
     protected ParameterizedTypeReference<PageableResult<AppUserRead>> createPagedTypeReference() {

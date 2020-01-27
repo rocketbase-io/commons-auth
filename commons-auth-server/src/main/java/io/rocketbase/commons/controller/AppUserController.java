@@ -55,7 +55,7 @@ public class AppUserController implements BaseController {
     @RequestMapping(method = RequestMethod.POST, path = "/api/user", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public AppUserRead create(@RequestBody @NotNull @Validated AppUserCreate create) {
-        validationService.validateRegistration(create.getUsername(), create.getPassword(), create.getEmail());
+        validationService.registrationIsValid(create.getUsername(), create.getPassword(), create.getEmail());
 
         AppUserEntity entity = appUserService.initializeUser(create.getUsername(), create.getPassword(), create.getEmail(), create.getAdmin());
         if (create.getFirstName() != null || create.getLastName() != null || create.getAvatar() != null || create.getKeyValues() != null) {

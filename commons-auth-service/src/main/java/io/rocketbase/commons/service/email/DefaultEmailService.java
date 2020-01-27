@@ -1,6 +1,7 @@
 package io.rocketbase.commons.service.email;
 
 import io.rocketbase.commons.email.model.HtmlTextEmail;
+import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppUserEntity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -56,6 +57,15 @@ public class DefaultEmailService implements EmailService {
 
         sentEmail(new InternetAddress(user.getEmail()), mailContentConfig.forgotPasswordSubject(user), htmlTextEmail);
     }
+
+    @Override
+    @SneakyThrows
+    public void sentInviteEmail(AppInviteEntity invite, String verificationUrl) {
+        HtmlTextEmail htmlTextEmail = mailContentConfig.invite(invite, verificationUrl);
+
+        sentEmail(new InternetAddress(invite.getEmail()), mailContentConfig.inviteSubject(invite), htmlTextEmail);
+    }
+
 
     @Override
     public void sentEmail(InternetAddress to, String subject, HtmlTextEmail htmlTextEmail) {

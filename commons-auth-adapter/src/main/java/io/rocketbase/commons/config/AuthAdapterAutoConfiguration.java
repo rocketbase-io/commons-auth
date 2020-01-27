@@ -1,5 +1,6 @@
 package io.rocketbase.commons.config;
 
+import io.rocketbase.commons.converter.AppInviteConverter;
 import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.security.CustomAuthoritiesProvider;
 import io.rocketbase.commons.security.EmptyCustomAuthoritiesProvider;
@@ -34,6 +35,12 @@ public class AuthAdapterAutoConfiguration {
     @ConditionalOnMissingBean
     public AppUserConverter appUserConverter() {
         return new AppUserConverter();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AppInviteConverter appInviteConverter() {
+        return new AppInviteConverter();
     }
 
 }

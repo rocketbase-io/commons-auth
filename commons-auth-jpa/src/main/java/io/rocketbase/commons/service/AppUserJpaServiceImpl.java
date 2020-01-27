@@ -10,10 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJpaEntity> {
+public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJpaEntity>, PredicateHelper {
 
     private final AppUserJpaRepository repository;
 
@@ -41,47 +39,32 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJ
             return repository.findAll(pageable);
         }
 
-        Specification<AppUserJpaEntity> specification = new Specification<AppUserJpaEntity>() {
-            @Override
-            public Predicate toPredicate(Root<AppUserJpaEntity> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder cb) {
-                Predicate result = cb.equal(root.get("enabled"), Nulls.notNull(query.getEnabled(), true));
-                List<Predicate> predicates = new ArrayList<>();
-                addToListIfNotEmpty(predicates, Nulls.notEmpty(query.getUsername(), query.getFreetext()), "username", root, cb);
-                addToListIfNotEmpty(predicates, Nulls.notEmpty(query.getFirstName(), query.getFreetext()), "firstName", root, cb);
-                addToListIfNotEmpty(predicates, Nulls.notEmpty(query.getLastName(), query.getFreetext()), "lastName", root, cb);
-                addToListIfNotEmpty(predicates, Nulls.notEmpty(query.getEmail(), query.getFreetext()), "email", root, cb);
-                if (!predicates.isEmpty()) {
-                    if (StringUtils.isEmpty(query.getFreetext())) {
-                        result = cb.and(result, cb.and(predicates.toArray(new Predicate[]{})));
-                    } else {
-                        result = cb.and(result, cb.or(predicates.toArray(new Predicate[]{})));
-                    }
+        Specification<AppUserJpaEntity> specification = (Specification<AppUserJpaEntity>) (root, criteriaQuery, cb) -> {
+            Predicate result = cb.equal(root.get("enabled"), Nulls.notNull(query.getEnabled(), true));
+            List<Predicate> predicates = new ArrayList<>();
+            addToListIfNotEmpty(predicates, Nulls.notEmpty(query.getUsername(), query.getFreetext()), "username", root, cb);
+            addToListIfNotEmpty(predicates, Nulls.notEmpty(query.getFirstName(), query.getFreetext()), "firstName", root, cb);
+            addToListIfNotEmpty(predicates, Nulls.notEmpty(query.getLastName(), query.getFreetext()), "lastName", root, cb);
+            addToListIfNotEmpty(predicates, Nulls.notEmpty(query.getEmail(), query.getFreetext()), "email", root, cb);
+            if (!predicates.isEmpty()) {
+                if (StringUtils.isEmpty(query.getFreetext())) {
+                    result = cb.and(result, cb.and(predicates.toArray(new Predicate[]{})));
+                } else {
+                    result = cb.and(result, cb.or(predicates.toArray(new Predicate[]{})));
                 }
-
-                if (!StringUtils.isEmpty(query.getHasRole())) {
-                    Predicate roles = cb.upper(root.join("roles")).in(query.getHasRole().toUpperCase());
-                    result = cb.and(result, roles);
-                }
-                return result;
             }
+
+            if (!StringUtils.isEmpty(query.getHasRole())) {
+                Predicate roles = cb.upper(root.join("roles")).in(query.getHasRole().toUpperCase());
+                result = cb.and(result, roles);
+            }
+            return result;
         };
         return repository.findAll(specification, pageable);
     }
 
-    void addToListIfNotEmpty(List<Predicate> list, String value, String path, Root<AppUserJpaEntity> root, CriteriaBuilder cb) {
-        if (!StringUtils.isEmpty(value)) {
-            list.add(cb.like(cb.lower(root.get(path)), buildLikeString(value)));
-        }
-    }
-
-    String buildLikeString(String value) {
-        if (value.contains("*")) {
-            return value.trim().toLowerCase().replace("*", "%");
-        }
-        return "%" + value.trim().toLowerCase() + "%";
-    }
-
     @Override
+    @Transactional
     public AppUserJpaEntity save(AppUserJpaEntity entity) {
         return repository.save(entity);
     }
@@ -97,11 +80,13 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJ
     }
 
     @Override
+    @Transactional
     public void delete(AppUserJpaEntity entity) {
         repository.delete(entity);
     }
 
     @Override
+    @Transactional
     public void deleteAll() {
         repository.deleteAll();
     }

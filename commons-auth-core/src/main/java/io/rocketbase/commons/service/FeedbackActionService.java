@@ -12,7 +12,7 @@ public interface FeedbackActionService {
         String result = StringUtils.isEmpty(customUrl) ? buildBaseUrl(applicationBaseUrl, actionType) : customUrl;
 
         result += result.contains("?") ? "&" : "?";
-        result += "verification=" + token;
+        result += actionType.getParameterName()+ "=" + token;
         return result;
     }
 
@@ -24,6 +24,9 @@ public interface FeedbackActionService {
                 break;
             case PASSWORD_RESET:
                 configuredUrl = getAuthProperties().getPasswordResetUrl();
+                break;
+            case INVITE:
+                configuredUrl = getAuthProperties().getInviteUrl();
                 break;
         }
 
@@ -44,13 +47,19 @@ public interface FeedbackActionService {
 
     enum ActionType {
 
-        VERIFICATION("/verification"), PASSWORD_RESET("/reset-password");
+        VERIFICATION("/verification", "verification"),
+        PASSWORD_RESET("/reset-password", "verification"),
+        INVITE("/invite", "inviteId");
 
         @Getter
         private String apiPath;
 
-        ActionType(String apiPath) {
+        @Getter
+        private String parameterName;
+
+        ActionType(String apiPath, String parameterName) {
             this.apiPath = apiPath;
+            this.parameterName = parameterName;
         }
 
     }

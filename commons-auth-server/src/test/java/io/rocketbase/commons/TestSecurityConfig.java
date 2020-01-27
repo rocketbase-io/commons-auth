@@ -4,7 +4,9 @@ import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.config.FormsProperties;
 import io.rocketbase.commons.filter.JwtAuthenticationTokenFilter;
 import io.rocketbase.commons.security.TokenAuthenticationProvider;
+import io.rocketbase.commons.service.AppInvitePersistenceService;
 import io.rocketbase.commons.service.AppUserPersistenceService;
+import io.rocketbase.commons.test.AppInvitePersistenceTestService;
 import io.rocketbase.commons.test.AppUserPersistenceTestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,6 +88,11 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public AppUserPersistenceService appUserPersistenceService() {
         return new AppUserPersistenceTestService();
+    }
+
+    @Bean
+    public AppInvitePersistenceService appInvitePersistenceService() {
+        return new AppInvitePersistenceTestService();
     }
 
     @Override

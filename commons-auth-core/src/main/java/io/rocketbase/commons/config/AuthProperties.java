@@ -43,10 +43,22 @@ public class AuthProperties {
      * ?verification=VALUE will get append
      */
     private String passwordResetUrl = null;
+
+    /**
+     * full qualified url to a custom UI that proceed the invite reset<br>
+     * ?inviteId=VALUE will get append
+     */
+    private String inviteUrl = null;
+
     /**
      * in minutes
      */
     private long passwordResetExpiration = 60;
+
+    /**
+     * in minutes
+     */
+    private long inviteExpiration = 10080;
 
     /**
      * quick help to configure login spring security<br>
@@ -70,6 +82,8 @@ public class AuthProperties {
                 prefixPath + "auth/validate",
                 prefixPath + "auth/validate/*",
                 prefixPath + "auth/register",
+                prefixPath + "auth/invite",
+                prefixPath + "auth/invite/*",
                 prefixPath + "auth/verify"
         };
     }
@@ -88,13 +102,20 @@ public class AuthProperties {
         };
     }
 
-
     /**
      * quick help to configure spring security<br>
      * endpoint to crud users (normally only allowed for admins)
      */
     public String getApiRestEndpointPath() {
         return UrlParts.ensureStartsAndEndsWithSlash(prefix) + "api/user/*";
+    }
+
+    /**
+     * quick help to configure spring security<br>
+     * endpoint to crud users (normally only allowed for admins)
+     */
+    public String getApiInviteRestEndpointPath() {
+        return UrlParts.ensureStartsAndEndsWithSlash(prefix) + "api/invite";
     }
 
     /**

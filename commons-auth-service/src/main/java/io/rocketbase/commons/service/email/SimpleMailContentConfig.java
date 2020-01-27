@@ -4,10 +4,12 @@ import io.rocketbase.commons.config.EmailProperties;
 import io.rocketbase.commons.email.EmailTemplateBuilder;
 import io.rocketbase.commons.email.model.HtmlTextEmail;
 import io.rocketbase.commons.email.template.ColorStyle;
+import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppUserEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.util.StringUtils;
 
 import java.util.Locale;
 
@@ -59,5 +61,46 @@ public class SimpleMailContentConfig implements MailContentConfig {
     public String forgotPasswordSubject(AppUserEntity user) {
         Locale currentLocale = LocaleContextHolder.getLocale();
         return messageSource.getMessage("auth.email.forgot.subject", new Object[]{emailProperties.getSubjectPrefix()}, currentLocale);
+    }
+
+    @Override
+    public HtmlTextEmail invite(AppInviteEntity invite, String actionUrl) {
+        Locale currentLocale = LocaleContextHolder.getLocale();
+        EmailTemplateBuilder.EmailTemplateConfigBuilder builder = EmailTemplateBuilder.builder()
+                .header(messageSource.getMessage("auth.email.invite.header", new Object[]{emailProperties.getServiceName()}, currentLocale)).color(new ColorStyle("fff", "7FA162")).and()
+                .addText(messageSource.getMessage("auth.email.invite.welcome", new Object[]{invite.getDisplayName()}, currentLocale)).and()
+                .addText(messageSource.getMessage("auth.email.invite.youHaveInvitedBy", new Object[]{invite.getInvitor(), emailProperties.getServiceName()}, currentLocale)).and();
+
+        if (StringUtils.isEmpty(invite.getMessage())) {
+            builder.addHtml("&nbsp;").and()
+                    .addText(messageSource.getMessage("auth.email.invite.messageFrom", new Object[]{invite.getInvitor()}, currentLocale)).center().italic().and()
+                    .addText(invite.getMessage()).center().italic().bold().and()
+                    .addHtml("&nbsp;");
+        }
+
+        return builder
+                .addText(messageSource.getMessage("auth.email.invite.createAccount", new Object[]{}, currentLocale)).and()
+                .addButton(messageSource.getMessage("auth.email.invite.button", new Object[]{}, currentLocale), actionUrl).color(new ColorStyle("fff", "7FA162")).center().and()
+                .addText(String.format("- %s", emailProperties.getServiceName())).and()
+                .addFooter(String.format("%s<br>%s",
+                        messageSource.getMessage("auth.email.footer.youReceiveThisEmailBecause", new Object[]{emailProperties.getServiceName()}, currentLocale),
+                        messageSource.getMessage("auth.email.footer.ifYouAreNotSureWhy", new Object[]{emailProperties.getSupportEmail()}, currentLocale))).and()
+                .copyright(emailProperties.getCopyrightName()).url(emailProperties.getCopyrightUrl())
+                .build();
+    }
+
+    /*
+    auth.email.invite.header=Invite for Application {0}
+    auth.email.invite.welcome=Welcome {0},
+    auth.email.invite.youHaveInvitedBy=you have been invited by {0} to register for {1}
+    auth.email.invite.messageFrom=Message from {0}:
+    auth.email.invite.createAccount=With the following link you can create an account to use the application.
+    auth.email.invite.button=Create Account
+     */
+
+    @Override
+    public String inviteSubject(AppInviteEntity invite) {
+        Locale currentLocale = LocaleContextHolder.getLocale();
+        return messageSource.getMessage("auth.email.invite.subject", new Object[]{emailProperties.getSubjectPrefix()}, currentLocale);
     }
 }
