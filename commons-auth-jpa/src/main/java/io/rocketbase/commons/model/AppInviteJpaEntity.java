@@ -29,8 +29,10 @@ public class AppInviteJpaEntity implements AppInviteEntity {
     @Column(length = 36, nullable = false)
     private String id;
 
+    @NotNull
     private String invitor;
 
+    @Column(length = 4000)
     private String message;
 
     private String firstName;

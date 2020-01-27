@@ -8,7 +8,7 @@ spring:
     properties:
       hibernate:
         hbm2ddl:
-          import_files: import_user.sql
+          import_files: import_user.sql,import_invite.sql
 
 hibernate:
   dialect: org.hibernate.dialect.H2Dialect
