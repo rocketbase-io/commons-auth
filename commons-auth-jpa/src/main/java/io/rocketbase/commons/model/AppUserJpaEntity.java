@@ -54,8 +54,8 @@ public class AppUserJpaEntity implements AppUserEntity {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "user_roles",
-            joinColumns = @JoinColumn(name = "id", referencedColumnName = "id"),
-            uniqueConstraints = @UniqueConstraint(name = "uk_user_roles", columnNames = {"id", "role"})
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "user_id"),
+            uniqueConstraints = @UniqueConstraint(name = "uk_user_roles", columnNames = {"user_id", "role"})
     )
     @Column(name = "role", length = 20, nullable = false)
     private List<String> roles;
@@ -63,9 +63,9 @@ public class AppUserJpaEntity implements AppUserEntity {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "user_keyvalue_pairs",
-            joinColumns = @JoinColumn(name = "id"),
-            uniqueConstraints = @UniqueConstraint(name = "uk_user_keyvalue_pairs", columnNames = {"id", "field_key"}),
-            indexes = @Index(name = "idx_user_keyvalue_pairs", columnList = "id")
+            joinColumns = @JoinColumn(name = "user_id"),
+            uniqueConstraints = @UniqueConstraint(name = "uk_user_keyvalue_pairs", columnNames = {"user_id", "field_key"}),
+            indexes = @Index(name = "idx_user_keyvalue_pairs", columnList = "user_id")
     )
     @MapKeyColumn(name = "field_key", length = 50)
     @Column(name = "field_value", length = 4000, nullable = false)

@@ -5,12 +5,12 @@ INSERT INTO user (id, avatar, created, email, enabled, first_name, last_login, l
 
 
 
-INSERT INTO user_roles (id, role) VALUES ('401fb225-057e-4e0a-a0ff-e99e76030d52', 'ADMIN');
-INSERT INTO user_roles (id, role) VALUES ('c3c58d60-e948-442f-9783-c0341c65a367', 'USER');
-INSERT INTO user_roles (id, role) VALUES ('d74678ea-6689-4c6f-a055-e275b4a2a61c', 'user');
-INSERT INTO user_roles (id, role) VALUES ('f55e3176-3fca-4100-bb26-853106269fb1', 'service');
+INSERT INTO user_roles (user_id, role) VALUES ('401fb225-057e-4e0a-a0ff-e99e76030d52', 'ADMIN');
+INSERT INTO user_roles (user_id, role) VALUES ('c3c58d60-e948-442f-9783-c0341c65a367', 'USER');
+INSERT INTO user_roles (user_id, role) VALUES ('d74678ea-6689-4c6f-a055-e275b4a2a61c', 'user');
+INSERT INTO user_roles (user_id, role) VALUES ('f55e3176-3fca-4100-bb26-853106269fb1', 'service');
 
 
-INSERT INTO user_keyvalue_pairs (id, field_key, field_value) VALUES ('401fb225-057e-4e0a-a0ff-e99e76030d52', 'workspace', '1');
-INSERT INTO user_keyvalue_pairs (id, field_key, field_value) VALUES ('c3c58d60-e948-442f-9783-c0341c65a367', 'workspace', '1');
-INSERT INTO user_keyvalue_pairs (id, field_key, field_value) VALUES ('c3c58d60-e948-442f-9783-c0341c65a367', 'language', 'en');
+INSERT INTO user_keyvalue_pairs (user_id, field_key, field_value) VALUES ('401fb225-057e-4e0a-a0ff-e99e76030d52', 'workspace', '1');
+INSERT INTO user_keyvalue_pairs (user_id, field_key, field_value) VALUES ('c3c58d60-e948-442f-9783-c0341c65a367', 'workspace', '1');
+INSERT INTO user_keyvalue_pairs (user_id, field_key, field_value) VALUES ('c3c58d60-e948-442f-9783-c0341c65a367', 'language', 'en');
