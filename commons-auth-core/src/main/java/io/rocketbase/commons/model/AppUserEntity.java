@@ -2,12 +2,11 @@ package io.rocketbase.commons.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.Assert;
 
 import java.time.Instant;
 import java.util.List;
 
-public interface AppUserEntity extends UserDetails, AppUserToken {
+public interface AppUserEntity extends UserDetails, AppUserToken, EntityWithKeyValue<AppUserEntity> {
 
     void setId(String id);
 
@@ -53,29 +52,6 @@ public interface AppUserEntity extends UserDetails, AppUserToken {
      */
     void updateLastTokenInvalidation();
 
-    /**
-     * @param key   will get stored with lowercase<br>
-     *              max length of 50 characters<br>
-     *              key with _ as prefix will not get displayed in REST_API
-     * @param value max length of 4000 characters
-     * @return itself for fluent api
-     */
-    default AppUserEntity addKeyValue(String key, String value) {
-        checkKeyValue(key, value);
-        getKeyValues().put(key.toLowerCase(), value);
-        return this;
-    }
-
-    default void removeKeyValue(String key) {
-        getKeyValues().remove(key.toLowerCase());
-    }
-
-    default void checkKeyValue(String key, String value) {
-        Assert.hasLength(key, "Key must not be empty");
-        Assert.state(key.length() <= 50, "Key is too long - at least 50 chars");
-        Assert.hasLength(value, "Value must not be empty");
-        Assert.state(value.length() <= 4000, "Value is too long - at least 4000 chars");
-    }
 
     /**
      * convert current instance to a simple reference copy

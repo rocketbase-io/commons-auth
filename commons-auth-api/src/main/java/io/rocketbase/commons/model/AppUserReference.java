@@ -22,7 +22,8 @@ public interface AppUserReference extends Serializable {
     String getAvatar();
 
     /**
-     * combines first + last name
+     * combines first + last name<br>
+     * will return null in case firstName & lastName is empty
      */
     @JsonIgnore
     default String getFullName() {
