@@ -1,6 +1,7 @@
 package io.rocketbase.commons.config;
 
 import io.rocketbase.commons.controller.AuthFormsController;
+import io.rocketbase.commons.controller.InviteFormsController;
 import io.rocketbase.commons.controller.RegistrationFormsController;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -31,6 +32,13 @@ public class AuthFormAutoConfiguration {
     @ConditionalOnProperty(name = "auth.registration.enabled", matchIfMissing = true)
     public RegistrationFormsController registrationFormsController() {
         return new RegistrationFormsController(authProperties, formsProperties, registrationProperties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(name = "auth.invite.enabled", matchIfMissing = true)
+    public InviteFormsController inviteFormsController() {
+        return new InviteFormsController(authProperties, formsProperties, registrationProperties);
     }
 
 }
