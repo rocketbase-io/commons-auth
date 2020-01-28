@@ -37,7 +37,7 @@ public class RegistrationResource implements BaseRestResource {
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/register").toUriString(),
                         HttpMethod.POST,
-                        new HttpEntity<>(registration),
+                        new HttpEntity<>(registration, createHeaderWithLanguage()),
                         AppUserRead.class);
         return response.getBody();
     }
@@ -48,7 +48,7 @@ public class RegistrationResource implements BaseRestResource {
                                 .path("/auth/verify")
                                 .queryParam("verification", verification).toUriString(),
                         HttpMethod.GET,
-                        new HttpEntity<>(null),
+                        new HttpEntity<>(null, createHeaderWithLanguage()),
                         JwtTokenBundle.class);
         return response.getBody();
     }

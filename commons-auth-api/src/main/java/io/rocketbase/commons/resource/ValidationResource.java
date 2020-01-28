@@ -36,7 +36,7 @@ public class ValidationResource implements BaseRestResource {
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/validate/password").toUriString(),
                         HttpMethod.POST,
-                        new HttpEntity<>(password),
+                        new HttpEntity<>(password, createHeaderWithLanguage()),
                         new ParameterizedTypeReference<ValidationResponse<PasswordErrorCodes>>() {
                         });
         return response.getBody();
@@ -47,7 +47,7 @@ public class ValidationResource implements BaseRestResource {
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/validate/username").toUriString(),
                         HttpMethod.POST,
-                        new HttpEntity<>(username),
+                        new HttpEntity<>(username, createHeaderWithLanguage()),
                         new ParameterizedTypeReference<ValidationResponse<UsernameErrorCodes>>() {
                         });
         return response.getBody();
@@ -58,7 +58,7 @@ public class ValidationResource implements BaseRestResource {
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/validate/email").toUriString(),
                         HttpMethod.POST,
-                        new HttpEntity<>(email),
+                        new HttpEntity<>(email, createHeaderWithLanguage()),
                         new ParameterizedTypeReference<ValidationResponse<EmailErrorCodes>>() {
                         });
         return response.getBody();
@@ -69,7 +69,7 @@ public class ValidationResource implements BaseRestResource {
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/validate/token").toUriString(),
                         HttpMethod.POST,
-                        new HttpEntity<>(token),
+                        new HttpEntity<>(token, createHeaderWithLanguage()),
                         new ParameterizedTypeReference<ValidationResponse<TokenErrorCodes>>() {
                         });
         return response.getBody();

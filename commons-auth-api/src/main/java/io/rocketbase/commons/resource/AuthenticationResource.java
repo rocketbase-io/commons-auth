@@ -37,7 +37,7 @@ public class AuthenticationResource implements BaseRestResource {
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/me").toUriString(),
                         HttpMethod.GET,
-                        null,
+                        new HttpEntity<>(createHeaderWithLanguage()),
                         AppUserRead.class);
         return response.getBody();
     }
@@ -52,7 +52,7 @@ public class AuthenticationResource implements BaseRestResource {
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/change-password").toUriString(),
                         HttpMethod.PUT,
-                        new HttpEntity<>(passwordChange),
+                        new HttpEntity<>(passwordChange, createHeaderWithLanguage()),
                         Void.class);
     }
 
@@ -66,7 +66,7 @@ public class AuthenticationResource implements BaseRestResource {
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/update-profile").toUriString(),
                         HttpMethod.PUT,
-                        new HttpEntity<>(updateProfile),
+                        new HttpEntity<>(updateProfile, createHeaderWithLanguage()),
                         Void.class);
     }
 

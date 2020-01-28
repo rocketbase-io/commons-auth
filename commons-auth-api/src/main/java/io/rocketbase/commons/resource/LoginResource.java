@@ -4,6 +4,7 @@ import io.rocketbase.commons.adapters.JwtTokenProvider;
 import io.rocketbase.commons.dto.authentication.LoginRequest;
 import io.rocketbase.commons.dto.authentication.LoginResponse;
 import lombok.Getter;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -48,7 +49,7 @@ public class LoginResource implements BaseRestResource {
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/login").toUriString(),
                         HttpMethod.POST,
-                        new HttpEntity<>(login),
+                        new HttpEntity<>(login, createHeaderWithLanguage()),
                         LoginResponse.class);
         return response.getBody();
     }
@@ -63,6 +64,7 @@ public class LoginResource implements BaseRestResource {
     public String getNewAccessToken(String refreshToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(header, String.format("%s%s", tokenPrefix, refreshToken));
+        headers.add("Accept-Language", LocaleContextHolder.getLocale().getLanguage());
 
         ResponseEntity<String> response = getRestTemplate().exchange(createUriComponentsBuilder(baseAuthApiUrl)
                         .path("/auth/refresh").toUriString(),

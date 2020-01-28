@@ -36,7 +36,7 @@ public class ForgotPasswordResource implements BaseRestResource {
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/forgot-password").toUriString(),
                         HttpMethod.PUT,
-                        new HttpEntity<>(forgotPassword),
+                        new HttpEntity<>(forgotPassword, createHeaderWithLanguage()),
                         Void.class);
     }
 
@@ -45,7 +45,7 @@ public class ForgotPasswordResource implements BaseRestResource {
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/reset-password").toUriString(),
                         HttpMethod.PUT,
-                        new HttpEntity<>(performPasswordReset),
+                        new HttpEntity<>(performPasswordReset, createHeaderWithLanguage()),
                         Void.class);
     }
 }
