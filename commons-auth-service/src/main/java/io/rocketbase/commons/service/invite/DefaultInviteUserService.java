@@ -4,38 +4,37 @@ import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.converter.AppInviteConverter;
 import io.rocketbase.commons.dto.appinvite.ConfirmInviteRequest;
 import io.rocketbase.commons.dto.appinvite.InviteRequest;
-import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
-import io.rocketbase.commons.dto.validation.EmailErrorCodes;
-import io.rocketbase.commons.exception.*;
+import io.rocketbase.commons.exception.BadRequestException;
+import io.rocketbase.commons.exception.NotFoundException;
+import io.rocketbase.commons.exception.RegistrationException;
+import io.rocketbase.commons.exception.VerificationException;
 import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.service.AppInvitePersistenceService;
 import io.rocketbase.commons.service.email.EmailService;
 import io.rocketbase.commons.service.user.AppUserService;
-import io.rocketbase.commons.service.validation.ValidationErrorCodeService;
 import io.rocketbase.commons.service.validation.ValidationService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 @RequiredArgsConstructor
 public class DefaultInviteUserService implements InviteUserService {
 
     @Getter
     final AuthProperties authProperties;
-    @Resource
-    protected AppInvitePersistenceService<AppInviteEntity> appInvitePersistenceService;
-    @Resource
-    private AppUserService appUserService;
-    @Resource
-    private ValidationService validationService;
 
     @Resource
-    private ValidationErrorCodeService validationErrorCodeService;
+    protected AppInvitePersistenceService<AppInviteEntity> appInvitePersistenceService;
+
+    @Resource
+    private AppUserService appUserService;
+
+    @Resource
+    private ValidationService validationService;
 
     @Resource
     private EmailService emailService;
@@ -45,15 +44,10 @@ public class DefaultInviteUserService implements InviteUserService {
 
 
     @Override
-    public AppInviteEntity createInvite(InviteRequest request, String baseUrl) throws EmailValidationException, BadRequestException {
-        Page<AppInviteEntity> foundByEmail = appInvitePersistenceService.findAll(QueryAppInvite.builder().email(request.getEmail()).build(), PageRequest.of(0, 1));
-        if (!foundByEmail.isEmpty()) {
-            throw new EmailValidationException(validationErrorCodeService.emailErrors(EmailErrorCodes.ALREADY_TAKEN));
-        }
-
+    public AppInviteEntity createInvite(InviteRequest request, String baseUrl) throws BadRequestException {
         AppInviteEntity dto = appInvitePersistenceService.initNewInstance();
         appInviteConverter.updateEntity(dto, request);
-        dto.setExpiration(Instant.now().plusSeconds(authProperties.getInviteExpiration() * 60));
+        dto.setExpiration(Instant.now().plus(authProperties.getInviteExpiration(), ChronoUnit.MINUTES));
         AppInviteEntity entity = appInvitePersistenceService.save(dto);
 
         emailService.sentInviteEmail(entity, buildActionUrl(baseUrl, ActionType.INVITE, entity.getId(), request.getInviteUrl()));

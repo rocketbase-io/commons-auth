@@ -37,7 +37,6 @@ public class AppInviteMongoEntity implements AppInviteEntity {
     private String lastName;
 
     @NotNull
-    @Indexed(unique = true)
     @Email
     private String email;
 

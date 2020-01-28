@@ -17,8 +17,7 @@ import java.util.Map;
 
 
 @Entity
-@Table(name = "invite", uniqueConstraints = {
-        @UniqueConstraint(name = "uk_invite_email", columnNames = {"email"})})
+@Table(name = "invite")
 @Data
 @Builder
 @AllArgsConstructor
