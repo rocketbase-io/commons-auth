@@ -20,6 +20,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+/**
+ * api resource used by authenticated users
+ */
 public class AppUserResource implements BaseRestResource {
 
     public static final String API_USER = "/api/user/";
