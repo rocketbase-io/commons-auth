@@ -83,7 +83,7 @@ public class SimpleMailContentConfig implements MailContentConfig {
                 .addButton(messageSource.getMessage("auth.email.invite.button", new Object[]{}, currentLocale), actionUrl).color(new ColorStyle("fff", "7FA162")).center().and()
                 .addText(String.format("- %s", emailProperties.getServiceName())).and()
                 .addFooter(String.format("%s<br>%s",
-                        messageSource.getMessage("auth.email.invite.footer.youReceiveThisEmailBecause", new Object[]{emailProperties.getServiceName()}, currentLocale),
+                        messageSource.getMessage("auth.email.invite.footer.youReceiveThisEmailBecause", new Object[]{invite.getInvitor(), emailProperties.getServiceName()}, currentLocale),
                         messageSource.getMessage("auth.email.invite.footer.ifYouAreNotSureWhy", new Object[]{emailProperties.getSupportEmail()}, currentLocale))).and()
                 .copyright(emailProperties.getCopyrightName()).url(emailProperties.getCopyrightUrl())
                 .build();
