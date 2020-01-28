@@ -38,7 +38,7 @@ public class SimpleMailContentConfig implements MailContentConfig {
     @Override
     public String registerSubject(AppUserEntity user) {
         Locale currentLocale = LocaleContextHolder.getLocale();
-        return messageSource.getMessage("auth.email.register.subject", new Object[]{emailProperties.getSubjectPrefix()}, currentLocale);
+        return messageSource.getMessage("auth.email.register.subject", new Object[]{emailProperties.getSubjectPrefix()}, currentLocale).trim();
     }
 
     @Override
@@ -60,7 +60,7 @@ public class SimpleMailContentConfig implements MailContentConfig {
     @Override
     public String forgotPasswordSubject(AppUserEntity user) {
         Locale currentLocale = LocaleContextHolder.getLocale();
-        return messageSource.getMessage("auth.email.forgot.subject", new Object[]{emailProperties.getSubjectPrefix()}, currentLocale);
+        return messageSource.getMessage("auth.email.forgot.subject", new Object[]{emailProperties.getSubjectPrefix()}, currentLocale).trim();
     }
 
     @Override
@@ -89,18 +89,9 @@ public class SimpleMailContentConfig implements MailContentConfig {
                 .build();
     }
 
-    /*
-    auth.email.invite.header=Invite for Application {0}
-    auth.email.invite.welcome=Welcome {0},
-    auth.email.invite.youHaveInvitedBy=you have been invited by {0} to register for {1}
-    auth.email.invite.messageFrom=Message from {0}:
-    auth.email.invite.createAccount=With the following link you can create an account to use the application.
-    auth.email.invite.button=Create Account
-     */
-
     @Override
     public String inviteSubject(AppInviteEntity invite) {
         Locale currentLocale = LocaleContextHolder.getLocale();
-        return messageSource.getMessage("auth.email.invite.subject", new Object[]{emailProperties.getSubjectPrefix()}, currentLocale);
+        return messageSource.getMessage("auth.email.invite.subject", new Object[]{emailProperties.getSubjectPrefix(), invite.getInvitor()}, currentLocale).trim();
     }
 }
