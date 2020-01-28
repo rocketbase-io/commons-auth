@@ -34,6 +34,8 @@ public class AppInviteMongoServiceImplTest {
 
     @Before
     public void beforeEachTest() {
+        service.deleteAll();
+
         service.save(AppInviteMongoEntity.builder()
                 .id("1314202d-e866-4452-b7fc-781e87d44c6c")
                 .created(Instant.now())
@@ -127,6 +129,29 @@ public class AppInviteMongoServiceImplTest {
     }
 
     @Test
+    public void save() {
+        // given
+        AppInviteMongoEntity entity = service.initNewInstance();
+        entity.setInvitor("Invitor");
+        entity.setMessage("My little message");
+        entity.setEmail("new@rocketbase.io");
+        entity.setExpiration(Instant.now().plus(10, ChronoUnit.DAYS));
+        entity.setRoles(Arrays.asList("USER", "SERVICE"));
+        entity.addKeyValue("_secure", "geheim123");
+        entity.addKeyValue("client", "abc");
+
+        // when
+        AppInviteMongoEntity result = service.save(entity);
+
+        // then
+        assertThat(result, notNullValue());
+        assertThat(result.getMessage(), equalTo(entity.getMessage()));
+        assertThat(result.getEmail(), equalTo(entity.getEmail()));
+        assertThat(result.getRoles(), equalTo(entity.getRoles()));
+        assertThat(result.getExpiration(), equalTo(entity.getExpiration()));
+    }
+
+    @Test
     public void findById() {
         // given
 
@@ -147,5 +172,41 @@ public class AppInviteMongoServiceImplTest {
 
         // then
         assertThat(result, equalTo(3L));
+    }
+
+    @Test
+    public void delete() {
+        // given
+
+        // when
+        service.delete(service.findById("1314202d-e866-4452-b7fc-781e87d44c6c").get());
+        Optional<AppInviteMongoEntity> result = service.findById("1314202d-e866-4452-b7fc-781e87d44c6c");
+
+        // then
+        assertThat(result, notNullValue());
+        assertThat(result.isPresent(), equalTo(false));
+    }
+
+    @Test
+    public void deleteAll() {
+        // given
+
+        // when
+        service.deleteAll();
+        long result = service.count();
+
+        // then
+        assertThat(result, equalTo(0L));
+    }
+
+    @Test
+    public void deleteExpired() {
+        // given
+
+        // when
+        long result = service.deleteExpired();
+
+        // then
+        assertThat(result, equalTo(1L));
     }
 }
