@@ -98,6 +98,8 @@ public class InviteFormsController extends AbstractFormsController {
         }
         form.setPassword("");
         form.setPasswordRepeat("");
+        model.addAttribute("invitor", form.getInvitor());
+        model.addAttribute("message", form.getMessage());
         return "invite";
     }
 
