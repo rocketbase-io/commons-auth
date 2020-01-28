@@ -77,30 +77,28 @@ public class OAuthLoginRefreshController {
             try {
                 setGrantType(GrantType.valueOf(paramMap.getFirst("grant_type").toUpperCase()));
             } catch (NullPointerException | IllegalArgumentException e) {
-                throw new BadRequestException(ErrorResponse.builder()
-                        .field("grant_type", grantType == null ? "notNull" : "password|refresh_token allowed")
-                        .build());
+                throw new BadRequestException(new ErrorResponse("grant type issue")
+                        .addField("grant_type", grantType == null ? "notNull" : "password|refresh_token allowed"));
             }
             setScope(paramMap.getFirst("scope"));
             if (grantType.equals(GrantType.PASSWORD)) {
                 setUsername(paramMap.getFirst("username"));
                 setPassword(paramMap.getFirst("password"));
                 if (username == null || password == null) {
-                    ErrorResponse.ErrorResponseBuilder builder = ErrorResponse.builder();
+                    ErrorResponse errorResponse = new ErrorResponse("authentication is missing");
                     if (username == null) {
-                        builder.field("username", "notNull");
+                        errorResponse.addField("username", "notNull");
                     }
                     if (password == null) {
-                        builder.field("password", "notNull");
+                        errorResponse.addField("password", "notNull");
                     }
-                    throw new BadRequestException(builder.build());
+                    throw new BadRequestException(errorResponse);
                 }
             } else if (grantType.equals(GrantType.REFRESH_TOKEN)) {
                 setRefreshToken(paramMap.containsKey("refresh_token") ? paramMap.getFirst("refresh_token") : paramMap.getFirst("code"));
                 if (refreshToken == null) {
-                    throw new BadRequestException(ErrorResponse.builder()
-                            .field("refresh_token", "notNull")
-                            .build());
+                    throw new BadRequestException(new ErrorResponse("refresh token issue")
+                            .addField("refresh_token", "notNull"));
                 }
             }
         }

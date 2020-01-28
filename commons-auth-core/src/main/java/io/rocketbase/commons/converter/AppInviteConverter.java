@@ -28,10 +28,8 @@ public class AppInviteConverter {
                 });
             }
         } catch (IllegalStateException e) {
-            throw new BadRequestException(ErrorResponse.builder()
-                    .message("invalid key-value pair")
-                    .field("keyValues", e.getMessage())
-                    .build());
+            throw new BadRequestException(new ErrorResponse("invalid key-value pair")
+                    .addField("keyValues", e.getMessage()));
         }
         return entity;
     }

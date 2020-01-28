@@ -38,7 +38,6 @@ public class InviteController implements BaseController {
     @ResponseBody
     public ResponseEntity<AppInviteRead> verify(@RequestParam("inviteId") String inviteId) {
         AppInviteEntity entity = inviteUserService.verifyInvite(inviteId);
-
         return ResponseEntity.ok(appInviteConverter.fromEntity(entity));
     }
 

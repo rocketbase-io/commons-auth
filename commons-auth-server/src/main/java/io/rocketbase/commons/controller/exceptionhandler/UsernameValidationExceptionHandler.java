@@ -27,8 +27,7 @@ public class UsernameValidationExceptionHandler extends BaseExceptionHandler {
         response.setFields(new HashMap<>());
         if (e.getErrors() != null) {
             for (ValidationErrorCode<UsernameErrorCodes> c : e.getErrors()) {
-                String value = c.getCode().getValue();
-                response.getFields().put(String.format("username.%s", value), Nulls.notNull(c.getMessage()));
+                response.addField("username", Nulls.notNull(c.getMessage(), c.getCode().getValue()));
             }
         }
         return response;

@@ -29,18 +29,24 @@
 
                     <article class="message" th:if="${validInvite}">
                         <div class="message-body">
-                            <p th:text="#{auth.invite.invitedBy(${invitor})}"></p>
-                            <p th:if="${message} != null" class="invitor-message" th:text="${message}"></p>
+                            <p th:text="#{auth.invite.invitedBy(${invitor})}" class="light"></p>
+                            <p th:if="${message} != null" class="invitor-message" th:text="#{auth.invite.message(${message})}"></p>
                         </div>
                     </article>
 
                     <form name="f" th:action="@{/invite}" th:object="${inviteForm}" method="post" th:if="${validInvite}">
+                        <input type="hidden" th:field="*{inviteId}" >
+                        <input type="hidden" th:field="*{invitor}" >
+                        <input type="hidden" th:field="*{message}" >
+
                         <div class="field">
                             <div class="control">
                                 <input class="input is-large" th:classappend="(${#fields.hasErrors('username')} OR ${usernameErrors} != null) ? 'is-danger'" type="text" th:field="*{username}"
                                        th:attr="placeholder=#{auth.username.placeholder}" autofocus/>
                                 <p th:if="${#fields.hasErrors('username')}" th:error="*{username}" class="help is-danger" th:text="#{auth.username.invalid}">Username is invalid</p>
-                                <p th:if="${usernameErrors} != null" class="help is-danger" th:text="${usernameErrors}"></p>
+                                <div th:if="${usernameErrors} != null" class="help is-danger">
+                                    <p th:each="error: ${usernameErrors}" th:text="${error}">Error Message</p>
+                                </div>
                             </div>
                         </div>
 
@@ -49,7 +55,9 @@
                                 <input class="input is-large" th:classappend="(${#fields.hasErrors('email')}  OR ${emailErrors} != null)? 'is-danger'" type="email" th:field="*{email}"
                                        th:attr="placeholder=#{auth.email.placeholder}"/>
                                 <p th:if="${#fields.hasErrors('email')}" th:error="*{email}" class="help is-danger" th:text="#{auth.email.invalid}">Email is invalid</p>
-                                <p th:if="${emailErrors} != null" class="help is-danger" th:text="${emailErrors}"></p>
+                                <div th:if="${emailErrors} != null" class="help is-danger">
+                                    <p th:each="error: ${emailErrors}" th:text="${error}">Error Message</p>
+                                </div>
                             </div>
                         </div>
 
@@ -75,7 +83,9 @@
                                 <input class="input is-large" th:classappend="(${#fields.hasErrors('password')} OR ${passwordErrors} != null)? 'is-danger'" type="password" th:field="*{password}"
                                        th:attr="placeholder=#{auth.password.placeholder}"/>
                                 <p th:if="${#fields.hasErrors('password')}" th:error="*{password}" class="help is-danger" th:text="#{auth.password.invalid}">Password is invalid</p>
-                                <p th:if="${passwordErrors} != null" class="help is-danger" th:text="${passwordErrors}"></p>
+                                <div th:if="${passwordErrors} != null" class="help is-danger">
+                                    <p th:each="error: ${passwordErrors}" th:text="${error}">Error Message</p>
+                                </div>
                             </div>
                         </div>
 
@@ -85,9 +95,14 @@
                                        th:attr="placeholder=#{auth.passwordRepeat.placeholder}"/>
                             </div>
                         </div>
-                        <button class="button is-block is-info is-large is-fullwidth" type="submit" th:text="#{auth.invite.submit}">create account</button>
+                        <button class="button is-block is-info is-large is-fullwidth" type="submit" th:text="#{auth.invite.button}">create account</button>
                     </form>
                 </div>
+                <p class="has-text-grey">
+                    <a th:href="@{/registration}" th:if="${registrationEnabled}" th:text="#{auth.registration}">Registration</a>
+                    <span th:if="${registrationEnabled}"> · </span>
+                    <a th:href="@{/forgot}" th:text="#{auth.forgotPassword}">Forgot Password</a>
+                </p>
             </div>
         </div>
     </div>

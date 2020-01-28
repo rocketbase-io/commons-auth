@@ -3,6 +3,7 @@ package io.rocketbase.commons.controller;
 import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.config.FormsProperties;
 import io.rocketbase.commons.config.RegistrationProperties;
+import io.rocketbase.commons.dto.ErrorResponse;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.BadRequestException;
@@ -24,16 +25,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
-import java.util.Map;
 
 @Slf4j
 @Controller
 public class RegistrationFormsController extends AbstractFormsController {
 
+    private final RegistrationResource registrationResource;
     @Value("${auth.forms.prefix:}")
     private String formsPrefix;
-
-    private final RegistrationResource registrationResource;
 
     public RegistrationFormsController(AuthProperties authProperties, FormsProperties formsProperties, RegistrationProperties registrationProperties) {
         super(authProperties, formsProperties, registrationProperties);
@@ -65,15 +64,15 @@ public class RegistrationFormsController extends AbstractFormsController {
                     model.addAttribute("expiresAfter", getRegistrationProperties().getVerificationExpiration());
                     return "registration-success";
                 } catch (BadRequestException badRequest) {
-                    Map<String, String> fields = badRequest.getErrorResponse().getFields();
-                    if (fields.containsKey("username")) {
-                        model.addAttribute("usernameErrors", fields.get("username"));
+                    ErrorResponse errorResponse = badRequest.getErrorResponse();
+                    if (errorResponse.hasField("username")) {
+                        model.addAttribute("usernameErrors", errorResponse.getFields().get("username"));
                     }
-                    if (fields.containsKey("email")) {
-                        model.addAttribute("emailErrors", fields.get("email"));
+                    if (errorResponse.hasField("email")) {
+                        model.addAttribute("emailErrors", errorResponse.getFields().get("email"));
                     }
-                    if (fields.containsKey("password")) {
-                        model.addAttribute("passwordErrors", fields.get("password"));
+                    if (errorResponse.hasField("password")) {
+                        model.addAttribute("passwordErrors", errorResponse.getFields().get("password"));
                     }
                 } catch (Exception e) {
                     log.error("problem with the registration flow. {}", e.getMessage());

@@ -30,7 +30,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
-import java.util.Map;
 
 @Slf4j
 @Controller
@@ -121,9 +120,8 @@ public class AuthFormsController extends AbstractFormsController {
                     model.addAttribute("verification", resetPassword.getVerification());
                     prepareResetPasswordForm(model, resetPassword.getVerification());
 
-                    Map<String, String> fields = badRequest.getErrorResponse().getFields();
-                    if (fields.containsKey("password")) {
-                        model.addAttribute("passwordErrors", fields.get("password"));
+                    if (badRequest.getErrorResponse().hasField("password") ) {
+                        model.addAttribute("passwordErrors", badRequest.getErrorResponse().getFields().get("password"));
                     }
                 } catch (Exception e) {
                     log.error("problem with the password-reset flow. {}", e.getMessage());

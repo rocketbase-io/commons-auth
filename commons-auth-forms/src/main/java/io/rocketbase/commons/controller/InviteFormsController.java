@@ -3,6 +3,7 @@ package io.rocketbase.commons.controller;
 import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.config.FormsProperties;
 import io.rocketbase.commons.config.RegistrationProperties;
+import io.rocketbase.commons.dto.ErrorResponse;
 import io.rocketbase.commons.dto.appinvite.AppInviteRead;
 import io.rocketbase.commons.dto.appinvite.ConfirmInviteRequest;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
@@ -26,7 +27,6 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.Map;
 
 @Slf4j
 @Controller
@@ -42,7 +42,7 @@ public class InviteFormsController extends AbstractFormsController {
     }
 
     @GetMapping("${auth.forms.prefix:}/invite")
-    public String registration(@RequestParam(value = "inviteId", required = false) String inviteId, Model model) {
+    public String verify(@RequestParam(value = "inviteId", required = false) String inviteId, Model model) {
         try {
             AppInviteRead info = inviteResource.verify(inviteId);
             model.addAttribute("validInvite", true);
@@ -57,14 +57,14 @@ public class InviteFormsController extends AbstractFormsController {
     }
 
     @PostMapping("${auth.forms.prefix:}/invite")
-    public String registrationSubmit(@ModelAttribute("inviteForm") @Validated InviteForm form,
-                                     BindingResult bindingResult, Model model,
-                                     HttpServletRequest request) {
-
+    public String transformToUser(@ModelAttribute("inviteForm") @Validated InviteForm form,
+                                  BindingResult bindingResult, Model model,
+                                  HttpServletRequest request) {
         if (!bindingResult.hasErrors()) {
             if (!form.getPassword().equals(form.getPasswordRepeat())) {
                 model.addAttribute("passwordErrors", "password not the same!");
             } else {
+                model.addAttribute("validInvite", true);
                 try {
                     ConfirmInviteRequest confirmInviteRequest = form.toRequest();
 
@@ -72,19 +72,28 @@ public class InviteFormsController extends AbstractFormsController {
                     model.addAttribute("username", user.getUsername());
                     return "invite-success";
                 } catch (BadRequestException badRequest) {
-                    Map<String, String> fields = badRequest.getErrorResponse().getFields();
-                    if (fields.containsKey("username")) {
-                        model.addAttribute("usernameErrors", fields.get("username"));
+                    ErrorResponse errorResponse = badRequest.getErrorResponse();
+                    if (errorResponse.hasField("username")) {
+                        model.addAttribute("usernameErrors", errorResponse.getFields().get("username"));
                     }
-                    if (fields.containsKey("email")) {
-                        model.addAttribute("emailErrors", fields.get("email"));
+                    if (errorResponse.hasField("email")) {
+                        model.addAttribute("emailErrors", errorResponse.getFields().get("email"));
                     }
-                    if (fields.containsKey("password")) {
-                        model.addAttribute("passwordErrors", fields.get("password"));
+                    if (errorResponse.hasField("password")) {
+                        model.addAttribute("passwordErrors", errorResponse.getFields().get("password"));
                     }
                 } catch (Exception e) {
+                    model.addAttribute("validInvite", false);
                     log.error("problem with the invite flow. {}", e.getMessage());
                 }
+            }
+        } else {
+            // check inviteId again
+            try {
+                inviteResource.verify(form.getInviteId());
+                model.addAttribute("validInvite", true);
+            } catch (Exception e) {
+                model.addAttribute("validInvite", false);
             }
         }
         form.setPassword("");
@@ -102,6 +111,10 @@ public class InviteFormsController extends AbstractFormsController {
 
         @NotNull
         private String inviteId;
+
+        private String invitor;
+
+        private String message;
 
         @NotEmpty
         private String username;
@@ -121,6 +134,8 @@ public class InviteFormsController extends AbstractFormsController {
 
         public InviteForm(AppInviteRead read) {
             setInviteId(read.getId());
+            setInvitor(read.getInvitor());
+            setMessage(read.getMessage());
             setFirstName(read.getFirstName());
             setLastName(read.getLastName());
             setEmail(read.getEmail());

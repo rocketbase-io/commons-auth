@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -24,11 +23,9 @@ public class PasswordValidationExceptionHandler extends BaseExceptionHandler {
     @ResponseBody
     public ErrorResponse handlePasswordValidationException(HttpServletRequest request, PasswordValidationException e) {
         ErrorResponse response = new ErrorResponse(ErrorCodes.FORM_ERROR.getStatus(), translate(request, "auth.error.passwordValidation", "Password not fitting requirements"));
-        response.setFields(new HashMap<>());
         if (e.getErrors() != null) {
             for (ValidationErrorCode<PasswordErrorCodes> c : e.getErrors()) {
-                String value = c.getCode().getValue();
-                response.getFields().put(String.format("password.%s", value), Nulls.notNull(c.getMessage()));
+                response.addField("password", Nulls.notNull(c.getMessage(), c.getCode().getValue()));
             }
         }
         return response;

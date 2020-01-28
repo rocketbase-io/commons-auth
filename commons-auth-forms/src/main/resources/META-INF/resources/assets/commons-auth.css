@@ -35,3 +35,6 @@ input {
 p {
     font-weight: 700;
 }
+p.light {
+    font-weight: 300;
+}

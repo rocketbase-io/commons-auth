@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
@@ -24,11 +23,9 @@ public class EmailValidationExceptionHandler extends BaseExceptionHandler {
     @ResponseBody
     public ErrorResponse handleEmailValidationException(HttpServletRequest request, EmailValidationException e) {
         ErrorResponse response = new ErrorResponse(ErrorCodes.FORM_ERROR.getStatus(), translate(request, "auth.error.emailValidation", "Email is used or incorrect"));
-        response.setFields(new HashMap<>());
         if (e.getErrors() != null) {
             for (ValidationErrorCode<EmailErrorCodes> c : e.getErrors()) {
-                String value = c.getCode().getValue();
-                response.getFields().put(String.format("email.%s", value), Nulls.notNull(c.getMessage()));
+                response.addField("email", Nulls.notNull(c.getMessage(), c.getCode().getValue()));
             }
         }
         return response;
