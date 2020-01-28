@@ -21,8 +21,7 @@ import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 
 public class AuthenticationControllerTest extends BaseUserIntegrationTest {
 
@@ -201,8 +200,8 @@ public class AuthenticationControllerTest extends BaseUserIntegrationTest {
         } catch (BadRequestException e) {
             assertThat(e.getErrorResponse(), notNullValue());
             assertThat(e.getErrorResponse().getFields(), notNullValue());
-            assertThat(e.getErrorResponse().getFields().containsKey("password.invalidCurrentPassword"), equalTo(true));
-            assertThat(e.getErrorResponse().getFields().get("password.invalidCurrentPassword"), equalTo("invalid current password"));
+            assertThat(e.getErrorResponse().hasField("password"), equalTo(true));
+            assertThat(e.getErrorResponse().getFields().get("password"), containsInAnyOrder("invalid current password"));
         }
     }
 
