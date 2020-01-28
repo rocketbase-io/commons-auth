@@ -126,8 +126,8 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
             // invite form
             .antMatchers(formsProperties.getInviteEndpointPaths()).permitAll()
             // user-management is only allowed by ADMINS
-            .antMatchers(authProperties.getApiRestEndpointPaths()).hasRole(new AuthProperties().getRoleAdmin())
-            .antMatchers(authProperties.getApiInviteRestEndpointPaths()).hasRole(new AuthProperties().getRoleAdmin())
+            .antMatchers(authProperties.getApiRestEndpointPaths()).hasRole(authProperties.getRoleAdmin())
+            .antMatchers(authProperties.getApiInviteRestEndpointPaths()).hasRole(authProperties.getRoleAdmin())
             .antMatchers(authProperties.getUserSearchRestEndpointPaths()).authenticated()
             // secure all other api-endpoints
             .antMatchers(authProperties.getPrefix()+"/api/**").authenticated()

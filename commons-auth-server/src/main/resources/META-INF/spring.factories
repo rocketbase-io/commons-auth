@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-io.rocketbase.commons.config.AuthServiceAutoConfiguration
+io.rocketbase.commons.config.AuthServerAutoConfiguration
