@@ -6,10 +6,7 @@ import io.rocketbase.commons.dto.appinvite.ConfirmInviteRequest;
 import io.rocketbase.commons.dto.appinvite.InviteRequest;
 import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
 import io.rocketbase.commons.dto.validation.EmailErrorCodes;
-import io.rocketbase.commons.exception.BadRequestException;
-import io.rocketbase.commons.exception.EmailValidationException;
-import io.rocketbase.commons.exception.RegistrationException;
-import io.rocketbase.commons.exception.VerificationException;
+import io.rocketbase.commons.exception.*;
 import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.service.AppInvitePersistenceService;
@@ -30,13 +27,10 @@ public class DefaultInviteUserService implements InviteUserService {
 
     @Getter
     final AuthProperties authProperties;
-
-    @Resource
-    private AppUserService appUserService;
-
     @Resource
     protected AppInvitePersistenceService<AppInviteEntity> appInvitePersistenceService;
-
+    @Resource
+    private AppUserService appUserService;
     @Resource
     private ValidationService validationService;
 
@@ -67,8 +61,8 @@ public class DefaultInviteUserService implements InviteUserService {
     }
 
     @Override
-    public AppInviteEntity verifyInvite(String inviteId) throws VerificationException {
-        AppInviteEntity inviteEntity = appInvitePersistenceService.findById(inviteId).orElseThrow(VerificationException::new);
+    public AppInviteEntity verifyInvite(String inviteId) throws VerificationException, NotFoundException {
+        AppInviteEntity inviteEntity = appInvitePersistenceService.findById(inviteId).orElseThrow(NotFoundException::new);
         if (!inviteEntity.getExpiration().isAfter(Instant.now())) {
             throw new VerificationException();
         }
@@ -76,12 +70,12 @@ public class DefaultInviteUserService implements InviteUserService {
     }
 
     @Override
-    public AppUserEntity confirmInvite(String inviteId, ConfirmInviteRequest request) throws RegistrationException, VerificationException {
-        AppInviteEntity inviteEntity = verifyInvite(inviteId);
+    public AppUserEntity confirmInvite(ConfirmInviteRequest request) throws RegistrationException, VerificationException {
+        AppInviteEntity inviteEntity = verifyInvite(request.getInviteId());
         // validate username, password + email
         validationService.registrationIsValid(request.getUsername(), request.getPassword(), request.getEmail());
         AppUserEntity appUserEntity = appUserService.initializeUser(request.getUsername(), request.getPassword(), request.getEmail(), inviteEntity.getRoles());
-        appUserEntity = appUserService.updateProfile(appUserEntity.getUsername(), request.getFirstName(), request.getLastName(),  appUserEntity.getAvatar(), inviteEntity.getKeyValues());
+        appUserEntity = appUserService.updateProfile(appUserEntity.getUsername(), request.getFirstName(), request.getLastName(), appUserEntity.getAvatar(), inviteEntity.getKeyValues());
         appInvitePersistenceService.delete(inviteEntity);
         return appUserEntity;
     }

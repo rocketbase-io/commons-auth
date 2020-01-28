@@ -14,6 +14,9 @@ import java.io.Serializable;
 public class ConfirmInviteRequest implements Serializable {
 
     @NotNull
+    private String inviteId;
+
+    @NotNull
     private String username;
 
     private String firstName;

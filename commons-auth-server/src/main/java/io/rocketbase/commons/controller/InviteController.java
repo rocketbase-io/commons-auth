@@ -42,10 +42,10 @@ public class InviteController implements BaseController {
         return ResponseEntity.ok(appInviteConverter.fromEntity(entity));
     }
 
-    @RequestMapping(method = RequestMethod.POST, path = "/auth/invite/{inviteId}", consumes = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.POST, path = "/auth/invite", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<AppUserRead> transformToUser(@PathVariable("inviteId") String inviteId, @RequestBody @NotNull @Validated ConfirmInviteRequest confirmInviteRequest) {
-        AppUserEntity entity = inviteUserService.confirmInvite(inviteId, confirmInviteRequest);
+    public ResponseEntity<AppUserRead> transformToUser(@RequestBody @NotNull @Validated ConfirmInviteRequest confirmInviteRequest) {
+        AppUserEntity entity = inviteUserService.confirmInvite(confirmInviteRequest);
         return ResponseEntity.ok(appUserConverter.fromEntity(entity));
     }
 

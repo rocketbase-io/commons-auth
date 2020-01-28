@@ -2,10 +2,7 @@ package io.rocketbase.commons.service.invite;
 
 import io.rocketbase.commons.dto.appinvite.ConfirmInviteRequest;
 import io.rocketbase.commons.dto.appinvite.InviteRequest;
-import io.rocketbase.commons.exception.BadRequestException;
-import io.rocketbase.commons.exception.EmailValidationException;
-import io.rocketbase.commons.exception.RegistrationException;
-import io.rocketbase.commons.exception.VerificationException;
+import io.rocketbase.commons.exception.*;
 import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.service.FeedbackActionService;
@@ -21,7 +18,7 @@ public interface InviteUserService extends FeedbackActionService {
      */
     AppInviteEntity createInvite(InviteRequest request, String baseUrl) throws EmailValidationException, BadRequestException;
 
-    AppInviteEntity verifyInvite(String inviteId) throws VerificationException;
+    AppInviteEntity verifyInvite(String inviteId) throws VerificationException, NotFoundException;
 
     /**
      * checks verification-token, set password and possible update firstName, lastName
@@ -29,5 +26,5 @@ public interface InviteUserService extends FeedbackActionService {
      * @throws RegistrationException
      * @throws VerificationException
      */
-    AppUserEntity confirmInvite(String inviteId, ConfirmInviteRequest request) throws RegistrationException, VerificationException;
+    AppUserEntity confirmInvite(ConfirmInviteRequest request) throws RegistrationException, VerificationException;
 }

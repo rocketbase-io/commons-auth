@@ -26,6 +26,13 @@ public class AuthServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    @ConditionalOnExpression(value = "${auth.invite.enabled:true}")
+    public AppInviteController appInviteController() {
+        return new AppInviteController();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public OAuthLoginRefreshController oAuthLoginRefreshController() {
         return new OAuthLoginRefreshController();
     }
@@ -47,6 +54,13 @@ public class AuthServerAutoConfiguration {
     @ConditionalOnExpression(value = "${auth.registration.enabled:true}")
     public RegistrationController registrationController() {
         return new RegistrationController();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnExpression(value = "${auth.invite.enabled:true}")
+    public InviteController inviteController() {
+        return new InviteController();
     }
 
     @Bean

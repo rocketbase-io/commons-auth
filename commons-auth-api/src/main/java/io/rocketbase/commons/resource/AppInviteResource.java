@@ -16,6 +16,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+/**
+ * api resource used by authenticated users
+ */
 public class AppInviteResource implements BaseRestResource {
 
     public static final String API_INVITE = "/api/invite/";
@@ -65,13 +68,23 @@ public class AppInviteResource implements BaseRestResource {
     public AppInviteRead invite(InviteRequest inviteRequest) {
         ResponseEntity<AppInviteRead> response = restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
                         .path(API_INVITE)
-                        .path("invite")
                         .toUriString(),
                 HttpMethod.POST,
                 new HttpEntity<>(inviteRequest, createHeaderWithLanguage()),
                 AppInviteRead.class);
 
         return response.getBody();
+    }
+
+    @SneakyThrows
+    public void delete(String id) {
+        restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
+                        .path(API_INVITE)
+                        .path(id)
+                        .toUriString(),
+                HttpMethod.DELETE,
+                new HttpEntity<>(createHeaderWithLanguage()),
+                Void.class);
     }
 
     protected ParameterizedTypeReference<PageableResult<AppInviteRead>> createPagedTypeReference() {

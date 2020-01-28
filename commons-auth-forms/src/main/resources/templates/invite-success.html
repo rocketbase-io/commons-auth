@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="msapplication-TileColor" content="#ffffff"/>
+    <meta name="theme-color" content="#ffffff"/>
+    <title th:text="#{auth.invite.title(${title})}"></title>
+    <link href="/assets/commons-auth.css" rel="stylesheet">
+</head>
+<body>
+
+<section class="hero is-fullheight">
+    <div class="hero-body">
+        <div class="container has-text-centered">
+            <div class="column is-6 is-offset-3">
+                <div class="box">
+                    <figure class="image avatar is-128x128">
+                        <img th:src="${logoSrc}" class="is-rounded">
+                    </figure>
+
+                    <h2 th:text="#{auth.invite.success}">Successfully created account *Yeah*</h2>
+                    <div class="notification" th:text="#{auth.invite.loginApplicationWithUsername(${username})}">
+                        You can now use the application with your account username.
+                    </div>
+                </div>
+                <p class="has-text-grey">
+                    <a th:href="@{/login}" th:text="#{auth.login}">Login</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+</body>
+</html>

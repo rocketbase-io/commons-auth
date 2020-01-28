@@ -5,6 +5,7 @@ import io.rocketbase.commons.converter.AppInviteConverter;
 import io.rocketbase.commons.dto.PageableResult;
 import io.rocketbase.commons.dto.appinvite.AppInviteRead;
 import io.rocketbase.commons.dto.appinvite.InviteRequest;
+import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.service.AppInvitePersistenceService;
 import io.rocketbase.commons.service.invite.InviteUserService;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
+import java.util.Optional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -50,11 +52,20 @@ public class AppInviteController implements BaseController {
         return PageableResult.contentPage(appInviteConverter.fromEntities(entities.getContent()), entities);
     }
 
-    @RequestMapping(method = RequestMethod.POST, path = "/auth/invite", consumes = APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.POST, path = "/api/invite", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<AppInviteRead> invite(HttpServletRequest request, @RequestBody @NotNull @Validated InviteRequest inviteRequest) {
         AppInviteEntity entity = inviteUserService.createInvite(inviteRequest, getBaseUrl(request));
         return ResponseEntity.ok(appInviteConverter.fromEntity(entity));
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE, path = "/api/invite/{id}")
+    public void delete(@PathVariable("id") String id) throws NotFoundException {
+        Optional<AppInviteEntity> entity = appInvitePersistenceService.findById(id);
+        if (!entity.isPresent()) {
+            throw new NotFoundException();
+        }
+        appInvitePersistenceService.delete(entity.get());
     }
 
 }
