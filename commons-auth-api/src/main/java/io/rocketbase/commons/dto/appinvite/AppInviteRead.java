@@ -24,8 +24,10 @@ public class AppInviteRead {
 
     private String email;
 
+    @Singular
     private List<String> roles;
 
+    @Singular
     private Map<String, String> keyValues;
 
     private Instant created;

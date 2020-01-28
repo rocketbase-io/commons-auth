@@ -30,6 +30,7 @@ public class AppUserCreate implements Serializable {
 
     private String avatar;
 
+    @Singular
     private Map<String, String> keyValues;
 
     @NotNull

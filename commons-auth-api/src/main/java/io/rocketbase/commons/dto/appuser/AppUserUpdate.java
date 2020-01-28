@@ -31,6 +31,7 @@ public class AppUserUpdate implements Serializable {
      * will only add/replace new/existing key values<br>
      * not mentioned key will still stay the same
      */
+    @Singular
     private Map<String, String> keyValues;
 
     private Boolean enabled;

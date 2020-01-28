@@ -1,10 +1,7 @@
 package io.rocketbase.commons.dto.appinvite;
 
 import io.rocketbase.commons.model.HasFirstAndLastName;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
@@ -42,8 +39,10 @@ public class InviteRequest implements Serializable, HasFirstAndLastName {
     private String email;
 
     @NotEmpty
+    @Singular
     private List<String> roles;
 
+    @Singular
     private Map<String, String> keyValues;
 
     /**
