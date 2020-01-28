@@ -83,7 +83,6 @@ public class AuthProperties {
                 prefixPath + "auth/validate/*",
                 prefixPath + "auth/register",
                 prefixPath + "auth/invite",
-                prefixPath + "auth/invite/*",
                 prefixPath + "auth/verify"
         };
     }
@@ -106,16 +105,24 @@ public class AuthProperties {
      * quick help to configure spring security<br>
      * endpoint to crud users (normally only allowed for admins)
      */
-    public String getApiRestEndpointPath() {
-        return UrlParts.ensureStartsAndEndsWithSlash(prefix) + "api/user/*";
+    public String[] getApiRestEndpointPaths() {
+        String prefixPath = UrlParts.ensureStartsAndEndsWithSlash(prefix);
+        return new String[]{
+                prefixPath + "api/user",
+                prefixPath + "api/user/*"
+        };
     }
 
     /**
      * quick help to configure spring security<br>
-     * endpoint to crud users (normally only allowed for admins)
+     * endpoint to crud invite (normally only allowed for admins)
      */
-    public String getApiInviteRestEndpointPath() {
-        return UrlParts.ensureStartsAndEndsWithSlash(prefix) + "api/invite";
+    public String[] getApiInviteRestEndpointPaths() {
+        String prefixPath = UrlParts.ensureStartsAndEndsWithSlash(prefix);
+        return new String[]{
+                prefixPath + "api/invite",
+                prefixPath + "api/invite/*"
+        };
     }
 
     /**

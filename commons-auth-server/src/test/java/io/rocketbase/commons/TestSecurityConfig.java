@@ -119,12 +119,15 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(authProperties.getAllPublicRestEndpointPaths()).permitAll()
             // allow logged in users get profile details etc.
             .antMatchers(authProperties.getAllAuthenticatedRestEndpointPaths()).authenticated()
-            // login/logout forms etc
+            // login/logout, forgot, reset-password forms etc
             .antMatchers(formsProperties.getFormEndpointPaths()).permitAll()
             // registration form
             .antMatchers(formsProperties.getRegistrationEndpointPaths()).permitAll()
+            // invite form
+            .antMatchers(formsProperties.getInviteEndpointPaths()).permitAll()
             // user-management is only allowed by ADMINS
-            .antMatchers(authProperties.getApiRestEndpointPath()).hasRole(new AuthProperties().getRoleAdmin())
+            .antMatchers(authProperties.getApiRestEndpointPaths()).hasRole(new AuthProperties().getRoleAdmin())
+            .antMatchers(authProperties.getApiInviteRestEndpointPaths()).hasRole(new AuthProperties().getRoleAdmin())
             .antMatchers(authProperties.getUserSearchRestEndpointPaths()).authenticated()
             // secure all other api-endpoints
             .antMatchers(authProperties.getPrefix()+"/api/**").authenticated()

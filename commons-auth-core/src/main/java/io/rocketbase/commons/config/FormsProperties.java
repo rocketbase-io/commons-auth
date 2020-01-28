@@ -26,15 +26,22 @@ public class FormsProperties {
                 prefixPath + "login",
                 prefixPath + "logout",
                 prefixPath + "forgot",
-                prefixPath + "reset-password",
-                prefixPath + "registration",
-                prefixPath + "verification"
+                prefixPath + "reset-password"
         };
     }
 
     /**
      * quick help to configure spring security
-     *
+     */
+    public String[] getInviteEndpointPaths() {
+        String prefixPath = UrlParts.ensureStartsAndEndsWithSlash(prefix);
+        return new String[]{
+                prefixPath + "invite"
+        };
+    }
+
+    /**
+     * quick help to configure spring security
      */
     public String[] getRegistrationEndpointPaths() {
         String prefixPath = UrlParts.ensureStartsAndEndsWithSlash(prefix);
