@@ -4,6 +4,7 @@ import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.EmailValidationException;
 import io.rocketbase.commons.exception.RegistrationException;
 import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.model.AppUserReference;
 import io.rocketbase.commons.service.ValidationUserLookupService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -70,12 +71,10 @@ public interface AppUserService extends UserDetailsService, ValidationUserLookup
     AppUserEntity updateKeyValues(String username, Map<String, String> keyValues);
 
     /**
-     * refresh user's cache
-     *
-     * @param username
-     * @return current live version
+     * invalidate user's cache
+     * @param appUser entity that implements AppUserReference
      */
-    AppUserEntity refreshUsername(String username);
+    void invalidateCache(AppUserReference appUser);
 
     /**
      * same as initializeUser but checks before if user already not exists

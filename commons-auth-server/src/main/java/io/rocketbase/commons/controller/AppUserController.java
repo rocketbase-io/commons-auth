@@ -90,8 +90,6 @@ public class AppUserController implements BaseController {
             appUserService.updatePassword(entity.getUsername(), update.getPassword());
         }
 
-        appUserService.refreshUsername(entity.getUsername());
-
         return appUserConverter.fromEntity(entity);
     }
 
@@ -99,7 +97,6 @@ public class AppUserController implements BaseController {
     public void delete(@PathVariable("id") String id) {
         AppUserEntity entity = getById(id);
         appUserPersistenceService.delete(entity);
-        appUserService.refreshUsername(entity.getUsername());
     }
 
 

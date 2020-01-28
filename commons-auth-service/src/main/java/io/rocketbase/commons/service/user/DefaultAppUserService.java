@@ -10,6 +10,7 @@ import io.rocketbase.commons.exception.EmailValidationException;
 import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.exception.RegistrationException;
 import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.model.AppUserReference;
 import io.rocketbase.commons.service.AppUserPersistenceService;
 import io.rocketbase.commons.service.avatar.AvatarService;
 import io.rocketbase.commons.service.validation.ValidationService;
@@ -103,8 +104,9 @@ public class DefaultAppUserService implements AppUserService {
     public AppUserEntity updateLastLogin(String username) {
         AppUserEntity entity = getEntityByUsername(username);
         entity.updateLastLogin();
-        appUserPersistenceService.save(entity);
-        return refreshUsername(username);
+
+        invalidateCache(entity);
+        return appUserPersistenceService.save(entity);
     }
 
     @Override
@@ -115,8 +117,8 @@ public class DefaultAppUserService implements AppUserService {
         entity.setPassword(passwordEncoder.encode(newPassword));
         entity.updateLastTokenInvalidation();
 
-        appUserPersistenceService.save(entity);
-        return refreshUsername(username);
+        invalidateCache(entity);
+        return appUserPersistenceService.save(entity);
     }
 
     @Override
@@ -127,8 +129,8 @@ public class DefaultAppUserService implements AppUserService {
         entity.setAvatar(avatar);
         handleKeyValues(entity, keyValues);
 
-        appUserPersistenceService.save(entity);
-        return refreshUsername(username);
+        invalidateCache(entity);
+        return appUserPersistenceService.save(entity);
     }
 
     @Override
@@ -136,8 +138,8 @@ public class DefaultAppUserService implements AppUserService {
         AppUserEntity entity = getEntityByUsername(username);
         handleKeyValues(entity, keyValues);
 
-        appUserPersistenceService.save(entity);
-        return refreshUsername(username);
+        invalidateCache(entity);
+        return appUserPersistenceService.save(entity);
     }
 
     private AppUserEntity getEntityByUsername(String username) {
@@ -149,11 +151,18 @@ public class DefaultAppUserService implements AppUserService {
     }
 
     @Override
-    public AppUserEntity refreshUsername(String username) {
-        if (cache != null) {
-            cache.invalidate(CacheFilter.builder().username(username).build());
+    public void invalidateCache(AppUserReference appUser) {
+        if (cache != null && appUser != null) {
+            if (appUser.getId() != null) {
+                cache.invalidate(CacheFilter.builder().id(appUser.getId()).build());
+            }
+            if (appUser.getUsername() != null) {
+                cache.invalidate(CacheFilter.builder().username(appUser.getUsername()).build());
+            }
+            if (appUser.getEmail() != null) {
+                cache.invalidate(CacheFilter.builder().email(appUser.getEmail()).build());
+            }
         }
-        return getByUsername(username);
     }
 
     @Override
@@ -194,7 +203,9 @@ public class DefaultAppUserService implements AppUserService {
             instance.setAvatar(avatarService.getAvatar(email));
         }
         AppUserEntity entity = appUserPersistenceService.save(instance);
-        return refreshUsername(entity.getUsername());
+        // invalid cache in case of email + username lookup for example
+        invalidateCache(entity);
+        return entity;
     }
 
     @Override
@@ -202,8 +213,9 @@ public class DefaultAppUserService implements AppUserService {
         AppUserEntity entity = getEntityByUsername(username);
         entity.setRoles(roles);
         entity.updateLastTokenInvalidation();
-        appUserPersistenceService.save(entity);
-        return refreshUsername(username);
+
+        invalidateCache(entity);
+        return appUserPersistenceService.save(entity);
     }
 
     @Override
@@ -224,7 +236,9 @@ public class DefaultAppUserService implements AppUserService {
         handleKeyValues(instance, registration.getKeyValues());
 
         AppUserEntity entity = appUserPersistenceService.save(instance);
-        return refreshUsername(entity.getUsername());
+        // invalid cache in case of email + username lookup for example
+        invalidateCache(entity);
+        return entity;
     }
 
     @Override
@@ -255,14 +269,15 @@ public class DefaultAppUserService implements AppUserService {
         keyValues.put(REGISTRATION_KV, null);
         handleKeyValues(entity, keyValues);
 
+        invalidateCache(entity);
+
         appUserPersistenceService.save(entity);
-        refreshUsername(entity.getUsername());
     }
 
     @Override
     public void delete(AppUserEntity user) {
         appUserPersistenceService.delete(user);
-        refreshUsername(user.getUsername());
+        invalidateCache(user);
     }
 
     @Builder
