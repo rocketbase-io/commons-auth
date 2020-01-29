@@ -16,6 +16,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Map;
+
 /**
  * api resource used by authenticated users
  */
@@ -46,6 +48,15 @@ public class AppInviteResource implements BaseRestResource {
             }
             if (query.getExpired() != null) {
                 uriBuilder.queryParam("expired", query.getExpired());
+            }
+            handleKeyValues(query.getKeyValues(), uriBuilder);
+        }
+    }
+
+    static void handleKeyValues(Map<String, String> keyValues, UriComponentsBuilder uriBuilder) {
+        if (uriBuilder != null && keyValues != null && !keyValues.isEmpty()) {
+            for (Map.Entry<String, String> entry : keyValues.entrySet()) {
+                uriBuilder.queryParam("keyValue", String.format("%s;%s", entry.getKey(), entry.getValue()));
             }
         }
     }

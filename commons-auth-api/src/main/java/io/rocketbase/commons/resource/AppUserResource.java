@@ -20,6 +20,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import static io.rocketbase.commons.resource.AppInviteResource.handleKeyValues;
+
 /**
  * api resource used by authenticated users
  */
@@ -63,6 +65,7 @@ public class AppUserResource implements BaseRestResource {
             if (!StringUtils.isEmpty(query.getHasRole())) {
                 uriBuilder.queryParam("hasRole", query.getHasRole());
             }
+            handleKeyValues(query.getKeyValues(), uriBuilder);
         }
     }
 

@@ -706,6 +706,13 @@
             "description": "searches in all properties containing (case-insensitive)"
           },
           {
+            "name": "keyValue",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "user needs to have key with value match (case-insensitive). format: keyValue=KEY;VALUE"
+          },
+          {
             "name": "enabled",
             "in": "query",
             "required": false,
@@ -912,6 +919,13 @@
             "required": false,
             "type": "string",
             "description": "default false - to search for expired invites you need to add to query"
+          },
+          {
+            "name": "keyValue",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "invite needs to have key with value match (case-insensitive). format: keyValue=KEY;VALUE"
           }
         ],
         "responses": {

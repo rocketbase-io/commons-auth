@@ -1,11 +1,9 @@
 package io.rocketbase.commons.dto.appuser;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * query object to find user
@@ -21,6 +19,13 @@ public class QueryAppUser implements Serializable {
     private String firstName;
     private String lastName;
     private String email;
+
+    /**
+     * search for given key and value with exact match ignore cases
+     */
+    @Singular
+    private Map<String, String> keyValues;
+
     /**
      * searches for all properties containing text
      */
