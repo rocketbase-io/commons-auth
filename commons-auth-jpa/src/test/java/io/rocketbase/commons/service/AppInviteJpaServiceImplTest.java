@@ -209,4 +209,39 @@ public class AppInviteJpaServiceImplTest {
         // then
         assertThat(result, equalTo(1L));
     }
+
+    @Test
+    public void findAllWithKeyValue() {
+        // given
+        QueryAppInvite query = QueryAppInvite.builder()
+                .expired(false)
+                .keyValue("WORKSPACE", "1")
+                .build();
+
+        // when
+        Page<AppInviteJpaEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("email")));
+
+        // then
+        assertThat(result, notNullValue());
+        for (AppInviteJpaEntity e : result.getContent()) {
+            assertThat(e.getKeyValue("workspace"), equalTo("1"));
+        }
+    }
+
+    @Test
+    public void findAllWithKeyValueAndOtherFilters() {
+        // given
+        QueryAppInvite query = QueryAppInvite.builder()
+                .expired(false)
+                .keyValue("WORKSPACE", "1")
+                .invitor("ma")
+                .build();
+
+        // when
+        Page<AppInviteJpaEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("email")));
+
+        // then
+        assertThat(result, notNullValue());
+        assertThat(result.getTotalElements(), equalTo(1L));
+    }
 }

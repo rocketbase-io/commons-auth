@@ -10,13 +10,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RequiredArgsConstructor
 public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJpaEntity>, PredicateHelper {
@@ -41,22 +39,34 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJ
 
         Specification<AppUserJpaEntity> specification = (Specification<AppUserJpaEntity>) (root, criteriaQuery, cb) -> {
             Predicate result = cb.equal(root.get("enabled"), Nulls.notNull(query.getEnabled(), true));
-            List<Predicate> predicates = new ArrayList<>();
-            addToListIfNotEmpty(predicates, Nulls.notEmpty(query.getUsername(), query.getFreetext()), "username", root, cb);
-            addToListIfNotEmpty(predicates, Nulls.notEmpty(query.getFirstName(), query.getFreetext()), "firstName", root, cb);
-            addToListIfNotEmpty(predicates, Nulls.notEmpty(query.getLastName(), query.getFreetext()), "lastName", root, cb);
-            addToListIfNotEmpty(predicates, Nulls.notEmpty(query.getEmail(), query.getFreetext()), "email", root, cb);
-            if (!predicates.isEmpty()) {
+            List<Predicate> textSearch = new ArrayList<>();
+            addToListIfNotEmpty(textSearch, Nulls.notEmpty(query.getUsername(), query.getFreetext()), "username", root, cb);
+            addToListIfNotEmpty(textSearch, Nulls.notEmpty(query.getFirstName(), query.getFreetext()), "firstName", root, cb);
+            addToListIfNotEmpty(textSearch, Nulls.notEmpty(query.getLastName(), query.getFreetext()), "lastName", root, cb);
+            addToListIfNotEmpty(textSearch, Nulls.notEmpty(query.getEmail(), query.getFreetext()), "email", root, cb);
+            if (!textSearch.isEmpty()) {
                 if (StringUtils.isEmpty(query.getFreetext())) {
-                    result = cb.and(result, cb.and(predicates.toArray(new Predicate[]{})));
+                    result = cb.and(result, cb.and(textSearch.toArray(new Predicate[]{})));
                 } else {
-                    result = cb.and(result, cb.or(predicates.toArray(new Predicate[]{})));
+                    result = cb.and(result, cb.or(textSearch.toArray(new Predicate[]{})));
                 }
             }
 
+            List<Predicate> furtherFilters = new ArrayList<>();
             if (!StringUtils.isEmpty(query.getHasRole())) {
+                criteriaQuery.distinct(true);
                 Predicate roles = cb.upper(root.join("roles")).in(query.getHasRole().toUpperCase());
-                result = cb.and(result, roles);
+                furtherFilters.add(roles);
+            }
+            if (query.getKeyValues() != null && !query.getKeyValues().isEmpty()) {
+                criteriaQuery.distinct(true);
+                MapJoin<AppUserJpaEntity, String, String> mapJoin = root.joinMap("keyValueMap");
+                for (Map.Entry<String, String> keyEntry : query.getKeyValues().entrySet()) {
+                    furtherFilters.add(cb.and(cb.equal(mapJoin.key(), keyEntry.getKey().toLowerCase()), cb.equal(cb.lower(mapJoin.value()), keyEntry.getValue().toLowerCase())));
+                }
+            }
+            if (!furtherFilters.isEmpty()) {
+                result = cb.and(result, cb.and(furtherFilters.toArray(new Predicate[]{})));
             }
             return result;
         };

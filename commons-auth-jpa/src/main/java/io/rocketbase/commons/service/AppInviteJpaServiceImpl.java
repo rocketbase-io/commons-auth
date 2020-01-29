@@ -2,6 +2,7 @@ package io.rocketbase.commons.service;
 
 import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
 import io.rocketbase.commons.model.AppInviteJpaEntity;
+import io.rocketbase.commons.model.AppUserJpaEntity;
 import io.rocketbase.commons.repository.AppInviteJpaRepository;
 import io.rocketbase.commons.util.Nulls;
 import lombok.RequiredArgsConstructor;
@@ -9,13 +10,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Predicate;
 import javax.transaction.Transactional;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @RequiredArgsConstructor
 public class AppInviteJpaServiceImpl implements AppInvitePersistenceService<AppInviteJpaEntity>, PredicateHelper {
@@ -39,6 +38,15 @@ public class AppInviteJpaServiceImpl implements AppInvitePersistenceService<AppI
             List<Predicate> predicates = new ArrayList<>();
             addToListIfNotEmpty(predicates, query.getInvitor(), "invitor", root, cb);
             addToListIfNotEmpty(predicates, query.getEmail(), "email", root, cb);
+
+            if (query.getKeyValues() != null && !query.getKeyValues().isEmpty()) {
+                criteriaQuery.distinct(true);
+                MapJoin<AppUserJpaEntity, String, String> mapJoin = root.joinMap("keyValueMap");
+                for (Map.Entry<String, String> keyEntry : query.getKeyValues().entrySet()) {
+                    predicates.add(cb.and(cb.equal(mapJoin.key(), keyEntry.getKey().toLowerCase()), cb.equal(cb.lower(mapJoin.value()), keyEntry.getValue().toLowerCase())));
+                }
+            }
+
             if (!predicates.isEmpty()) {
                 result = cb.and(result, cb.and(predicates.toArray(new Predicate[]{})));
             }
