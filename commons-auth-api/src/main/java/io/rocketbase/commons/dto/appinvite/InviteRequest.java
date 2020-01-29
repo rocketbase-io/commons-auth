@@ -49,7 +49,7 @@ public class InviteRequest implements Serializable, HasFirstAndLastName {
      * optional parameter to overwrite system default
      * <p>
      * full qualified url to a custom UI that proceed the invite<br>
-     * * ?inviteId=VALUE will get append
+     * ?inviteId=VALUE will get append
      */
     private String inviteUrl;
 }
