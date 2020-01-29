@@ -14,12 +14,14 @@ The implementation bases on spring-boot: mainly on **spring-mvc**, **spring-data
 **Features:**
 * authentication with jwt-tokens
 * refresh token flow
+* oauth2 endpoints
 * registration + verification flow
 * optional gravatar integration
 * optional key values pairs to hold custom properties to user
 * password forgot/reset flow
-* admin endpoints to crud users
-* forms to register/fogot-password etc.
+* admin endpoints to crud users + invites
+* invite user flow to allow others to join your application
+* forms to register/fogot-password/invite etc.
 
 I've added an swagger api-documentation. You can find it within [src](./commons-auth-api/src/doc/swagger) of [swaggerHub](https://app.swaggerhub.com/apis-docs/melistik/commons-auth/)
 
@@ -131,10 +133,14 @@ Forms configuration:
 | auth.forms.logo-src                                 | ./assets/rocketbase.svg |
 
 
+## commons-auth-service
+
+Containing nearly all services and functions to perform any task within the application - services for working with entities (without db-layer), performing invites, forgot/password-reset/registration flows,  sending emails etc.
+
+
 ## commons-auth-server
 
-Containing mainly the spring rest-controller + services for sending emails etc.
-
+Only spring rest-controller + exception handler - logic is used from service-module
 
 ### configure spring-security
 
