@@ -1,8 +1,8 @@
 {
   "swagger": "2.0",
   "info": {
-    "description": "Handles authentication + authorization with registration- and password-reset flows.",
-    "version": "2.7.5",
+    "description": "Handles authentication + authorization with registration-, invite and password-reset flows.",
+    "version": "3.0.0",
     "title": "commons-auth api",
     "contact": {
       "name": "rocketbase.io",
@@ -28,8 +28,16 @@
       "description": "Allows to validate username, email, password in advance."
     },
     {
+      "name": "invite",
+      "description": "Allows invited to verify and perform creation account."
+    },
+    {
       "name": "admin",
       "description": "CRUD for user entities. Mainly used by users with admin rights."
+    },
+    {
+      "name": "admin-invite",
+      "description": "CRUD for invite entities. Mainly used by users with admin rights."
     },
     {
       "name": "user-search",
@@ -858,6 +866,237 @@
         "deprecated": false
       }
     },
+    "/api/invite": {
+      "get": {
+        "tags": [
+          "admin-invite"
+        ],
+        "summary": "find",
+        "description": "page thew invite-list with optional filter parameters.",
+        "operationId": "findInviteGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "default 25 max is 200",
+            "required": false,
+            "type": "integer"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "default is 1",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "email containing case-insensitive"
+          },
+          {
+            "name": "invitor",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "invitor containing case-insensitive"
+          },
+          {
+            "name": "expired",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "default false - to search for expired invites you need to add to query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/PageableResult-AppInviteRead"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      },
+      "post": {
+        "tags": [
+          "admin-invite"
+        ],
+        "summary": "invite",
+        "description": "invite a someone threw admin-rights.",
+        "operationId": "invitePOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "create",
+            "description": "create",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InviteRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AppUserRead"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/invite/{id}": {
+      "delete": {
+        "tags": [
+          "admin-invite"
+        ],
+        "summary": "delete",
+        "description": "remove an invite from database.",
+        "operationId": "deleteInviteDELETE",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/auth/invite": {
+      "get": {
+        "tags": [
+          "invite"
+        ],
+        "summary": "verify",
+        "description": "verfiy inviteId and return details",
+        "operationId": "verifyInviteGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "inviteId",
+            "in": "query",
+            "description": "id of the invite - has been sent via email to invited email",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AppInviteRead"
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      },
+      "post": {
+        "tags": [
+          "invite"
+        ],
+        "summary": "transformToUser",
+        "description": "creates an account with predefined roles/keyValues during invite-process",
+        "operationId": "transformToUserPOST",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "create",
+            "description": "create",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ConfirmInviteRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AppUserRead"
+            }
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
     "/api/user-search": {
       "get": {
         "tags": [
@@ -1005,19 +1244,22 @@
     "AppUserCreate": {
       "type": "object",
       "properties": {
-        "admin": {
-          "type": "boolean"
+        "username": {
+          "type": "string"
         },
-        "avatar": {
+        "password": {
           "type": "string"
         },
         "email": {
           "type": "string"
         },
-        "enabled": {
-          "type": "boolean"
-        },
         "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "avatar": {
           "type": "string"
         },
         "keyValues": {
@@ -1026,38 +1268,89 @@
             "type": "string"
           }
         },
-        "lastName": {
+        "admin": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "title": "AppUserCreate"
+    },
+    "ConfirmInviteRequest": {
+      "type": "object",
+      "properties": {
+        "inviteId": {
+          "type": "string"
+        },
+        "username": {
           "type": "string"
         },
         "password": {
           "type": "string"
         },
-        "username": {
-          "type": "string"
-        }
-      },
-      "title": "AppUserCreate"
-    },
-    "AppUserRead": {
-      "type": "object",
-      "properties": {
-        "avatar": {
-          "type": "string"
-        },
-        "created": {
-          "type": "string",
-          "format": "date-time"
-        },
         "email": {
           "type": "string"
-        },
-        "enabled": {
-          "type": "boolean"
         },
         "firstName": {
           "type": "string"
         },
+        "lastName": {
+          "type": "string"
+        }
+      },
+      "title": "ConfirmInviteRequest"
+    },
+    "InviteRequest": {
+      "type": "object",
+      "properties": {
+        "invitor": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "keyValues": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "inviteUrl": {
+          "type": "string",
+          "description": "optional parameter: full qualified url to a custom UI that proceed the invite - ?inviteId=VALUE will get append"
+        }
+      },
+      "title": "InviteRequest"
+    },
+    "AppUserRead": {
+      "type": "object",
+      "properties": {
         "id": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
+        "lastName": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "avatar": {
           "type": "string"
         },
         "keyValues": {
@@ -1070,8 +1363,48 @@
           "type": "string",
           "format": "date-time"
         },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      },
+      "title": "AppUserRead"
+    },
+    "AppInviteRead": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "invitor": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "firstName": {
+          "type": "string"
+        },
         "lastName": {
           "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "keyValues": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         },
         "roles": {
           "type": "array",
@@ -1079,11 +1412,16 @@
             "type": "string"
           }
         },
-        "username": {
-          "type": "string"
+        "created": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expiration": {
+          "type": "string",
+          "format": "date-time"
         }
       },
-      "title": "AppUserRead"
+      "title": "AppInviteRead"
     },
     "AppUserReference": {
       "type": "object",
@@ -1112,13 +1450,10 @@
     "AppUserUpdate": {
       "type": "object",
       "properties": {
-        "avatar": {
+        "firstName": {
           "type": "string"
         },
-        "enabled": {
-          "type": "boolean"
-        },
-        "firstName": {
+        "lastName": {
           "type": "string"
         },
         "keyValues": {
@@ -1127,11 +1462,14 @@
             "type": "string"
           }
         },
-        "lastName": {
-          "type": "string"
-        },
         "password": {
           "type": "string"
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
         },
         "roles": {
           "type": "array",
@@ -1222,6 +1560,34 @@
         }
       },
       "title": "PageableResult-AppUserRead"
+    },
+    "PageableResult-AppInviteRead": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/AppInviteRead"
+          }
+        },
+        "page": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "totalElements": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "totalPages": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "PageableResult-AppInviteRead"
     },
     "PageableResult-AppUserReference": {
       "type": "object",
