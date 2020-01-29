@@ -294,6 +294,92 @@ In order to get it running you need to add the following annotations to your pro
 
 Some base test classes and configurations.
 
+## dependencies
+
+Here you can find a simplified dependency-tree of commons-auth created 2020-01
+
+```
+---------------< io.rocketbase.commons:commons-auth-api >---------------
+
+io.rocketbase.commons:commons-auth-api:jar:LATEST-SNAPSHOT
++- io.rocketbase.commons:commons-rest-api:jar:2.0.0:compile
++- com.google.guava:guava:jar:28.2-jre:compile
+
+--------------< io.rocketbase.commons:commons-auth-core >---------------
+
+io.rocketbase.commons:commons-auth-core:jar:LATEST-SNAPSHOT
++- io.rocketbase.commons:commons-auth-api:jar:LATEST-SNAPSHOT:compile
++- org.springframework.boot:spring-boot:jar:2.2.4.RELEASE:compile
++- org.springframework.security:spring-security-core:jar:5.2.1.RELEASE:compile
++- io.jsonwebtoken:jjwt-api:jar:0.10.7:compile
+
+-------------< io.rocketbase.commons:commons-auth-adapter >-------------
+
+io.rocketbase.commons:commons-auth-adapter:jar:LATEST-SNAPSHOT
++- io.rocketbase.commons:commons-auth-core:jar:LATEST-SNAPSHOT:compile
++- org.springframework.boot:spring-boot-autoconfigure:jar:2.2.4.RELEASE:compile
++- org.springframework.security:spring-security-config:jar:5.2.1.RELEASE:compile
++- org.springframework.security:spring-security-web:jar:5.2.1.RELEASE:compile
+
+-------------< io.rocketbase.commons:commons-auth-service >-------------
+
+io.rocketbase.commons:commons-auth-service:jar:LATEST-SNAPSHOT
++- io.rocketbase.commons:email-template-builder:jar:1.4.0:compile
+|  +- io.pebbletemplates:pebble:jar:3.1.2:compile
+|  \- org.jsoup:jsoup:jar:1.12.1:compile
++- org.springframework.data:spring-data-commons:jar:2.2.4.RELEASE:compile
++- org.springframework.boot:spring-boot-autoconfigure:jar:2.2.4.RELEASE:compile
++- org.springframework:spring-webmvc:jar:5.2.3.RELEASE:compile
++- org.passay:passay:jar:1.0:compile
++- org.springframework.boot:spring-boot-starter-mail:jar:2.2.4.RELEASE:compile
++- org.springframework.security:spring-security-config:jar:5.2.1.RELEASE:compile
++- org.springframework.security:spring-security-web:jar:5.2.1.RELEASE:compile
++- org.springframework.boot:spring-boot-configuration-processor:jar:2.2.4.RELEASE:compile
+
+-------------< io.rocketbase.commons:commons-auth-server >--------------
+
+io.rocketbase.commons:commons-auth-server:jar:LATEST-SNAPSHOT
++- io.rocketbase.commons:commons-auth-adapter:jar:LATEST-SNAPSHOT:compile
++- io.rocketbase.commons:commons-auth-service:jar:LATEST-SNAPSHOT:compile
++- io.rocketbase.commons:commons-rest-server:jar:2.0.0:compile
++- io.rocketbase.commons:commons-rest-errorpage:jar:2.0.0:compile
++- io.rocketbase.commons:email-template-builder:jar:1.4.0:compile
+|  +- io.pebbletemplates:pebble:jar:3.1.2:compile
+|  \- org.jsoup:jsoup:jar:1.12.1:compile
++- org.springframework.data:spring-data-commons:jar:2.2.4.RELEASE:compile
++- org.springframework.boot:spring-boot-autoconfigure:jar:2.2.4.RELEASE:compile
++- org.springframework:spring-webmvc:jar:5.2.3.RELEASE:compile
++- org.passay:passay:jar:1.0:compile
++- org.springframework.boot:spring-boot-starter-mail:jar:2.2.4.RELEASE:compile
++- org.springframework.security:spring-security-config:jar:5.2.1.RELEASE:compile
++- org.springframework.security:spring-security-web:jar:5.2.1.RELEASE:compile
++- org.springframework.boot:spring-boot-configuration-processor:jar:2.2.4.RELEASE:compile
+
+--------------< io.rocketbase.commons:commons-auth-mongo >--------------
+
+io.rocketbase.commons:commons-auth-mongo:jar:LATEST-SNAPSHOT
++- io.rocketbase.commons:commons-auth-service:jar:LATEST-SNAPSHOT:compile
++- org.springframework.data:spring-data-mongodb:jar:2.2.4.RELEASE:compile
+
+---------------< io.rocketbase.commons:commons-auth-jpa >---------------
+
+io.rocketbase.commons:commons-auth-jpa:jar:LATEST-SNAPSHOT
++- io.rocketbase.commons:commons-auth-service:jar:LATEST-SNAPSHOT:compile
++- org.springframework.data:spring-data-jpa:jar:2.2.4.RELEASE:compile
+
+--------------< io.rocketbase.commons:commons-auth-forms >--------------
+
+io.rocketbase.commons:commons-auth-forms:jar:LATEST-SNAPSHOT
++- io.rocketbase.commons:commons-auth-adapter:jar:LATEST-SNAPSHOT:compile
++- io.rocketbase.commons:commons-rest-errorpage:jar:2.0.0:compile
++- org.thymeleaf:thymeleaf:jar:3.0.11.RELEASE:compile
++- org.springframework:spring-webmvc:jar:5.2.3.RELEASE:compile
++- org.hibernate.validator:hibernate-validator:jar:6.0.18.Final:compile
++- org.springframework.boot:spring-boot-autoconfigure:jar:2.2.4.RELEASE:compile
++- org.springframework.security:spring-security-config:jar:5.2.1.RELEASE:compile
++- org.springframework.security:spring-security-web:jar:5.2.1.RELEASE:compile
+```
+
 
 ### The MIT License (MIT)
 Copyright (c) 2019 rocketbase.io
