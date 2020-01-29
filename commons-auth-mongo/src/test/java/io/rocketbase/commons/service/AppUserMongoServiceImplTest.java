@@ -197,4 +197,23 @@ public class AppUserMongoServiceImplTest {
         assertThat(result.getTotalElements(), equalTo(1L));
         assertThat(result.getContent().get(0).getUsername(), equalTo("marten"));
     }
+
+
+    @Test
+    public void findAllKeyValues() {
+        // given
+        QueryAppUser query = QueryAppUser.builder()
+                .keyValue("workspace", "1")
+                .keyValue("language", "en")
+                .build();
+
+        // when
+        Page<AppUserMongoEntity> result = service.findAll(query, PageRequest.of(0, 10));
+
+        // then
+        assertThat(result, notNullValue());
+        assertThat(result.getTotalElements(), equalTo(1L));
+        assertThat(result.getContent().get(0).getKeyValue("workspace"), equalTo("1"));
+        assertThat(result.getContent().get(0).getKeyValue("language"), equalTo("en"));
+    }
 }

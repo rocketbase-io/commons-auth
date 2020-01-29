@@ -209,4 +209,22 @@ public class AppInviteMongoServiceImplTest {
         // then
         assertThat(result, equalTo(1L));
     }
+
+    @Test
+    public void findAllKeyValues() {
+        // given
+        QueryAppInvite query = QueryAppInvite.builder()
+                .keyValue("workspace", "1")
+                .keyValue("_secret","secure")
+                .build();
+
+        // when
+        Page<AppInviteMongoEntity> result = service.findAll(query, PageRequest.of(0, 10));
+
+        // then
+        assertThat(result, notNullValue());
+        assertThat(result.getTotalElements(), equalTo(1L));
+        assertThat(result.getContent().get(0).getKeyValue("workspace"), equalTo("1"));
+        assertThat(result.getContent().get(0).getKeyValue("_secret"), equalTo("secure"));
+    }
 }

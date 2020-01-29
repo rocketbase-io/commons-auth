@@ -14,10 +14,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.StringUtils;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 public class AppInviteMongoServiceImpl implements AppInvitePersistenceService<AppInviteMongoEntity> {
@@ -45,6 +43,12 @@ public class AppInviteMongoServiceImpl implements AppInvitePersistenceService<Ap
                 result.addCriteria(Criteria.where("expiration").gte(Instant.now()));
             } else {
                 result.addCriteria(Criteria.where("expiration").lt(Instant.now()));
+            }
+            if (query.getKeyValues() != null && !query.getKeyValues().isEmpty()) {
+                for (Map.Entry<String, String> kv : query.getKeyValues().entrySet()) {
+                    Pattern valuePattern = Pattern.compile(kv.getValue(), Pattern.CASE_INSENSITIVE);
+                    result.addCriteria(Criteria.where("keyValueMap." + kv.getKey().toLowerCase()).is(valuePattern));
+                }
             }
         }
         return result;
