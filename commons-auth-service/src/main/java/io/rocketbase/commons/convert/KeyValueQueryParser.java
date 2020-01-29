@@ -9,9 +9,8 @@ import java.util.Map;
 public interface KeyValueQueryParser {
 
     default Map<String, String> parseKeyValue(MultiValueMap<String, String> params, String key) {
-        Map<String, String> result = null;
+        Map<String, String> result = new HashMap<>();
         if (params != null && params.containsKey(key)) {
-            result = new HashMap<>();
             for (String kv : params.get(key)) {
                 String[] split = StringUtils.split(kv, ";");
                 if (split != null) {
