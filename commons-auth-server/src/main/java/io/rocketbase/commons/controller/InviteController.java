@@ -7,7 +7,7 @@ import io.rocketbase.commons.dto.appinvite.ConfirmInviteRequest;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppUserEntity;
-import io.rocketbase.commons.service.invite.InviteUserService;
+import io.rocketbase.commons.service.invite.AppInviteService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +26,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class InviteController implements BaseController {
 
     @Resource
-    private InviteUserService inviteUserService;
+    private AppInviteService appInviteService;
 
     @Resource
     private AppInviteConverter appInviteConverter;
@@ -37,14 +37,14 @@ public class InviteController implements BaseController {
     @RequestMapping(method = RequestMethod.GET, path = "/auth/invite")
     @ResponseBody
     public ResponseEntity<AppInviteRead> verify(@RequestParam("inviteId") String inviteId) {
-        AppInviteEntity entity = inviteUserService.verifyInvite(inviteId);
+        AppInviteEntity entity = appInviteService.verifyInvite(inviteId);
         return ResponseEntity.ok(appInviteConverter.fromEntity(entity));
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/auth/invite", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<AppUserRead> transformToUser(@RequestBody @NotNull @Validated ConfirmInviteRequest confirmInviteRequest) {
-        AppUserEntity entity = inviteUserService.confirmInvite(confirmInviteRequest);
+        AppUserEntity entity = appInviteService.confirmInvite(confirmInviteRequest);
         return ResponseEntity.ok(appUserConverter.fromEntity(entity));
     }
 

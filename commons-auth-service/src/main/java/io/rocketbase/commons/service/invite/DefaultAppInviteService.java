@@ -22,7 +22,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 @RequiredArgsConstructor
-public class DefaultInviteUserService implements InviteUserService {
+public class DefaultAppInviteService implements AppInviteService {
 
     @Getter
     final AuthProperties authProperties;

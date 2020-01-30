@@ -10,7 +10,7 @@ import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.service.FeedbackActionService;
 
-public interface InviteUserService extends FeedbackActionService {
+public interface AppInviteService extends FeedbackActionService {
 
     /**
      * creates an invite and sent him a invite email. during confirm process invitor will fill required fields like username, password to a new user.<br>

@@ -8,7 +8,7 @@ import io.rocketbase.commons.dto.appinvite.InviteRequest;
 import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.service.AppInvitePersistenceService;
-import io.rocketbase.commons.service.invite.InviteUserService;
+import io.rocketbase.commons.service.invite.AppInviteService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.data.domain.Page;
@@ -35,7 +35,7 @@ public class AppInviteController implements BaseController {
     private AppInvitePersistenceService appInvitePersistenceService;
 
     @Resource
-    private InviteUserService inviteUserService;
+    private AppInviteService appInviteService;
 
     @Resource
     private AppInviteConverter appInviteConverter;
@@ -55,7 +55,7 @@ public class AppInviteController implements BaseController {
     @RequestMapping(method = RequestMethod.POST, path = "/api/invite", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<AppInviteRead> invite(HttpServletRequest request, @RequestBody @NotNull @Validated InviteRequest inviteRequest) {
-        AppInviteEntity entity = inviteUserService.createInvite(inviteRequest, getBaseUrl(request));
+        AppInviteEntity entity = appInviteService.createInvite(inviteRequest, getBaseUrl(request));
         return ResponseEntity.ok(appInviteConverter.fromEntity(entity));
     }
 

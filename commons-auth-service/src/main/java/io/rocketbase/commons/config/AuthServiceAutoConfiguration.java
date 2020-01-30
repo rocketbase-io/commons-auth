@@ -10,8 +10,8 @@ import io.rocketbase.commons.service.email.MailContentConfig;
 import io.rocketbase.commons.service.email.SimpleMailContentConfig;
 import io.rocketbase.commons.service.forgot.AppUserForgotPasswordService;
 import io.rocketbase.commons.service.forgot.DefaultAppUserForgotPasswordService;
-import io.rocketbase.commons.service.invite.DefaultInviteUserService;
-import io.rocketbase.commons.service.invite.InviteUserService;
+import io.rocketbase.commons.service.invite.AppInviteService;
+import io.rocketbase.commons.service.invite.DefaultAppInviteService;
 import io.rocketbase.commons.service.registration.DefaultRegistrationService;
 import io.rocketbase.commons.service.registration.RegistrationService;
 import io.rocketbase.commons.service.user.AppUserService;
@@ -66,8 +66,8 @@ public class AuthServiceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public InviteUserService inviteUserService() {
-        return new DefaultInviteUserService(authProperties);
+    public AppInviteService appInviteService() {
+        return new DefaultAppInviteService(authProperties);
     }
 
     @Bean
