@@ -10,7 +10,7 @@ import java.util.Set;
 @Getter
 @ToString
 @RequiredArgsConstructor
-public class PasswordValidationException extends RuntimeException {
+public class PasswordValidationException extends RuntimeException implements BaseValidationException {
 
     private final Set<ValidationErrorCode<PasswordErrorCodes>> errors;
 

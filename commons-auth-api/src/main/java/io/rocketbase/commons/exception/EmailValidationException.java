@@ -10,7 +10,7 @@ import java.util.Set;
 @Getter
 @ToString
 @RequiredArgsConstructor
-public class EmailValidationException extends RuntimeException {
+public class EmailValidationException extends RuntimeException implements BaseValidationException {
 
     private final Set<ValidationErrorCode<EmailErrorCodes>> errors;
 
