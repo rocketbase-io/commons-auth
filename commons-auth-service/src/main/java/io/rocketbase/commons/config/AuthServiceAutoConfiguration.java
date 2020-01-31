@@ -21,13 +21,12 @@ import io.rocketbase.commons.service.validation.ValidationErrorCodeService;
 import io.rocketbase.commons.service.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 import javax.mail.internet.InternetAddress;
 
@@ -46,8 +45,8 @@ public class AuthServiceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public MailContentConfig mailContentConfig(@Autowired MessageSource messageSource) {
-        return new SimpleMailContentConfig(emailProperties, messageSource);
+    public MailContentConfig mailContentConfig() {
+        return new SimpleMailContentConfig(emailProperties, authMessageSource());
     }
 
     @Bean
@@ -97,13 +96,22 @@ public class AuthServiceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ValidationErrorCodeService validationErrorCodeService(@Autowired MessageSource messageSource) {
-        return new ValidationErrorCodeService(usernameProperties, passwordProperties, messageSource);
+    public ValidationErrorCodeService validationErrorCodeService() {
+        return new ValidationErrorCodeService(usernameProperties, passwordProperties, authMessageSource());
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ValidationService validationService(ValidationErrorCodeService validationErrorCodeService) {
-        return new DefaultValidationService(usernameProperties, passwordProperties, appUserService(), validationErrorCodeService);
+    public ValidationService validationService() {
+        return new DefaultValidationService(usernameProperties, passwordProperties, appUserService(), validationErrorCodeService());
     }
+
+    @Bean(name = "authMessageSource")
+    @ConditionalOnMissingBean
+    public ResourceBundleMessageSource authMessageSource() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.addBasenames("auth_messages");
+        return messageSource;
+    }
+
 }

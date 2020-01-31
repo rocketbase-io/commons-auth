@@ -92,6 +92,7 @@ public class ValidationErrorCodeService {
 
 
     private <T extends Enum<T>> ValidationErrorCode<T> generateError(T error, Function<T, String> errorCode, Object... args) {
-        return new ValidationErrorCode<T>(error, messageSource.getMessage(String.format("auth.error.%s", errorCode.apply(error)), args, LocaleContextHolder.getLocale()));
+        String code = String.format("auth.error.%s", errorCode.apply(error));
+        return new ValidationErrorCode<T>(error, messageSource.getMessage(code, args, code, LocaleContextHolder.getLocale()));
     }
 }

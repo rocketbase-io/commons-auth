@@ -3,11 +3,13 @@ package io.rocketbase.commons.config;
 import io.rocketbase.commons.controller.*;
 import io.rocketbase.commons.controller.exceptionhandler.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 @Configuration
 @AutoConfigureAfter({AuthAdapterAutoConfiguration.class, AuthServiceAutoConfiguration.class, CommonsRestAutoConfiguration.class})
@@ -72,8 +74,8 @@ public class AuthServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ValidationController validationController() {
-        return new ValidationController();
+    public ValidationController validationController(@Autowired ResourceBundleMessageSource authMessageSource) {
+        return new ValidationController(authMessageSource);
     }
 
     // -------------------------------------------------------

@@ -6,6 +6,7 @@ import io.rocketbase.commons.dto.validation.*;
 import io.rocketbase.commons.exception.ValidationErrorCode;
 import io.rocketbase.commons.service.SimpleTokenService;
 import io.rocketbase.commons.service.validation.ValidationService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -22,13 +23,14 @@ import java.util.Set;
 @Slf4j
 @RestController
 @RequestMapping("${auth.prefix:}")
+@RequiredArgsConstructor
 public class ValidationController implements BaseController {
+
+    private final MessageSource messageSource;
 
     @Resource
     private ValidationService validationService;
 
-    @Resource
-    private MessageSource messageSource;
 
     @RequestMapping(value = "/auth/validate/password", method = RequestMethod.POST)
     public ResponseEntity<ValidationResponse<PasswordErrorCodes>> validatePassword(@RequestBody String password) {
