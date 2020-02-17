@@ -195,6 +195,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         // @formatter:off
         httpSecurity
+            // activate CorsConfigurationSource
+            .cors().and()
             // we don't need CSRF because our token is invulnerable
             .csrf().disable()
 
