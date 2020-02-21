@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.config.RegistrationProperties;
+import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.EmailValidationException;
 import io.rocketbase.commons.exception.NotFoundException;
@@ -18,6 +19,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -281,6 +284,11 @@ public class DefaultAppUserService implements AppUserService {
     public void delete(AppUserEntity user) {
         appUserPersistenceService.delete(user);
         invalidateCache(user);
+    }
+
+    @Override
+    public Page<AppUserEntity> findAll(QueryAppUser query, Pageable pageable) {
+        return appUserPersistenceService.findAll(query, pageable);
     }
 
     @Builder

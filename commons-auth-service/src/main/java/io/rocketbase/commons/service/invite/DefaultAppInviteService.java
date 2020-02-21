@@ -4,6 +4,7 @@ import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.converter.AppInviteConverter;
 import io.rocketbase.commons.dto.appinvite.ConfirmInviteRequest;
 import io.rocketbase.commons.dto.appinvite.InviteRequest;
+import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
 import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.exception.RegistrationException;
@@ -16,6 +17,8 @@ import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.service.validation.ValidationService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import javax.annotation.Resource;
 import java.time.Instant;
@@ -71,5 +74,10 @@ public class DefaultAppInviteService implements AppInviteService {
         AppUserEntity appUserEntity = appUserService.initializeUser(request.getUsername(), request.getPassword(), request.getEmail(), request.getFirstName(), request.getLastName(), inviteEntity.getKeyValues(), inviteEntity.getRoles());
         appInvitePersistenceService.delete(inviteEntity);
         return appUserEntity;
+    }
+
+    @Override
+    public Page<AppInviteEntity> findAll(QueryAppInvite query, Pageable pageable) {
+        return appInvitePersistenceService.findAll(query, pageable);
     }
 }

@@ -1,11 +1,14 @@
 package io.rocketbase.commons.service.user;
 
+import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.EmailValidationException;
 import io.rocketbase.commons.exception.RegistrationException;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.model.AppUserReference;
 import io.rocketbase.commons.service.ValidationUserLookupService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -149,5 +152,11 @@ public interface AppUserService extends UserDetailsService, ValidationUserLookup
      * @param user
      */
     void delete(AppUserEntity user);
+
+    /**
+     * delegates query to persistence service<br>
+     * so that for all main function {@link AppUserService} is the main service - by dealing with users
+     */
+    Page<AppUserEntity> findAll(QueryAppUser query, Pageable pageable);
 
 }
