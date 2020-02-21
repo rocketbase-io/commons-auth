@@ -52,9 +52,11 @@ public class ValidationController implements BaseController {
 
     @RequestMapping(value = "/auth/validate/token", method = RequestMethod.POST)
     public ResponseEntity<ValidationResponse<TokenErrorCodes>> validateToken(@RequestBody String token) {
-        boolean valid = SimpleTokenService.parseToken(token).isValid();
-        ValidationResponse<TokenErrorCodes> response = new ValidationResponse<>(valid, null);
-        if (!valid) {
+        SimpleTokenService.Token parsed  = SimpleTokenService.parseToken(token);
+        ValidationResponse<TokenErrorCodes> response = new ValidationResponse<>(parsed.isValid(), null);
+        if (parsed.getExp() == null) {
+            response.setErrorCodes(ImmutableMap.of(TokenErrorCodes.INVALID, messageSource.getMessage("auth.error." + TokenErrorCodes.INVALID.getValue(), null, TokenErrorCodes.INVALID.getValue(), LocaleContextHolder.getLocale())));
+        } else if (!parsed.isValid()) {
             response.setErrorCodes(ImmutableMap.of(TokenErrorCodes.EXPIRED, messageSource.getMessage("auth.error." + TokenErrorCodes.EXPIRED.getValue(), null, TokenErrorCodes.EXPIRED.getValue(), LocaleContextHolder.getLocale())));
         }
         return ResponseEntity.ok(response);

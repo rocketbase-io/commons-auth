@@ -133,4 +133,17 @@ public class ValidationControllerTest extends BaseUserIntegrationTest {
         assertThat(response.getErrorCodes().keySet(), containsInAnyOrder(TokenErrorCodes.EXPIRED));
     }
 
+    @Test
+    public void validateTokenInvalid() {
+        // given
+        String token = "xyz";
+        // when
+        ValidationResponse<TokenErrorCodes> response = new ValidationResource(getBaseUrl()).validateToken(token);
+
+        // then
+        assertThat(response, notNullValue());
+        assertThat(response.isValid(), equalTo(false));
+        assertThat(response.getErrorCodes().keySet(), containsInAnyOrder(TokenErrorCodes.INVALID));
+    }
+
 }
