@@ -1,10 +1,7 @@
 package io.rocketbase.commons.model;
 
 import io.rocketbase.commons.model.converter.StringListConverter;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
@@ -22,6 +19,7 @@ import java.util.Map;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(of = {"id"})
 public class AppInviteJpaEntity implements AppInviteEntity {
 
     @Id

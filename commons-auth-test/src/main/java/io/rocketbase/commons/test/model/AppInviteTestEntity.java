@@ -2,10 +2,7 @@ package io.rocketbase.commons.test.model;
 
 import com.google.common.collect.ImmutableMap;
 import io.rocketbase.commons.model.AppInviteEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -18,6 +15,7 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(of = {"id"})
 public class AppInviteTestEntity implements AppInviteEntity {
 
     private String id;

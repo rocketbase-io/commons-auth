@@ -3,10 +3,7 @@ package io.rocketbase.commons.test.model;
 import com.google.common.collect.ImmutableMap;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.util.RolesAuthoritiesConverter;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.time.Instant;
@@ -21,6 +18,7 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(of = {"id"})
 public class AppUserTestEntity implements AppUserEntity {
 
     private String id;

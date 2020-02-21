@@ -1,10 +1,7 @@
 package io.rocketbase.commons.model;
 
 import io.rocketbase.commons.util.RolesAuthoritiesConverter;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -26,6 +23,7 @@ import java.util.Map;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(of = {"id"})
 public class AppUserJpaEntity implements AppUserEntity {
 
     @Id
