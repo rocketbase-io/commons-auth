@@ -68,8 +68,7 @@ public class DefaultAppInviteService implements AppInviteService {
         AppInviteEntity inviteEntity = verifyInvite(request.getInviteId());
         // validate username, password + email
         validationService.registrationIsValid(request.getUsername(), request.getPassword(), request.getEmail());
-        AppUserEntity appUserEntity = appUserService.initializeUser(request.getUsername(), request.getPassword(), request.getEmail(), inviteEntity.getRoles());
-        appUserEntity = appUserService.updateProfile(appUserEntity.getUsername(), request.getFirstName(), request.getLastName(), appUserEntity.getAvatar(), inviteEntity.getKeyValues());
+        AppUserEntity appUserEntity = appUserService.initializeUser(request.getUsername(), request.getPassword(), request.getEmail(), request.getFirstName(), request.getLastName(), inviteEntity.getKeyValues(), inviteEntity.getRoles());
         appInvitePersistenceService.delete(inviteEntity);
         return appUserEntity;
     }

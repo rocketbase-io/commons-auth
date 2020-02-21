@@ -72,6 +72,7 @@ public interface AppUserService extends UserDetailsService, ValidationUserLookup
 
     /**
      * invalidate user's cache
+     *
      * @param appUser entity that implements AppUserReference
      */
     void invalidateCache(AppUserReference appUser);
@@ -97,13 +98,16 @@ public interface AppUserService extends UserDetailsService, ValidationUserLookup
     AppUserEntity initializeUser(String username, String password, String email, boolean admin) throws UsernameNotFoundException, EmailValidationException;
 
     /**
-     * @param username will get verified
-     * @param password will not get verified
-     * @param email    will get verified
-     * @param roles    individually specify user's roles
+     * @param username  will get verified
+     * @param password  will not get verified
+     * @param email     will get verified
+     * @param firstName optional firstName
+     * @param lastName  optional lastName
+     * @param keyValues optional key value pairs for user
+     * @param roles     individually specify user's roles
      * @return initialized user
      */
-    AppUserEntity initializeUser(String username, String password, String email, List<String> roles) throws UsernameNotFoundException, EmailValidationException;
+    AppUserEntity initializeUser(String username, String password, String email, String firstName, String lastName, Map<String, String> keyValues, List<String> roles) throws UsernameNotFoundException, EmailValidationException;
 
     /**
      * replace user's roles by given list<br>

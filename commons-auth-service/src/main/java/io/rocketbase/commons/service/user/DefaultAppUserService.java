@@ -185,11 +185,11 @@ public class DefaultAppUserService implements AppUserService {
 
     @Override
     public AppUserEntity initializeUser(String username, String password, String email, boolean admin) throws UsernameNotFoundException, EmailValidationException {
-        return initializeUser(username, password, email, Collections.singletonList(admin ? authProperties.getRoleAdmin() : authProperties.getRoleUser()));
+        return initializeUser(username, password, email, null, null, null, Collections.singletonList(admin ? authProperties.getRoleAdmin() : authProperties.getRoleUser()));
     }
 
     @Override
-    public AppUserEntity initializeUser(String username, String password, String email, List<String> roles) throws UsernameNotFoundException, EmailValidationException {
+    public AppUserEntity initializeUser(String username, String password, String email, String firstName, String lastName, Map<String, String> keyValues, List<String> roles) throws UsernameNotFoundException, EmailValidationException {
         validationService.usernameIsValid(username);
         validationService.emailIsValid(email);
 
@@ -197,6 +197,9 @@ public class DefaultAppUserService implements AppUserService {
         instance.setUsername(username.toLowerCase());
         instance.setEmail(email.toLowerCase());
         instance.setPassword(passwordEncoder.encode(password));
+        instance.setFirstName(firstName);
+        instance.setLastName(lastName);
+        handleKeyValues(instance, keyValues);
         instance.setRoles(roles);
         instance.setEnabled(true);
         if (avatarService.isEnabled()) {
