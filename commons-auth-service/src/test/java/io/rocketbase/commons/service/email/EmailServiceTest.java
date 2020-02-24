@@ -62,7 +62,7 @@ public class EmailServiceTest extends BaseUserIntegrationTest {
 
         MimeMessage current = receivedMessages[0];
 
-        assertThat(current.getSubject(), is(String.format("%s Registierung bestätigen", emailProperties.getSubjectPrefix())));
+        assertThat(current.getSubject(), is(String.format("%s Registrierung bestätigen", emailProperties.getSubjectPrefix())));
         assertThat(GreenMailUtil.getBody(current), containsString("Sie Ihre Registrierung durch einen Klick auf den"));
     }
 }
