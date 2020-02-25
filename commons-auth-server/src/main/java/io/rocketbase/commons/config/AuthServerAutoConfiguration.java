@@ -78,6 +78,13 @@ public class AuthServerAutoConfiguration {
         return new ValidationController(authMessageSource);
     }
 
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnExpression(value = "${auth.impersonate.enabled:true}")
+    public ImpersonateController impersonateController() {
+        return new ImpersonateController();
+    }
+
     // -------------------------------------------------------
     // ------------------ ExceptionHandlers ------------------
     // -------------------------------------------------------
