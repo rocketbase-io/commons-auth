@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "description": "Handles authentication + authorization with registration-, invite and password-reset flows.",
-    "version": "3.0.0",
+    "version": "3.1.0",
     "title": "commons-auth api",
     "contact": {
       "name": "rocketbase.io",
@@ -34,6 +34,10 @@
     {
       "name": "admin",
       "description": "CRUD for user entities. Mainly used by users with admin rights."
+    },
+    {
+      "name": "impersonate",
+      "description": "As Admin impersonate as another user to check app behaviour"
     },
     {
       "name": "admin-invite",
@@ -620,6 +624,46 @@
             "name": "verification",
             "in": "query",
             "description": "verification",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/JwtTokenBundle"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/api/impersonate/{userIdOrUsername}": {
+      "get": {
+        "tags": [
+          "impersonate"
+        ],
+        "summary": "impersonate",
+        "description": "get JwtBundle of another user to impersonate",
+        "operationId": "impersonateGET",
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "userIdOrUsername",
+            "in": "path",
+            "description": "userId or username could be used",
             "required": true,
             "type": "string"
           }

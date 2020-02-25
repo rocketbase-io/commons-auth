@@ -21,7 +21,8 @@ The implementation bases on spring-boot: mainly on **spring-mvc**, **spring-data
 * password forgot/reset flow
 * admin endpoints to crud users + invites
 * invite user flow to allow others to join your application
-* forms to register/fogot-password/invite etc.
+* forms to register/forgot-password/invite etc.
+* as admin - impersonate as someone else to check app-behaviour
 
 I've added an swagger api-documentation. You can find it within [src](./commons-auth-api/src/doc/swagger) of [swaggerHub](https://app.swaggerhub.com/apis-docs/melistik/commons-auth/)
 
@@ -226,6 +227,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             // user-management is only allowed by ADMINS
             .antMatchers(authProperties.getApiRestEndpointPaths()).hasRole(authProperties.getRoleAdmin())
             .antMatchers(authProperties.getApiInviteRestEndpointPaths()).hasRole(authProperties.getRoleAdmin())
+            .antMatchers(authProperties.getImpersonateEndpointPaths()).hasRole(authProperties.getRoleAdmin())
             .antMatchers(authProperties.getUserSearchRestEndpointPaths()).authenticated()
             // secure all other api-endpoints
             .antMatchers(authProperties.getPrefix()+"/api/**").authenticated()

@@ -136,4 +136,11 @@ public class AuthProperties {
                 prefixPath + "api/user-search/*"
         };
     }
+    /**
+     * quick help to configure login spring security<br>
+     * endpoints login and oauth
+     */
+    public String getImpersonateEndpointPaths() {
+        return UrlParts.ensureStartsAndEndsWithSlash(prefix) + "api/impersonate/*";
+    }
 }
