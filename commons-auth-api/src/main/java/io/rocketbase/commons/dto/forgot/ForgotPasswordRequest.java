@@ -22,8 +22,8 @@ public class ForgotPasswordRequest implements Serializable {
     /**
      * optional parameter to overwrite system default
      * <p>
-     * full qualified url to a custom UI that proceed the verification<br>
+     * full qualified url to a custom UI that proceed the password reset<br>
      * * ?verification=VALUE will get append
      */
-    private String verificationUrl;
+    private String resetPasswordUrl;
 }

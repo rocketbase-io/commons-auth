@@ -12,14 +12,14 @@ public interface FeedbackActionService {
         String result = StringUtils.isEmpty(customUrl) ? buildBaseUrl(applicationBaseUrl, actionType) : customUrl;
 
         result += result.contains("?") ? "&" : "?";
-        result += actionType.getParameterName()+ "=" + token;
+        result += actionType.getParameterName() + "=" + token;
         return result;
     }
 
     default String buildBaseUrl(String applicationBaseUrl, ActionType actionType) {
         String configuredUrl = null;
         switch (actionType) {
-            case VERIFICATION:
+            case VERIFICATION_REGISTRATION:
                 configuredUrl = getAuthProperties().getVerificationUrl();
                 break;
             case PASSWORD_RESET:
@@ -47,7 +47,7 @@ public interface FeedbackActionService {
 
     enum ActionType {
 
-        VERIFICATION("/verification", "verification"),
+        VERIFICATION_REGISTRATION("/verification", "verification"),
         PASSWORD_RESET("/reset-password", "verification"),
         INVITE("/invite", "inviteId");
 
