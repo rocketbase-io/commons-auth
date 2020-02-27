@@ -95,10 +95,10 @@ SOFTWARE.
         <spring-boot.version>2.2.4.RELEASE</spring-boot.version>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <commons-rest.version>2.0.1</commons-rest.version>
-        <jjwt.version>0.10.7</jjwt.version>
+        <jjwt.version>0.11.0</jjwt.version>
         <guava.version>28.2-jre</guava.version>
         <passay.version>1.0</passay.version>
-        <email-template-builder.version>1.4.0</email-template-builder.version>
+        <email-template-builder.version>1.6.0</email-template-builder.version>
         <jacoco.version>0.8.5</jacoco.version>
         <greenmail.version>1.5.7</greenmail.version>
     </properties>
