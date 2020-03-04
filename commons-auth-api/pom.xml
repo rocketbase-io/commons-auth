@@ -91,5 +91,63 @@ SOFTWARE.
         </dependency>
     </dependencies>
 
+    <!--
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>cz.habarta.typescript-generator</groupId>
+                <artifactId>typescript-generator-maven-plugin</artifactId>
+                <version>2.14.505</version>
+                <executions>
+                    <execution>
+                        <id>generate</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <phase>process-classes</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <jsonLibrary>jackson2</jsonLibrary>
+                    <classPatterns>
+                        <classPattern>io.rocketbase.commons.dto.**</classPattern>
+                        <classPattern>io.rocketbase.commons.dto.**</classPattern>
+
+                    </classPatterns>
+                    <excludeClassPatterns>
+                        <excludeClassPattern>**Builder</excludeClassPattern>
+                        <excludeClassPattern>**Deserializer</excludeClassPattern>
+                        <excludeClassPattern>**Serializer</excludeClassPattern>
+                        <excludeClassPattern>**Exception</excludeClassPattern>
+                        <excludeClassPattern>**Visitor</excludeClassPattern>
+                    </excludeClassPatterns>
+                    <excludeClasses>
+                        <excludeClass>java.io.Serializable</excludeClass>
+                        <excludeClass>java.lang.Iterable</excludeClass>
+                    </excludeClasses>
+                    <customTypeMappings>
+                        <customTypeMapping>java.net.URL:string</customTypeMapping>
+                        <customTypeMapping>java.time.LocalDate:string</customTypeMapping>
+                        <customTypeMapping>java.time.LocalTime:string</customTypeMapping>
+                        <customTypeMapping>java.time.LocalDateTime:string</customTypeMapping>
+                        <customTypeMapping>java.time.Instant:string</customTypeMapping>
+                        <customTypeMapping>io.rocketbase.commons.obfuscated.ObfuscatedId:cRest.ObfuscatedId</customTypeMapping>
+                        <customTypeMapping>io.rocketbase.commons.dto.ErrorResponse:cRest.ErrorResponse</customTypeMapping>
+                        <customTypeMapping>io.rocketbase.commons.dto.PageableResult:cRest.PageableResult</customTypeMapping>
+                        <customTypeMapping>io.rocketbase.commons.dto.address.AddressDto:cRest.AddressDto</customTypeMapping>
+                        <customTypeMapping>io.rocketbase.commons.dto.address.ContactDto:cRest.ContactDto</customTypeMapping>
+                        <customTypeMapping>io.rocketbase.commons.dto.address.Gender:cRest.Gender</customTypeMapping>
+                    </customTypeMappings>
+                    <importDeclarations>
+                        <import>import * as cRest from "commons-rest-api.d.ts"</import>
+                    </importDeclarations>
+                    <outputKind>module</outputKind>
+                    <noEslintDisable>true</noEslintDisable>
+                    <noTslintDisable>true</noTslintDisable>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    -->
 
 </project>
