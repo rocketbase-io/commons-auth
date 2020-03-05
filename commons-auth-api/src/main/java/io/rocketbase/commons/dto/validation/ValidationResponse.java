@@ -1,7 +1,9 @@
 package io.rocketbase.commons.dto.validation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.google.common.base.Joiner;
 import lombok.*;
 
 import java.io.Serializable;
@@ -23,4 +25,12 @@ public class ValidationResponse<T extends Enum> implements Serializable {
 
     @Singular
     private Map<T, String> errorCodes;
+
+    @JsonIgnore
+    public String getMessage(String separator) {
+        if (!errorCodes.isEmpty()) {
+            return Joiner.on(separator).join(errorCodes.values());
+        }
+        return null;
+    }
 }
