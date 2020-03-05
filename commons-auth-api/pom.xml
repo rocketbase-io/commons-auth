@@ -92,6 +92,7 @@ SOFTWARE.
     </dependencies>
 
 
+    <!--
     <build>
         <plugins>
             <plugin>
@@ -168,7 +169,6 @@ SOFTWARE.
                         <customTypeMapping>java.time.LocalDateTime:string</customTypeMapping>
                         <customTypeMapping>java.time.Instant:string</customTypeMapping>
                         <customTypeMapping><![CDATA[java.util.Map<T1, T2>:Record<string,string>]]></customTypeMapping>
-                        <!-- commons-rest mappings -->
                         <customTypeMapping>io.rocketbase.commons.obfuscated.ObfuscatedId:string</customTypeMapping>
                         <customTypeMapping>io.rocketbase.commons.dto.ErrorResponse:rest.ErrorResponse</customTypeMapping>
                         <customTypeMapping><![CDATA[io.rocketbase.commons.dto.PageableResult<E>:rest.PageableResult<E>]]></customTypeMapping>
@@ -186,5 +186,5 @@ SOFTWARE.
             </plugin>
         </plugins>
     </build>
-
+    -->
 </project>
