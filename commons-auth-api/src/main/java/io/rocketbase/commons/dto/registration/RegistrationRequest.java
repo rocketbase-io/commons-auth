@@ -2,6 +2,7 @@ package io.rocketbase.commons.dto.registration;
 
 import lombok.*;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -17,8 +18,10 @@ public class RegistrationRequest implements Serializable {
     @NotNull
     private String username;
 
+    @Nullable
     private String firstName;
 
+    @Nullable
     private String lastName;
 
     @NotNull
@@ -28,6 +31,7 @@ public class RegistrationRequest implements Serializable {
     @NotNull
     private String password;
 
+    @Nullable
     private Map<String, String> keyValues;
 
     /**
@@ -36,5 +40,6 @@ public class RegistrationRequest implements Serializable {
      * full qualified url to a custom UI that proceed the verification<br>
      * * ?verification=VALUE will get append
      */
+    @Nullable
     private String verificationUrl;
 }

@@ -3,10 +3,14 @@ package io.rocketbase.commons.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Nullable;
+
 public interface HasFirstAndLastName {
 
+    @Nullable
     String getFirstName();
 
+    @Nullable
     String getLastName();
 
     /**

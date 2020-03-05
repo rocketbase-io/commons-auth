@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.Email;
 import java.io.Serializable;
 
@@ -14,9 +15,11 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class ForgotPasswordRequest implements Serializable {
 
+    @Nullable
     private String username;
 
     @Email
+    @Nullable
     private String email;
 
     /**
@@ -25,5 +28,6 @@ public class ForgotPasswordRequest implements Serializable {
      * full qualified url to a custom UI that proceed the password reset<br>
      * * ?verification=VALUE will get append
      */
+    @Nullable
     private String resetPasswordUrl;
 }

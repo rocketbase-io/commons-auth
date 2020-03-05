@@ -2,6 +2,7 @@ package io.rocketbase.commons.dto.appuser;
 
 import lombok.*;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -16,14 +17,19 @@ import java.util.Map;
 @ToString(exclude = {"password"})
 public class AppUserUpdate implements Serializable {
 
+    @Nullable
     private String password;
 
+    @Nullable
     private String firstName;
 
+    @Nullable
     private String lastName;
 
+    @Nullable
     private String avatar;
 
+    @Nullable
     private List<String> roles;
 
     /**
@@ -32,7 +38,9 @@ public class AppUserUpdate implements Serializable {
      * not mentioned key will still stay the same
      */
     @Singular
+    @Nullable
     private Map<String, String> keyValues;
 
+    @Nullable
     private Boolean enabled;
 }

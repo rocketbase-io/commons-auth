@@ -2,6 +2,7 @@ package io.rocketbase.commons.dto.appuser;
 
 import lombok.*;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -20,17 +21,21 @@ public class AppUserCreate implements Serializable {
     @NotNull
     private String password;
 
+    @Nullable
     private String firstName;
 
+    @Nullable
     private String lastName;
 
     @NotNull
     @Email
     private String email;
 
+    @Nullable
     private String avatar;
 
     @Singular
+    @Nullable
     private Map<String, String> keyValues;
 
     @NotNull

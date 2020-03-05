@@ -3,6 +3,7 @@ package io.rocketbase.commons.dto.appinvite;
 import io.rocketbase.commons.model.HasFirstAndLastName;
 import lombok.*;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -28,10 +29,13 @@ public class InviteRequest implements Serializable, HasFirstAndLastName {
      * optional message to add to invited person
      */
     @Size(max = 4000)
+    @Nullable
     private String message;
 
+    @Nullable
     private String firstName;
 
+    @Nullable
     private String lastName;
 
     @NotNull
@@ -43,6 +47,7 @@ public class InviteRequest implements Serializable, HasFirstAndLastName {
     private List<String> roles;
 
     @Singular
+    @Nullable
     private Map<String, String> keyValues;
 
     /**
@@ -51,5 +56,6 @@ public class InviteRequest implements Serializable, HasFirstAndLastName {
      * full qualified url to a custom UI that proceed the invite<br>
      * ?inviteId=VALUE will get append
      */
+    @Nullable
     private String inviteUrl;
 }

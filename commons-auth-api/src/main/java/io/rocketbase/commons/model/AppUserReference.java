@@ -3,6 +3,7 @@ package io.rocketbase.commons.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 
 @JsonDeserialize(as = SimpleAppUserReference.class)
@@ -14,6 +15,7 @@ public interface AppUserReference extends HasFirstAndLastName, Serializable {
 
     String getEmail();
 
+    @Nullable
     String getAvatar();
 
     /**

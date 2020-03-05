@@ -1,4 +1,6 @@
-export interface AppInviteRead extends HasKeyValue {
+// Generated using typescript-generator version 2.20.583 on 2020-03-05 21:14:45.
+
+export interface AppInviteRead {
     id: string;
     invitor: string;
     message: string;
@@ -6,6 +8,7 @@ export interface AppInviteRead extends HasKeyValue {
     lastName: string;
     email: string;
     roles: string[];
+    keyValues: Record<string, string>;
     created: string;
     expiration: string;
 }
@@ -13,60 +16,76 @@ export interface AppInviteRead extends HasKeyValue {
 export interface ConfirmInviteRequest {
     inviteId: string;
     username: string;
-    firstName: string;
-    lastName: string;
+    firstName?: string;
+    lastName?: string;
     email: string;
     password: string;
 }
 
-export interface InviteRequest extends HasFirstAndLastName, HasKeyValue {
+export interface InviteRequest extends HasFirstAndLastName {
     invitor: string;
-    message: string;
+    message?: string;
     email: string;
     roles: string[];
-    inviteUrl: string;
+    keyValues?: Record<string, string>;
+    inviteUrl?: string;
 }
 
-export interface QueryAppInvite extends HasKeyValue {
-    invitor: string;
-    email: string;
-    expired: boolean;
+/**
+ * query object to find invites
+ * string properties mean search like ignore cases
+ */
+export interface QueryAppInvite {
+    invitor?: string;
+    email?: string;
+    expired?: boolean;
+    keyValues?: Record<string, string>;
 }
 
-export interface AppUserCreate extends HasKeyValue {
+export interface AppUserCreate {
     username: string;
     password: string;
-    firstName: string;
-    lastName: string;
+    firstName?: string;
+    lastName?: string;
     email: string;
-    avatar: string;
+    avatar?: string;
+    keyValues?: Record<string, string>;
     admin: boolean;
     enabled: boolean;
 }
 
-export interface AppUserRead extends AppUserToken {
+export interface AppUserRead extends AppUserToken, HasKeyValue {
     enabled: boolean;
     created: string;
-    lastLogin: string;
+    lastLogin?: string;
 }
 
-export interface AppUserUpdate extends HasKeyValue {
-    password: string;
-    firstName: string;
-    lastName: string;
-    avatar: string;
-    roles: string[];
-    enabled: boolean;
+/**
+ * null properties mean let value as it is
+ */
+export interface AppUserUpdate {
+    password?: string;
+    firstName?: string;
+    lastName?: string;
+    avatar?: string;
+    roles?: string[];
+    keyValues?: Record<string, string>;
+    enabled?: boolean;
 }
 
-export interface QueryAppUser extends HasKeyValue {
-    username: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    freetext: string;
-    hasRole: string;
-    enabled: boolean;
+/**
+ * query object to find user
+ * string properties mean search like ignore cases
+ */
+export interface QueryAppUser {
+    username?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    keyValues?: Record<string, string>;
+    freetext?: string;
+    hasRole?: string;
+    enabled?: boolean;
 }
 
 export interface JwtTokenBundle {
@@ -98,16 +117,17 @@ export interface PasswordChangeRequest {
     newPassword: string;
 }
 
-export interface UpdateProfileRequest extends HasKeyValue {
-    firstName: string;
-    lastName: string;
-    avatar: string;
+export interface UpdateProfileRequest {
+    firstName?: string;
+    lastName?: string;
+    avatar?: string;
+    keyValues?: Record<string, string>;
 }
 
 export interface ForgotPasswordRequest {
-    username: string;
-    email: string;
-    resetPasswordUrl: string;
+    username?: string;
+    email?: string;
+    resetPasswordUrl?: string;
 }
 
 export interface PerformPasswordResetRequest {
@@ -117,37 +137,40 @@ export interface PerformPasswordResetRequest {
 
 export interface RegistrationRequest {
     username: string;
-    firstName: string;
-    lastName: string;
+    firstName?: string;
+    lastName?: string;
     email: string;
     password: string;
-    keyValues: Record<string, string>;
-    verificationUrl: string;
+    keyValues?: Record<string, string>;
+    verificationUrl?: string;
 }
 
-export interface ValidationResponse<T> {
+export interface ValidationResponse {
     valid: boolean;
     errorCodes: Record<string, string>;
 }
 
-export interface HasFirstAndLastName {
-    firstName: string;
-    lastName: string;
+export interface AppUserReference extends HasFirstAndLastName {
+    id: string;
+    avatar?: string;
+    email: string;
+    username: string;
 }
 
 export interface AppUserToken extends AppUserReference, HasKeyValue {
     roles: string[];
 }
 
-export interface AppUserReference extends HasFirstAndLastName {
-    id: string;
-    email: string;
-    avatar: string;
-    username: string;
+export interface HasFirstAndLastName {
+    firstName?: string;
+    lastName?: string;
 }
 
 export interface HasKeyValue {
-    keyValues: Record<string, string>;
+    /**
+     * @return an immutable map so that changes should only be done by add/remove KeyValue
+     */
+    keyValues?: Record<string, string>;
 }
 
 export type EmailErrorCodes = "alreadyTaken" | "invalid" | "tooLong";
@@ -165,4 +188,4 @@ export type TokenErrorCodes = "expired" | "invalid";
 
 export type UsernameErrorCodes = "alreadyTaken" | "tooShort" | "tooLong" | "notAllowedChar";
 
-export type ValidationResponseUnion = UsernameErrorCodes | PasswordErrorCodes | EmailErrorCodes | TokenErrorCodes;
+export type ValidationResponseUnion<T> = UsernameErrorCodes | PasswordErrorCodes | EmailErrorCodes | TokenErrorCodes;

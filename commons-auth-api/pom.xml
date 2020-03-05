@@ -91,13 +91,37 @@ SOFTWARE.
         </dependency>
     </dependencies>
 
-    <!--
+
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>xml-doclet</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>javadoc</goal>
+                        </goals>
+                        <configuration>
+                            <doclet>com.github.markusbernhardt.xmldoclet.XmlDoclet</doclet>
+                            <useStandardDocletOptions>false</useStandardDocletOptions>
+                            <docletArtifact>
+                                <groupId>com.github.markusbernhardt</groupId>
+                                <artifactId>xml-doclet</artifactId>
+                                <version>1.0.5</version>
+                            </docletArtifact>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>cz.habarta.typescript-generator</groupId>
                 <artifactId>typescript-generator-maven-plugin</artifactId>
-                <version>2.14.505</version>
+                <version>2.20.583</version>
                 <executions>
                     <execution>
                         <id>generate</id>
@@ -109,10 +133,22 @@ SOFTWARE.
                 </executions>
                 <configuration>
                     <jsonLibrary>jackson2</jsonLibrary>
+                    <javadocXmlFiles>
+                        <file>target/site/apidocs/javadoc.xml</file>
+                    </javadocXmlFiles>
+                    <optionalAnnotations>
+                        <optionalAnnotation>javax.annotation.Nullable</optionalAnnotation>
+                    </optionalAnnotations>
+                    <optionalProperties>useSpecifiedAnnotations</optionalProperties>
                     <classPatterns>
-                        <classPattern>io.rocketbase.commons.dto.**</classPattern>
-                        <classPattern>io.rocketbase.commons.dto.**</classPattern>
-
+                        <classPattern>io.rocketbase.commons.dto.appinvite.**</classPattern>
+                        <classPattern>io.rocketbase.commons.dto.appuser.**</classPattern>
+                        <classPattern>io.rocketbase.commons.dto.authentication.**</classPattern>
+                        <classPattern>io.rocketbase.commons.dto.forgot.**</classPattern>
+                        <classPattern>io.rocketbase.commons.dto.registration.**</classPattern>
+                        <classPattern>io.rocketbase.commons.dto.validation.**</classPattern>
+                        <classPattern>io.rocketbase.commons.model.AppUser*</classPattern>
+                        <classPattern>io.rocketbase.commons.model.Has*</classPattern>
                     </classPatterns>
                     <excludeClassPatterns>
                         <excludeClassPattern>**Builder</excludeClassPattern>
@@ -131,15 +167,17 @@ SOFTWARE.
                         <customTypeMapping>java.time.LocalTime:string</customTypeMapping>
                         <customTypeMapping>java.time.LocalDateTime:string</customTypeMapping>
                         <customTypeMapping>java.time.Instant:string</customTypeMapping>
-                        <customTypeMapping>io.rocketbase.commons.obfuscated.ObfuscatedId:cRest.ObfuscatedId</customTypeMapping>
-                        <customTypeMapping>io.rocketbase.commons.dto.ErrorResponse:cRest.ErrorResponse</customTypeMapping>
-                        <customTypeMapping>io.rocketbase.commons.dto.PageableResult:cRest.PageableResult</customTypeMapping>
-                        <customTypeMapping>io.rocketbase.commons.dto.address.AddressDto:cRest.AddressDto</customTypeMapping>
-                        <customTypeMapping>io.rocketbase.commons.dto.address.ContactDto:cRest.ContactDto</customTypeMapping>
-                        <customTypeMapping>io.rocketbase.commons.dto.address.Gender:cRest.Gender</customTypeMapping>
+                        <customTypeMapping><![CDATA[java.util.Map<T1, T2>:Record<string,string>]]></customTypeMapping>
+                        <!-- commons-rest mappings -->
+                        <customTypeMapping>io.rocketbase.commons.obfuscated.ObfuscatedId:string</customTypeMapping>
+                        <customTypeMapping>io.rocketbase.commons.dto.ErrorResponse:rest.ErrorResponse</customTypeMapping>
+                        <customTypeMapping><![CDATA[io.rocketbase.commons.dto.PageableResult<E>:rest.PageableResult<E>]]></customTypeMapping>
+                        <customTypeMapping>io.rocketbase.commons.dto.address.AddressDto:rest.AddressDto</customTypeMapping>
+                        <customTypeMapping>io.rocketbase.commons.dto.address.ContactDto:rest.ContactDto</customTypeMapping>
+                        <customTypeMapping>io.rocketbase.commons.dto.address.Gender:rest.Gender</customTypeMapping>
                     </customTypeMappings>
                     <importDeclarations>
-                        <import>import * as cRest from "commons-rest-api.d.ts"</import>
+                        <import>import * as rest from "./commons-rest-api.d.ts"</import>
                     </importDeclarations>
                     <outputKind>module</outputKind>
                     <noEslintDisable>true</noEslintDisable>
@@ -148,6 +186,5 @@ SOFTWARE.
             </plugin>
         </plugins>
     </build>
-    -->
 
 </project>

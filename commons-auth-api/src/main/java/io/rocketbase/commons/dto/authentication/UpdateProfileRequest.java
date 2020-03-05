@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -14,10 +15,13 @@ import java.util.Map;
 @AllArgsConstructor
 public class UpdateProfileRequest implements Serializable {
 
+    @Nullable
     private String firstName;
 
+    @Nullable
     private String lastName;
 
+    @Nullable
     private String avatar;
 
     /**
@@ -25,6 +29,7 @@ public class UpdateProfileRequest implements Serializable {
      * will only add/replace new/existing key values<br>
      * not mentioned key will still stay the same
      */
+    @Nullable
     private Map<String, String> keyValues;
 
 }
