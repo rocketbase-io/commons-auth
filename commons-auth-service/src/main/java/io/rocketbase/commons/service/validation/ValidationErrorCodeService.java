@@ -49,7 +49,7 @@ public class ValidationErrorCodeService {
             case TOO_LONG:
                 return generateError(UsernameErrorCodes.TOO_LONG, e -> e.getValue(), usernameProperties.getMaxLength());
             case NOT_ALLOWED_CHAR:
-                return generateError(UsernameErrorCodes.NOT_ALLOWED_CHAR, e -> e.getValue(), String.format("a-z, 0-9 and %s", usernameProperties.getSpecialCharacters()));
+                return generateError(UsernameErrorCodes.NOT_ALLOWED_CHAR, e -> e.getValue(), String.format("a-z, 0-9 & \"%s\"", usernameProperties.getSpecialCharacters()));
             default:
                 return generateError(error, e -> e.getValue());
         }
