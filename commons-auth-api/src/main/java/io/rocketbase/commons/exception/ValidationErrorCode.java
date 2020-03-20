@@ -10,10 +10,12 @@ import lombok.RequiredArgsConstructor;
 public class ValidationErrorCode<T extends Enum<T>> {
 
     private final T code;
+    private final String field;
     private final String message;
 
     public ValidationErrorCode(T code) {
         this.code = code;
         message = null;
+        field = null;
     }
 }

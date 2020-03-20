@@ -86,7 +86,7 @@ public class AppUserController implements BaseController {
         appUserPersistenceService.save(entity);
 
         if (shouldPatch(update.getPassword())) {
-            validationService.passwordIsValid(update.getPassword());
+            validationService.passwordIsValid("password", update.getPassword());
             appUserService.updatePassword(entity.getUsername(), update.getPassword());
         }
 

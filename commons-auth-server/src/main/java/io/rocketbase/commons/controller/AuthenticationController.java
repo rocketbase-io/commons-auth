@@ -17,6 +17,7 @@ import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.auth.LoginService;
 import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.service.validation.ValidationErrorCodeService;
+import io.rocketbase.commons.service.validation.ValidationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -60,6 +61,9 @@ public class AuthenticationController {
     @Resource
     private ValidationErrorCodeService validationErrorCodeService;
 
+    @Resource
+    private ValidationService validationService;
+
     @RequestMapping(method = RequestMethod.POST, path = "/auth/login", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<LoginResponse> login(@RequestBody @NotNull @Validated LoginRequest login) {
@@ -89,9 +93,10 @@ public class AuthenticationController {
                     new UsernamePasswordAuthenticationToken(username, passwordChange.getCurrentPassword())
             );
         } catch (AuthenticationException e) {
-            throw new PasswordValidationException(Sets.newHashSet(validationErrorCodeService.passwordError(PasswordErrorCodes.INVALID_CURRENT_PASSWORD)));
+            throw new PasswordValidationException(Sets.newHashSet(validationErrorCodeService.passwordError("currentPassword", PasswordErrorCodes.INVALID_CURRENT_PASSWORD)));
         }
 
+        validationService.passwordIsValid("newPassword", passwordChange.getNewPassword());
         appUserService.updatePassword(username, passwordChange.getNewPassword());
 
         applicationEventPublisher.publishEvent(new ChangePasswordEvent(this, appUserService.getByUsername(username)));

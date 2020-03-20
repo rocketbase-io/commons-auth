@@ -25,7 +25,7 @@ public class PasswordValidationExceptionHandler extends BaseExceptionHandler {
         ErrorResponse response = new ErrorResponse(ErrorCodes.FORM_ERROR.getStatus(), translate(request, "auth.error.passwordValidation", "Password not fitting requirements"));
         if (e.getErrors() != null) {
             for (ValidationErrorCode<PasswordErrorCodes> c : e.getErrors()) {
-                response.addField("password", Nulls.notNull(c.getMessage(), c.getCode().getValue()));
+                response.addField(c.getField(), Nulls.notNull(c.getMessage(), c.getCode().getValue()));
             }
         }
         return response;

@@ -60,13 +60,13 @@ public class DefaultRegistrationService implements RegistrationService {
     public AppUserEntity verifyRegistration(String verification) throws VerificationException {
         Token token = SimpleTokenService.parseToken(verification);
         if (!token.isValid()) {
-            throw new VerificationException();
+            throw new VerificationException("verification");
         }
         AppUserEntity entity = appUserService.getByUsername(token.getUsername());
         String dbRegistrationToken = entity.getKeyValues().getOrDefault(REGISTRATION_KV, null);
 
         if (!verification.equals(dbRegistrationToken)) {
-            throw new VerificationException();
+            throw new VerificationException("verification");
         }
 
         appUserService.processRegistrationVerification(token.getUsername());

@@ -78,8 +78,8 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
     }
 
     @Override
-    public void passwordIsValid(String password) throws PasswordValidationException {
-        Set<ValidationErrorCode<PasswordErrorCodes>> errorCodes = getPasswordValidationDetails(password);
+    public void passwordIsValid(String field, String password) throws PasswordValidationException {
+        Set<ValidationErrorCode<PasswordErrorCodes>> errorCodes = getPasswordValidationDetails(field, password);
         if (!errorCodes.isEmpty()) {
             PasswordValidationException exception = new PasswordValidationException(errorCodes);
             if (log.isDebugEnabled()) {
@@ -90,18 +90,18 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
     }
 
     @Override
-    public Set<ValidationErrorCode<PasswordErrorCodes>> getPasswordValidationDetails(String password) {
+    public Set<ValidationErrorCode<PasswordErrorCodes>> getPasswordValidationDetails(String field, String password) {
         return runPasswordValidation(password).getDetails().stream()
                 .map(d -> {
                     PasswordErrorCodes errorCode = PasswordErrorCodes.valueOf(d.getErrorCode());
-                    return validationErrorCodeService.passwordError(errorCode);
+                    return validationErrorCodeService.passwordError(field, errorCode);
                 })
                 .collect(Collectors.toSet());
     }
 
     @Override
-    public void usernameIsValid(String username) throws UsernameValidationException {
-        Set<ValidationErrorCode<UsernameErrorCodes>> errorCodes = getUsernameValidationDetails(username);
+    public void usernameIsValid(String field, String username) throws UsernameValidationException {
+        Set<ValidationErrorCode<UsernameErrorCodes>> errorCodes = getUsernameValidationDetails(field, username);
         if (!errorCodes.isEmpty()) {
             UsernameValidationException exception = new UsernameValidationException(errorCodes);
             if (log.isDebugEnabled()) {
@@ -112,7 +112,7 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
     }
 
     @Override
-    public Set<ValidationErrorCode<UsernameErrorCodes>> getUsernameValidationDetails(String username) {
+    public Set<ValidationErrorCode<UsernameErrorCodes>> getUsernameValidationDetails(String field, String username) {
         Set<UsernameErrorCodes> errorCodes = new HashSet<>();
         if (StringUtils.isEmpty(username)) {
             errorCodes.add(UsernameErrorCodes.TOO_SHORT);
@@ -131,13 +131,13 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
                 errorCodes.add(UsernameErrorCodes.ALREADY_TAKEN);
             }
         }
-        return validationErrorCodeService.usernameErrors(errorCodes.toArray(new UsernameErrorCodes[]{}));
+        return validationErrorCodeService.usernameErrors(field, errorCodes.toArray(new UsernameErrorCodes[]{}));
     }
 
 
     @Override
-    public void emailIsValid(String email) throws EmailValidationException {
-        Set<ValidationErrorCode<EmailErrorCodes>> errorCodes = getEmailValidationDetails(email);
+    public void emailIsValid(String field, String email) throws EmailValidationException {
+        Set<ValidationErrorCode<EmailErrorCodes>> errorCodes = getEmailValidationDetails(field, email);
         if (!errorCodes.isEmpty()) {
             EmailValidationException exception = new EmailValidationException(errorCodes);
             if (log.isDebugEnabled()) {
@@ -148,7 +148,7 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
     }
 
     @Override
-    public Set<ValidationErrorCode<EmailErrorCodes>> getEmailValidationDetails(String email) {
+    public Set<ValidationErrorCode<EmailErrorCodes>> getEmailValidationDetails(String field, String email) {
         Set<EmailErrorCodes> errorCodes = new HashSet<>();
         if (StringUtils.isEmpty(email)) {
             errorCodes.add(EmailErrorCodes.INVALID);
@@ -167,14 +167,14 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
                 errorCodes.add(EmailErrorCodes.TOO_LONG);
             }
         }
-        return validationErrorCodeService.emailErrors(errorCodes.toArray(new EmailErrorCodes[]{}));
+        return validationErrorCodeService.emailErrors(field, errorCodes.toArray(new EmailErrorCodes[]{}));
     }
 
     @Override
     public void registrationIsValid(String username, String password, String email) throws RegistrationException {
-        Set<ValidationErrorCode<UsernameErrorCodes>> usernameErrorCodes = getUsernameValidationDetails(username);
-        Set<ValidationErrorCode<PasswordErrorCodes>> passwordErrorCodes = getPasswordValidationDetails(password);
-        Set<ValidationErrorCode<EmailErrorCodes>> emailErrorCodes = getEmailValidationDetails(email);
+        Set<ValidationErrorCode<UsernameErrorCodes>> usernameErrorCodes = getUsernameValidationDetails("username", username);
+        Set<ValidationErrorCode<PasswordErrorCodes>> passwordErrorCodes = getPasswordValidationDetails("password", password);
+        Set<ValidationErrorCode<EmailErrorCodes>> emailErrorCodes = getEmailValidationDetails("email", email);
 
         if (!usernameErrorCodes.isEmpty() || !passwordErrorCodes.isEmpty() || !emailErrorCodes.isEmpty()) {
             RegistrationException exception = new RegistrationException(usernameErrorCodes, passwordErrorCodes, emailErrorCodes);

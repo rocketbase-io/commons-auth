@@ -29,7 +29,7 @@ public class DefaultValidationServiceTest extends BaseUserIntegrationTest {
         // then
         assertThat(result, notNullValue());
         assertThat(result.size(), equalTo(0));
-        assertThat(service.isPasswordValid(password), equalTo(true));
+        assertThat(service.isPasswordValid("password", password), equalTo(true));
     }
 
     @Test

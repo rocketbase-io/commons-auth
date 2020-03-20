@@ -23,76 +23,76 @@ public class ValidationErrorCodeService {
     final PasswordProperties passwordProperties;
     final MessageSource messageSource;
 
-    public ValidationErrorCode<PasswordErrorCodes> passwordError(PasswordErrorCodes error) {
+    public ValidationErrorCode<PasswordErrorCodes> passwordError(String field, PasswordErrorCodes error) {
         switch (error) {
             case TOO_SHORT:
-                return generateError(PasswordErrorCodes.TOO_SHORT, e -> e.getValue(), passwordProperties.getMinLength());
+                return generateError(PasswordErrorCodes.TOO_SHORT, e -> e.getValue(), field, passwordProperties.getMinLength());
             case TOO_LONG:
-                return generateError(PasswordErrorCodes.TOO_LONG, e -> e.getValue(), passwordProperties.getMaxLength());
+                return generateError(PasswordErrorCodes.TOO_LONG, e -> e.getValue(), field, passwordProperties.getMaxLength());
             case INSUFFICIENT_LOWERCASE:
-                return generateError(PasswordErrorCodes.INSUFFICIENT_LOWERCASE, e -> e.getValue(), passwordProperties.getLowercase());
+                return generateError(PasswordErrorCodes.INSUFFICIENT_LOWERCASE, e -> e.getValue(), field, passwordProperties.getLowercase());
             case INSUFFICIENT_UPPERCASE:
-                return generateError(PasswordErrorCodes.INSUFFICIENT_UPPERCASE, e -> e.getValue(), passwordProperties.getUppercase());
+                return generateError(PasswordErrorCodes.INSUFFICIENT_UPPERCASE, e -> e.getValue(), field, passwordProperties.getUppercase());
             case INSUFFICIENT_DIGIT:
-                return generateError(PasswordErrorCodes.INSUFFICIENT_DIGIT, e -> e.getValue(), passwordProperties.getDigit());
+                return generateError(PasswordErrorCodes.INSUFFICIENT_DIGIT, e -> e.getValue(), field, passwordProperties.getDigit());
             case INSUFFICIENT_SPECIAL:
-                return generateError(PasswordErrorCodes.INSUFFICIENT_SPECIAL, e -> e.getValue(), SpecialCharacterRule.CHARS, passwordProperties.getSpecial());
+                return generateError(PasswordErrorCodes.INSUFFICIENT_SPECIAL, e -> e.getValue(), field, SpecialCharacterRule.CHARS, passwordProperties.getSpecial());
             default:
-                return generateError(error, e -> e.getValue());
+                return generateError(error, e -> e.getValue(), field);
         }
     }
 
-    public ValidationErrorCode<UsernameErrorCodes> usernameError(UsernameErrorCodes error) {
+    public ValidationErrorCode<UsernameErrorCodes> usernameError(String field, UsernameErrorCodes error) {
         switch (error) {
             case TOO_SHORT:
-                return generateError(UsernameErrorCodes.TOO_SHORT, e -> e.getValue(), usernameProperties.getMinLength());
+                return generateError(UsernameErrorCodes.TOO_SHORT, e -> e.getValue(), field, usernameProperties.getMinLength());
             case TOO_LONG:
-                return generateError(UsernameErrorCodes.TOO_LONG, e -> e.getValue(), usernameProperties.getMaxLength());
+                return generateError(UsernameErrorCodes.TOO_LONG, e -> e.getValue(), field, usernameProperties.getMaxLength());
             case NOT_ALLOWED_CHAR:
                 return generateError(UsernameErrorCodes.NOT_ALLOWED_CHAR, e -> e.getValue(), String.format("a-z, 0-9 & \"%s\"", usernameProperties.getSpecialCharacters()));
             default:
-                return generateError(error, e -> e.getValue());
+                return generateError(error, e -> e.getValue(), field);
         }
     }
 
-    public ValidationErrorCode<EmailErrorCodes> emailError(EmailErrorCodes error) {
+    public ValidationErrorCode<EmailErrorCodes> emailError(String field, EmailErrorCodes error) {
         switch (error) {
             case ALREADY_TAKEN:
-                return generateError(EmailErrorCodes.ALREADY_TAKEN, e -> e.getValue(), usernameProperties.getMinLength());
+                return generateError(EmailErrorCodes.ALREADY_TAKEN, e -> e.getValue(), field, usernameProperties.getMinLength());
             case TOO_LONG:
-                return generateError(EmailErrorCodes.TOO_LONG, e -> e.getValue(), ValidationService.EMAIL_MAX_LENGTH);
+                return generateError(EmailErrorCodes.TOO_LONG, e -> e.getValue(), field, ValidationService.EMAIL_MAX_LENGTH);
             default:
-                return generateError(error, e -> e.getValue());
+                return generateError(error, e -> e.getValue(), field);
         }
     }
 
-    public Set<ValidationErrorCode<PasswordErrorCodes>> passwordError(PasswordErrorCodes... errors) {
+    public Set<ValidationErrorCode<PasswordErrorCodes>> passwordError(String field, PasswordErrorCodes... errors) {
         Set<ValidationErrorCode<PasswordErrorCodes>> result = new HashSet<>();
         for (PasswordErrorCodes e : Nulls.notNull(errors, new PasswordErrorCodes[]{})) {
-            result.add(passwordError(e));
+            result.add(passwordError(field, e));
         }
         return result;
     }
 
-    public Set<ValidationErrorCode<UsernameErrorCodes>> usernameErrors(UsernameErrorCodes... errors) {
+    public Set<ValidationErrorCode<UsernameErrorCodes>> usernameErrors(String field, UsernameErrorCodes... errors) {
         Set<ValidationErrorCode<UsernameErrorCodes>> result = new HashSet<>();
         for (UsernameErrorCodes e : Nulls.notNull(errors, new UsernameErrorCodes[]{})) {
-            result.add(usernameError(e));
+            result.add(usernameError(field, e));
         }
         return result;
     }
 
-    public Set<ValidationErrorCode<EmailErrorCodes>> emailErrors(EmailErrorCodes... errors) {
+    public Set<ValidationErrorCode<EmailErrorCodes>> emailErrors(String field, EmailErrorCodes... errors) {
         Set<ValidationErrorCode<EmailErrorCodes>> result = new HashSet<>();
         for (EmailErrorCodes e : Nulls.notNull(errors, new EmailErrorCodes[]{})) {
-            result.add(emailError(e));
+            result.add(emailError(field, e));
         }
         return result;
     }
 
 
-    private <T extends Enum<T>> ValidationErrorCode<T> generateError(T error, Function<T, String> errorCode, Object... args) {
+    private <T extends Enum<T>> ValidationErrorCode<T> generateError(T error, Function<T, String> errorCode, String field, Object... args) {
         String code = String.format("auth.error.%s", errorCode.apply(error));
-        return new ValidationErrorCode<T>(error, messageSource.getMessage(code, args, code, LocaleContextHolder.getLocale()));
+        return new ValidationErrorCode<T>(error, field, messageSource.getMessage(code, args, code, LocaleContextHolder.getLocale()));
     }
 }

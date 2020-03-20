@@ -16,6 +16,7 @@ import io.rocketbase.commons.service.user.AppUserService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 
@@ -45,7 +46,7 @@ public class DefaultAppUserForgotPasswordService implements AppUserForgotPasswor
             appUser = appUserService.findByEmail(forgotPassword.getEmail().toLowerCase()).orElseGet(null);
         }
         if (appUser == null || !appUser.isEnabled()) {
-            throw new UnknownUserException();
+            throw new UnknownUserException(!StringUtils.isEmpty(forgotPassword.getEmail()), !StringUtils.isEmpty(forgotPassword.getUsername()));
         }
         String token = SimpleTokenService.generateToken(appUser.getUsername(), authProperties.getPasswordResetExpiration());
         appUserService.updateKeyValues(appUser.getUsername(), ImmutableMap.of(FORGOTPW_KV, token));
@@ -61,15 +62,15 @@ public class DefaultAppUserForgotPasswordService implements AppUserForgotPasswor
     public AppUserEntity resetPassword(PerformPasswordResetRequest performPasswordReset) {
         Token token = SimpleTokenService.parseToken(performPasswordReset.getVerification());
         if (!token.isValid()) {
-            throw new VerificationException();
+            throw new VerificationException("verification");
         }
         AppUserEntity user = appUserService.getByUsername(token.getUsername());
         if (user == null || !user.isEnabled()) {
-            throw new UnknownUserException();
+            throw new VerificationException("verification");
         }
         String dbForgotToken = user.getKeyValues().getOrDefault(FORGOTPW_KV, null);
         if (!performPasswordReset.getVerification().equals(dbForgotToken)) {
-            throw new VerificationException();
+            throw new VerificationException("verification");
         }
 
         appUserService.updatePassword(user.getUsername(), performPasswordReset.getPassword());

@@ -114,8 +114,6 @@ public class DefaultAppUserService implements AppUserService {
 
     @Override
     public AppUserEntity updatePassword(String username, String newPassword) {
-        validationService.passwordIsValid(newPassword);
-
         AppUserEntity entity = getEntityByUsername(username);
         entity.setPassword(passwordEncoder.encode(newPassword));
         entity.updateLastTokenInvalidation();
@@ -193,8 +191,8 @@ public class DefaultAppUserService implements AppUserService {
 
     @Override
     public AppUserEntity initializeUser(String username, String password, String email, String firstName, String lastName, Map<String, String> keyValues, List<String> roles) throws UsernameNotFoundException, EmailValidationException {
-        validationService.usernameIsValid(username);
-        validationService.emailIsValid(email);
+        validationService.usernameIsValid("username", username);
+        validationService.emailIsValid("email", email);
 
         AppUserEntity instance = appUserPersistenceService.initNewInstance();
         instance.setUsername(username.toLowerCase());

@@ -25,7 +25,7 @@ public class EmailValidationExceptionHandler extends BaseExceptionHandler {
         ErrorResponse response = new ErrorResponse(ErrorCodes.FORM_ERROR.getStatus(), translate(request, "auth.error.emailValidation", "Email is used or incorrect"));
         if (e.getErrors() != null) {
             for (ValidationErrorCode<EmailErrorCodes> c : e.getErrors()) {
-                response.addField("email", Nulls.notNull(c.getMessage(), c.getCode().getValue()));
+                response.addField(c.getField(), Nulls.notNull(c.getMessage(), c.getCode().getValue()));
             }
         }
         return response;

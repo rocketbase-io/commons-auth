@@ -61,7 +61,7 @@ public class DefaultAppInviteService implements AppInviteService {
     public AppInviteEntity verifyInvite(String inviteId) throws VerificationException, NotFoundException {
         AppInviteEntity inviteEntity = appInvitePersistenceService.findById(inviteId).orElseThrow(NotFoundException::new);
         if (!inviteEntity.getExpiration().isAfter(Instant.now())) {
-            throw new VerificationException();
+            throw new VerificationException("inviteId");
         }
         return inviteEntity;
     }
