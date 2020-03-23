@@ -32,7 +32,7 @@ public class ForgotPasswordControllerTest extends BaseUserIntegrationTest {
         appUserService.initializeUser("forget", "pw", email, false);
 
         // when
-        forgotPasswordResource.forgotPassword(new ForgotPasswordRequest(null, email, null));
+        forgotPasswordResource.forgotPassword(new ForgotPasswordRequest(null, email, null, null));
 
         // then
         MimeMessage[] receivedMessages = getSmtpServerRule().getMessages();
@@ -55,7 +55,7 @@ public class ForgotPasswordControllerTest extends BaseUserIntegrationTest {
         appUserService.initializeUser(username, "pw", email, false);
 
         // when
-        forgotPasswordResource.forgotPassword(new ForgotPasswordRequest(username, null, null));
+        forgotPasswordResource.forgotPassword(new ForgotPasswordRequest(username, null, null, null));
 
         // then
         MimeMessage[] receivedMessages = getSmtpServerRule().getMessages();
@@ -74,7 +74,7 @@ public class ForgotPasswordControllerTest extends BaseUserIntegrationTest {
 
         // when
         try {
-            forgotPasswordResource.forgotPassword(new ForgotPasswordRequest(null, "unkown@rocketbase.io", null));
+            forgotPasswordResource.forgotPassword(new ForgotPasswordRequest(null, "unkown@rocketbase.io", null, null));
             // then
             Assert.fail("should have thrown NotFoundException");
         } catch (Exception e) {
