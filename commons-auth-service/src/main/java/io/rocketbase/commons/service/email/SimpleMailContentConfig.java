@@ -71,7 +71,7 @@ public class SimpleMailContentConfig implements MailContentConfig {
                 .addText(messageSource.getMessage("auth.email.invite.welcome", new Object[]{invite.getDisplayName()}, currentLocale)).and()
                 .addText(messageSource.getMessage("auth.email.invite.youHaveInvitedBy", new Object[]{invite.getInvitor(), emailProperties.getServiceName()}, currentLocale)).and();
 
-        if (StringUtils.isEmpty(invite.getMessage())) {
+        if (!StringUtils.isEmpty(invite.getMessage())) {
             builder.addHtml("&nbsp;").and()
                     .addText(messageSource.getMessage("auth.email.invite.messageFrom", new Object[]{invite.getInvitor()}, currentLocale)).center().italic().and()
                     .addText(invite.getMessage()).center().italic().bold().and()
