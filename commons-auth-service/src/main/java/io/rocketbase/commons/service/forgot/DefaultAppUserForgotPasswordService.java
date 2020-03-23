@@ -13,6 +13,7 @@ import io.rocketbase.commons.service.SimpleTokenService;
 import io.rocketbase.commons.service.SimpleTokenService.Token;
 import io.rocketbase.commons.service.email.EmailService;
 import io.rocketbase.commons.service.user.AppUserService;
+import io.rocketbase.commons.util.Nulls;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -51,7 +52,7 @@ public class DefaultAppUserForgotPasswordService implements AppUserForgotPasswor
         String token = SimpleTokenService.generateToken(appUser.getUsername(), authProperties.getPasswordResetExpiration());
         appUserService.updateKeyValues(appUser.getUsername(), ImmutableMap.of(FORGOTPW_KV, token));
 
-        emailService.sentForgotPasswordEmail(appUser, buildActionUrl(baseUrl, ActionType.PASSWORD_RESET, token, forgotPassword.getResetPasswordUrl()));
+        emailService.sentForgotPasswordEmail(appUser, buildActionUrl(baseUrl, ActionType.PASSWORD_RESET, token, Nulls.notEmpty(forgotPassword.getResetPasswordUrl(), forgotPassword.getVerificationUrl())));
 
         applicationEventPublisher.publishEvent(new ForgotPasswordEvent(this, appUser));
 

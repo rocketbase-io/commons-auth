@@ -30,4 +30,12 @@ public class ForgotPasswordRequest implements Serializable {
      */
     @Nullable
     private String resetPasswordUrl;
+
+
+    /**
+     * please use resetPasswordUrl will get removed in future
+     */
+    @Deprecated
+    @Nullable
+    private String verificationUrl;
 }
