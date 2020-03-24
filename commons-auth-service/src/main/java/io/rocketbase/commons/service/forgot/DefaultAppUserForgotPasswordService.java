@@ -44,7 +44,7 @@ public class DefaultAppUserForgotPasswordService implements AppUserForgotPasswor
         if (forgotPassword.getUsername() != null) {
             appUser = appUserService.getByUsername(forgotPassword.getUsername());
         } else if (forgotPassword.getEmail() != null) {
-            appUser = appUserService.findByEmail(forgotPassword.getEmail().toLowerCase()).orElseGet(null);
+            appUser = appUserService.findByEmail(forgotPassword.getEmail().toLowerCase()).orElse(null);
         }
         if (appUser == null || !appUser.isEnabled()) {
             throw new UnknownUserException(!StringUtils.isEmpty(forgotPassword.getEmail()), !StringUtils.isEmpty(forgotPassword.getUsername()));
