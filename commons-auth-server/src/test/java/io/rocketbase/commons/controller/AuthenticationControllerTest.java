@@ -54,6 +54,24 @@ public class AuthenticationControllerTest extends BaseUserIntegrationTest {
     }
 
     @Test
+    public void successLoginViaEmail() {
+        // given
+        LoginRequest login = LoginRequest.builder()
+                .username(getAppUser().getEmail())
+                .password("pw")
+                .build();
+
+        // when
+        ResponseEntity<LoginResponse> response = authenticationController.login(login);
+
+        // then
+        LoginResponse loginResponse = response.getBody();
+        assertThat(loginResponse, notNullValue());
+        assertThat(loginResponse.getJwtTokenBundle().getRefreshToken(), notNullValue());
+        assertThat(loginResponse.getJwtTokenBundle().getToken(), notNullValue());
+    }
+
+    @Test
     public void invalidLogin() {
         // given
         LoginRequest login = LoginRequest.builder()

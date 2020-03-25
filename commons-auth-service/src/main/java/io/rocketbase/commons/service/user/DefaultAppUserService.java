@@ -166,11 +166,14 @@ public class DefaultAppUserService implements AppUserService {
         }
     }
 
+    /**
+     * lookup user also via email-adress if used...
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AppUserEntity entity = getByUsername(username);
         if (entity == null) {
-            throw new UsernameNotFoundException(String.format("user: %s not found", username));
+            entity = findByEmail(username).orElseThrow(() -> new UsernameNotFoundException(String.format("user: %s not found", username)));
         }
         return entity;
     }

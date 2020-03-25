@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.annotation.Resource;
 
@@ -40,7 +41,7 @@ public class DefaultLoginService implements LoginService {
         SecurityContextHolder.getContext()
                 .setAuthentication(authentication);
 
-        AppUserEntity user = appUserService.updateLastLogin(username.toLowerCase());
+        AppUserEntity user = appUserService.updateLastLogin(((UserDetails)authentication.getPrincipal()).getUsername());
 
         applicationEventPublisher.publishEvent(new LoginEvent(this, user));
 
