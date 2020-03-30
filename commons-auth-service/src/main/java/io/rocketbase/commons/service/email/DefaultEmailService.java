@@ -2,7 +2,7 @@ package io.rocketbase.commons.service.email;
 
 import io.rocketbase.commons.email.model.HtmlTextEmail;
 import io.rocketbase.commons.model.AppInviteEntity;
-import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.model.AppUserReference;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -44,7 +44,7 @@ public class DefaultEmailService implements EmailService {
 
     @Override
     @SneakyThrows
-    public void sentRegistrationEmail(AppUserEntity user, String verificationUrl) {
+    public void sentRegistrationEmail(AppUserReference user, String verificationUrl) {
         HtmlTextEmail htmlTextEmail = mailContentConfig.register(user, verificationUrl);
 
         sentEmail(new InternetAddress(user.getEmail()), mailContentConfig.registerSubject(user), htmlTextEmail);
@@ -52,7 +52,7 @@ public class DefaultEmailService implements EmailService {
 
     @Override
     @SneakyThrows
-    public void sentForgotPasswordEmail(AppUserEntity user, String verificationUrl) {
+    public void sentForgotPasswordEmail(AppUserReference user, String verificationUrl) {
         HtmlTextEmail htmlTextEmail = mailContentConfig.forgotPassword(user, verificationUrl);
 
         sentEmail(new InternetAddress(user.getEmail()), mailContentConfig.forgotPasswordSubject(user), htmlTextEmail);

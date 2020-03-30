@@ -2,17 +2,17 @@ package io.rocketbase.commons.service.email;
 
 import io.rocketbase.commons.email.model.HtmlTextEmail;
 import io.rocketbase.commons.model.AppInviteEntity;
-import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.model.AppUserReference;
 
 public interface MailContentConfig {
 
-    HtmlTextEmail register(AppUserEntity user, String actionUrl);
+    HtmlTextEmail register(AppUserReference user, String actionUrl);
 
-    String registerSubject(AppUserEntity user);
+    String registerSubject(AppUserReference user);
 
-    HtmlTextEmail forgotPassword(AppUserEntity user, String actionUrl);
+    HtmlTextEmail forgotPassword(AppUserReference user, String actionUrl);
 
-    String forgotPasswordSubject(AppUserEntity user);
+    String forgotPasswordSubject(AppUserReference user);
 
     HtmlTextEmail invite(AppInviteEntity invite, String actionUrl);
 

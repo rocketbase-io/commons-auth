@@ -2,15 +2,15 @@ package io.rocketbase.commons.service.email;
 
 import io.rocketbase.commons.email.model.HtmlTextEmail;
 import io.rocketbase.commons.model.AppInviteEntity;
-import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.model.AppUserReference;
 
 import javax.mail.internet.InternetAddress;
 
 public interface EmailService {
 
-    void sentRegistrationEmail(AppUserEntity user, String verificationUrl);
+    void sentRegistrationEmail(AppUserReference user, String verificationUrl);
 
-    void sentForgotPasswordEmail(AppUserEntity user, String verificationUrl);
+    void sentForgotPasswordEmail(AppUserReference user, String verificationUrl);
 
     void sentInviteEmail(AppInviteEntity invite, String verificationUrl);
 

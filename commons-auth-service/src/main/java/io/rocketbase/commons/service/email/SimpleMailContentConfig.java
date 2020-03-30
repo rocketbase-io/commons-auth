@@ -5,7 +5,7 @@ import io.rocketbase.commons.email.EmailTemplateBuilder;
 import io.rocketbase.commons.email.model.HtmlTextEmail;
 import io.rocketbase.commons.email.template.ColorStyle;
 import io.rocketbase.commons.model.AppInviteEntity;
-import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.model.AppUserReference;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -20,7 +20,7 @@ public class SimpleMailContentConfig implements MailContentConfig {
     final MessageSource messageSource;
 
     @Override
-    public HtmlTextEmail register(AppUserEntity user, String actionUrl) {
+    public HtmlTextEmail register(AppUserReference user, String actionUrl) {
         Locale currentLocale = LocaleContextHolder.getLocale();
         return EmailTemplateBuilder.builder()
                 .header(messageSource.getMessage("auth.email.register.header", new Object[]{}, currentLocale)).and()
@@ -36,13 +36,13 @@ public class SimpleMailContentConfig implements MailContentConfig {
     }
 
     @Override
-    public String registerSubject(AppUserEntity user) {
+    public String registerSubject(AppUserReference user) {
         Locale currentLocale = LocaleContextHolder.getLocale();
         return messageSource.getMessage("auth.email.register.subject", new Object[]{emailProperties.getSubjectPrefix()}, currentLocale).trim();
     }
 
     @Override
-    public HtmlTextEmail forgotPassword(AppUserEntity user, String actionUrl) {
+    public HtmlTextEmail forgotPassword(AppUserReference user, String actionUrl) {
         Locale currentLocale = LocaleContextHolder.getLocale();
         return EmailTemplateBuilder.builder()
                 .header(messageSource.getMessage("auth.email.forgot.header", new Object[]{}, currentLocale)).color(new ColorStyle("fff", "E63946")).and()
@@ -58,7 +58,7 @@ public class SimpleMailContentConfig implements MailContentConfig {
     }
 
     @Override
-    public String forgotPasswordSubject(AppUserEntity user) {
+    public String forgotPasswordSubject(AppUserReference user) {
         Locale currentLocale = LocaleContextHolder.getLocale();
         return messageSource.getMessage("auth.email.forgot.subject", new Object[]{emailProperties.getSubjectPrefix()}, currentLocale).trim();
     }
