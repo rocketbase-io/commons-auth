@@ -5,9 +5,9 @@ import io.rocketbase.commons.service.auth.LoginService;
 import io.rocketbase.commons.service.avatar.AvatarService;
 import io.rocketbase.commons.service.avatar.GravatarService;
 import io.rocketbase.commons.service.email.DefaultEmailService;
+import io.rocketbase.commons.service.email.DefaultMailContentConfig;
 import io.rocketbase.commons.service.email.EmailService;
 import io.rocketbase.commons.service.email.MailContentConfig;
-import io.rocketbase.commons.service.email.SimpleMailContentConfig;
 import io.rocketbase.commons.service.forgot.AppUserForgotPasswordService;
 import io.rocketbase.commons.service.forgot.DefaultAppUserForgotPasswordService;
 import io.rocketbase.commons.service.impersonate.DefaultImpersonateService;
@@ -48,7 +48,7 @@ public class AuthServiceAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public MailContentConfig mailContentConfig() {
-        return new SimpleMailContentConfig(emailProperties, authMessageSource());
+        return new DefaultMailContentConfig(emailProperties, authMessageSource());
     }
 
     @Bean
