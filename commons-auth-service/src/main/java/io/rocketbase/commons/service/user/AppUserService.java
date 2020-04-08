@@ -113,6 +113,11 @@ public interface AppUserService extends UserDetailsService, ValidationUserLookup
     AppUserEntity initializeUser(String username, String password, String email, String firstName, String lastName, Map<String, String> keyValues, List<String> roles) throws UsernameNotFoundException, EmailValidationException;
 
     /**
+     * allows to enable/disable an user
+     */
+    AppUserEntity updateEnabled(String username, boolean enabled);
+
+    /**
      * replace user's roles by given list<br>
      * already created tokens get invalidated
      *

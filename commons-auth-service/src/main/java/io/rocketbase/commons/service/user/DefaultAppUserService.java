@@ -216,6 +216,15 @@ public class DefaultAppUserService implements AppUserService {
     }
 
     @Override
+    public AppUserEntity updateEnabled(String username, boolean enabled) {
+        AppUserEntity entity = getEntityByUsername(username);
+        entity.setEnabled(enabled);
+        entity = appUserPersistenceService.save(entity);
+        invalidateCache(entity);
+        return entity;
+    }
+
+    @Override
     public AppUserEntity updateRoles(String username, List<String> roles) {
         AppUserEntity entity = getEntityByUsername(username);
         entity.setRoles(roles);
