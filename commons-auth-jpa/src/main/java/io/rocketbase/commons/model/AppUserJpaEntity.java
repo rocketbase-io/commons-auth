@@ -27,11 +27,10 @@ import java.util.Map;
 public class AppUserJpaEntity implements AppUserEntity {
 
     @Id
-    @Column(length = 36, nullable = false)
+    @Column(length = 36)
     private String id;
 
     @NotNull
-    @Column(length = 20, nullable = false)
     private String username;
 
 
