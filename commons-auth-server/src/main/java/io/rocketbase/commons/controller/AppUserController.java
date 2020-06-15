@@ -41,7 +41,7 @@ public class AppUserController implements BaseController {
     @Resource
     private ValidationService validationService;
 
-    private QueryAppUserConverter queryConverter = new QueryAppUserConverter();
+    private final QueryAppUserConverter queryConverter = new QueryAppUserConverter();
 
     @RequestMapping(method = RequestMethod.GET, path = "/api/user")
     @ResponseBody
@@ -57,11 +57,7 @@ public class AppUserController implements BaseController {
     public AppUserRead create(@RequestBody @NotNull @Validated AppUserCreate create) {
         validationService.registrationIsValid(create.getUsername(), create.getPassword(), create.getEmail());
 
-        AppUserEntity entity = appUserService.initializeUser(create.getUsername(), create.getPassword(), create.getEmail(), create.getAdmin());
-        if (create.getFirstName() != null || create.getLastName() != null || create.getAvatar() != null || create.getKeyValues() != null) {
-            String avatar = create.getAvatar() != null ? create.getAvatar() : entity.getAvatar();
-            appUserService.updateProfile(entity.getUsername(), create.getFirstName(), create.getLastName(), avatar, create.getKeyValues());
-        }
+        AppUserEntity entity = appUserService.initializeUser(create);
         return appUserConverter.fromEntity(entity);
     }
 

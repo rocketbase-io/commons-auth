@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.config.RegistrationProperties;
+import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.EmailValidationException;
@@ -24,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -190,25 +192,39 @@ public class DefaultAppUserService implements AppUserService {
 
     @Override
     public AppUserEntity initializeUser(String username, String password, String email, boolean admin) throws UsernameNotFoundException, EmailValidationException {
-        return initializeUser(username, password, email, null, null, null, Collections.singletonList(admin ? authProperties.getRoleAdmin() : authProperties.getRoleUser()));
+        return initializeUser(AppUserCreate.builder()
+                .username(username)
+                .password(password)
+                .email(email)
+                .admin(admin)
+                .enabled(true)
+                .build());
     }
 
     @Override
-    public AppUserEntity initializeUser(String username, String password, String email, String firstName, String lastName, Map<String, String> keyValues, List<String> roles) throws UsernameNotFoundException, EmailValidationException {
-        validationService.usernameIsValid("username", username);
-        validationService.emailIsValid("email", email);
+    public AppUserEntity initializeUser(AppUserCreate userCreate) throws UsernameNotFoundException, EmailValidationException {
+        validationService.usernameIsValid("username", userCreate.getUsername());
+        validationService.emailIsValid("email", userCreate.getEmail());
 
         AppUserEntity instance = appUserPersistenceService.initNewInstance();
-        instance.setUsername(username.toLowerCase());
-        instance.setEmail(email.toLowerCase());
-        instance.setPassword(passwordEncoder.encode(password));
-        instance.setFirstName(firstName);
-        instance.setLastName(lastName);
-        handleKeyValues(instance, keyValues);
+        instance.setUsername(userCreate.getUsername().toLowerCase());
+        instance.setEmail(userCreate.getEmail().toLowerCase());
+        instance.setPassword(passwordEncoder.encode(userCreate.getPassword()));
+        instance.setFirstName(userCreate.getFirstName());
+        instance.setLastName(userCreate.getLastName());
+        handleKeyValues(instance, userCreate.getKeyValues());
+
+        List<String> roles = new ArrayList<>();
+        if (userCreate.getAdmin() != null) {
+            roles.add(userCreate.getAdmin() ? authProperties.getRoleAdmin() : authProperties.getRoleUser());
+        }
+        if (userCreate.getRoles() != null) {
+            roles.addAll(roles);
+        }
         instance.setRoles(convertRoles(roles));
-        instance.setEnabled(true);
-        if (avatarService.isEnabled()) {
-            instance.setAvatar(avatarService.getAvatar(email));
+        instance.setEnabled(userCreate.isEnabled());
+        if (StringUtils.isEmpty(userCreate.getAvatar()) && avatarService.isEnabled()) {
+            instance.setAvatar(avatarService.getAvatar(userCreate.getEmail()));
         }
         AppUserEntity entity = appUserPersistenceService.save(instance);
         // invalid cache in case of email + username lookup for example

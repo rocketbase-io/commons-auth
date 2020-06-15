@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -38,9 +39,12 @@ public class AppUserCreate implements Serializable {
     @Nullable
     private Map<String, String> keyValues;
 
-    @NotNull
+    @Nullable
     private Boolean admin;
 
-    @NotNull
-    private Boolean enabled;
+    @Singular
+    @Nullable
+    private List<String> roles;
+
+    private boolean enabled;
 }

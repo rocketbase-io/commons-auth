@@ -5,6 +5,7 @@ import io.rocketbase.commons.converter.AppInviteConverter;
 import io.rocketbase.commons.dto.appinvite.ConfirmInviteRequest;
 import io.rocketbase.commons.dto.appinvite.InviteRequest;
 import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
+import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.exception.RegistrationException;
@@ -71,7 +72,18 @@ public class DefaultAppInviteService implements AppInviteService {
         AppInviteEntity inviteEntity = verifyInvite(request.getInviteId());
         // validate username, password + email
         validationService.registrationIsValid(request.getUsername(), request.getPassword(), request.getEmail());
-        AppUserEntity appUserEntity = appUserService.initializeUser(request.getUsername(), request.getPassword(), request.getEmail(), request.getFirstName(), request.getLastName(), inviteEntity.getKeyValues(), inviteEntity.getRoles());
+
+        AppUserCreate userCreate = AppUserCreate.builder()
+                .username(request.getUsername().toLowerCase())
+                .password(request.getPassword())
+                .email(request.getEmail())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .keyValues(inviteEntity.getKeyValues())
+                .roles(inviteEntity.getRoles())
+                .build();
+
+        AppUserEntity appUserEntity = appUserService.initializeUser(userCreate);
         appInvitePersistenceService.delete(inviteEntity);
         return appUserEntity;
     }

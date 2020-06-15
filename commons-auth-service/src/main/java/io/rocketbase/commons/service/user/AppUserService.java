@@ -1,5 +1,6 @@
 package io.rocketbase.commons.service.user;
 
+import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.EmailValidationException;
@@ -101,16 +102,14 @@ public interface AppUserService extends UserDetailsService, ValidationUserLookup
     AppUserEntity initializeUser(String username, String password, String email, boolean admin) throws UsernameNotFoundException, EmailValidationException;
 
     /**
-     * @param username  will get verified
-     * @param password  will not get verified
-     * @param email     will get verified
-     * @param firstName optional firstName
-     * @param lastName  optional lastName
-     * @param keyValues optional key value pairs for user
-     * @param roles     individually specify user's roles
+     * @param userCreate <ul>
+     *                   <li>username will get verified</li>
+     *                   <li>password will not get verified</li>
+     *                   <li>email will get verified</li>
+     *                   </ul>
      * @return initialized user
      */
-    AppUserEntity initializeUser(String username, String password, String email, String firstName, String lastName, Map<String, String> keyValues, List<String> roles) throws UsernameNotFoundException, EmailValidationException;
+    AppUserEntity initializeUser(AppUserCreate userCreate) throws UsernameNotFoundException, EmailValidationException;
 
     /**
      * allows to enable/disable an user
