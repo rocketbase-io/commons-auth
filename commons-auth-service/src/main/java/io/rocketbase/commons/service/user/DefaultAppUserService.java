@@ -29,6 +29,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -204,7 +205,7 @@ public class DefaultAppUserService implements AppUserService {
         instance.setFirstName(firstName);
         instance.setLastName(lastName);
         handleKeyValues(instance, keyValues);
-        instance.setRoles(roles);
+        instance.setRoles(convertRoles(roles));
         instance.setEnabled(true);
         if (avatarService.isEnabled()) {
             instance.setAvatar(avatarService.getAvatar(email));
@@ -224,10 +225,17 @@ public class DefaultAppUserService implements AppUserService {
         return entity;
     }
 
+    protected List<String> convertRoles(List<String> roles) {
+        if (roles == null) {
+            return null;
+        }
+        return roles.stream().map(r -> r.replaceAll("^ROLE_", "")).collect(Collectors.toList());
+    }
+
     @Override
     public AppUserEntity updateRoles(String username, List<String> roles) {
         AppUserEntity entity = getEntityByUsername(username);
-        entity.setRoles(roles);
+        entity.setRoles(convertRoles(roles));
         entity.updateLastTokenInvalidation();
 
         invalidateCache(entity);
@@ -244,7 +252,7 @@ public class DefaultAppUserService implements AppUserService {
         instance.setFirstName(registration.getFirstName());
         instance.setLastName(registration.getLastName());
         instance.setPassword(passwordEncoder.encode(registration.getPassword()));
-        instance.setRoles(Collections.singletonList(registrationProperties.getRole()));
+        instance.setRoles(convertRoles(Arrays.asList(registrationProperties.getRole())));
         instance.setEnabled(!registrationProperties.isVerification());
         if (avatarService.isEnabled()) {
             instance.setAvatar(avatarService.getAvatar(registration.getEmail()));
