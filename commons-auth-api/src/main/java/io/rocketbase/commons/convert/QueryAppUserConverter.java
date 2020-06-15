@@ -2,10 +2,12 @@ package io.rocketbase.commons.convert;
 
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import static io.rocketbase.commons.util.QueryParamBuilder.appendParams;
 import static io.rocketbase.commons.util.QueryParamParser.parseBoolean;
 
-public class QueryAppUserConverter implements KeyValueQueryParser {
+public class QueryAppUserConverter implements AuthQueryConverter<QueryAppUser> {
 
     public QueryAppUser fromParams(MultiValueMap<String, String> params) {
         if (params == null) {
@@ -19,7 +21,21 @@ public class QueryAppUserConverter implements KeyValueQueryParser {
                 .freetext(params.containsKey("freetext") ? params.getFirst("freetext") : null)
                 .enabled(parseBoolean(params, "enabled", null))
                 .hasRole(params.containsKey("hasRole") ? params.getFirst("hasRole") : null)
-                .keyValues(parseKeyValue(params, "keyValue"))
+                .keyValues(parseKeyValue("keyValue", params))
                 .build();
+    }
+
+    public UriComponentsBuilder addParams(UriComponentsBuilder uriBuilder, QueryAppUser query) {
+        if (query != null) {
+            addString(uriBuilder, "username", query.getUsername());
+            addString(uriBuilder, "firstName", query.getFirstName());
+            addString(uriBuilder, "lastName", query.getLastName());
+            addString(uriBuilder, "email", query.getEmail());
+            addString(uriBuilder, "freetext", query.getFreetext());
+            appendParams(uriBuilder, "enabled", query.getEnabled());
+            addString(uriBuilder, "hasRole", query.getHasRole());
+            addKeyValues(uriBuilder, "keyValue", query.getKeyValues());
+        }
+        return uriBuilder;
     }
 }

@@ -1,6 +1,7 @@
 package io.rocketbase.commons.resource;
 
 import io.rocketbase.commons.adapters.JwtRestTemplate;
+import io.rocketbase.commons.convert.QueryAppUserConverter;
 import io.rocketbase.commons.dto.PageableResult;
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.exception.NotFoundException;
@@ -18,30 +19,31 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Optional;
 
-import static io.rocketbase.commons.resource.AppUserResource.addQueryParams;
-
 public class UserSearchResource implements BaseRestResource {
 
     public static final String API_USER = "/api/user-search/";
     protected RestTemplate restTemplate;
     protected String baseAuthApiUrl;
+    protected QueryAppUserConverter converter;
 
     public UserSearchResource(String baseAuthApiUrl, RestTemplate restTemplate) {
         Assert.hasText(baseAuthApiUrl, "baseAuthApiUrl is required");
         this.restTemplate = restTemplate;
         this.baseAuthApiUrl = baseAuthApiUrl;
+        this.converter = new QueryAppUserConverter();
     }
 
     public UserSearchResource(JwtRestTemplate restTemplate) {
         this.restTemplate = restTemplate;
         this.baseAuthApiUrl = restTemplate.getTokenProvider().getBaseAuthApiUrl();
+        this.converter = new QueryAppUserConverter();
     }
 
     @SneakyThrows
     public PageableResult<AppUserReference> search(QueryAppUser query, Pageable pageable) {
         UriComponentsBuilder uriBuilder = appendParams(createUriComponentsBuilder(baseAuthApiUrl), pageable)
                 .path(API_USER);
-        addQueryParams(query, uriBuilder);
+        converter.addParams(uriBuilder, query);
 
         ResponseEntity<PageableResult<SimpleAppUserToken>> response = restTemplate.exchange(uriBuilder.toUriString(),
                 HttpMethod.GET,
