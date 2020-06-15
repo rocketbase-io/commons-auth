@@ -9,6 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * used for invited to lookup their details
+ */
 public class InviteResource implements BaseRestResource {
 
     public static final String AUTH_INVITE = "/auth/invite";
