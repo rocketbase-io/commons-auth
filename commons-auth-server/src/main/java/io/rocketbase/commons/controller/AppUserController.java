@@ -29,6 +29,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("${auth.prefix:}")
 public class AppUserController implements BaseController {
 
+    private final QueryAppUserConverter queryConverter = new QueryAppUserConverter();
+
     @Resource
     private AppUserPersistenceService appUserPersistenceService;
 
@@ -40,8 +42,6 @@ public class AppUserController implements BaseController {
 
     @Resource
     private ValidationService validationService;
-
-    private final QueryAppUserConverter queryConverter = new QueryAppUserConverter();
 
     @RequestMapping(method = RequestMethod.GET, path = "/api/user")
     @ResponseBody
@@ -86,6 +86,7 @@ public class AppUserController implements BaseController {
             appUserService.updatePassword(entity.getUsername(), update.getPassword());
         }
 
+        appUserService.invalidateCache(entity);
         return appUserConverter.fromEntity(entity);
     }
 
@@ -93,6 +94,7 @@ public class AppUserController implements BaseController {
     public void delete(@PathVariable("id") String id) {
         AppUserEntity entity = getById(id);
         appUserPersistenceService.delete(entity);
+        appUserService.invalidateCache(entity);
     }
 
 
