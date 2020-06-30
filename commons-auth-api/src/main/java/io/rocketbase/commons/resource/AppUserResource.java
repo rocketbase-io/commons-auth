@@ -1,6 +1,7 @@
 package io.rocketbase.commons.resource;
 
 import io.rocketbase.commons.adapters.JwtRestTemplate;
+import io.rocketbase.commons.api.AppUserApi;
 import io.rocketbase.commons.convert.QueryAppUserConverter;
 import io.rocketbase.commons.dto.PageableResult;
 import io.rocketbase.commons.dto.appinvite.AppInviteRead;
@@ -23,7 +24,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 /**
  * api resource used by authenticated users
  */
-public class AppUserResource implements BaseRestResource {
+public class AppUserResource implements BaseRestResource, AppUserApi {
 
     public static final String API_USER = "/api/user/";
     protected RestTemplate restTemplate;
@@ -44,15 +45,18 @@ public class AppUserResource implements BaseRestResource {
     }
 
     @SneakyThrows
+    @Deprecated
     public PageableResult<AppUserRead> find(int page, int pagesize) {
         return find(PageRequest.of(page, pagesize));
     }
 
+    @Override
     @SneakyThrows
     public PageableResult<AppUserRead> find(Pageable pageable) {
         return find(null, pageable);
     }
 
+    @Override
     @SneakyThrows
     public PageableResult<AppUserRead> find(QueryAppUser query, Pageable pageable) {
         UriComponentsBuilder uriBuilder = appendParams(createUriComponentsBuilder(baseAuthApiUrl), pageable)
@@ -67,6 +71,7 @@ public class AppUserResource implements BaseRestResource {
         return response.getBody();
     }
 
+    @Override
     @SneakyThrows
     public AppUserRead create(AppUserCreate create) {
         ResponseEntity<AppUserRead> response = restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
@@ -79,6 +84,7 @@ public class AppUserResource implements BaseRestResource {
         return response.getBody();
     }
 
+    @Override
     @SneakyThrows
     public AppUserRead patch(String id, AppUserUpdate update) {
         ResponseEntity<AppUserRead> response = restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
@@ -92,6 +98,7 @@ public class AppUserResource implements BaseRestResource {
         return response.getBody();
     }
 
+    @Override
     @SneakyThrows
     public void delete(String id) {
         restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
@@ -103,6 +110,7 @@ public class AppUserResource implements BaseRestResource {
                 AppUserRead.class);
     }
 
+    @Override
     @SneakyThrows
     public AppInviteRead invite(InviteRequest inviteRequest) {
         ResponseEntity<AppInviteRead> response = restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)

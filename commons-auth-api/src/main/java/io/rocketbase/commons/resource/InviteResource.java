@@ -1,5 +1,6 @@
 package io.rocketbase.commons.resource;
 
+import io.rocketbase.commons.api.InviteApi;
 import io.rocketbase.commons.dto.appinvite.AppInviteRead;
 import io.rocketbase.commons.dto.appinvite.ConfirmInviteRequest;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
@@ -12,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 /**
  * used for invited to lookup their details
  */
-public class InviteResource implements BaseRestResource {
+public class InviteResource implements BaseRestResource, InviteApi {
 
     public static final String AUTH_INVITE = "/auth/invite";
 
@@ -37,6 +38,7 @@ public class InviteResource implements BaseRestResource {
         return restTemplate;
     }
 
+    @Override
     public AppInviteRead verify(String inviteId) {
         ResponseEntity<AppInviteRead> response = getRestTemplate()
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
@@ -48,6 +50,7 @@ public class InviteResource implements BaseRestResource {
         return response.getBody();
     }
 
+    @Override
     public AppUserRead transformToUser(ConfirmInviteRequest confirmInvite) {
         ResponseEntity<AppUserRead> response = getRestTemplate()
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)

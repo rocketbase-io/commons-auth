@@ -1,5 +1,7 @@
 package io.rocketbase.commons.controller;
 
+import io.rocketbase.commons.api.ForgotPasswordApi;
+import io.rocketbase.commons.api.ValidationApi;
 import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.config.FormsProperties;
 import io.rocketbase.commons.config.RegistrationProperties;
@@ -8,7 +10,6 @@ import io.rocketbase.commons.dto.forgot.PerformPasswordResetRequest;
 import io.rocketbase.commons.dto.validation.TokenErrorCodes;
 import io.rocketbase.commons.dto.validation.ValidationResponse;
 import io.rocketbase.commons.exception.BadRequestException;
-import io.rocketbase.commons.resource.ForgotPasswordResource;
 import io.rocketbase.commons.util.UrlParts;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -35,13 +36,18 @@ import java.io.Serializable;
 @Controller
 public class AuthFormsController extends AbstractFormsController {
 
-    private final ForgotPasswordResource forgotPasswordResource;
+    private final AuthProperties authProperties;
+    private final ForgotPasswordApi forgotPasswordApi;
+    private final ValidationApi validationApi;
+
     @Value("${auth.forms.prefix:}")
     private String formsPrefix;
 
-    public AuthFormsController(AuthProperties authProperties, FormsProperties formsProperties, RegistrationProperties registrationProperties) {
-        super(authProperties, formsProperties, registrationProperties);
-        forgotPasswordResource = new ForgotPasswordResource(authProperties.getBaseUrl());
+    public AuthFormsController(FormsProperties formsProperties, RegistrationProperties registrationProperties, AuthProperties authProperties, ForgotPasswordApi forgotPasswordApi, ValidationApi validationApi) {
+        super(formsProperties, registrationProperties);
+        this.authProperties = authProperties;
+        this.forgotPasswordApi = forgotPasswordApi;
+        this.validationApi = validationApi;
     }
 
     @GetMapping("${auth.forms.prefix:}/login")
@@ -75,8 +81,8 @@ public class AuthFormsController extends AbstractFormsController {
                 try {
                     String resetPasswordUrl = UrlParts.getBaseUrl(request) + UrlParts.ensureStartsAndEndsWithSlash(formsPrefix) + "reset-password";
                     forgot.setResetPasswordUrl(resetPasswordUrl);
-                    forgotPasswordResource.forgotPassword(forgot);
-                    model.addAttribute("expiresAfter", getAuthProperties().getPasswordResetExpiration());
+                    forgotPasswordApi.forgotPassword(forgot);
+                    model.addAttribute("expiresAfter", authProperties.getPasswordResetExpiration());
                     return "forgot-submitted";
                 } catch (BadRequestException badRequest) {
                     model.addAttribute("serviceException", badRequest.getErrorResponse().getMessage());
@@ -99,7 +105,7 @@ public class AuthFormsController extends AbstractFormsController {
     public void prepareResetPasswordForm(Model model, String verification) {
         model.addAttribute("resetPasswordForm", ResetPasswordForm.builder().verification(verification).build());
         try {
-            ValidationResponse<TokenErrorCodes> response = getValidationResource().validateToken(verification);
+            ValidationResponse<TokenErrorCodes> response = validationApi.validateToken(verification);
             model.addAttribute("verificationValid", response.isValid());
         } catch (Exception e) {
             model.addAttribute("verificationValid", false);
@@ -114,13 +120,13 @@ public class AuthFormsController extends AbstractFormsController {
                 model.addAttribute("passwordErrors", "password not the same!");
             } else {
                 try {
-                    forgotPasswordResource.resetPassword(resetPassword.toRequest());
+                    forgotPasswordApi.resetPassword(resetPassword.toRequest());
                     return "reset-password-success";
                 } catch (BadRequestException badRequest) {
                     model.addAttribute("verification", resetPassword.getVerification());
                     prepareResetPasswordForm(model, resetPassword.getVerification());
 
-                    if (badRequest.getErrorResponse().hasField("password") ) {
+                    if (badRequest.getErrorResponse().hasField("password")) {
                         model.addAttribute("passwordErrors", badRequest.getErrorResponse().getFields().get("password"));
                     }
                 } catch (Exception e) {

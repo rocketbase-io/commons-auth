@@ -1,5 +1,6 @@
 package io.rocketbase.commons.resource;
 
+import io.rocketbase.commons.api.RegistrationApi;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
@@ -9,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
-public class RegistrationResource implements BaseRestResource {
+public class RegistrationResource implements BaseRestResource, RegistrationApi {
 
     protected String baseAuthApiUrl;
     protected RestTemplate restTemplate;
@@ -32,6 +33,7 @@ public class RegistrationResource implements BaseRestResource {
         return restTemplate;
     }
 
+    @Override
     public AppUserRead register(RegistrationRequest registration) {
         ResponseEntity<AppUserRead> response = getRestTemplate()
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
@@ -42,6 +44,7 @@ public class RegistrationResource implements BaseRestResource {
         return response.getBody();
     }
 
+    @Override
     public JwtTokenBundle verify(String verification) {
         ResponseEntity<JwtTokenBundle> response = getRestTemplate()
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)

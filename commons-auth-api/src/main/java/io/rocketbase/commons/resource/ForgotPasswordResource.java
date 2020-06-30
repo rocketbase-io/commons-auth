@@ -1,5 +1,6 @@
 package io.rocketbase.commons.resource;
 
+import io.rocketbase.commons.api.ForgotPasswordApi;
 import io.rocketbase.commons.dto.forgot.ForgotPasswordRequest;
 import io.rocketbase.commons.dto.forgot.PerformPasswordResetRequest;
 import org.springframework.http.HttpEntity;
@@ -8,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
-public class ForgotPasswordResource implements BaseRestResource {
+public class ForgotPasswordResource implements BaseRestResource, ForgotPasswordApi {
 
     protected RestTemplate restTemplate;
     protected String baseAuthApiUrl;
@@ -31,6 +32,7 @@ public class ForgotPasswordResource implements BaseRestResource {
         return restTemplate;
     }
 
+    @Override
     public void forgotPassword(ForgotPasswordRequest forgotPassword) {
         ResponseEntity<Void> response = getRestTemplate()
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
@@ -40,6 +42,7 @@ public class ForgotPasswordResource implements BaseRestResource {
                         Void.class);
     }
 
+    @Override
     public void resetPassword(PerformPasswordResetRequest performPasswordReset) {
         ResponseEntity<Void> response = getRestTemplate()
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)

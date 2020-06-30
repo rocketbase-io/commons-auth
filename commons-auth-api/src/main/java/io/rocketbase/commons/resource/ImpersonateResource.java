@@ -1,6 +1,7 @@
 package io.rocketbase.commons.resource;
 
 import io.rocketbase.commons.adapters.JwtRestTemplate;
+import io.rocketbase.commons.api.ImpersonateApi;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import lombok.SneakyThrows;
 import org.springframework.http.HttpEntity;
@@ -11,7 +12,7 @@ import org.springframework.web.client.RestTemplate;
 /**
  * api resource used by admins to impersonate as someone else
  */
-public class ImpersonateResource implements BaseRestResource {
+public class ImpersonateResource implements BaseRestResource, ImpersonateApi {
 
     public static final String API_IMPERSONATE = "/api/impersonate/";
     protected RestTemplate restTemplate;
@@ -28,6 +29,7 @@ public class ImpersonateResource implements BaseRestResource {
         this.baseAuthApiUrl = restTemplate.getTokenProvider().getBaseAuthApiUrl();
     }
 
+    @Override
     @SneakyThrows
     public JwtTokenBundle impersonate(String userIdOrUsername) {
         return restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)

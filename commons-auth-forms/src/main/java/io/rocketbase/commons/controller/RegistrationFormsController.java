@@ -1,13 +1,12 @@
 package io.rocketbase.commons.controller;
 
-import io.rocketbase.commons.config.AuthProperties;
+import io.rocketbase.commons.api.RegistrationApi;
 import io.rocketbase.commons.config.FormsProperties;
 import io.rocketbase.commons.config.RegistrationProperties;
 import io.rocketbase.commons.dto.ErrorResponse;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.BadRequestException;
-import io.rocketbase.commons.resource.RegistrationResource;
 import io.rocketbase.commons.util.UrlParts;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -30,13 +29,14 @@ import java.io.Serializable;
 @Controller
 public class RegistrationFormsController extends AbstractFormsController {
 
-    private final RegistrationResource registrationResource;
+    private final RegistrationApi registrationApi;
+    
     @Value("${auth.forms.prefix:}")
     private String formsPrefix;
 
-    public RegistrationFormsController(AuthProperties authProperties, FormsProperties formsProperties, RegistrationProperties registrationProperties) {
-        super(authProperties, formsProperties, registrationProperties);
-        registrationResource = new RegistrationResource(authProperties.getBaseUrl());
+    public RegistrationFormsController(FormsProperties formsProperties, RegistrationProperties registrationProperties, RegistrationApi registrationApi) {
+        super(formsProperties, registrationProperties);
+        this.registrationApi = registrationApi;
     }
 
     @GetMapping("${auth.forms.prefix:}/registration")
@@ -59,7 +59,7 @@ public class RegistrationFormsController extends AbstractFormsController {
                     String verificationUrl = UrlParts.getBaseUrl(request) + UrlParts.ensureStartsAndEndsWithSlash(formsPrefix) + "verification";
                     registrationRequest.setVerificationUrl(verificationUrl);
 
-                    AppUserRead user = registrationResource.register(registrationRequest);
+                    AppUserRead user = registrationApi.register(registrationRequest);
                     model.addAttribute("needsVerification", !user.isEnabled());
                     model.addAttribute("expiresAfter", getRegistrationProperties().getVerificationExpiration());
                     return "registration-success";
@@ -87,7 +87,7 @@ public class RegistrationFormsController extends AbstractFormsController {
     @GetMapping("${auth.forms.prefix:}/verification")
     public String verification(@RequestParam(value = "verification", required = false) String verification, Model model) {
         try {
-            registrationResource.verify(verification);
+            registrationApi.verify(verification);
             model.addAttribute("successfull", true);
         } catch (Exception e) {
             model.addAttribute("successfull", false);

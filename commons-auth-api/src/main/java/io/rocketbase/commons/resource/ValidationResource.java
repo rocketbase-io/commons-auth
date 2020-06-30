@@ -1,5 +1,6 @@
 package io.rocketbase.commons.resource;
 
+import io.rocketbase.commons.api.ValidationApi;
 import io.rocketbase.commons.dto.validation.*;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -8,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
-public class ValidationResource implements BaseRestResource {
+public class ValidationResource implements BaseRestResource, ValidationApi {
 
     protected String baseAuthApiUrl;
     protected RestTemplate restTemplate;
@@ -31,6 +32,7 @@ public class ValidationResource implements BaseRestResource {
         return restTemplate;
     }
 
+    @Override
     public ValidationResponse<PasswordErrorCodes> validatePassword(String password) {
         ResponseEntity<ValidationResponse<PasswordErrorCodes>> response = getRestTemplate()
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
@@ -42,6 +44,7 @@ public class ValidationResource implements BaseRestResource {
         return response.getBody();
     }
 
+    @Override
     public ValidationResponse<UsernameErrorCodes> validateUsername(String username) {
         ResponseEntity<ValidationResponse<UsernameErrorCodes>> response = getRestTemplate()
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
@@ -53,6 +56,7 @@ public class ValidationResource implements BaseRestResource {
         return response.getBody();
     }
 
+    @Override
     public ValidationResponse<EmailErrorCodes> validateEmail(String email) {
         ResponseEntity<ValidationResponse<EmailErrorCodes>> response = getRestTemplate()
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
@@ -64,6 +68,7 @@ public class ValidationResource implements BaseRestResource {
         return response.getBody();
     }
 
+    @Override
     public ValidationResponse<TokenErrorCodes> validateToken(String token) {
         ResponseEntity<ValidationResponse<TokenErrorCodes>> response = getRestTemplate()
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)

@@ -1,6 +1,6 @@
 package io.rocketbase.commons.resource;
 
-import io.rocketbase.commons.adapters.JwtTokenProvider;
+import io.rocketbase.commons.api.LoginApi;
 import io.rocketbase.commons.dto.authentication.LoginRequest;
 import io.rocketbase.commons.dto.authentication.LoginResponse;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
-public class LoginResource implements BaseRestResource {
+public class LoginResource implements BaseRestResource, LoginApi {
 
     @Getter
     protected String baseAuthApiUrl;
@@ -44,6 +44,7 @@ public class LoginResource implements BaseRestResource {
      * @param login credentials
      * @return token bundle with access- and refresh-token + user details
      */
+    @Override
     public LoginResponse login(LoginRequest login) {
         ResponseEntity<LoginResponse> response = getRestTemplate()
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
@@ -61,6 +62,7 @@ public class LoginResource implements BaseRestResource {
      * @param refreshToken token that has been provided after login
      * @return new accessToken
      */
+    @Override
     public String getNewAccessToken(String refreshToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(header, String.format("%s%s", tokenPrefix, refreshToken));
@@ -73,10 +75,5 @@ public class LoginResource implements BaseRestResource {
                 String.class);
 
         return response.getBody();
-    }
-
-    public void refreshAccessToken(JwtTokenProvider tokenProvider) {
-        String accessToken = getNewAccessToken(tokenProvider.getRefreshToken());
-        tokenProvider.setToken(accessToken);
     }
 }

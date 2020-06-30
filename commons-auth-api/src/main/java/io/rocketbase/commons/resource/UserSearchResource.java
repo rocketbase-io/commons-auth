@@ -1,6 +1,7 @@
 package io.rocketbase.commons.resource;
 
 import io.rocketbase.commons.adapters.JwtRestTemplate;
+import io.rocketbase.commons.api.UserSearchApi;
 import io.rocketbase.commons.convert.QueryAppUserConverter;
 import io.rocketbase.commons.dto.PageableResult;
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
@@ -19,7 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Optional;
 
-public class UserSearchResource implements BaseRestResource {
+public class UserSearchResource implements BaseRestResource, UserSearchApi {
 
     public static final String API_USER = "/api/user-search/";
     protected RestTemplate restTemplate;
@@ -39,6 +40,7 @@ public class UserSearchResource implements BaseRestResource {
         this.converter = new QueryAppUserConverter();
     }
 
+    @Override
     @SneakyThrows
     public PageableResult<AppUserReference> search(QueryAppUser query, Pageable pageable) {
         UriComponentsBuilder uriBuilder = appendParams(createUriComponentsBuilder(baseAuthApiUrl), pageable)
@@ -53,6 +55,7 @@ public class UserSearchResource implements BaseRestResource {
         return (PageableResult) response.getBody();
     }
 
+    @Override
     public Optional<AppUserReference> findByUsernameOrId(String usernameOrId) {
         ResponseEntity<SimpleAppUserToken> response;
         try {

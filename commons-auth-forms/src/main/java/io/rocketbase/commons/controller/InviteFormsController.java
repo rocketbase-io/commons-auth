@@ -1,6 +1,6 @@
 package io.rocketbase.commons.controller;
 
-import io.rocketbase.commons.config.AuthProperties;
+import io.rocketbase.commons.api.InviteApi;
 import io.rocketbase.commons.config.FormsProperties;
 import io.rocketbase.commons.config.RegistrationProperties;
 import io.rocketbase.commons.dto.ErrorResponse;
@@ -8,10 +8,8 @@ import io.rocketbase.commons.dto.appinvite.AppInviteRead;
 import io.rocketbase.commons.dto.appinvite.ConfirmInviteRequest;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.exception.BadRequestException;
-import io.rocketbase.commons.resource.InviteResource;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -32,19 +30,17 @@ import java.io.Serializable;
 @Controller
 public class InviteFormsController extends AbstractFormsController {
 
-    private final InviteResource inviteResource;
-    @Value("${auth.forms.prefix:}")
-    private String formsPrefix;
+    private final InviteApi inviteApi;
 
-    public InviteFormsController(AuthProperties authProperties, FormsProperties formsProperties, RegistrationProperties registrationProperties) {
-        super(authProperties, formsProperties, registrationProperties);
-        inviteResource = new InviteResource(authProperties.getBaseUrl());
+    public InviteFormsController(FormsProperties formsProperties, RegistrationProperties registrationProperties, InviteApi inviteApi) {
+        super(formsProperties, registrationProperties);
+        this.inviteApi = inviteApi;
     }
 
     @GetMapping("${auth.forms.prefix:}/invite")
     public String verify(@RequestParam(value = "inviteId", required = false) String inviteId, Model model) {
         try {
-            AppInviteRead info = inviteResource.verify(inviteId);
+            AppInviteRead info = inviteApi.verify(inviteId);
             model.addAttribute("validInvite", true);
             model.addAttribute("invitor", info.getInvitor());
             model.addAttribute("message", StringUtils.isEmpty(info.getMessage()) ? null : info.getMessage());
@@ -68,7 +64,7 @@ public class InviteFormsController extends AbstractFormsController {
                 try {
                     ConfirmInviteRequest confirmInviteRequest = form.toRequest();
 
-                    AppUserRead user = inviteResource.transformToUser(confirmInviteRequest);
+                    AppUserRead user = inviteApi.transformToUser(confirmInviteRequest);
                     model.addAttribute("username", user.getUsername());
                     return "invite-success";
                 } catch (BadRequestException badRequest) {
@@ -90,7 +86,7 @@ public class InviteFormsController extends AbstractFormsController {
         } else {
             // check inviteId again
             try {
-                inviteResource.verify(form.getInviteId());
+                inviteApi.verify(form.getInviteId());
                 model.addAttribute("validInvite", true);
             } catch (Exception e) {
                 model.addAttribute("validInvite", false);

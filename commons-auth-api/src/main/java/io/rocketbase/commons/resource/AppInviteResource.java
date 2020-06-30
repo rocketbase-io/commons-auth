@@ -1,6 +1,7 @@
 package io.rocketbase.commons.resource;
 
 import io.rocketbase.commons.adapters.JwtRestTemplate;
+import io.rocketbase.commons.api.AppInviteApi;
 import io.rocketbase.commons.convert.QueryAppInviteConverter;
 import io.rocketbase.commons.dto.PageableResult;
 import io.rocketbase.commons.dto.appinvite.AppInviteRead;
@@ -19,7 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 /**
  * api resource used by authenticated users
  */
-public class AppInviteResource implements BaseRestResource {
+public class AppInviteResource implements BaseRestResource, AppInviteApi {
 
     public static final String API_INVITE = "/api/invite/";
     protected RestTemplate restTemplate;
@@ -39,6 +40,7 @@ public class AppInviteResource implements BaseRestResource {
         this.converter = new QueryAppInviteConverter();
     }
 
+    @Override
     @SneakyThrows
     public PageableResult<AppInviteRead> find(QueryAppInvite query, Pageable pageable) {
         UriComponentsBuilder uriBuilder = appendParams(createUriComponentsBuilder(baseAuthApiUrl), pageable)
@@ -53,6 +55,7 @@ public class AppInviteResource implements BaseRestResource {
         return response.getBody();
     }
 
+    @Override
     @SneakyThrows
     public AppInviteRead invite(InviteRequest inviteRequest) {
         ResponseEntity<AppInviteRead> response = restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
@@ -65,6 +68,7 @@ public class AppInviteResource implements BaseRestResource {
         return response.getBody();
     }
 
+    @Override
     @SneakyThrows
     public void delete(String id) {
         restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
