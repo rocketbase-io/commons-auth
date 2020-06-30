@@ -12,7 +12,6 @@ import io.rocketbase.commons.dto.appuser.AppUserUpdate;
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import lombok.SneakyThrows;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -42,18 +41,6 @@ public class AppUserResource implements BaseRestResource, AppUserApi {
         this.restTemplate = restTemplate;
         this.baseAuthApiUrl = restTemplate.getTokenProvider().getBaseAuthApiUrl();
         this.converter = new QueryAppUserConverter();
-    }
-
-    @SneakyThrows
-    @Deprecated
-    public PageableResult<AppUserRead> find(int page, int pagesize) {
-        return find(PageRequest.of(page, pagesize));
-    }
-
-    @Override
-    @SneakyThrows
-    public PageableResult<AppUserRead> find(Pageable pageable) {
-        return find(null, pageable);
     }
 
     @Override
