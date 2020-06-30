@@ -4,6 +4,7 @@ import io.rocketbase.commons.config.PasswordProperties;
 import io.rocketbase.commons.config.UsernameProperties;
 import io.rocketbase.commons.dto.validation.EmailErrorCodes;
 import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
+import io.rocketbase.commons.dto.validation.TokenErrorCodes;
 import io.rocketbase.commons.dto.validation.UsernameErrorCodes;
 import io.rocketbase.commons.exception.ValidationErrorCode;
 import io.rocketbase.commons.util.Nulls;
@@ -66,6 +67,10 @@ public class ValidationErrorCodeService {
         }
     }
 
+    public ValidationErrorCode<TokenErrorCodes> tokenError(String field, TokenErrorCodes error) {
+        return generateError(error, e -> e.getValue(), field);
+    }
+
     public Set<ValidationErrorCode<PasswordErrorCodes>> passwordError(String field, PasswordErrorCodes... errors) {
         Set<ValidationErrorCode<PasswordErrorCodes>> result = new HashSet<>();
         for (PasswordErrorCodes e : Nulls.notNull(errors, new PasswordErrorCodes[]{})) {
@@ -90,6 +95,13 @@ public class ValidationErrorCodeService {
         return result;
     }
 
+    public Set<ValidationErrorCode<TokenErrorCodes>> tokenErrors(String field, TokenErrorCodes... errors) {
+        Set<ValidationErrorCode<TokenErrorCodes>> result = new HashSet<>();
+        for (TokenErrorCodes e : Nulls.notNull(errors, new TokenErrorCodes[]{})) {
+            result.add(tokenError(field, e));
+        }
+        return result;
+    }
 
     private <T extends Enum<T>> ValidationErrorCode<T> generateError(T error, Function<T, String> errorCode, String field, Object... args) {
         String code = String.format("auth.error.%s", errorCode.apply(error));

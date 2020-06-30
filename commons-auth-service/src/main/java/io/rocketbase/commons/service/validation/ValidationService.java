@@ -2,6 +2,7 @@ package io.rocketbase.commons.service.validation;
 
 import io.rocketbase.commons.dto.validation.EmailErrorCodes;
 import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
+import io.rocketbase.commons.dto.validation.TokenErrorCodes;
 import io.rocketbase.commons.dto.validation.UsernameErrorCodes;
 import io.rocketbase.commons.exception.*;
 
@@ -69,5 +70,7 @@ public interface ValidationService {
     void emailIsValid(String field, String email) throws EmailValidationException;
 
     void registrationIsValid(String username, String password, String email) throws RegistrationException;
+
+    Set<ValidationErrorCode<TokenErrorCodes>> getTokenValidationDetails(String token);
 
 }

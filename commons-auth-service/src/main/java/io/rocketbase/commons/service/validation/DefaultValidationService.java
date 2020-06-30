@@ -5,9 +5,11 @@ import io.rocketbase.commons.config.PasswordProperties;
 import io.rocketbase.commons.config.UsernameProperties;
 import io.rocketbase.commons.dto.validation.EmailErrorCodes;
 import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
+import io.rocketbase.commons.dto.validation.TokenErrorCodes;
 import io.rocketbase.commons.dto.validation.UsernameErrorCodes;
 import io.rocketbase.commons.exception.*;
 import io.rocketbase.commons.model.AppUserToken;
+import io.rocketbase.commons.service.SimpleTokenService;
 import io.rocketbase.commons.service.ValidationUserLookupService;
 import io.rocketbase.commons.util.Nulls;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +28,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
-public class DefaultValidationService implements io.rocketbase.commons.service.validation.ValidationService {
+public class DefaultValidationService implements ValidationService {
 
     final UsernameProperties usernameProperties;
     final PasswordProperties passwordProperties;
@@ -183,5 +185,17 @@ public class DefaultValidationService implements io.rocketbase.commons.service.v
             }
             throw exception;
         }
+    }
+
+    @Override
+    public Set<ValidationErrorCode<TokenErrorCodes>> getTokenValidationDetails(String token) {
+        Set<ValidationErrorCode<TokenErrorCodes>> result = new HashSet<>();
+        SimpleTokenService.Token parsed = SimpleTokenService.parseToken(token);
+        if (parsed.getExp() == null) {
+            result.add(validationErrorCodeService.tokenError(null, TokenErrorCodes.INVALID));
+        } else if (!parsed.isValid()) {
+            result.add(validationErrorCodeService.tokenError(null, TokenErrorCodes.EXPIRED));
+        }
+        return result;
     }
 }
