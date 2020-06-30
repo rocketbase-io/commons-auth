@@ -9,7 +9,6 @@ import io.rocketbase.commons.dto.validation.UsernameErrorCodes;
 import io.rocketbase.commons.exception.ValidationErrorCode;
 import io.rocketbase.commons.util.Nulls;
 import lombok.RequiredArgsConstructor;
-import org.passay.SpecialCharacterRule;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 
@@ -37,7 +36,7 @@ public class ValidationErrorCodeService {
             case INSUFFICIENT_DIGIT:
                 return generateError(PasswordErrorCodes.INSUFFICIENT_DIGIT, e -> e.getValue(), field, passwordProperties.getDigit());
             case INSUFFICIENT_SPECIAL:
-                return generateError(PasswordErrorCodes.INSUFFICIENT_SPECIAL, e -> e.getValue(), field, SpecialCharacterRule.CHARS, passwordProperties.getSpecial());
+                return generateError(PasswordErrorCodes.INSUFFICIENT_SPECIAL, e -> e.getValue(), field, ValidationService.SPECIAL.getCharacters(), passwordProperties.getSpecial());
             default:
                 return generateError(error, e -> e.getValue(), field);
         }

@@ -5,12 +5,25 @@ import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
 import io.rocketbase.commons.dto.validation.TokenErrorCodes;
 import io.rocketbase.commons.dto.validation.UsernameErrorCodes;
 import io.rocketbase.commons.exception.*;
+import org.passay.CharacterData;
 
 import java.util.Set;
 
 public interface ValidationService {
 
     int EMAIL_MAX_LENGTH = 255;
+
+    CharacterData SPECIAL = new CharacterData() {
+        @Override
+        public String getErrorCode() {
+            return "INSUFFICIENT_SPECIAL";
+        }
+
+        @Override
+        public String getCharacters() {
+            return "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
+        }
+    };
 
     default boolean isPasswordValid(String field, String password) {
         return getPasswordValidationDetails(field, password).isEmpty();

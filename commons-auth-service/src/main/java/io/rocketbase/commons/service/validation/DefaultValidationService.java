@@ -43,16 +43,16 @@ public class DefaultValidationService implements ValidationService {
             List<Rule> rules = new ArrayList<>();
             rules.add(new LengthRule(passwordProperties.getMinLength(), passwordProperties.getMaxLength()));
             if (passwordProperties.getLowercase() > 0) {
-                rules.add(new LowercaseCharacterRule(passwordProperties.getLowercase()));
+                rules.add(new CharacterRule(EnglishCharacterData.LowerCase, passwordProperties.getLowercase()));
             }
             if (passwordProperties.getUppercase() > 0) {
-                rules.add(new UppercaseCharacterRule(passwordProperties.getUppercase()));
+                rules.add(new CharacterRule(EnglishCharacterData.UpperCase, passwordProperties.getUppercase()));
             }
             if (passwordProperties.getDigit() > 0) {
-                rules.add(new DigitCharacterRule(passwordProperties.getDigit()));
+                rules.add(new CharacterRule(EnglishCharacterData.Digit, passwordProperties.getDigit()));
             }
             if (passwordProperties.getSpecial() > 0) {
-                rules.add(new SpecialCharacterRule(passwordProperties.getSpecial()));
+                rules.add(new CharacterRule(SPECIAL, passwordProperties.getSpecial()));
             }
             passwordValidator = new PasswordValidator(rules);
         }
