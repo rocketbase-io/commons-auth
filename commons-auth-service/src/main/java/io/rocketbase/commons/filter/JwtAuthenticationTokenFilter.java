@@ -5,8 +5,8 @@ import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.security.CommonsAuthenticationToken;
 import io.rocketbase.commons.security.CustomAuthoritiesProvider;
 import io.rocketbase.commons.security.JwtTokenService;
+import io.rocketbase.commons.service.JwtTokenStoreProvider;
 import io.rocketbase.commons.service.user.AppUserService;
-import io.rocketbase.commons.util.JwtTokenStore;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,6 +29,9 @@ public class JwtAuthenticationTokenFilter extends JwtTokenFilter {
     @Resource
     private CustomAuthoritiesProvider customAuthoritiesProvider;
 
+    @Resource
+    private JwtTokenStoreProvider jwtTokenStoreProvider;
+
     protected Authentication tryToAuthenticate(String authToken, String username, HttpServletRequest request) {
         if (username != null && SecurityContextHolder.getContext()
                 .getAuthentication() == null) {
@@ -40,7 +43,7 @@ public class JwtAuthenticationTokenFilter extends JwtTokenFilter {
                 authorities.addAll(customAuthoritiesProvider.getExtraSecurityContextAuthorities(user, request));
 
                 CommonsAuthenticationToken authentication = new CommonsAuthenticationToken(authorities, user,
-                        new JwtTokenStore(new JwtTokenBundle(authToken, null)));
+                        jwtTokenStoreProvider.getInstance(new JwtTokenBundle(authToken, null)));
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 if (log.isTraceEnabled()) {
                     log.trace("authenticated user {} with {}, setting security context", username, authorities);

@@ -1,13 +1,13 @@
 package io.rocketbase.commons.filter;
 
+import io.rocketbase.commons.api.LoginApi;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.handler.LoginSuccessCookieHandler;
 import io.rocketbase.commons.model.AppUserToken;
-import io.rocketbase.commons.resource.LoginResource;
 import io.rocketbase.commons.security.CommonsAuthenticationToken;
 import io.rocketbase.commons.security.CustomAuthoritiesProvider;
 import io.rocketbase.commons.security.JwtTokenService;
-import io.rocketbase.commons.util.JwtTokenStore;
+import io.rocketbase.commons.service.JwtTokenStoreProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,9 +29,10 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class LoginCookieFilter extends OncePerRequestFilter {
 
-    private final LoginResource loginResource;
+    private final LoginApi loginApi;
     private final JwtTokenService jwtTokenService;
     private final CustomAuthoritiesProvider customAuthoritiesProvider;
+    private final JwtTokenStoreProvider jwtTokenStoreProvider;
 
     public static void removeAuthCookie(HttpServletResponse response) {
         Cookie cookie = new Cookie(LoginSuccessCookieHandler.AUTH_REMEMBER, "");
@@ -49,7 +50,7 @@ public class LoginCookieFilter extends OncePerRequestFilter {
                     // check if token is valid
                     jwtTokenService.parseToken(cookieRefreshToken);
                     // get new accessToken
-                    String accessToken = loginResource.getNewAccessToken(cookieRefreshToken);
+                    String accessToken = loginApi.getNewAccessToken(cookieRefreshToken);
                     // use accessToken in order to get also keyValues etc
                     AppUserToken appUserToken = jwtTokenService.parseToken(accessToken);
 
@@ -59,7 +60,7 @@ public class LoginCookieFilter extends OncePerRequestFilter {
                     }
 
                     CommonsAuthenticationToken authentication = new CommonsAuthenticationToken(authorities, appUserToken,
-                            new JwtTokenStore(loginResource.getBaseAuthApiUrl(), new JwtTokenBundle(accessToken, cookieRefreshToken)));
+                            jwtTokenStoreProvider.getInstance(new JwtTokenBundle(accessToken, cookieRefreshToken)));
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     if (log.isTraceEnabled()) {
                         log.trace("authenticated user {} with {}, setting security context", appUserToken.getUsername(), authorities);

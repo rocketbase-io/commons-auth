@@ -7,6 +7,7 @@ import io.rocketbase.commons.exception.TokenRefreshException;
 import io.rocketbase.commons.resource.BaseRestResource;
 import io.rocketbase.commons.resource.LoginResource;
 import io.rocketbase.commons.util.JwtTokenStore;
+import io.rocketbase.commons.util.JwtTokenStoreHttp;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -62,7 +63,7 @@ public class AuthClientLoginRequestFactory extends HttpComponentsClientHttpReque
 
     private void refreshJwtTokenStore() {
         LoginResponse loginResponse = new LoginResource(baseAuthApiUrl).login(new LoginRequest(username, password));
-        jwtTokenStore = new JwtTokenStore(baseAuthApiUrl, loginResponse.getJwtTokenBundle());
+        jwtTokenStore = new JwtTokenStoreHttp(baseAuthApiUrl, loginResponse.getJwtTokenBundle());
         if (log.isDebugEnabled()) {
             log.debug("logged with user: {}", username);
         }

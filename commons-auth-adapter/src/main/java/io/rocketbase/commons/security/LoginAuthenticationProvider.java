@@ -1,9 +1,9 @@
 package io.rocketbase.commons.security;
 
+import io.rocketbase.commons.api.LoginApi;
 import io.rocketbase.commons.dto.authentication.LoginRequest;
 import io.rocketbase.commons.dto.authentication.LoginResponse;
-import io.rocketbase.commons.resource.LoginResource;
-import io.rocketbase.commons.util.JwtTokenStore;
+import io.rocketbase.commons.service.JwtTokenStoreProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -21,15 +21,17 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class LoginAuthenticationProvider implements AuthenticationProvider {
 
-    private final LoginResource loginResource;
+    private final LoginApi loginApi;
     private final JwtTokenService jwtTokenService;
+    private final JwtTokenStoreProvider jwtTokenStoreProvider;
+
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         try {
-            LoginResponse login = loginResource.login(new LoginRequest(authentication.getName(), String.valueOf(authentication.getCredentials())));
+            LoginResponse login = loginApi.login(new LoginRequest(authentication.getName(), String.valueOf(authentication.getCredentials())));
             Collection<GrantedAuthority> authorities = jwtTokenService.getAuthoritiesFromToken(login.getJwtTokenBundle().getToken());
-            return new CommonsAuthenticationToken(authorities, login.getUser(), new JwtTokenStore(loginResource.getBaseAuthApiUrl(), login.getJwtTokenBundle()));
+            return new CommonsAuthenticationToken(authorities, login.getUser(), jwtTokenStoreProvider.getInstance(login.getJwtTokenBundle()));
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode().equals(HttpStatus.FORBIDDEN)) {
                 throw new BadCredentialsException("wrong username/password", e);

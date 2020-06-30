@@ -9,7 +9,7 @@ import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.security.CommonsAuthenticationToken;
 import io.rocketbase.commons.security.CustomAuthoritiesProvider;
 import io.rocketbase.commons.security.JwtTokenService;
-import io.rocketbase.commons.util.JwtTokenStore;
+import io.rocketbase.commons.service.JwtTokenStoreProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -37,6 +37,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Resource
     private CustomAuthoritiesProvider customAuthoritiesProvider;
+
+    @Resource
+    private JwtTokenStoreProvider jwtTokenStoreProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
@@ -95,7 +98,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 authorities.addAll(customAuthoritiesProvider.getExtraSecurityContextAuthorities(appUserToken, request));
 
                 CommonsAuthenticationToken authentication = new CommonsAuthenticationToken(authorities, appUserToken,
-                        new JwtTokenStore(new JwtTokenBundle(authToken, null)));
+                        jwtTokenStoreProvider.getInstance(new JwtTokenBundle(authToken, null)));
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 if (log.isTraceEnabled()) {
                     log.trace("authenticated user {} with {}, setting security context", username, authorities);

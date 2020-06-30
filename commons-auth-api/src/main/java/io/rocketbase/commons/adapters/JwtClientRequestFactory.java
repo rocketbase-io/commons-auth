@@ -3,6 +3,7 @@ package io.rocketbase.commons.adapters;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.resource.BaseRestResource;
 import io.rocketbase.commons.util.JwtTokenStore;
+import io.rocketbase.commons.util.JwtTokenStoreHttp;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.HttpClients;
@@ -25,7 +26,7 @@ public class JwtClientRequestFactory extends HttpComponentsClientHttpRequestFact
                 .build()
         );
         this.tokenProvider = tokenProvider;
-        jwtTokenStore = new JwtTokenStore(tokenProvider.getBaseAuthApiUrl(), new JwtTokenBundle(tokenProvider.getToken(), tokenProvider.getRefreshToken()));
+        jwtTokenStore = new JwtTokenStoreHttp(tokenProvider.getBaseAuthApiUrl(), new JwtTokenBundle(tokenProvider.getToken(), tokenProvider.getRefreshToken()));
     }
 
     @Override
