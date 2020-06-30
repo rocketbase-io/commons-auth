@@ -13,7 +13,7 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.util.Assert;
 
 @Slf4j
-public class JwtTokenStoreHttp extends AbstractJwtTokenStore implements BaseRestResource, JwtTokenStore {
+public class JwtTokenStoreHttp extends AbstractJwtTokenStore implements BaseRestResource {
 
     protected final String refreshUri;
 
