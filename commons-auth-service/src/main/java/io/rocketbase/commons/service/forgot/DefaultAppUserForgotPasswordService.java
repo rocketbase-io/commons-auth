@@ -74,7 +74,7 @@ public class DefaultAppUserForgotPasswordService implements AppUserForgotPasswor
             throw new VerificationException("verification");
         }
 
-        appUserService.updatePassword(user.getUsername(), performPasswordReset.getPassword());
+        appUserService.updatePasswordUnchecked(user.getUsername(), performPasswordReset.getPassword());
 
         applicationEventPublisher.publishEvent(new ResetPasswordEvent(this, user));
 

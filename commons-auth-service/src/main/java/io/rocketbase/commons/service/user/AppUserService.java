@@ -1,9 +1,13 @@
 package io.rocketbase.commons.service.user;
 
 import io.rocketbase.commons.dto.appuser.AppUserCreate;
+import io.rocketbase.commons.dto.appuser.AppUserUpdate;
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
+import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
+import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.EmailValidationException;
+import io.rocketbase.commons.exception.PasswordValidationException;
 import io.rocketbase.commons.exception.RegistrationException;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.model.AppUserReference;
@@ -37,42 +41,66 @@ public interface AppUserService extends UserDetailsService, ValidationUserLookup
      */
     Optional<AppUserEntity> findById(String id);
 
+    default Optional<AppUserEntity> findByIdOrUsername(String idOrUsername) {
+        Optional<AppUserEntity> optional = findById(idOrUsername);
+        if (!optional.isPresent()) {
+            optional = Optional.ofNullable(getByUsername(idOrUsername));
+        }
+        return optional;
+    }
+
     /**
      * updates AppUsers property lastLogin
      *
-     * @param username unique username
+     * @param usernameOrId unique username
      * @return
      */
-    AppUserEntity updateLastLogin(String username);
+    AppUserEntity updateLastLogin(String usernameOrId);
+
+    /**
+     * validate password and perform update - invalidates already generated tokens
+     *
+     * @param usernameOrId
+     * @param passwordChangeRequest current password get checked will + new will get validated validated via validationService
+     * @return
+     */
+    AppUserEntity performUpdatePassword(String usernameOrId, PasswordChangeRequest passwordChangeRequest) throws PasswordValidationException;
 
     /**
      * update users password and invalidates already generated tokens
      *
-     * @param username
-     * @param newPassword password is not been checked by validations (this needs to be done separately)
+     * @param usernameOrId
+     * @param newPassword  password is not been checked by validations (this needs to be done separately)
      * @return
      */
-    AppUserEntity updatePassword(String username, String newPassword);
+    AppUserEntity updatePasswordUnchecked(String usernameOrId, String newPassword);
+
+
+    /**
+     * allow to update values
+     *
+     * @param usernameOrId entity to lookup
+     * @param update       only not null/empty values will get updated
+     * @return
+     */
+    AppUserEntity patch(String usernameOrId, AppUserUpdate update);
 
     /**
      * update user profile settings
      *
-     * @param username
-     * @param firstName
-     * @param lastName
-     * @param avatar
-     * @param keyValues
+     * @param usernameOrId
+     * @param updateProfile
      */
-    AppUserEntity updateProfile(String username, String firstName, String lastName, String avatar, Map<String, String> keyValues);
+    AppUserEntity updateProfile(String usernameOrId, UpdateProfileRequest updateProfile);
 
     /**
      * update keyValues and persist settings
      *
-     * @param username
+     * @param usernameOrId
      * @param keyValues
      * @return
      */
-    AppUserEntity updateKeyValues(String username, Map<String, String> keyValues);
+    AppUserEntity updateKeyValues(String usernameOrId, Map<String, String> keyValues);
 
     /**
      * invalidate user's cache
@@ -120,11 +148,11 @@ public interface AppUserService extends UserDetailsService, ValidationUserLookup
      * replace user's roles by given list<br>
      * already created tokens get invalidated
      *
-     * @param username
+     * @param usernameOrId
      * @param roles
      * @return
      */
-    AppUserEntity updateRoles(String username, List<String> roles);
+    AppUserEntity updateRoles(String usernameOrId, List<String> roles);
 
     /**
      * perform a registration of user
@@ -133,15 +161,6 @@ public interface AppUserService extends UserDetailsService, ValidationUserLookup
      * @return
      */
     AppUserEntity registerUser(RegistrationRequest registration) throws RegistrationException;
-
-    /**
-     * only update's the keyValues add a users<br>
-     * doesn't persits changes!
-     *
-     * @param user
-     * @param keyValues
-     */
-    void handleKeyValues(AppUserEntity user, Map<String, String> keyValues);
 
     /**
      * handle registration verification
@@ -162,5 +181,9 @@ public interface AppUserService extends UserDetailsService, ValidationUserLookup
      * so that for all main function {@link AppUserService} is the main service - by dealing with users
      */
     Page<AppUserEntity> findAll(QueryAppUser query, Pageable pageable);
+
+    default boolean shouldPatch(String value) {
+        return value != null && !value.trim().isEmpty();
+    }
 
 }

@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -29,11 +28,7 @@ public class ImpersonateController implements BaseController {
     @RequestMapping(method = RequestMethod.GET, path = "/api/impersonate/{userIdOrUsername}")
     @ResponseBody
     public ResponseEntity<JwtTokenBundle> impersonate(@PathVariable("userIdOrUsername") String userIdOrUsername) {
-        Optional<AppUserEntity> optional = appUserService.findById(userIdOrUsername);
-        if (!optional.isPresent()) {
-            optional = Optional.ofNullable(appUserService.getByUsername(userIdOrUsername));
-        }
-        AppUserEntity impersonateUser = optional.orElseThrow(NotFoundException::new);
+        AppUserEntity impersonateUser = appUserService.findByIdOrUsername(userIdOrUsername).orElseThrow(NotFoundException::new);
 
         return ResponseEntity.ok(impersonateService.getImpersonateBundle(CommonsPrincipal.getCurrent(), impersonateUser));
     }

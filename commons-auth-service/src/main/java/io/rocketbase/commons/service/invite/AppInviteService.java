@@ -38,4 +38,6 @@ public interface AppInviteService extends FeedbackActionService {
      * so that for all main function {@link AppInviteService} is the main service - by dealing with invites
      */
     Page<AppInviteEntity> findAll(QueryAppInvite query, Pageable pageable);
+
+    void deleteInvite(String inviteId);
 }

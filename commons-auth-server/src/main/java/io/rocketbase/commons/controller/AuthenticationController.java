@@ -1,31 +1,23 @@
 package io.rocketbase.commons.controller;
 
-import com.google.common.collect.Sets;
 import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.LoginRequest;
 import io.rocketbase.commons.dto.authentication.LoginResponse;
 import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
 import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
-import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
 import io.rocketbase.commons.event.ChangePasswordEvent;
 import io.rocketbase.commons.event.UpdateProfileEvent;
-import io.rocketbase.commons.exception.PasswordValidationException;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.security.CommonsAuthenticationToken;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.auth.LoginService;
 import io.rocketbase.commons.service.user.AppUserService;
-import io.rocketbase.commons.service.validation.ValidationErrorCodeService;
-import io.rocketbase.commons.service.validation.ValidationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -41,9 +33,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class AuthenticationController {
 
     @Resource
-    private AuthenticationManager authenticationManager;
-
-    @Resource
     private JwtTokenService jwtTokenService;
 
     @Resource
@@ -57,12 +46,6 @@ public class AuthenticationController {
 
     @Resource
     private LoginService loginService;
-
-    @Resource
-    private ValidationErrorCodeService validationErrorCodeService;
-
-    @Resource
-    private ValidationService validationService;
 
     @RequestMapping(method = RequestMethod.POST, path = "/auth/login", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -86,20 +69,9 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        String username = ((CommonsAuthenticationToken) authentication).getUsername();
-        // check old password otherwise it throws errors
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(username, passwordChange.getCurrentPassword())
-            );
-        } catch (AuthenticationException e) {
-            throw new PasswordValidationException(Sets.newHashSet(validationErrorCodeService.passwordError("currentPassword", PasswordErrorCodes.INVALID_CURRENT_PASSWORD)));
-        }
+        AppUserEntity entity = appUserService.performUpdatePassword(((CommonsAuthenticationToken) authentication).getUsername(), passwordChange);
 
-        validationService.passwordIsValid("newPassword", passwordChange.getNewPassword());
-        appUserService.updatePassword(username, passwordChange.getNewPassword());
-
-        applicationEventPublisher.publishEvent(new ChangePasswordEvent(this, appUserService.getByUsername(username)));
+        applicationEventPublisher.publishEvent(new ChangePasswordEvent(this, entity));
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -112,7 +84,7 @@ public class AuthenticationController {
 
         String username = ((CommonsAuthenticationToken) authentication).getUsername();
 
-        appUserService.updateProfile(username, updateProfile.getFirstName(), updateProfile.getLastName(), updateProfile.getAvatar(), updateProfile.getKeyValues());
+        appUserService.updateProfile(username, updateProfile);
 
         applicationEventPublisher.publishEvent(new UpdateProfileEvent(this, appUserService.getByUsername(username)));
 

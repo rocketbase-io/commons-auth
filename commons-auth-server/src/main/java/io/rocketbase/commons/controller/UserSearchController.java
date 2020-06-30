@@ -29,7 +29,7 @@ public class UserSearchController implements BaseController {
     @Resource
     private AppUserService appUserService;
 
-    private QueryAppUserConverter queryConverter = new QueryAppUserConverter();
+    private final QueryAppUserConverter queryConverter = new QueryAppUserConverter();
 
     @RequestMapping(method = RequestMethod.GET, path = "/api/user-search")
     @ResponseBody
@@ -42,12 +42,9 @@ public class UserSearchController implements BaseController {
 
     @RequestMapping(method = RequestMethod.GET, path = "/api/user-search/{usernameOrId}")
     @ResponseBody
-    public AppUserReference findByUsernameOrId(@PathVariable("usernameOrId") String usernameOrId) throws Throwable {
-        AppUserEntity byUsername = appUserService.getByUsername(usernameOrId);
-        if (byUsername != null) {
-            return byUsername.toReference();
-        }
-
-        return appUserPersistenceService.findById(usernameOrId).orElseThrow(() -> new NotFoundException()).toReference();
+    public AppUserReference findByUsernameOrId(@PathVariable("usernameOrId") String usernameOrId) {
+        return appUserService.findByIdOrUsername(usernameOrId)
+                .orElseThrow(() -> new NotFoundException())
+                .toReference();
     }
 }

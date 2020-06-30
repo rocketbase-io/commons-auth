@@ -92,4 +92,9 @@ public class DefaultAppInviteService implements AppInviteService {
     public Page<AppInviteEntity> findAll(QueryAppInvite query, Pageable pageable) {
         return appInvitePersistenceService.findAll(query, pageable);
     }
+
+    @Override
+    public void deleteInvite(String inviteId) {
+        appInvitePersistenceService.delete(appInvitePersistenceService.findById(inviteId).orElseThrow(NotFoundException::new));
+    }
 }
