@@ -11,6 +11,7 @@ import io.rocketbase.commons.service.invite.AppInviteService;
 import io.rocketbase.commons.service.registration.RegistrationService;
 import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.service.validation.ValidationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -36,9 +37,6 @@ public class AuthApiAutoConfiguration {
 
     @Resource
     private ValidationService validationService;
-
-    @Resource
-    private LoginService loginService;
 
     @Resource
     private AppUserForgotPasswordService forgotPasswordService;
@@ -90,7 +88,7 @@ public class AuthApiAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public LoginApi loginApi() {
+    public LoginApi loginApi(@Autowired LoginService loginService) {
         return new LoginServiceApi(loginService, jwtTokenService);
     }
 

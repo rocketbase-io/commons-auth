@@ -8,18 +8,15 @@ import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.user.AppUserService;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsChecker;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.annotation.Resource;
 
 public class DefaultLoginService implements LoginService {
-
-    @Resource
-    private AuthenticationManager authenticationManager;
 
     @Resource
     private JwtTokenService jwtTokenService;
@@ -33,15 +30,21 @@ public class DefaultLoginService implements LoginService {
     @Resource
     private ApplicationEventPublisher applicationEventPublisher;
 
+    @Resource
+    private PasswordEncoder passwordEncoder;
+
+    private final UserDetailsChecker userDetailsChecker = new AccountStatusUserDetailsChecker();
+
     @Override
     public LoginResponse performLogin(String username, String password) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username.toLowerCase(), password)
-        );
-        SecurityContextHolder.getContext()
-                .setAuthentication(authentication);
+        UserDetails userDetails = appUserService.loadUserByUsername(username);
 
-        AppUserEntity user = appUserService.updateLastLogin(((UserDetails)authentication.getPrincipal()).getUsername());
+        userDetailsChecker.check(userDetails);
+        if (!passwordEncoder.matches(password, userDetails.getPassword())) {
+            throw new BadCredentialsException("Invalid Credentials");
+        }
+
+        AppUserEntity user = appUserService.updateLastLogin(userDetails.getUsername());
 
         applicationEventPublisher.publishEvent(new LoginEvent(this, user));
 
