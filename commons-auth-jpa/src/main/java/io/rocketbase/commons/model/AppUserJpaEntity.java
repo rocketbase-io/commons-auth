@@ -16,7 +16,7 @@ import java.util.Map;
 
 
 @Entity
-@Table(name = "user", uniqueConstraints = {
+@Table(name = "co_user", uniqueConstraints = {
         @UniqueConstraint(name = "uk_user_username", columnNames = {"username"}),
         @UniqueConstraint(name = "uk_user_email", columnNames = {"email"})})
 @Data

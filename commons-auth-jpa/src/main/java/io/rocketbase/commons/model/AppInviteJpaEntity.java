@@ -14,7 +14,7 @@ import java.util.Map;
 
 
 @Entity
-@Table(name = "invite")
+@Table(name = "co_invite")
 @Data
 @Builder
 @AllArgsConstructor
