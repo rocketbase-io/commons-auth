@@ -46,7 +46,7 @@ public class AppInviteJpaEntity implements AppInviteEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
-            name = "invite_keyvalue_pairs",
+            name = "co_invite_keyvalue_pairs",
             joinColumns = @JoinColumn(name = "invite_id"),
             uniqueConstraints = @UniqueConstraint(name = "uk_invite_keyvalue_pairs", columnNames = {"invite_id", "field_key"}),
             indexes = @Index(name = "idx_invite_keyvalue_pairs", columnList = "invite_id")

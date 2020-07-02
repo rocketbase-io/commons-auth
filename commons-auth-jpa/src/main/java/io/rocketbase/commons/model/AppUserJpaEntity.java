@@ -50,7 +50,7 @@ public class AppUserJpaEntity implements AppUserEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
-            name = "user_roles",
+            name = "co_user_roles",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             uniqueConstraints = @UniqueConstraint(name = "uk_user_roles", columnNames = {"user_id", "role"})
     )
@@ -59,7 +59,7 @@ public class AppUserJpaEntity implements AppUserEntity {
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
-            name = "user_keyvalue_pairs",
+            name = "co_user_keyvalue_pairs",
             joinColumns = @JoinColumn(name = "user_id"),
             uniqueConstraints = @UniqueConstraint(name = "uk_user_keyvalue_pairs", columnNames = {"user_id", "field_key"}),
             indexes = @Index(name = "idx_user_keyvalue_pairs", columnList = "user_id")
