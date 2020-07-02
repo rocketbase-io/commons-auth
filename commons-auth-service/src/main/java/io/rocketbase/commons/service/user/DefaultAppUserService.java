@@ -268,7 +268,7 @@ public class DefaultAppUserService implements AppUserService {
             roles.add(userCreate.getAdmin() ? authProperties.getRoleAdmin() : authProperties.getRoleUser());
         }
         if (userCreate.getRoles() != null) {
-            roles.addAll(roles);
+            roles.addAll(userCreate.getRoles());
         }
         instance.setRoles(convertRoles(roles));
         instance.setEnabled(userCreate.isEnabled());
@@ -294,7 +294,8 @@ public class DefaultAppUserService implements AppUserService {
         if (roles == null) {
             return null;
         }
-        return roles.stream().map(r -> r.replaceAll("^ROLE_", "")).collect(Collectors.toList());
+        return new ArrayList<>(roles.stream().map(r -> r.replaceAll("^ROLE_", ""))
+                .collect(Collectors.toSet()));
     }
 
     @Override
