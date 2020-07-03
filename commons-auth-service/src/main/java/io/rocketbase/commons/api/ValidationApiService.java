@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.Set;
 
 @RequiredArgsConstructor
-public class ValidationServiceApi implements ValidationApi {
+public class ValidationApiService implements ValidationApi {
 
     private final ValidationService validationService;
 

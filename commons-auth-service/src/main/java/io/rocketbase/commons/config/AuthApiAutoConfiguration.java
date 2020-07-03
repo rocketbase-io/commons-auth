@@ -53,61 +53,61 @@ public class AuthApiAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public AppInviteApi appInviteApi() {
-        return new AppInviteServiceApi(appInviteService, inviteConverter);
+        return new AppInviteApiService(appInviteService, inviteConverter);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public AppUserApi appUserApi() {
-        return new AppUserServiceApi(appUserService, appUserConverter, validationService, appInviteService, inviteConverter);
+        return new AppUserApiService(appUserService, appUserConverter, validationService, appInviteService, inviteConverter);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public AuthenticationApi authenticationApi() {
-        return new AuthenticationServiceApi(appUserService, appUserConverter);
+        return new AuthenticationApiService(appUserService, appUserConverter);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public ForgotPasswordApi forgotPasswordApi() {
-        return new ForgotPasswordServiceApi(forgotPasswordService);
+        return new ForgotPasswordApiService(forgotPasswordService);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public ImpersonateApi impersonateApi() {
-        return new ImpersonateServiceApi(impersonateService, appUserService);
+        return new ImpersonateApiService(impersonateService, appUserService);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public InviteApi inviteApi() {
-        return new InviteServiceApi(appInviteService, inviteConverter, appUserConverter);
+        return new InviteApiService(appInviteService, inviteConverter, appUserConverter);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public LoginApi loginApi(@Autowired LoginService loginService) {
-        return new LoginServiceApi(loginService, jwtTokenService);
+        return new LoginApiService(loginService, jwtTokenService, appUserService);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public RegistrationApi registrationApi() {
-        return new RegistrationServiceApi(registrationService, appUserConverter, jwtTokenService);
+        return new RegistrationApiService(registrationService, appUserConverter, jwtTokenService);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public UserSearchApi userSearchApi() {
-        return new UserSearchServiceApi(appUserService);
+        return new UserSearchApiService(appUserService);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public ValidationApi validationApi() {
-        return new ValidationServiceApi(validationService);
+        return new ValidationApiService(validationService);
     }
 
 }

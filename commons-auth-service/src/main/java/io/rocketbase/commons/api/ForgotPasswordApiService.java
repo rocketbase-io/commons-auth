@@ -6,7 +6,7 @@ import io.rocketbase.commons.service.forgot.AppUserForgotPasswordService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ForgotPasswordServiceApi implements ForgotPasswordApi, BaseServiceApi {
+public class ForgotPasswordApiService implements ForgotPasswordApi, BaseApiService {
 
     private final AppUserForgotPasswordService forgotPasswordService;
 

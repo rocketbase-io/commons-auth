@@ -10,7 +10,7 @@ import io.rocketbase.commons.service.invite.AppInviteService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class InviteServiceApi implements InviteApi {
+public class InviteApiService implements InviteApi {
 
     private final AppInviteService appInviteService;
     private final AppInviteConverter inviteConverter;

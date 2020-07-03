@@ -5,14 +5,17 @@ import io.rocketbase.commons.dto.authentication.LoginResponse;
 import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.auth.LoginService;
+import io.rocketbase.commons.service.user.AppUserService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class LoginServiceApi implements LoginApi {
+public class LoginApiService implements LoginApi {
 
     private final LoginService loginService;
 
     private final JwtTokenService jwtTokenService;
+
+    private final AppUserService appUserService;
 
     @Override
     public LoginResponse login(LoginRequest login) {
@@ -25,6 +28,6 @@ public class LoginServiceApi implements LoginApi {
         if (!appUserToken.hasRole(JwtTokenService.REFRESH_TOKEN)) {
             throw new RuntimeException("need a valid refresh-token!");
         }
-        return jwtTokenService.generateAccessToken(appUserToken);
+        return jwtTokenService.generateAccessToken(appUserService.getByUsername(appUserToken.getUsername()));
     }
 }

@@ -10,7 +10,7 @@ import io.rocketbase.commons.service.registration.RegistrationService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class RegistrationServiceApi implements RegistrationApi, BaseServiceApi {
+public class RegistrationApiService implements RegistrationApi, BaseApiService {
 
     private final RegistrationService registrationService;
     private final AppUserConverter converter;

@@ -11,7 +11,7 @@ import io.rocketbase.commons.service.user.AppUserService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class AuthenticationServiceApi implements AuthenticationApi {
+public class AuthenticationApiService implements AuthenticationApi {
 
     private final AppUserService appUserService;
     private final AppUserConverter userConverter;

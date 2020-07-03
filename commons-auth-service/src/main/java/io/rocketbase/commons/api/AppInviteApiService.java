@@ -12,7 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 @RequiredArgsConstructor
-public class AppInviteServiceApi implements AppInviteApi, BaseServiceApi {
+public class AppInviteApiService implements AppInviteApi, BaseApiService {
 
     private final AppInviteService appInviteService;
     private final AppInviteConverter converter;

@@ -20,7 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 @RequiredArgsConstructor
-public class AppUserServiceApi implements AppUserApi, BaseServiceApi {
+public class AppUserApiService implements AppUserApi, BaseApiService {
 
     private final AppUserService appUserService;
     private final AppUserConverter userConverter;

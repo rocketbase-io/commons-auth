@@ -7,7 +7,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 
-public interface BaseServiceApi {
+public interface BaseApiService {
 
     default String getBaseUrl() {
         try {

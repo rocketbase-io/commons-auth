@@ -9,7 +9,7 @@ import io.rocketbase.commons.service.user.AppUserService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class ImpersonateServiceApi implements ImpersonateApi {
+public class ImpersonateApiService implements ImpersonateApi {
 
     private final ImpersonateService impersonateService;
     private final AppUserService appUserService;
