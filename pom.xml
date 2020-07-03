@@ -136,6 +136,8 @@ SOFTWARE.
                             <exclude>**/*Repository.*</exclude>
                             <exclude>**/config/*AutoConfiguration.*</exclude>
                             <exclude>**/io/rocketbase/commons/test/**</exclude>
+                            <exclude>**/io/rocketbase/commons/dto/**</exclude>
+                            <exclude>**/io/rocketbase/commons/config/**</exclude>
                         </excludes>
                     </configuration>
                 </plugin>
@@ -205,7 +207,7 @@ SOFTWARE.
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.1.1</version>
+                        <version>3.2.0</version>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
