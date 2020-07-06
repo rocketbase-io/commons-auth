@@ -48,7 +48,7 @@ public class AppUserJpaEntity implements AppUserEntity {
     @Column(length = 2000)
     private String avatar;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     @CollectionTable(
             name = "co_user_roles",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
@@ -57,7 +57,7 @@ public class AppUserJpaEntity implements AppUserEntity {
     @Column(name = "role", length = 20, nullable = false)
     private List<String> roles;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     @CollectionTable(
             name = "co_user_keyvalue_pairs",
             joinColumns = @JoinColumn(name = "user_id"),

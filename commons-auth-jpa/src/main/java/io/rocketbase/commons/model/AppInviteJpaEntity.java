@@ -44,7 +44,7 @@ public class AppInviteJpaEntity implements AppInviteEntity {
     @Convert(converter = StringListConverter.class)
     private List<String> roles;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     @CollectionTable(
             name = "co_invite_keyvalue_pairs",
             joinColumns = @JoinColumn(name = "invite_id"),

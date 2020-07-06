@@ -32,6 +32,7 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJ
     }
 
     @Override
+    @Transactional
     public Page<AppUserJpaEntity> findAll(QueryAppUser query, Pageable pageable) {
         if (query == null) {
             return repository.findAll(pageable);
@@ -70,13 +71,17 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJ
             }
             return result;
         };
-        return repository.findAll(specification, pageable);
+        Page<AppUserJpaEntity> result = repository.findAll(specification, pageable);
+        // in order to initialize lazy map
+        result.stream()
+                .forEach(v -> initLazyObjects(v));
+        return result;
     }
 
     @Override
     @Transactional
     public AppUserJpaEntity save(AppUserJpaEntity entity) {
-        return repository.save(entity);
+        return initLazyObjects(repository.save(entity));
     }
 
     @Override
@@ -108,5 +113,19 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJ
                 .created(Instant.now())
                 .roles(new ArrayList<>())
                 .build();
+    }
+
+    protected AppUserJpaEntity initLazyObjects(AppUserJpaEntity entity) {
+        if (entity != null) {
+            if (entity.getKeyValueMap() != null) {
+                // in order to initialize lazy map
+                entity.getKeyValueMap().size();
+            }
+            if (entity.getRoles() != null) {
+                // in order to initialize lazy map
+                entity.getRoles().size();
+            }
+        }
+        return entity;
     }
 }

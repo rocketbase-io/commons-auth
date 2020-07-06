@@ -22,6 +22,7 @@ public class AppInviteJpaServiceImpl implements AppInvitePersistenceService<AppI
     private final AppInviteJpaRepository repository;
 
     @Override
+    @Transactional
     public Page<AppInviteJpaEntity> findAll(QueryAppInvite query, Pageable pageable) {
         if (query == null) {
             return repository.findAll(pageable);
@@ -52,13 +53,17 @@ public class AppInviteJpaServiceImpl implements AppInvitePersistenceService<AppI
             }
             return result;
         };
-        return repository.findAll(specification, pageable);
+        Page<AppInviteJpaEntity> result = repository.findAll(specification, pageable);
+        // in order to initialize lazy map
+        result.stream()
+                .forEach(v -> initLazyObjects(v));
+        return result;
     }
 
     @Override
     @Transactional
     public AppInviteJpaEntity save(AppInviteJpaEntity entity) {
-        return repository.save(entity);
+        return initLazyObjects(repository.save(entity));
     }
 
     @Override
@@ -98,5 +103,15 @@ public class AppInviteJpaServiceImpl implements AppInvitePersistenceService<AppI
         Page<AppInviteJpaEntity> allExpired = findAll(QueryAppInvite.builder().expired(true).build(), Pageable.unpaged());
         repository.deleteAll(allExpired.getContent());
         return allExpired.getNumberOfElements();
+    }
+
+    protected AppInviteJpaEntity initLazyObjects(AppInviteJpaEntity entity) {
+        if (entity != null) {
+            if (entity.getKeyValueMap() != null) {
+                // in order to initialize lazy map
+                entity.getKeyValueMap().size();
+            }
+        }
+        return entity;
     }
 }
