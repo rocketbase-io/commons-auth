@@ -5,11 +5,11 @@ import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
 @Getter
-public class ChangePasswordEvent extends ApplicationEvent {
+public class RequestMeEvent extends ApplicationEvent {
 
-    private AppUserEntity appUserEntity;
+    private final AppUserEntity appUserEntity;
 
-    public ChangePasswordEvent(Object source, AppUserEntity appUserEntity) {
+    public RequestMeEvent(Object source, AppUserEntity appUserEntity) {
         super(source);
         this.appUserEntity = appUserEntity;
     }

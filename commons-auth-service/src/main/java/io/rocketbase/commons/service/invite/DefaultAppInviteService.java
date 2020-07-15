@@ -6,6 +6,7 @@ import io.rocketbase.commons.dto.appinvite.ConfirmInviteRequest;
 import io.rocketbase.commons.dto.appinvite.InviteRequest;
 import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
 import io.rocketbase.commons.dto.appuser.AppUserCreate;
+import io.rocketbase.commons.event.InviteEvent;
 import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.exception.RegistrationException;
@@ -18,12 +19,16 @@ import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.service.validation.ValidationService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import javax.annotation.Resource;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+
+import static io.rocketbase.commons.event.InviteEvent.InviteProcessType.CREATE;
+import static io.rocketbase.commons.event.InviteEvent.InviteProcessType.VERIFY;
 
 @RequiredArgsConstructor
 public class DefaultAppInviteService implements AppInviteService {
@@ -46,6 +51,9 @@ public class DefaultAppInviteService implements AppInviteService {
     @Resource
     private AppInviteConverter appInviteConverter;
 
+    @Resource
+    private ApplicationEventPublisher applicationEventPublisher;
+
 
     @Override
     public AppInviteEntity createInvite(InviteRequest request, String baseUrl) throws BadRequestException {
@@ -53,6 +61,8 @@ public class DefaultAppInviteService implements AppInviteService {
         appInviteConverter.updateEntity(dto, request);
         dto.setExpiration(Instant.now().plus(authProperties.getInviteExpiration(), ChronoUnit.MINUTES));
         AppInviteEntity entity = appInvitePersistenceService.save(dto);
+
+        applicationEventPublisher.publishEvent(new InviteEvent(this, entity, CREATE));
 
         emailService.sentInviteEmail(entity, buildActionUrl(baseUrl, ActionType.INVITE, entity.getId(), request.getInviteUrl()));
         return entity;
@@ -64,6 +74,8 @@ public class DefaultAppInviteService implements AppInviteService {
         if (!inviteEntity.getExpiration().isAfter(Instant.now())) {
             throw new VerificationException("inviteId");
         }
+        applicationEventPublisher.publishEvent(new InviteEvent(this, inviteEntity, VERIFY));
+
         return inviteEntity;
     }
 
@@ -84,6 +96,9 @@ public class DefaultAppInviteService implements AppInviteService {
                 .build();
 
         AppUserEntity appUserEntity = appUserService.initializeUser(userCreate);
+
+        applicationEventPublisher.publishEvent(new InviteEvent(this, inviteEntity, appUserEntity));
+
         appInvitePersistenceService.delete(inviteEntity);
         return appUserEntity;
     }

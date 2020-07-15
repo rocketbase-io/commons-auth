@@ -5,19 +5,20 @@ import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
 @Getter
-public class RegistrationEvent extends ApplicationEvent {
+public class PasswordEvent extends ApplicationEvent {
 
     private final AppUserEntity appUserEntity;
-    private final RegistrationProcessType type;
+    private final PasswordProcessType type;
 
-    public RegistrationEvent(Object source, AppUserEntity appUserEntity, RegistrationProcessType type) {
+    public PasswordEvent(Object source, AppUserEntity appUserEntity, PasswordProcessType type) {
         super(source);
         this.appUserEntity = appUserEntity;
         this.type = type;
     }
 
-    public enum RegistrationProcessType {
-        REGISTER,
-        VERIFIED
+    public enum PasswordProcessType {
+        REQUEST_RESET,
+        PROCEED_RESET,
+        CHANGED
     }
 }

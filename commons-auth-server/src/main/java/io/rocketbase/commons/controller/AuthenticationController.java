@@ -6,8 +6,8 @@ import io.rocketbase.commons.dto.authentication.LoginRequest;
 import io.rocketbase.commons.dto.authentication.LoginResponse;
 import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
 import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
-import io.rocketbase.commons.event.ChangePasswordEvent;
-import io.rocketbase.commons.event.UpdateProfileEvent;
+import io.rocketbase.commons.event.RefreshTokenEvent;
+import io.rocketbase.commons.event.RequestMeEvent;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.security.CommonsAuthenticationToken;
 import io.rocketbase.commons.security.JwtTokenService;
@@ -60,7 +60,11 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return ResponseEntity.ok(appUserConverter.fromEntity(appUserService.getByUsername(authentication.getName())));
+        AppUserEntity entity = appUserService.getByUsername(authentication.getName());
+
+        applicationEventPublisher.publishEvent(new RequestMeEvent(this, entity));
+
+        return ResponseEntity.ok(appUserConverter.fromEntity(entity));
     }
 
     @RequestMapping(value = "/auth/change-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
@@ -69,9 +73,7 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        AppUserEntity entity = appUserService.performUpdatePassword(((CommonsAuthenticationToken) authentication).getUsername(), passwordChange);
-
-        applicationEventPublisher.publishEvent(new ChangePasswordEvent(this, entity));
+        appUserService.performUpdatePassword(((CommonsAuthenticationToken) authentication).getUsername(), passwordChange);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -86,8 +88,6 @@ public class AuthenticationController {
 
         appUserService.updateProfile(username, updateProfile);
 
-        applicationEventPublisher.publishEvent(new UpdateProfileEvent(this, appUserService.getByUsername(username)));
-
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -101,8 +101,10 @@ public class AuthenticationController {
                 .contains(new SimpleGrantedAuthority(JwtTokenService.REFRESH_TOKEN))) {
             return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
         }
-        AppUserEntity appUser = appUserService.getByUsername(((CommonsAuthenticationToken) authentication).getUsername());
+        AppUserEntity entity = appUserService.getByUsername(((CommonsAuthenticationToken) authentication).getUsername());
 
-        return ResponseEntity.ok(jwtTokenService.generateAccessToken(appUser));
+        applicationEventPublisher.publishEvent(new RefreshTokenEvent(this, entity));
+
+        return ResponseEntity.ok(jwtTokenService.generateAccessToken(entity));
     }
 }

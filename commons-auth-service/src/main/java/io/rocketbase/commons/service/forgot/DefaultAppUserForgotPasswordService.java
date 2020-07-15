@@ -4,8 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.dto.forgot.ForgotPasswordRequest;
 import io.rocketbase.commons.dto.forgot.PerformPasswordResetRequest;
-import io.rocketbase.commons.event.ForgotPasswordEvent;
-import io.rocketbase.commons.event.ResetPasswordEvent;
+import io.rocketbase.commons.event.PasswordEvent;
 import io.rocketbase.commons.exception.UnknownUserException;
 import io.rocketbase.commons.exception.VerificationException;
 import io.rocketbase.commons.model.AppUserEntity;
@@ -21,6 +20,8 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 
+import static io.rocketbase.commons.event.PasswordEvent.PasswordProcessType.PROCEED_RESET;
+import static io.rocketbase.commons.event.PasswordEvent.PasswordProcessType.REQUEST_RESET;
 import static io.rocketbase.commons.service.user.DefaultAppUserService.FORGOTPW_KV;
 
 @RequiredArgsConstructor
@@ -54,7 +55,7 @@ public class DefaultAppUserForgotPasswordService implements AppUserForgotPasswor
 
         emailService.sentForgotPasswordEmail(appUser, buildActionUrl(baseUrl, ActionType.PASSWORD_RESET, token, Nulls.notEmpty(forgotPassword.getResetPasswordUrl(), forgotPassword.getVerificationUrl())));
 
-        applicationEventPublisher.publishEvent(new ForgotPasswordEvent(this, appUser));
+        applicationEventPublisher.publishEvent(new PasswordEvent(this, appUser, REQUEST_RESET));
 
         return appUser;
     }
@@ -76,7 +77,7 @@ public class DefaultAppUserForgotPasswordService implements AppUserForgotPasswor
 
         appUserService.updatePasswordUnchecked(user.getUsername(), performPasswordReset.getPassword());
 
-        applicationEventPublisher.publishEvent(new ResetPasswordEvent(this, user));
+        applicationEventPublisher.publishEvent(new PasswordEvent(this, user, PROCEED_RESET));
 
         return user;
     }

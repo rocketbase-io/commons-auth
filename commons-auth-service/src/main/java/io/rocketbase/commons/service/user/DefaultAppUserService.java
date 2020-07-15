@@ -13,6 +13,8 @@ import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
 import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
+import io.rocketbase.commons.event.PasswordEvent;
+import io.rocketbase.commons.event.UpdateProfileEvent;
 import io.rocketbase.commons.exception.EmailValidationException;
 import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.exception.PasswordValidationException;
@@ -27,6 +29,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,6 +42,8 @@ import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static io.rocketbase.commons.event.PasswordEvent.PasswordProcessType.CHANGED;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -66,6 +71,9 @@ public class DefaultAppUserService implements AppUserService {
 
     @Resource
     private ValidationErrorCodeService validationErrorCodeService;
+
+    @Resource
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @PostConstruct
     public void postConstruct() {
@@ -144,7 +152,11 @@ public class DefaultAppUserService implements AppUserService {
         entity.updateLastTokenInvalidation();
 
         invalidateCache(entity);
-        return appUserPersistenceService.save(entity);
+        entity = appUserPersistenceService.save(entity);
+
+        applicationEventPublisher.publishEvent(new PasswordEvent(this, entity, CHANGED));
+
+        return entity;
     }
 
     @Override
@@ -183,7 +195,11 @@ public class DefaultAppUserService implements AppUserService {
         handleKeyValues(entity, updateProfile.getKeyValues());
 
         invalidateCache(entity);
-        return appUserPersistenceService.save(entity);
+        entity = appUserPersistenceService.save(entity);
+
+        applicationEventPublisher.publishEvent(new UpdateProfileEvent(this, entity));
+
+        return entity;
     }
 
     @Override

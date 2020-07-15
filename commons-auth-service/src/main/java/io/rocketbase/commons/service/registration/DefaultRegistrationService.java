@@ -5,7 +5,6 @@ import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.config.RegistrationProperties;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.event.RegistrationEvent;
-import io.rocketbase.commons.event.VerificationEvent;
 import io.rocketbase.commons.exception.VerificationException;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.service.SimpleTokenService;
@@ -19,6 +18,8 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import javax.annotation.Resource;
 
+import static io.rocketbase.commons.event.RegistrationEvent.RegistrationProcessType.REGISTER;
+import static io.rocketbase.commons.event.RegistrationEvent.RegistrationProcessType.VERIFIED;
 import static io.rocketbase.commons.service.user.DefaultAppUserService.REGISTRATION_KV;
 
 @Slf4j
@@ -52,7 +53,7 @@ public class DefaultRegistrationService implements RegistrationService {
                 throw e;
             }
         }
-        applicationEventPublisher.publishEvent(new RegistrationEvent(this, entity));
+        applicationEventPublisher.publishEvent(new RegistrationEvent(this, entity, REGISTER));
 
         return entity;
     }
@@ -71,7 +72,7 @@ public class DefaultRegistrationService implements RegistrationService {
 
         appUserService.processRegistrationVerification(token.getUsername());
 
-        applicationEventPublisher.publishEvent(new VerificationEvent(this, entity));
+        applicationEventPublisher.publishEvent(new RegistrationEvent(this, entity, VERIFIED));
 
         return entity;
     }

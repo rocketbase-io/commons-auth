@@ -5,11 +5,11 @@ import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
 @Getter
-public class VerificationEvent extends ApplicationEvent {
+public class RefreshTokenEvent extends ApplicationEvent {
 
-    private AppUserEntity appUserEntity;
+    private final AppUserEntity appUserEntity;
 
-    public VerificationEvent(Object source, AppUserEntity appUserEntity) {
+    public RefreshTokenEvent(Object source, AppUserEntity appUserEntity) {
         super(source);
         this.appUserEntity = appUserEntity;
     }
