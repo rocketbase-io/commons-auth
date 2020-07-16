@@ -13,6 +13,8 @@ import io.rocketbase.commons.service.invite.AppInviteService;
 import io.rocketbase.commons.service.invite.DefaultAppInviteService;
 import io.rocketbase.commons.service.registration.DefaultRegistrationService;
 import io.rocketbase.commons.service.registration.RegistrationService;
+import io.rocketbase.commons.service.user.ActiveUserStore;
+import io.rocketbase.commons.service.user.ActiveUserStoreLocalCache;
 import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.service.user.DefaultAppUserService;
 import io.rocketbase.commons.service.validation.DefaultValidationService;
@@ -29,7 +31,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 
 @Configuration
 @AutoConfigureAfter({AuthAdapterAutoConfiguration.class})
-@EnableConfigurationProperties({AuthProperties.class, EmailProperties.class, RegistrationProperties.class, GravatarProperties.class, UsernameProperties.class, PasswordProperties.class})
+@EnableConfigurationProperties({AuthProperties.class, EmailProperties.class, RegistrationProperties.class, GravatarProperties.class, UsernameProperties.class, PasswordProperties.class, JwtProperties.class})
 @RequiredArgsConstructor
 public class AuthServiceAutoConfiguration {
 
@@ -39,11 +41,18 @@ public class AuthServiceAutoConfiguration {
     private final GravatarProperties gravatarProperties;
     private final UsernameProperties usernameProperties;
     private final PasswordProperties passwordProperties;
+    private final JwtProperties jwtProperties;
 
     @Bean
     @ConditionalOnMissingBean
     public MailContentConfig mailContentConfig() {
         return new DefaultMailContentConfig(emailProperties, authMessageSource());
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ActiveUserStore activeUserStore() {
+        return new ActiveUserStoreLocalCache(jwtProperties);
     }
 
     @Bean

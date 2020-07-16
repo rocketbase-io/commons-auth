@@ -7,6 +7,7 @@ import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.auth.LoginService;
+import io.rocketbase.commons.service.user.ActiveUserStore;
 import io.rocketbase.commons.util.JwtTokenDecoder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,9 @@ public class OAuthLoginRefreshController {
     @Resource
     private LoginService loginService;
 
+    @Resource
+    private ActiveUserStore activeUserStore;
+
     // activate cors in this way in order to work in combination with ignored security for this endpoint
     @CrossOrigin(allowedHeaders = "*", origins = "*")
     @RequestMapping(method = RequestMethod.POST, path = "/auth/oauth2/token")
@@ -40,6 +44,7 @@ public class OAuthLoginRefreshController {
                 .scope(oAuthRequest.getScope());
         if (oAuthRequest.getGrantType().equals(GrantType.PASSWORD)) {
             LoginResponse loginResponse = loginService.performLogin(oAuthRequest.getUsername(), oAuthRequest.getPassword());
+            activeUserStore.addUser(loginResponse.getUser());
             response.accessToken(loginResponse.getJwtTokenBundle().getToken())
                     .refreshToken(loginResponse.getJwtTokenBundle().getRefreshToken())
                     .expiresIn(getExpiresIn(loginResponse.getJwtTokenBundle().getToken()))
@@ -48,7 +53,7 @@ public class OAuthLoginRefreshController {
         } else if (oAuthRequest.getGrantType().equals(GrantType.REFRESH_TOKEN)) {
             AppUserToken appUserToken = jwtTokenService.parseToken(oAuthRequest.getRefreshToken());
             String accessToken = jwtTokenService.generateAccessToken(appUserToken);
-
+            activeUserStore.addUser(appUserToken);
             response.accessToken(accessToken)
                     .refreshToken(oAuthRequest.getRefreshToken())
                     .expiresIn(getExpiresIn(accessToken))

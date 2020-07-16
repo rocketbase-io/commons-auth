@@ -12,6 +12,7 @@ import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.security.CommonsAuthenticationToken;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.auth.LoginService;
+import io.rocketbase.commons.service.user.ActiveUserStore;
 import io.rocketbase.commons.service.user.AppUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -47,10 +48,15 @@ public class AuthenticationController {
     @Resource
     private LoginService loginService;
 
+    @Resource
+    private ActiveUserStore activeUserStore;
+
     @RequestMapping(method = RequestMethod.POST, path = "/auth/login", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<LoginResponse> login(@RequestBody @NotNull @Validated LoginRequest login) {
-        return ResponseEntity.ok(loginService.performLogin(login.getUsername(), login.getPassword()));
+        LoginResponse response = loginService.performLogin(login.getUsername(), login.getPassword());
+        activeUserStore.addUser(response.getUser());
+        return ResponseEntity.ok(response);
     }
 
     @RequestMapping(value = "/auth/me", method = RequestMethod.GET)
@@ -59,11 +65,9 @@ public class AuthenticationController {
         if (authentication == null || !(CommonsAuthenticationToken.class.isAssignableFrom(authentication.getClass()))) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
         AppUserEntity entity = appUserService.getByUsername(authentication.getName());
-
         applicationEventPublisher.publishEvent(new RequestMeEvent(this, entity));
-
+        activeUserStore.addUser(entity);
         return ResponseEntity.ok(appUserConverter.fromEntity(entity));
     }
 
@@ -72,9 +76,7 @@ public class AuthenticationController {
         if (authentication == null || !(CommonsAuthenticationToken.class.isAssignableFrom(authentication.getClass()))) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
         appUserService.performUpdatePassword(((CommonsAuthenticationToken) authentication).getUsername(), passwordChange);
-
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -85,9 +87,7 @@ public class AuthenticationController {
         }
 
         String username = ((CommonsAuthenticationToken) authentication).getUsername();
-
         appUserService.updateProfile(username, updateProfile);
-
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -102,9 +102,8 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
         }
         AppUserEntity entity = appUserService.getByUsername(((CommonsAuthenticationToken) authentication).getUsername());
-
         applicationEventPublisher.publishEvent(new RefreshTokenEvent(this, entity));
-
+        activeUserStore.addUser(entity);
         return ResponseEntity.ok(jwtTokenService.generateAccessToken(entity));
     }
 }

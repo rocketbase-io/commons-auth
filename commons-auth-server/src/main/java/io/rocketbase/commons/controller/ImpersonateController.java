@@ -5,6 +5,7 @@ import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.security.CommonsPrincipal;
 import io.rocketbase.commons.service.impersonate.ImpersonateService;
+import io.rocketbase.commons.service.user.ActiveUserStore;
 import io.rocketbase.commons.service.user.AppUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -25,10 +26,14 @@ public class ImpersonateController implements BaseController {
     @Resource
     private ImpersonateService impersonateService;
 
+    @Resource
+    private ActiveUserStore activeUserStore;
+
     @RequestMapping(method = RequestMethod.GET, path = "/api/impersonate/{userIdOrUsername}")
     @ResponseBody
     public ResponseEntity<JwtTokenBundle> impersonate(@PathVariable("userIdOrUsername") String userIdOrUsername) {
         AppUserEntity impersonateUser = appUserService.findByIdOrUsername(userIdOrUsername).orElseThrow(NotFoundException::new);
+        activeUserStore.addUser(impersonateUser);
 
         return ResponseEntity.ok(impersonateService.getImpersonateBundle(CommonsPrincipal.getCurrent(), impersonateUser));
     }

@@ -31,6 +31,12 @@ public class SimpleAppUserToken implements AppUserToken {
     @Setter(AccessLevel.PROTECTED)
     private Map<String, String> keyValueMap = new HashMap<>();
 
+    public SimpleAppUserToken(String id, String username, List<String> roles) {
+        this.id = id;
+        this.username = username;
+        this.roles = roles;
+    }
+
     @Override
     public Map<String, String> getKeyValues() {
         return getKeyValueMap() != null ? ImmutableMap.copyOf(getKeyValueMap()) : null;
