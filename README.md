@@ -115,17 +115,6 @@ The Content of the emails (forgot-password + registration-verification) is been 
 | auth.email.copyright-name          | commons-auth          | name of sender |
 | auth.email.copyright-url          | link to github repro          | will get displayed in email-text |
 
-To send emails the is used. This needs also some configurations:
-
-| property                                         | default    |
-| ------------------------------------------------ | ---------- |
-| spring.mail.host                                 | *required* |
-| spring.mail.port                                 | *required* |
-| spring.mail.username                             | *required* |
-| spring.mail.password                             | *required* |
-| spring.mail.properties.mail.smtp.auth            | *required* |
-| spring.mail.properties.mail.smtp.starttls.enable | *required* |
-
 Forms configuration:
 
 | property                                            | default    |
@@ -138,6 +127,20 @@ Forms configuration:
 
 Containing nearly all services and functions to perform any task within the application - services for working with entities (without db-layer), performing invites, forgot/password-reset/registration flows,  sending emails etc.
 
+## commons-auth-email-smtp
+
+Preconfigures an EmailSender that uses spring-boot-starter-mail to sent emails via SMTP.
+
+To send emails via spring-boot-starter-mail. This needs also some configurations:
+
+| property                                         | default    |
+| ------------------------------------------------ | ---------- |
+| spring.mail.host                                 | *required* |
+| spring.mail.port                                 | *required* |
+| spring.mail.username                             | *required* |
+| spring.mail.password                             | *required* |
+| spring.mail.properties.mail.smtp.auth            | *required* |
+| spring.mail.properties.mail.smtp.starttls.enable | *required* |
 
 ## commons-auth-server
 

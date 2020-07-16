@@ -48,6 +48,7 @@ SOFTWARE.
         <module>commons-auth-adapter</module>
         <module>commons-auth-forms</module>
         <module>commons-auth-service</module>
+        <module>commons-auth-email-smtp</module>
     </modules>
 
     <licenses>
