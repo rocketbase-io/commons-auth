@@ -191,7 +191,13 @@ public class DefaultAppUserService implements AppUserService {
         AppUserEntity entity = getEntityByUsernameOrId(usernameOrId);
         entity.setFirstName(updateProfile.getFirstName());
         entity.setLastName(updateProfile.getLastName());
-        entity.setAvatar(updateProfile.getAvatar());
+
+        if (StringUtils.isEmpty(updateProfile.getAvatar()) && avatarService.isEnabled()) {
+            entity.setAvatar(avatarService.getAvatar(entity.getEmail()));
+        } else {
+            entity.setAvatar(updateProfile.getAvatar());
+        }
+
         handleKeyValues(entity, updateProfile.getKeyValues());
 
         invalidateCache(entity);
