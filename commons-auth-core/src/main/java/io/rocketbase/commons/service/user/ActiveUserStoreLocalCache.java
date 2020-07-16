@@ -43,6 +43,7 @@ public class ActiveUserStoreLocalCache implements ActiveUserStore {
 
     @Override
     public Set<String> getUserIds() {
+        activeUsers.cleanUp();
         return activeUsers.asMap().keySet();
     }
 }
