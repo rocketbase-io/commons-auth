@@ -100,7 +100,6 @@ SOFTWARE.
         <passay.version>1.6.0</passay.version>
         <email-template-builder.version>1.6.0</email-template-builder.version>
         <jacoco.version>0.8.5</jacoco.version>
-        <greenmail.version>1.5.7</greenmail.version>
     </properties>
 
     <dependencyManagement>

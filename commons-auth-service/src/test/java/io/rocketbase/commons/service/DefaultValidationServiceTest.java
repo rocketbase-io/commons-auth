@@ -5,17 +5,17 @@ import io.rocketbase.commons.dto.validation.UsernameErrorCodes;
 import io.rocketbase.commons.exception.RegistrationException;
 import io.rocketbase.commons.exception.ValidationErrorCode;
 import io.rocketbase.commons.service.validation.DefaultValidationService;
-import io.rocketbase.commons.test.BaseUserIntegrationTest;
+import io.rocketbase.commons.test.BaseIntegrationTest;
 import org.junit.Test;
 
 import javax.annotation.Resource;
 import java.util.Set;
 
 import static io.rocketbase.commons.dto.validation.PasswordErrorCodes.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
 
-public class DefaultValidationServiceTest extends BaseUserIntegrationTest {
+public class DefaultValidationServiceTest extends BaseIntegrationTest {
 
     @Resource
     private DefaultValidationService service;

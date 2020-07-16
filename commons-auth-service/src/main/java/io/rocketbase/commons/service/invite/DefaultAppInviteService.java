@@ -14,7 +14,7 @@ import io.rocketbase.commons.exception.VerificationException;
 import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.service.AppInvitePersistenceService;
-import io.rocketbase.commons.service.email.EmailService;
+import io.rocketbase.commons.service.email.AuthEmailService;
 import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.service.validation.ValidationService;
 import lombok.Getter;
@@ -46,7 +46,7 @@ public class DefaultAppInviteService implements AppInviteService {
     private ValidationService validationService;
 
     @Resource
-    private EmailService emailService;
+    private AuthEmailService emailService;
 
     @Resource
     private AppInviteConverter appInviteConverter;

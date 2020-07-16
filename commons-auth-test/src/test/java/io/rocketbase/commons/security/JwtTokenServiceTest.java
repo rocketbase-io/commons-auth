@@ -13,12 +13,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
 
 public class JwtTokenServiceTest {
 
-    private ZoneId UTC = ZoneId.of("+0");
+    private final ZoneId UTC = ZoneId.of("+0");
 
     private JwtTokenService getInstance() {
         JwtProperties config = new JwtProperties();

@@ -1,12 +1,12 @@
 package io.rocketbase.commons.controller;
 
+import io.rocketbase.commons.BaseIntegrationTestPrefixed;
 import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.adapters.JwtTokenProvider;
 import io.rocketbase.commons.adapters.SimpleJwtTokenProvider;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.resource.ImpersonateResource;
-import io.rocketbase.commons.test.BaseUserIntegrationTest;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
 import io.rocketbase.commons.util.JwtTokenBody;
 import io.rocketbase.commons.util.JwtTokenDecoder;
@@ -17,7 +17,7 @@ import javax.annotation.Resource;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-public class ImpersonateControllerTest extends BaseUserIntegrationTest {
+public class ImpersonateControllerTest extends BaseIntegrationTestPrefixed {
 
     @Resource
     private ModifiedJwtTokenService modifiedJwtTokenService;

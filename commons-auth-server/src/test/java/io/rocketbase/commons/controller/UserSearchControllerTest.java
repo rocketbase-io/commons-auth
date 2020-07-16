@@ -1,5 +1,6 @@
 package io.rocketbase.commons.controller;
 
+import io.rocketbase.commons.BaseIntegrationTestPrefixed;
 import io.rocketbase.commons.adapters.AuthRestTemplate;
 import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.adapters.JwtTokenProvider;
@@ -9,7 +10,6 @@ import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.model.AppUserReference;
 import io.rocketbase.commons.resource.UserSearchResource;
-import io.rocketbase.commons.test.BaseUserIntegrationTest;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
 import org.junit.Test;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +22,7 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-public class UserSearchControllerTest extends BaseUserIntegrationTest {
+public class UserSearchControllerTest extends BaseIntegrationTestPrefixed {
 
     @Resource
     private ModifiedJwtTokenService modifiedJwtTokenService;

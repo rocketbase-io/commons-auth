@@ -4,10 +4,7 @@ import io.rocketbase.commons.service.auth.DefaultLoginService;
 import io.rocketbase.commons.service.auth.LoginService;
 import io.rocketbase.commons.service.avatar.AvatarService;
 import io.rocketbase.commons.service.avatar.GravatarService;
-import io.rocketbase.commons.service.email.DefaultEmailService;
-import io.rocketbase.commons.service.email.DefaultMailContentConfig;
-import io.rocketbase.commons.service.email.EmailService;
-import io.rocketbase.commons.service.email.MailContentConfig;
+import io.rocketbase.commons.service.email.*;
 import io.rocketbase.commons.service.forgot.AppUserForgotPasswordService;
 import io.rocketbase.commons.service.forgot.DefaultAppUserForgotPasswordService;
 import io.rocketbase.commons.service.impersonate.DefaultImpersonateService;
@@ -29,8 +26,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
-
-import javax.mail.internet.InternetAddress;
 
 @Configuration
 @AutoConfigureAfter({AuthAdapterAutoConfiguration.class})
@@ -54,8 +49,15 @@ public class AuthServiceAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @SneakyThrows
-    public EmailService emailService() {
-        return new DefaultEmailService(new InternetAddress(emailProperties.getFromEmail(), emailProperties.getServiceName()));
+    public AuthEmailService emailService() {
+        return new DefaultEmailService(new EmailAddress(emailProperties.getFromEmail(), emailProperties.getServiceName()));
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @SneakyThrows
+    public EmailSender emailSender() {
+        return new EmailLogSender();
     }
 
     @Bean

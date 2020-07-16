@@ -1,26 +1,25 @@
 package io.rocketbase.commons.service.email;
 
-import com.icegreen.greenmail.util.GreenMailUtil;
 import io.rocketbase.commons.config.EmailProperties;
 import io.rocketbase.commons.model.AppUserEntity;
-import io.rocketbase.commons.test.BaseUserIntegrationTest;
+import io.rocketbase.commons.test.BaseIntegrationTest;
+import io.rocketbase.commons.test.EmailSenderTest;
 import org.junit.Test;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import javax.annotation.Resource;
-import javax.mail.Message;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import java.util.Locale;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
-public class EmailServiceTest extends BaseUserIntegrationTest {
+public class EmailServiceTest extends BaseIntegrationTest {
 
     @Resource
-    private EmailService emailService;
+    private AuthEmailService emailService;
+
+    @Resource
+    private EmailSenderTest emailSenderTest;
 
     @Test
     public void simpleSendRegistrationEmail() throws Exception {
@@ -33,16 +32,10 @@ public class EmailServiceTest extends BaseUserIntegrationTest {
         emailService.sentRegistrationEmail(user, "http://localhost:8080/?verification=token");
 
         // then
-        MimeMessage[] receivedMessages = getSmtpServerRule().getMessages();
-        assertEquals(1, receivedMessages.length);
 
-        MimeMessage current = receivedMessages[0];
-
-        assertThat(current.getSubject(), startsWith(emailProperties.getSubjectPrefix() + " "));
-        assertThat(current.getFrom()[0].toString(), containsString(emailProperties.getFromEmail()));
-        assertThat(current.getRecipients(Message.RecipientType.TO)[0].toString(), containsString(user.getEmail()));
-        assertThat(current.getContent(), instanceOf(MimeMultipart.class));
-        assertThat(((MimeMultipart) current.getContent()).getBodyPart(0).getSize(), greaterThan(0));
+        assertThat(emailSenderTest.getSubject(), startsWith(emailProperties.getSubjectPrefix() + " "));
+        assertThat(emailSenderTest.getTo().getEmail(), containsString(user.getEmail()));
+        assertThat(emailSenderTest.getHtml().length(), greaterThan(0));
     }
 
     @Test
@@ -57,12 +50,8 @@ public class EmailServiceTest extends BaseUserIntegrationTest {
         emailService.sentRegistrationEmail(user, "http://localhost:8080/?verification=token");
 
         // then
-        MimeMessage[] receivedMessages = getSmtpServerRule().getMessages();
-        assertEquals(1, receivedMessages.length);
 
-        MimeMessage current = receivedMessages[0];
-
-        assertThat(current.getSubject(), is(String.format("%s Registrierung bestätigen", emailProperties.getSubjectPrefix())));
-        assertThat(GreenMailUtil.getBody(current), containsString("Sie Ihre Registrierung durch einen Klick auf den"));
+        assertThat(emailSenderTest.getSubject(), is(String.format("%s Registrierung bestätigen", emailProperties.getSubjectPrefix())));
+        assertThat(emailSenderTest.getText(), containsString("Sie Ihre Registrierung durch einen Klick auf den"));
     }
 }

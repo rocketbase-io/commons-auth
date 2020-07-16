@@ -1,26 +1,27 @@
 package io.rocketbase.commons.controller;
 
+import io.rocketbase.commons.BaseIntegrationTestPrefixed;
 import io.rocketbase.commons.config.EmailProperties;
 import io.rocketbase.commons.dto.forgot.ForgotPasswordRequest;
 import io.rocketbase.commons.resource.ForgotPasswordResource;
 import io.rocketbase.commons.service.user.AppUserService;
-import io.rocketbase.commons.test.BaseUserIntegrationTest;
+import io.rocketbase.commons.test.EmailSenderTest;
 import org.junit.Assert;
 import org.junit.Test;
 
 import javax.annotation.Resource;
-import javax.mail.Message;
-import javax.mail.internet.MimeMessage;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
-public class ForgotPasswordControllerTest extends BaseUserIntegrationTest {
+public class ForgotPasswordControllerTest extends BaseIntegrationTestPrefixed {
 
     @Resource
     private AppUserService appUserService;
+
+    @Resource
+    private EmailSenderTest emailSenderTest;
 
     @Test
     public void forgotPasswordByEmail() throws Exception {
@@ -35,13 +36,9 @@ public class ForgotPasswordControllerTest extends BaseUserIntegrationTest {
         forgotPasswordResource.forgotPassword(new ForgotPasswordRequest(null, email, null, null));
 
         // then
-        MimeMessage[] receivedMessages = getSmtpServerRule().getMessages();
-        assertEquals(1, receivedMessages.length);
-
-        MimeMessage current = receivedMessages[0];
-        assertThat(current.getSubject(), startsWith(emailProperties.getSubjectPrefix() + " "));
-        assertThat(current.getFrom()[0].toString(), containsString(emailProperties.getFromEmail()));
-        assertThat(current.getRecipients(Message.RecipientType.TO)[0].toString(), containsString(email));
+        assertThat(emailSenderTest.getSubject(), startsWith(emailProperties.getSubjectPrefix() + " "));
+        assertThat(emailSenderTest.getFrom().getEmail(), containsString(emailProperties.getFromEmail()));
+        assertThat(emailSenderTest.getTo().getEmail(), containsString(email));
     }
 
     @Test
@@ -58,13 +55,9 @@ public class ForgotPasswordControllerTest extends BaseUserIntegrationTest {
         forgotPasswordResource.forgotPassword(new ForgotPasswordRequest(username, null, null, null));
 
         // then
-        MimeMessage[] receivedMessages = getSmtpServerRule().getMessages();
-        assertEquals(1, receivedMessages.length);
-
-        MimeMessage current = receivedMessages[0];
-        assertThat(current.getSubject(), startsWith(emailProperties.getSubjectPrefix() + " "));
-        assertThat(current.getFrom()[0].toString(), containsString(emailProperties.getFromEmail()));
-        assertThat(current.getRecipients(Message.RecipientType.TO)[0].toString(), containsString(email));
+        assertThat(emailSenderTest.getSubject(), startsWith(emailProperties.getSubjectPrefix() + " "));
+        assertThat(emailSenderTest.getFrom().getEmail(), containsString(emailProperties.getFromEmail()));
+        assertThat(emailSenderTest.getTo().getEmail(), containsString(email));
     }
 
     @Test

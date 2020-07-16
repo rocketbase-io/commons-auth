@@ -11,14 +11,13 @@ import io.rocketbase.commons.exception.*;
 import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.service.SimpleTokenService;
 import io.rocketbase.commons.service.ValidationUserLookupService;
+import io.rocketbase.commons.service.email.EmailAddress;
 import io.rocketbase.commons.util.Nulls;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.passay.*;
 import org.springframework.util.StringUtils;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -155,10 +154,8 @@ public class DefaultValidationService implements ValidationService {
         if (StringUtils.isEmpty(email)) {
             errorCodes.add(EmailErrorCodes.INVALID);
         } else {
-            try {
-                InternetAddress emailAddr = new InternetAddress(email);
-                emailAddr.validate();
-            } catch (AddressException ex) {
+            EmailAddress emailAddr = new EmailAddress(email);
+            if (!emailAddr.isValid()) {
                 errorCodes.add(EmailErrorCodes.INVALID);
             }
             if (userLookupService.findByEmail(email).isPresent()) {

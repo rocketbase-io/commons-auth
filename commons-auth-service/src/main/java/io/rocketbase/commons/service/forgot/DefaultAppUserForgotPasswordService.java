@@ -10,7 +10,7 @@ import io.rocketbase.commons.exception.VerificationException;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.service.SimpleTokenService;
 import io.rocketbase.commons.service.SimpleTokenService.Token;
-import io.rocketbase.commons.service.email.EmailService;
+import io.rocketbase.commons.service.email.AuthEmailService;
 import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.util.Nulls;
 import lombok.Getter;
@@ -34,7 +34,7 @@ public class DefaultAppUserForgotPasswordService implements AppUserForgotPasswor
     private AppUserService appUserService;
 
     @Resource
-    private EmailService emailService;
+    private AuthEmailService emailService;
 
     @Resource
     private ApplicationEventPublisher applicationEventPublisher;

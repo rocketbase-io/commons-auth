@@ -1,5 +1,6 @@
 package io.rocketbase.commons.controller;
 
+import io.rocketbase.commons.BaseIntegrationTestPrefixed;
 import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.adapters.JwtTokenProvider;
 import io.rocketbase.commons.adapters.SimpleJwtTokenProvider;
@@ -9,8 +10,6 @@ import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.resource.AuthenticationResource;
 import io.rocketbase.commons.resource.LoginResource;
-import io.rocketbase.commons.test.AppUserPersistenceTestService;
-import io.rocketbase.commons.test.BaseUserIntegrationTest;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,13 +23,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
-public class AuthenticationControllerTest extends BaseUserIntegrationTest {
+public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
 
     @Resource
     private AuthenticationController authenticationController;
-
-    @Resource
-    private AppUserPersistenceTestService appUserPersistenceTestService;
 
     @Resource
     private ModifiedJwtTokenService modifiedJwtTokenService;

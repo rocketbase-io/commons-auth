@@ -4,8 +4,8 @@ import io.rocketbase.commons.config.GravatarProperties;
 import io.rocketbase.commons.service.avatar.GravatarService;
 import org.junit.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
 
 public class GravatarServiceTest {
 

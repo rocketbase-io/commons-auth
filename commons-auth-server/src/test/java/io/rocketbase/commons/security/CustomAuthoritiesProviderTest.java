@@ -1,10 +1,10 @@
 package io.rocketbase.commons.security;
 
+import io.rocketbase.commons.BaseIntegrationTestPrefixed;
 import io.rocketbase.commons.config.JwtProperties;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.model.SimpleAppUserToken;
-import io.rocketbase.commons.test.BaseIntegrationTest;
 import io.rocketbase.commons.util.RolesAuthoritiesConverter;
 import org.junit.Test;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,11 +15,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 
-public class CustomAuthoritiesProviderTest extends BaseIntegrationTest {
+public class CustomAuthoritiesProviderTest extends BaseIntegrationTestPrefixed {
 
     public CustomAuthoritiesProvider myOwnImplementation() {
         return new CustomAuthoritiesProvider() {
