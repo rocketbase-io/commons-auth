@@ -49,6 +49,7 @@ SOFTWARE.
         <module>commons-auth-forms</module>
         <module>commons-auth-service</module>
         <module>commons-auth-email-smtp</module>
+        <module>commons-auth-email-postmark</module>
     </modules>
 
     <licenses>

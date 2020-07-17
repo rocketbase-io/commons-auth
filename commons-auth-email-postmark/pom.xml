@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>commons-auth</artifactId>
+        <groupId>io.rocketbase.commons</groupId>
+        <version>LATEST-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>commons-auth-email-postmark</artifactId>
+
+    <properties>
+        <postmark-spring.version>0.0.1</postmark-spring.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.rocketbase.commons</groupId>
+            <artifactId>commons-auth-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.rocketbase.mail</groupId>
+            <artifactId>postmark-spring</artifactId>
+            <version>${postmark-spring.version}</version>
+        </dependency>
+    </dependencies>
+
+</project>
