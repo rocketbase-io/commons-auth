@@ -14,10 +14,10 @@ import java.util.concurrent.TimeUnit;
 
 public class ActiveUserStoreLocalCache implements ActiveUserStore {
 
-    private final Cache<String, Boolean> activeUsers;
+    protected final Cache<String, Boolean> activeUsers;
 
     @Resource
-    private ApplicationEventPublisher applicationEventPublisher;
+    protected ApplicationEventPublisher applicationEventPublisher;
 
     public ActiveUserStoreLocalCache(JwtProperties jwtProperties) {
         activeUsers = CacheBuilder.newBuilder()
