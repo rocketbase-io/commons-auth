@@ -1,8 +1,8 @@
 package io.rocketbase.commons.service.email;
 
-import io.rocketbase.commons.email.model.HtmlTextEmail;
 import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppUserReference;
+import io.rocketbase.mail.model.HtmlTextEmail;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;

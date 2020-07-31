@@ -100,7 +100,7 @@ SOFTWARE.
         <jjwt.version>0.11.2</jjwt.version>
         <guava.version>29.0-jre</guava.version>
         <passay.version>1.6.0</passay.version>
-        <email-template-builder.version>1.6.0</email-template-builder.version>
+        <email-template-builder.version>2.0.0-RC1</email-template-builder.version>
         <jacoco.version>0.8.5</jacoco.version>
     </properties>
 

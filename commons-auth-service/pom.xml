@@ -11,6 +11,10 @@
 
     <artifactId>commons-auth-service</artifactId>
 
+    <properties>
+        <simple-java-mail.version>6.4.0</simple-java-mail.version>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -20,7 +24,7 @@
         </dependency>
 
         <dependency>
-            <groupId>io.rocketbase.commons</groupId>
+            <groupId>io.rocketbase.mail</groupId>
             <artifactId>email-template-builder</artifactId>
             <version>${email-template-builder.version}</version>
         </dependency>
@@ -96,6 +100,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.simplejavamail</groupId>
+            <artifactId>simple-java-mail</artifactId>
+            <version>${simple-java-mail.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

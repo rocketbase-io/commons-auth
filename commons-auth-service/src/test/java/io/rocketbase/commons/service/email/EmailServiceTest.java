@@ -54,4 +54,7 @@ public class EmailServiceTest extends BaseIntegrationTest {
         assertThat(emailSenderTest.getSubject(), is(String.format("%s Registrierung bestätigen", emailProperties.getSubjectPrefix())));
         assertThat(emailSenderTest.getText(), containsString("Sie Ihre Registrierung durch einen Klick auf den"));
     }
+
+
+
 }

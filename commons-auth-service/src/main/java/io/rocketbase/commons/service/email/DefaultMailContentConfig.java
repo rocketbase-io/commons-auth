@@ -1,12 +1,13 @@
 package io.rocketbase.commons.service.email;
 
 import io.rocketbase.commons.config.EmailProperties;
-import io.rocketbase.commons.email.EmailTemplateBuilder;
-import io.rocketbase.commons.email.EmailTemplateBuilder.EmailTemplateConfigBuilder;
-import io.rocketbase.commons.email.model.HtmlTextEmail;
-import io.rocketbase.commons.email.template.ColorStyle;
 import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppUserReference;
+import io.rocketbase.mail.EmailTemplateBuilder;
+import io.rocketbase.mail.EmailTemplateBuilder.EmailTemplateConfigBuilder;
+import io.rocketbase.mail.Header;
+import io.rocketbase.mail.model.HtmlTextEmail;
+import io.rocketbase.mail.styling.ColorStyleSimple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -27,16 +28,18 @@ public class DefaultMailContentConfig implements MailContentConfig {
         Locale currentLocale = LocaleContextHolder.getLocale();
         EmailTemplateConfigBuilder builder = EmailTemplateBuilder.builder();
         // header
-        buildHeader(REGISTER, builder, messageSource.getMessage("auth.email.register.header", new Object[]{}, currentLocale));
+        buildHeader(REGISTER, builder);
+        // title
+        buildTitle(REGISTER, builder, messageSource.getMessage("auth.email.register.header", new Object[]{}, currentLocale));
         // intro text
-        builder.addText(messageSource.getMessage("auth.email.register.hi", new Object[]{user.getUsername()}, currentLocale)).and()
-                .addText(messageSource.getMessage("auth.email.register.pleaseVerifyAccount", new Object[]{}, currentLocale));
+        builder.text(messageSource.getMessage("auth.email.register.hi", new Object[]{user.getUsername()}, currentLocale)).and()
+                .text(messageSource.getMessage("auth.email.register.pleaseVerifyAccount", new Object[]{}, currentLocale));
         // button
         buildButton(REGISTER, builder, messageSource.getMessage("auth.email.register.button", new Object[]{}, currentLocale), actionUrl);
         // greeting / footer...
         return builder
-                .addText(getGreeting()).and()
-                .addFooter(getFooter(currentLocale)).center().and()
+                .text(getGreeting()).and()
+                .footerText(getFooter(currentLocale)).center().and()
                 .copyright(emailProperties.getCopyrightName()).url(emailProperties.getCopyrightUrl())
                 .build();
     }
@@ -52,15 +55,17 @@ public class DefaultMailContentConfig implements MailContentConfig {
         Locale currentLocale = LocaleContextHolder.getLocale();
         EmailTemplateConfigBuilder builder = EmailTemplateBuilder.builder();
         // header
-        buildHeader(FORGOT, builder, messageSource.getMessage("auth.email.forgot.header", new Object[]{}, currentLocale));
+        buildHeader(FORGOT, builder);
+        // title
+        buildTitle(FORGOT, builder, messageSource.getMessage("auth.email.forgot.header", new Object[]{}, currentLocale));
         // intro text
-        builder.addText(messageSource.getMessage("auth.email.forgot.hi", new Object[]{user.getUsername()}, currentLocale)).and()
-                .addText(messageSource.getMessage("auth.email.forgot.confirmPasswordChange", new Object[]{}, currentLocale));
+        builder.text(messageSource.getMessage("auth.email.forgot.hi", new Object[]{user.getUsername()}, currentLocale)).and()
+                .text(messageSource.getMessage("auth.email.forgot.confirmPasswordChange", new Object[]{}, currentLocale));
         // button
         buildButton(FORGOT, builder, messageSource.getMessage("auth.email.forgot.button", new Object[]{}, currentLocale), actionUrl);
         // greeting / footer...
-        return builder.addText(getGreeting()).and()
-                .addFooter(getFooter(currentLocale)).center().and()
+        return builder.text(getGreeting()).and()
+                .footerText(getFooter(currentLocale)).center().and()
                 .copyright(emailProperties.getCopyrightName()).url(emailProperties.getCopyrightUrl())
                 .build();
     }
@@ -76,23 +81,25 @@ public class DefaultMailContentConfig implements MailContentConfig {
         Locale currentLocale = LocaleContextHolder.getLocale();
         EmailTemplateConfigBuilder builder = EmailTemplateBuilder.builder();
         // header
-        buildHeader(INVITE, builder, messageSource.getMessage("auth.email.invite.header", new Object[]{getServiceName()}, currentLocale));
+        buildHeader(INVITE, builder);
+        // title
+        buildTitle(INVITE, builder, messageSource.getMessage("auth.email.invite.header", new Object[]{}, currentLocale));
         // intro text
-        builder.addText(messageSource.getMessage("auth.email.invite.welcome", new Object[]{invite.getDisplayName()}, currentLocale)).and()
-                .addText(messageSource.getMessage("auth.email.invite.youHaveInvitedBy", new Object[]{invite.getInvitor(), getServiceName()}, currentLocale)).and();
+        builder.text(messageSource.getMessage("auth.email.invite.welcome", new Object[]{invite.getDisplayName()}, currentLocale)).and()
+                .text(messageSource.getMessage("auth.email.invite.youHaveInvitedBy", new Object[]{invite.getInvitor(), getServiceName()}, currentLocale)).and();
         // invite message
         if (!StringUtils.isEmpty(invite.getMessage())) {
-            builder.addHtml("&nbsp;").and()
-                    .addText(messageSource.getMessage("auth.email.invite.messageFrom", new Object[]{invite.getInvitor()}, currentLocale)).center().italic().and()
-                    .addText(invite.getMessage()).center().italic().bold().and()
-                    .addHtml("&nbsp;");
+            builder.text("").and()
+                    .text(messageSource.getMessage("auth.email.invite.messageFrom", new Object[]{invite.getInvitor()}, currentLocale)).center().italic().and()
+                    .text(invite.getMessage()).center().italic().bold().and()
+                    .text("");
         }
-        builder.addText(messageSource.getMessage("auth.email.invite.createAccount", new Object[]{}, currentLocale));
+        builder.text(messageSource.getMessage("auth.email.invite.createAccount", new Object[]{}, currentLocale));
         // button
         buildButton(INVITE, builder, messageSource.getMessage("auth.email.invite.button", new Object[]{}, currentLocale), actionUrl);
         // greeting / footer...
-        return builder.addText(getGreeting()).and()
-                .addFooter(getFooterInvite(invite, currentLocale)).center().and()
+        return builder.text(getGreeting()).and()
+                .footerText(getFooterInvite(invite, currentLocale)).center().and()
                 .copyright(emailProperties.getCopyrightName()).url(emailProperties.getCopyrightUrl())
                 .build();
     }
@@ -103,51 +110,40 @@ public class DefaultMailContentConfig implements MailContentConfig {
         return messageSource.getMessage("auth.email.invite.subject", new Object[]{emailProperties.getSubjectPrefix(), invite.getInvitor()}, currentLocale).trim();
     }
 
-    protected ColorStyle getButtonColor(MailType type) {
+    protected ColorStyleSimple getButtonColor(MailType type) {
         switch (type) {
             case REGISTER:
-                return ColorStyle.BASE_STYLE;
+                return ColorStyleSimple.BLUE_STYLE;
             case FORGOT:
-                return new ColorStyle("fff", "E63946");
+                return ColorStyleSimple.RED_STYLE;
             case INVITE:
-                return new ColorStyle("fff", "7FA162");
+                return ColorStyleSimple.GREEN_STYLE;
         }
-        return ColorStyle.BASE_STYLE;
+        return ColorStyleSimple.BASE_STYLE;
     }
 
-    protected ColorStyle getHeaderColor(MailType type) {
-        switch (type) {
-            case REGISTER:
-                return ColorStyle.BASE_STYLE;
-            case FORGOT:
-                return new ColorStyle("fff", "E63946");
-            case INVITE:
-                return new ColorStyle("fff", "7FA162");
+    protected void buildHeader(MailType type, EmailTemplateConfigBuilder builder) {
+        EmailProperties.EmailLogo logo = emailProperties.getLogo();
+        if (logo != null && !StringUtils.isEmpty(logo.getSrc())) {
+            Header header = builder.header().logo(logo.getSrc()).text(getServiceName());
+            if (logo.getHeight() != null) {
+                header.logoHeight(logo.getHeight());
+            }
+            if (logo.getWidth() != null) {
+                header.logoWidth(logo.getWidth());
+            }
+        } else {
+            builder.header().text(getServiceName());
         }
-        return ColorStyle.BASE_STYLE;
     }
 
-    protected void buildHeader(MailType type, EmailTemplateConfigBuilder builder, String text) {
-        prependHeader(type, builder);
-        builder.header(text).color(getHeaderColor(type));
-        appendHeader(type, builder);
+    protected void buildTitle(MailType type, EmailTemplateConfigBuilder builder, String text) {
+        builder.text(text).h1();
     }
 
     protected void buildButton(MailType type, EmailTemplateConfigBuilder builder, String text, String actionUrl) {
-        builder.addButton(text, actionUrl).color(getButtonColor(type)).center();
+        builder.button(text, actionUrl).color(getButtonColor(type)).center();
         appendButton(type, builder);
-    }
-
-    /**
-     * could be used to add extra before header
-     */
-    protected void prependHeader(MailType type, EmailTemplateConfigBuilder builder) {
-    }
-
-    /**
-     * could be used to add extra after header
-     */
-    protected void appendHeader(MailType type, EmailTemplateConfigBuilder builder) {
     }
 
     /**
@@ -161,7 +157,7 @@ public class DefaultMailContentConfig implements MailContentConfig {
      * last text-line before footer
      */
     protected String getGreeting() {
-        return String.format("- %s", getServiceName());
+        return String.format("%s\n%s", messageSource.getMessage("auth.email.greeting", new Object[]{}, LocaleContextHolder.getLocale()), emailProperties.getGreetingFrom());
     }
 
     protected String getServiceName() {
