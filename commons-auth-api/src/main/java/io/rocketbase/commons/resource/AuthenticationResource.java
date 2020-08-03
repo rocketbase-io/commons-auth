@@ -8,6 +8,8 @@ import io.rocketbase.commons.dto.authentication.EmailChangeRequest;
 import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
 import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
 import io.rocketbase.commons.dto.authentication.UsernameChangeRequest;
+import io.rocketbase.commons.exception.EmailValidationException;
+import io.rocketbase.commons.exception.UsernameValidationException;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -64,7 +66,7 @@ public class AuthenticationResource implements BaseRestResource, AuthenticationA
     }
 
     @Override
-    public AppUserRead changeUsername(UsernameChangeRequest usernameChange) {
+    public AppUserRead changeUsername(UsernameChangeRequest usernameChange) throws UsernameValidationException {
         ResponseEntity<AppUserRead> response = restTemplate
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/change-username").toUriString(),
@@ -75,12 +77,12 @@ public class AuthenticationResource implements BaseRestResource, AuthenticationA
     }
 
     @Override
-    public ExpirationInfo<AppUserRead> changeEmail(EmailChangeRequest emailChange) {
+    public ExpirationInfo<AppUserRead> changeEmail(EmailChangeRequest emailChange) throws EmailValidationException {
         ResponseEntity<ExpirationInfo<AppUserRead>> response = restTemplate
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
-                                .path("/auth/change-mail").toUriString(),
-                        HttpMethod.GET,
-                        new HttpEntity<>(createHeaderWithLanguage()),
+                                .path("/auth/change-email").toUriString(),
+                        HttpMethod.PUT,
+                        new HttpEntity<>(emailChange, createHeaderWithLanguage()),
                         new ParameterizedTypeReference<ExpirationInfo<AppUserRead>>() {
                         });
         return response.getBody();

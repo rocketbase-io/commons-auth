@@ -6,6 +6,8 @@ import io.rocketbase.commons.dto.authentication.EmailChangeRequest;
 import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
 import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
 import io.rocketbase.commons.dto.authentication.UsernameChangeRequest;
+import io.rocketbase.commons.exception.EmailValidationException;
+import io.rocketbase.commons.exception.UsernameValidationException;
 
 public interface AuthenticationApi {
 
@@ -13,9 +15,9 @@ public interface AuthenticationApi {
 
     void changePassword(PasswordChangeRequest passwordChange);
 
-    AppUserRead changeUsername(UsernameChangeRequest usernameChange);
+    AppUserRead changeUsername(UsernameChangeRequest usernameChange) throws UsernameValidationException;
 
-    ExpirationInfo<AppUserRead> changeEmail(EmailChangeRequest emailChange);
+    ExpirationInfo<AppUserRead> changeEmail(EmailChangeRequest emailChange) throws EmailValidationException;
 
     AppUserRead verifyEmail(String verification);
 

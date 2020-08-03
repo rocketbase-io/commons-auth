@@ -1,16 +1,11 @@
 package io.rocketbase.commons.config;
 
-import io.rocketbase.commons.api.ForgotPasswordApi;
-import io.rocketbase.commons.api.InviteApi;
-import io.rocketbase.commons.api.RegistrationApi;
-import io.rocketbase.commons.api.ValidationApi;
+import io.rocketbase.commons.api.*;
 import io.rocketbase.commons.controller.AuthFormsController;
 import io.rocketbase.commons.controller.InviteFormsController;
 import io.rocketbase.commons.controller.RegistrationFormsController;
-import io.rocketbase.commons.resource.ForgotPasswordResource;
-import io.rocketbase.commons.resource.InviteResource;
-import io.rocketbase.commons.resource.RegistrationResource;
-import io.rocketbase.commons.resource.ValidationResource;
+import io.rocketbase.commons.controller.VerifyChangeFormsController;
+import io.rocketbase.commons.resource.*;
 import io.rocketbase.commons.util.Nulls;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +14,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @EnableConfigurationProperties({AuthProperties.class, FormsProperties.class, RegistrationProperties.class})
@@ -53,6 +49,14 @@ public class AuthFormAutoConfiguration {
     public InviteFormsController inviteFormsController(@Autowired(required = false) InviteApi inviteApi) {
         InviteApi api = Nulls.notNull(inviteApi, new InviteResource(authProperties.getBaseUrl()));
         return new InviteFormsController(formsProperties, registrationProperties, api);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(name = "auth.change.enabled", matchIfMissing = true)
+    public VerifyChangeFormsController verifyChangeFormsController(@Autowired(required = false) AuthenticationApi authenticationApi) {
+        AuthenticationApi api = Nulls.notNull(authenticationApi, new AuthenticationResource(authProperties.getBaseUrl(), new RestTemplate()));
+        return new VerifyChangeFormsController(formsProperties, registrationProperties, api);
     }
 
 }

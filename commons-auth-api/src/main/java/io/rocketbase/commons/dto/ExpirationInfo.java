@@ -33,7 +33,7 @@ public class ExpirationInfo<T> implements Serializable {
     }
 
     public boolean isExpired() {
-        return expires != null && Instant.now().isBefore(expires);
+        return expires != null && Instant.now().isAfter(expires);
     }
 
 }

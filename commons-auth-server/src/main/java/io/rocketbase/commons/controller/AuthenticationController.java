@@ -104,7 +104,7 @@ public class AuthenticationController implements BaseController {
                 .build());
     }
 
-    @RequestMapping(value = "/auth/verify-email", method = RequestMethod.GET, consumes = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/auth/verify-email", method = RequestMethod.GET)
     public ResponseEntity<AppUserRead> changeEmail(@RequestParam("verification") String verification) {
         AppUserEntity entity = changeAppUserWithConfirmService.confirmEmailChange(verification);
         return ResponseEntity.ok(appUserConverter.fromEntity(entity));

@@ -16,7 +16,7 @@ import java.util.*;
 
 public class AppUserPersistenceTestService implements AppUserPersistenceService<AppUserTestEntity> {
 
-    private Map<String, AppUserTestEntity> userMap = new HashMap<>();
+    private final Map<String, AppUserTestEntity> userMap = new HashMap<>();
 
     @Resource
     private PasswordEncoder passwordEncoder;
@@ -43,7 +43,7 @@ public class AppUserPersistenceTestService implements AppUserPersistenceService<
         AuthProperties authProperties = new AuthProperties();
 
         userMap.put("user", buildAppUser("user", authProperties.getRoleUser(), "user@rocketbase.io"));
-        userMap.put("admin", buildAppUser("admin", authProperties.getRoleAdmin(), "user@rocketbase.io"));
+        userMap.put("admin", buildAppUser("admin", authProperties.getRoleAdmin(), "admin@rocketbase.io"));
         AppUserTestEntity disabled = buildAppUser("disabled", authProperties.getRoleAdmin(), "disabled@rocketbase.io");
         disabled.setEnabled(false);
         userMap.put("disabled", disabled);

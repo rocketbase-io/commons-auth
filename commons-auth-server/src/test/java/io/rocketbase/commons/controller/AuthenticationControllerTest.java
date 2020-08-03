@@ -4,17 +4,24 @@ import io.rocketbase.commons.BaseIntegrationTestPrefixed;
 import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.adapters.JwtTokenProvider;
 import io.rocketbase.commons.adapters.SimpleJwtTokenProvider;
+import io.rocketbase.commons.dto.ExpirationInfo;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.*;
 import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.resource.AuthenticationResource;
+import io.rocketbase.commons.resource.BasicResponseErrorHandler;
 import io.rocketbase.commons.resource.LoginResource;
+import io.rocketbase.commons.service.change.DefaultChangeAppUserWithConfirmService;
+import io.rocketbase.commons.test.AppUserPersistenceTestService;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
+import io.rocketbase.commons.test.model.AppUserTestEntity;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +37,9 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
 
     @Resource
     private ModifiedJwtTokenService modifiedJwtTokenService;
+
+    @Resource
+    private AppUserPersistenceTestService appUserPersistenceTestService;
 
     @Test
     public void successLogin() {
@@ -245,5 +255,106 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
 
     }
 
+
+    @Test
+    public void changeUsername() {
+        // given
+        AppUserEntity user = getAppUser();
+        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
+        JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
+        AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
+
+        // when
+        String newUsername = "halli.galli";
+        AppUserRead appUserRead = resource.changeUsername(new UsernameChangeRequest(newUsername));
+
+        // then
+        assertThat(appUserRead.getUsername(), equalTo(newUsername));
+        assertThat(appUserPersistenceTestService.findById(appUserRead.getId()).get().getUsername(), equalTo(newUsername));
+    }
+
+    @Test
+    public void changeUsernameUsed() {
+        // given
+        AppUserEntity user = getAppUser();
+        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
+        JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
+        AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
+
+        // when
+        try {
+            resource.changeUsername(new UsernameChangeRequest("admin"));
+            throw new RuntimeException("should get error");
+        } catch (BadRequestException badRequestException) {
+            assertThat(badRequestException.getMessage(), equalTo("Username not fitting requirements"));
+            assertThat(badRequestException.getErrorResponse().getFirstFieldValue("newUsername"), notNullValue());
+        } catch (HttpClientErrorException e) {
+            assertThat(e.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST.value()));
+        }
+    }
+
+    @Test
+    public void changeEmailAddress() {
+        // given
+        AppUserEntity user = getAppUser();
+        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
+        JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
+        AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
+
+        // when
+        String newEmail = "new-email@rocketbase.io";
+        ExpirationInfo<AppUserRead> expirationInfo = resource.changeEmail(new EmailChangeRequest(newEmail));
+
+        // then
+        assertThat(expirationInfo.isExpired(), equalTo(false));
+        assertThat(expirationInfo.getExpires(), notNullValue());
+        AppUserTestEntity appUser = appUserPersistenceTestService.findById(expirationInfo.getDetail().getId()).get();
+        assertThat(appUser.getKeyValue(DefaultChangeAppUserWithConfirmService.CHANGEMAIL_VALUE), equalTo(newEmail));
+        assertThat(appUser.getEmail(), equalTo(user.getEmail()));
+
+        String token = appUser.getKeyValue(DefaultChangeAppUserWithConfirmService.CHANGEMAIL_TOKEN);
+        AppUserRead appUserRead = new AuthenticationResource(getBaseUrl(), new RestTemplate()).verifyEmail(token);
+        assertThat(appUserRead.getEmail(), equalTo(newEmail));
+        assertThat(appUserPersistenceTestService.findById(expirationInfo.getDetail().getId()).get().getEmail(), equalTo(newEmail));
+    }
+
+    @Test
+    public void changeEmailAddressUsed() {
+        // given
+        AppUserEntity user = getAppUser();
+        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
+        JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
+        AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
+
+        // when
+        try {
+            resource.changeEmail(new EmailChangeRequest("admin@rocketbase.io"));
+            throw new RuntimeException("should get error");
+        } catch (BadRequestException badRequestException) {
+            assertThat(badRequestException.getMessage(), equalTo("Email is used or incorrect"));
+            assertThat(badRequestException.getErrorResponse().getFirstFieldValue("newEmail"), notNullValue());
+        } catch (HttpClientErrorException e) {
+            assertThat(e.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST.value()));
+        }
+    }
+
+    @Test
+    public void changeEmailAddressInvalidVerification() {
+        // given
+        String invalidToken = "invalidABC";
+        // when
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.setErrorHandler(new BasicResponseErrorHandler());
+            new AuthenticationResource(getBaseUrl(), restTemplate)
+                    .verifyEmail(invalidToken);
+            throw new RuntimeException("should get error");
+        } catch (BadRequestException badRequestException) {
+            assertThat(badRequestException.getMessage(), equalTo("Verification is invalid or expired"));
+            assertThat(badRequestException.getErrorResponse().getFirstFieldValue("verification"), notNullValue());
+        } catch (HttpClientErrorException e) {
+            assertThat(e.getStatusCode(), equalTo(HttpStatus.BAD_REQUEST.value()));
+        }
+    }
 
 }

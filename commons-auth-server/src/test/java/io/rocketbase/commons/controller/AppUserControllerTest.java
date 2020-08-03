@@ -24,7 +24,6 @@ import static org.hamcrest.Matchers.*;
 
 public class AppUserControllerTest extends BaseIntegrationTestPrefixed {
 
-
     @Resource
     private AppUserPersistenceTestService appUserPersistenceTestService;
 
