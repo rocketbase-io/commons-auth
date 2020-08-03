@@ -16,6 +16,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import javax.annotation.Resource;
+import java.time.Instant;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -41,7 +42,7 @@ public class RegistrationControllerTest extends BaseIntegrationTestPrefixed {
         assertThat(response, notNullValue());
         AppUserTestEntity appUser = appUserPersistenceTestService.findByUsername("new-user").get();
         assertThat(appUser.isEnabled(), equalTo(!new RegistrationProperties().isVerification()));
-        assertThat(response.getExpiresAfter(), equalTo(new RegistrationProperties().getVerificationExpiration()));
+        assertThat(response.getExpires().isAfter(Instant.now()), equalTo(true));
         assertThat(appUser.getKeyValueMap().getOrDefault(DefaultAppUserService.REGISTRATION_KV, null), notNullValue());
     }
 

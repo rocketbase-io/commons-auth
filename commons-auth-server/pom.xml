@@ -36,12 +36,6 @@
         </dependency>
 
         <dependency>
-            <groupId>io.rocketbase.commons</groupId>
-            <artifactId>email-template-builder</artifactId>
-            <version>${email-template-builder.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-commons</artifactId>
         </dependency>
