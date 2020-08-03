@@ -127,6 +127,12 @@ Forms configuration:
 
 Containing nearly all services and functions to perform any task within the application - services for working with entities (without db-layer), performing invites, forgot/password-reset/registration flows,  sending emails etc.
 
+| Layout | Emails |
+|:-------:|:-------:|
+| ![](assets/email/email-verify.png) <br><br> confirm email after registration|  ![](assets/email/email-change-password.png)  <br><br> request password reset |
+| ![](assets/email/email-invite.png)  <br><br> invite person to application |  ![](assets/email/email-change-email.png)  <br><br> confirm new email-address |
+
+
 ## commons-auth-email-smtp
 
 Preconfigures an EmailSender that uses spring-boot-starter-mail to sent emails via SMTP.
