@@ -9,6 +9,7 @@ import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.EmailValidationException;
 import io.rocketbase.commons.exception.PasswordValidationException;
 import io.rocketbase.commons.exception.RegistrationException;
+import io.rocketbase.commons.exception.UsernameValidationException;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.model.AppUserReference;
 import io.rocketbase.commons.service.ValidationUserLookupService;
@@ -168,6 +169,10 @@ public interface AppUserService extends UserDetailsService, ValidationUserLookup
      * @param username
      */
     void processRegistrationVerification(String username);
+
+    AppUserEntity changeUsername(String usernameOrId, String newUsername) throws UsernameValidationException;
+
+    AppUserEntity changeEmail(String usernameOrId, String newEmail) throws EmailValidationException;
 
     /**
      * delete a user from database

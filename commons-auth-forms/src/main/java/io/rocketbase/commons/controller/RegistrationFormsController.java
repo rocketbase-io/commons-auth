@@ -4,6 +4,7 @@ import io.rocketbase.commons.api.RegistrationApi;
 import io.rocketbase.commons.config.FormsProperties;
 import io.rocketbase.commons.config.RegistrationProperties;
 import io.rocketbase.commons.dto.ErrorResponse;
+import io.rocketbase.commons.dto.ExpirationInfo;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.BadRequestException;
@@ -30,7 +31,7 @@ import java.io.Serializable;
 public class RegistrationFormsController extends AbstractFormsController {
 
     private final RegistrationApi registrationApi;
-    
+
     @Value("${auth.forms.prefix:}")
     private String formsPrefix;
 
@@ -59,8 +60,8 @@ public class RegistrationFormsController extends AbstractFormsController {
                     String verificationUrl = UrlParts.getBaseUrl(request) + UrlParts.ensureStartsAndEndsWithSlash(formsPrefix) + "verification";
                     registrationRequest.setVerificationUrl(verificationUrl);
 
-                    AppUserRead user = registrationApi.register(registrationRequest);
-                    model.addAttribute("needsVerification", !user.isEnabled());
+                    ExpirationInfo<AppUserRead> expirationInfo = registrationApi.register(registrationRequest);
+                    model.addAttribute("needsVerification", !expirationInfo.getDetail().isEnabled());
                     model.addAttribute("expiresAfter", getRegistrationProperties().getVerificationExpiration());
                     return "registration-success";
                 } catch (BadRequestException badRequest) {

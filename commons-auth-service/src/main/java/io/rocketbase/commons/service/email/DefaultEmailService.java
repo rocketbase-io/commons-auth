@@ -47,6 +47,13 @@ public class DefaultEmailService implements AuthEmailService {
         sentEmail(new EmailAddress(invite.getEmail()), mailContentConfig.inviteSubject(invite), htmlTextEmail);
     }
 
+    @Override
+    public void sentChangeEmailAddressEmail(AppUserReference user, String newEmailAddress, String verificationUrl) {
+        HtmlTextEmail htmlTextEmail = mailContentConfig.changeEmail(user, newEmailAddress, verificationUrl);
+
+        sentEmail(new EmailAddress(newEmailAddress), mailContentConfig.changeEmailSubject(user), htmlTextEmail);
+    }
+
     public void sentEmail(EmailAddress to, String subject, HtmlTextEmail htmlTextEmail) {
         emailSender.sentEmail(to, subject, htmlTextEmail.getHtml(), htmlTextEmail.getText(), getFrom());
     }

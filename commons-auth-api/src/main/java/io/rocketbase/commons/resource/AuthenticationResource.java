@@ -2,9 +2,13 @@ package io.rocketbase.commons.resource;
 
 import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.api.AuthenticationApi;
+import io.rocketbase.commons.dto.ExpirationInfo;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
+import io.rocketbase.commons.dto.authentication.EmailChangeRequest;
 import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
 import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
+import io.rocketbase.commons.dto.authentication.UsernameChangeRequest;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -57,6 +61,41 @@ public class AuthenticationResource implements BaseRestResource, AuthenticationA
                         HttpMethod.PUT,
                         new HttpEntity<>(passwordChange, createHeaderWithLanguage()),
                         Void.class);
+    }
+
+    @Override
+    public AppUserRead changeUsername(UsernameChangeRequest usernameChange) {
+        ResponseEntity<AppUserRead> response = restTemplate
+                .exchange(createUriComponentsBuilder(baseAuthApiUrl)
+                                .path("/auth/change-username").toUriString(),
+                        HttpMethod.PUT,
+                        new HttpEntity<>(usernameChange, createHeaderWithLanguage()),
+                        AppUserRead.class);
+        return response.getBody();
+    }
+
+    @Override
+    public ExpirationInfo<AppUserRead> changeEmail(EmailChangeRequest emailChange) {
+        ResponseEntity<ExpirationInfo<AppUserRead>> response = restTemplate
+                .exchange(createUriComponentsBuilder(baseAuthApiUrl)
+                                .path("/auth/change-mail").toUriString(),
+                        HttpMethod.GET,
+                        new HttpEntity<>(createHeaderWithLanguage()),
+                        new ParameterizedTypeReference<ExpirationInfo<AppUserRead>>() {
+                        });
+        return response.getBody();
+    }
+
+    @Override
+    public AppUserRead verifyEmail(String verification) {
+        ResponseEntity<AppUserRead> response = restTemplate
+                .exchange(createUriComponentsBuilder(baseAuthApiUrl)
+                                .path("/auth/verify-email")
+                                .queryParam("verification", verification).toUriString(),
+                        HttpMethod.GET,
+                        new HttpEntity<>(createHeaderWithLanguage()),
+                        AppUserRead.class);
+        return response.getBody();
     }
 
     /**

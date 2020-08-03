@@ -28,6 +28,12 @@ public interface FeedbackActionService {
             case INVITE:
                 configuredUrl = getAuthProperties().getInviteUrl();
                 break;
+            case CHANGE_EMAIL:
+                configuredUrl = getAuthProperties().getChangeEmailUrl();
+                break;
+            case CHANGE_USERNAME:
+                configuredUrl = getAuthProperties().getChangeUsernameUrl();
+                break;
         }
 
         String result;
@@ -49,13 +55,15 @@ public interface FeedbackActionService {
 
         VERIFICATION_REGISTRATION("/verification", "verification"),
         PASSWORD_RESET("/reset-password", "verification"),
-        INVITE("/invite", "inviteId");
+        INVITE("/invite", "inviteId"),
+        CHANGE_EMAIL("/change-email", "verification"),
+        CHANGE_USERNAME("/change-username", "verification");
 
         @Getter
-        private String apiPath;
+        private final String apiPath;
 
         @Getter
-        private String parameterName;
+        private final String parameterName;
 
         ActionType(String apiPath, String parameterName) {
             this.apiPath = apiPath;

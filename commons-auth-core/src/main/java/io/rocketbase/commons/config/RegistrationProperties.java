@@ -10,8 +10,17 @@ import org.springframework.validation.annotation.Validated;
 public class RegistrationProperties {
 
     private boolean enabled = true;
+
+    /**
+     * should use verify it's email-adress
+     */
     private boolean verification = true;
+
+    /**
+     * in minutes - default 1 day
+     */
     private long verificationExpiration = 1440;
+
     private String role = "USER";
 
 }

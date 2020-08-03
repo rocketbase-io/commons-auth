@@ -4,6 +4,8 @@ import io.rocketbase.commons.service.auth.DefaultLoginService;
 import io.rocketbase.commons.service.auth.LoginService;
 import io.rocketbase.commons.service.avatar.AvatarService;
 import io.rocketbase.commons.service.avatar.GravatarService;
+import io.rocketbase.commons.service.change.ChangeAppUserWithConfirmService;
+import io.rocketbase.commons.service.change.DefaultChangeAppUserWithConfirmService;
 import io.rocketbase.commons.service.email.*;
 import io.rocketbase.commons.service.forgot.AppUserForgotPasswordService;
 import io.rocketbase.commons.service.forgot.DefaultAppUserForgotPasswordService;
@@ -132,5 +134,10 @@ public class AuthServiceAutoConfiguration {
         return new DefaultImpersonateService();
     }
 
+    @Bean
+    @ConditionalOnMissingBean
+    public ChangeAppUserWithConfirmService changeAppUserWithConfirmService() {
+        return new DefaultChangeAppUserWithConfirmService(authProperties);
+    }
 
 }

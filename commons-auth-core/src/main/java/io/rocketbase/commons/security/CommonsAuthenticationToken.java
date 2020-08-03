@@ -34,4 +34,11 @@ public class CommonsAuthenticationToken extends AbstractAuthenticationToken {
         return principal.getUsername();
     }
 
+    /**
+     * shortcut for id of token
+     */
+    public String getId() {
+        return principal.getId();
+    }
+
 }

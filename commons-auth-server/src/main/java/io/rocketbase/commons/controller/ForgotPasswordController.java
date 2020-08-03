@@ -1,9 +1,13 @@
 package io.rocketbase.commons.controller;
 
 
+import io.rocketbase.commons.converter.AppUserConverter;
+import io.rocketbase.commons.dto.ExpirationInfo;
+import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.forgot.ForgotPasswordRequest;
 import io.rocketbase.commons.dto.forgot.PerformPasswordResetRequest;
-import io.rocketbase.commons.service.forgot.DefaultAppUserForgotPasswordService;
+import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.service.forgot.AppUserForgotPasswordService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,12 +29,18 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class ForgotPasswordController implements BaseController {
 
     @Resource
-    private DefaultAppUserForgotPasswordService appUserForgotPasswordService;
+    private AppUserForgotPasswordService appUserForgotPasswordService;
+
+    @Resource
+    private AppUserConverter appUserConverter;
 
     @RequestMapping(value = "/auth/forgot-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> forgotPassword(HttpServletRequest request, @RequestBody @NotNull @Validated ForgotPasswordRequest forgotPassword) {
-        appUserForgotPasswordService.requestPasswordReset(forgotPassword, getBaseUrl(request));
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<ExpirationInfo<AppUserRead>> forgotPassword(HttpServletRequest request, @RequestBody @NotNull @Validated ForgotPasswordRequest forgotPassword) {
+        ExpirationInfo<AppUserEntity> expirationInfo = appUserForgotPasswordService.requestPasswordReset(forgotPassword, getBaseUrl(request));
+        return ResponseEntity.ok(ExpirationInfo.<AppUserRead>builder()
+                .expires(expirationInfo.getExpires())
+                .detail(appUserConverter.fromEntity(expirationInfo.getDetail()))
+                .build());
     }
 
     @RequestMapping(value = "/auth/reset-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)

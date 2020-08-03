@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta name="msapplication-TileColor" content="#ffffff"/>
+    <meta name="theme-color" content="#ffffff"/>
+    <title th:text="#{auth.emailChange.title(${title})}"></title>
+    <link href="/assets/commons-auth.css" rel="stylesheet">
+    <link href="../META-INF/resources/assets/commons-auth.css" rel="stylesheet">
+</head>
+<body>
+
+<section class="hero is-fullheight">
+    <div class="hero-body">
+        <div class="container has-text-centered">
+            <div class="column is-4 is-offset-4">
+                <div class="box">
+                    <figure class="image avatar is-128x128">
+                        <img th:src="${logoSrc}" class="is-rounded">
+                    </figure>
+
+
+                    <article class="message is-success" th:if="${valid}">
+                        <div class="message-body">
+                            <p  th:text="#{auth.emailChange.success.headline}">Successfully changed email-adress *Yeah*</p>
+                            <p th:text="#{auth.emailChange.success.info}" class="light">Your old email-adress will not get used any longer.</p>
+                        </div>
+                    </article>
+
+                    <article class="message is-danger" th:unless="${valid}">
+                        <div class="message-body" th:text="#{auth.emailChange.invalidOrExpired}">
+                            Verification is expired please request a new email-change to get a valid link!
+                        </div>
+                    </article>
+
+                </div>
+                <p class="has-text-grey">
+                    <a th:href="@{/login}" th:text="#{auth.login}">Login</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+</body>
+</html>

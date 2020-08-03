@@ -11,4 +11,6 @@ public interface AuthEmailService {
 
     void sentInviteEmail(AppInviteEntity invite, String verificationUrl);
 
+    void sentChangeEmailAddressEmail(AppUserReference user, String newEmailAddress, String verificationUrl);
+
 }

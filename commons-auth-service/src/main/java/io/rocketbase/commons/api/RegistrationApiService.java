@@ -1,6 +1,7 @@
 package io.rocketbase.commons.api;
 
 import io.rocketbase.commons.converter.AppUserConverter;
+import io.rocketbase.commons.dto.ExpirationInfo;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
@@ -17,9 +18,12 @@ public class RegistrationApiService implements RegistrationApi, BaseApiService {
     private final JwtTokenService jwtTokenService;
 
     @Override
-    public AppUserRead register(RegistrationRequest registration) {
-        AppUserEntity entity = registrationService.register(registration, getBaseUrl());
-        return converter.fromEntity(entity);
+    public ExpirationInfo<AppUserRead> register(RegistrationRequest registration) {
+        ExpirationInfo<AppUserEntity> expirationInfo = registrationService.register(registration, getBaseUrl());
+        return ExpirationInfo.<AppUserRead>builder()
+                .expires(expirationInfo.getExpires())
+                .detail(converter.fromEntity(expirationInfo.getDetail()))
+                .build();
     }
 
     @Override

@@ -18,4 +18,8 @@ public interface MailContentConfig {
 
     String inviteSubject(AppInviteEntity invite);
 
+    HtmlTextEmail changeEmail(AppUserReference user, String newEmailAddress, String actionUrl);
+
+    String changeEmailSubject(AppUserReference user);
+
 }

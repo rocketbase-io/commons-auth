@@ -33,6 +33,11 @@ public class AuthProperties {
     private String prefix = "";
 
     /**
+     * should use verify it's email-adress
+     */
+    private boolean verifyEmail = true;
+
+    /**
      * full qualified url to a custom UI that proceed the verification<br>
      * ?verification=VALUE will get append
      */
@@ -51,12 +56,34 @@ public class AuthProperties {
     private String inviteUrl = null;
 
     /**
+     * full qualified url to a custom UI that proceed the change email<br>
+     * ?inviteId=VALUE will get append
+     */
+    private String changeEmailUrl = null;
+
+    /**
+     * full qualified url to a custom UI that proceed the change username<br>
+     * ?inviteId=VALUE will get append
+     */
+    private String changeUsernameUrl = null;
+
+    /**
      * in minutes
      */
     private long passwordResetExpiration = 60;
 
     /**
      * in minutes
+     */
+    private long changeEmailExpiration = 60;
+
+    /**
+     * in minutes
+     */
+    private long changeUsernameExpiration = 60;
+
+    /**
+     * in minutes - default 7 days
      */
     private long inviteExpiration = 10080;
 
@@ -83,7 +110,8 @@ public class AuthProperties {
                 prefixPath + "auth/validate/*",
                 prefixPath + "auth/register",
                 prefixPath + "auth/invite",
-                prefixPath + "auth/verify"
+                prefixPath + "auth/verify",
+                prefixPath + "auth/verify-email"
         };
     }
 
@@ -97,7 +125,9 @@ public class AuthProperties {
                 prefixPath + "auth/me",
                 prefixPath + "auth/refresh",
                 prefixPath + "auth/update-profile",
-                prefixPath + "auth/change-password"
+                prefixPath + "auth/change-password",
+                prefixPath + "auth/change-username",
+                prefixPath + "auth/change-email"
         };
     }
 
@@ -136,6 +166,7 @@ public class AuthProperties {
                 prefixPath + "api/user-search/*"
         };
     }
+
     /**
      * quick help to configure login spring security<br>
      * endpoints login and oauth

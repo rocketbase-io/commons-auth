@@ -1,9 +1,11 @@
 package io.rocketbase.commons.resource;
 
 import io.rocketbase.commons.api.RegistrationApi;
+import io.rocketbase.commons.dto.ExpirationInfo;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -34,13 +36,13 @@ public class RegistrationResource implements BaseRestResource, RegistrationApi {
     }
 
     @Override
-    public AppUserRead register(RegistrationRequest registration) {
-        ResponseEntity<AppUserRead> response = getRestTemplate()
+    public ExpirationInfo<AppUserRead> register(RegistrationRequest registration) {
+        ResponseEntity<ExpirationInfo<AppUserRead>> response = getRestTemplate()
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/register").toUriString(),
                         HttpMethod.POST,
                         new HttpEntity<>(registration, createHeaderWithLanguage()),
-                        AppUserRead.class);
+                        new ParameterizedTypeReference<ExpirationInfo<AppUserRead>>() {});
         return response.getBody();
     }
 

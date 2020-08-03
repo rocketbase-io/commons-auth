@@ -15,10 +15,7 @@ import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
 import io.rocketbase.commons.event.PasswordEvent;
 import io.rocketbase.commons.event.UpdateProfileEvent;
-import io.rocketbase.commons.exception.EmailValidationException;
-import io.rocketbase.commons.exception.NotFoundException;
-import io.rocketbase.commons.exception.PasswordValidationException;
-import io.rocketbase.commons.exception.RegistrationException;
+import io.rocketbase.commons.exception.*;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.model.AppUserReference;
 import io.rocketbase.commons.service.AppUserPersistenceService;
@@ -384,6 +381,30 @@ public class DefaultAppUserService implements AppUserService {
         invalidateCache(entity);
 
         appUserPersistenceService.save(entity);
+    }
+
+    @Override
+    public AppUserEntity changeUsername(String userId, String newUsername) throws UsernameValidationException {
+        AppUserEntity entity = appUserPersistenceService.findById(userId).orElseThrow(NotFoundException::new);
+        // invalidate will old values
+        invalidateCache(entity);
+
+        validationService.usernameIsValid("newUsername", newUsername);
+        entity.setUsername(newUsername);
+
+        return appUserPersistenceService.save(entity);
+    }
+
+    @Override
+    public AppUserEntity changeEmail(String userId, String newEmail) throws EmailValidationException {
+        AppUserEntity entity = appUserPersistenceService.findById(userId).orElseThrow(NotFoundException::new);
+        // invalidate will old values
+        invalidateCache(entity);
+
+        validationService.emailIsValid("newEmail", newEmail);
+        entity.setEmail(newEmail);
+
+        return appUserPersistenceService.save(entity);
     }
 
     @Override

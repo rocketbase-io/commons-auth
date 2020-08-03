@@ -109,4 +109,21 @@ public class MailContentConfigTest extends BaseIntegrationTest {
         assertThat(subject, notNullValue());
     }
 
+
+    @Test
+    public void changeEmail() {
+        // given
+        String actionUrl = "http://localhost:8080/?action=change-mail";
+        AppUserReference appUserReference = new SimpleAppUserReference("id", "username", "firstName", "lastName", "email@email.com", null);
+
+        // when
+        HtmlTextEmail htmlTextEmail = mailContentConfig.changeEmail(appUserReference, "new-email@rocketbase.com", actionUrl);
+        String subject = mailContentConfig.changeEmailSubject(appUserReference);
+        sentEmail(subject, htmlTextEmail);
+
+        // then
+        assertThat(htmlTextEmail, notNullValue());
+        assertThat(subject, notNullValue());
+    }
+
 }

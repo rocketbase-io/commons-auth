@@ -2,6 +2,7 @@ package io.rocketbase.commons.service.forgot;
 
 import com.google.common.collect.ImmutableMap;
 import io.rocketbase.commons.config.AuthProperties;
+import io.rocketbase.commons.dto.ExpirationInfo;
 import io.rocketbase.commons.dto.forgot.ForgotPasswordRequest;
 import io.rocketbase.commons.dto.forgot.PerformPasswordResetRequest;
 import io.rocketbase.commons.event.PasswordEvent;
@@ -19,6 +20,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import static io.rocketbase.commons.event.PasswordEvent.PasswordProcessType.PROCEED_RESET;
 import static io.rocketbase.commons.event.PasswordEvent.PasswordProcessType.REQUEST_RESET;
@@ -40,7 +43,7 @@ public class DefaultAppUserForgotPasswordService implements AppUserForgotPasswor
     private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    public AppUserEntity requestPasswordReset(ForgotPasswordRequest forgotPassword, String baseUrl) {
+    public ExpirationInfo<AppUserEntity> requestPasswordReset(ForgotPasswordRequest forgotPassword, String baseUrl) {
         AppUserEntity appUser = null;
         if (forgotPassword.getUsername() != null) {
             appUser = appUserService.getByUsername(forgotPassword.getUsername());
@@ -50,6 +53,8 @@ public class DefaultAppUserForgotPasswordService implements AppUserForgotPasswor
         if (appUser == null || !appUser.isEnabled()) {
             throw new UnknownUserException(!StringUtils.isEmpty(forgotPassword.getEmail()), !StringUtils.isEmpty(forgotPassword.getUsername()));
         }
+
+        Instant expires = Instant.now().plus(authProperties.getPasswordResetExpiration(), ChronoUnit.MINUTES);
         String token = SimpleTokenService.generateToken(appUser.getUsername(), authProperties.getPasswordResetExpiration());
         appUserService.updateKeyValues(appUser.getUsername(), ImmutableMap.of(FORGOTPW_KV, token));
 
@@ -57,7 +62,10 @@ public class DefaultAppUserForgotPasswordService implements AppUserForgotPasswor
 
         applicationEventPublisher.publishEvent(new PasswordEvent(this, appUser, REQUEST_RESET));
 
-        return appUser;
+        return ExpirationInfo.<AppUserEntity>builder()
+                .expires(expires)
+                .detail(appUser)
+                .build();
     }
 
     @Override

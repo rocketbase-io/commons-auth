@@ -1,5 +1,6 @@
 package io.rocketbase.commons.api;
 
+import io.rocketbase.commons.dto.ExpirationInfo;
 import io.rocketbase.commons.dto.forgot.ForgotPasswordRequest;
 import io.rocketbase.commons.dto.forgot.PerformPasswordResetRequest;
 import io.rocketbase.commons.service.forgot.AppUserForgotPasswordService;
@@ -11,8 +12,8 @@ public class ForgotPasswordApiService implements ForgotPasswordApi, BaseApiServi
     private final AppUserForgotPasswordService forgotPasswordService;
 
     @Override
-    public void forgotPassword(ForgotPasswordRequest forgotPassword) {
-        forgotPasswordService.requestPasswordReset(forgotPassword, getBaseUrl());
+    public ExpirationInfo forgotPassword(ForgotPasswordRequest forgotPassword) {
+        return forgotPasswordService.requestPasswordReset(forgotPassword, getBaseUrl());
     }
 
     @Override

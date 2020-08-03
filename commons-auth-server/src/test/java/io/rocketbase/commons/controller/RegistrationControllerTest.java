@@ -2,6 +2,7 @@ package io.rocketbase.commons.controller;
 
 import io.rocketbase.commons.BaseIntegrationTestPrefixed;
 import io.rocketbase.commons.config.RegistrationProperties;
+import io.rocketbase.commons.dto.ExpirationInfo;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
@@ -34,12 +35,13 @@ public class RegistrationControllerTest extends BaseIntegrationTestPrefixed {
                 .password("r0cketB@se")
                 .build();
         // when
-        AppUserRead response = new RegistrationResource(getBaseUrl()).register(registration);
+        ExpirationInfo<AppUserRead> response = new RegistrationResource(getBaseUrl()).register(registration);
 
         // then
         assertThat(response, notNullValue());
         AppUserTestEntity appUser = appUserPersistenceTestService.findByUsername("new-user").get();
         assertThat(appUser.isEnabled(), equalTo(!new RegistrationProperties().isVerification()));
+        assertThat(response.getExpiresAfter(), equalTo(new RegistrationProperties().getVerificationExpiration()));
         assertThat(appUser.getKeyValueMap().getOrDefault(DefaultAppUserService.REGISTRATION_KV, null), notNullValue());
     }
 
@@ -71,7 +73,7 @@ public class RegistrationControllerTest extends BaseIntegrationTestPrefixed {
                 .password("r0cketB@se")
                 .build(); // when
         try {
-            AppUserRead response = new RegistrationResource(getBaseUrl()).register(registration);
+            new RegistrationResource(getBaseUrl()).register(registration);
             // then
             Assert.fail("should have thrown RegistrationException");
         } catch (BadRequestException e) {
@@ -88,7 +90,7 @@ public class RegistrationControllerTest extends BaseIntegrationTestPrefixed {
                 .password("r0cket")
                 .build(); // when
         try {
-            AppUserRead response = new RegistrationResource(getBaseUrl()).register(registration);
+            new RegistrationResource(getBaseUrl()).register(registration);
             // then
             Assert.fail("should have thrown RegistrationException");
         } catch (BadRequestException e) {

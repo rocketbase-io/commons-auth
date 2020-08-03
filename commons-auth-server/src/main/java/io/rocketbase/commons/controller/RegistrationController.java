@@ -1,6 +1,7 @@
 package io.rocketbase.commons.controller;
 
 import io.rocketbase.commons.converter.AppUserConverter;
+import io.rocketbase.commons.dto.ExpirationInfo;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
@@ -36,9 +37,12 @@ public class RegistrationController implements BaseController {
 
     @RequestMapping(method = RequestMethod.POST, path = "/auth/register", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<AppUserRead> register(HttpServletRequest request, @RequestBody @NotNull @Validated RegistrationRequest registration) {
-        AppUserEntity entity = registrationService.register(registration, getBaseUrl(request));
-        return ResponseEntity.ok(appUserConverter.fromEntity(entity));
+    public ResponseEntity<ExpirationInfo<AppUserRead>> register(HttpServletRequest request, @RequestBody @NotNull @Validated RegistrationRequest registration) {
+        ExpirationInfo<AppUserEntity> expirationInfo = registrationService.register(registration, getBaseUrl(request));
+        return ResponseEntity.ok(ExpirationInfo.<AppUserRead>builder()
+                .expires(expirationInfo.getExpires())
+                .detail(appUserConverter.fromEntity(expirationInfo.getDetail()))
+                .build());
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/verify")

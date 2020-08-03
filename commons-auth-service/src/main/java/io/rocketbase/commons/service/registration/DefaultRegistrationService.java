@@ -3,6 +3,7 @@ package io.rocketbase.commons.service.registration;
 import com.google.common.collect.ImmutableMap;
 import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.config.RegistrationProperties;
+import io.rocketbase.commons.dto.ExpirationInfo;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.event.RegistrationEvent;
 import io.rocketbase.commons.exception.VerificationException;
@@ -17,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 
 import javax.annotation.Resource;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 import static io.rocketbase.commons.event.RegistrationEvent.RegistrationProcessType.REGISTER;
 import static io.rocketbase.commons.event.RegistrationEvent.RegistrationProcessType.VERIFIED;
@@ -39,10 +42,14 @@ public class DefaultRegistrationService implements RegistrationService {
     @Resource
     private ApplicationEventPublisher applicationEventPublisher;
 
-    public AppUserEntity register(RegistrationRequest registration, String baseUrl) {
+    public ExpirationInfo<AppUserEntity> register(RegistrationRequest registration, String baseUrl) {
         AppUserEntity entity = appUserService.registerUser(registration);
+
+        ExpirationInfo<AppUserEntity> expirationInfo = new ExpirationInfo<>(null, entity);
         if (registrationProperties.isVerification()) {
             try {
+                expirationInfo.setExpires(Instant.now().plus(registrationProperties.getVerificationExpiration(), ChronoUnit.MINUTES));
+
                 String token = SimpleTokenService.generateToken(registration.getUsername(), registrationProperties.getVerificationExpiration());
                 appUserService.updateKeyValues(entity.getUsername(), ImmutableMap.of(REGISTRATION_KV, token));
 
@@ -55,7 +62,7 @@ public class DefaultRegistrationService implements RegistrationService {
         }
         applicationEventPublisher.publishEvent(new RegistrationEvent(this, entity, REGISTER));
 
-        return entity;
+        return expirationInfo;
     }
 
     public AppUserEntity verifyRegistration(String verification) throws VerificationException {

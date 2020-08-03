@@ -5,6 +5,7 @@ import io.rocketbase.commons.converter.AppInviteConverter;
 import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.auth.LoginService;
+import io.rocketbase.commons.service.change.ChangeAppUserWithConfirmService;
 import io.rocketbase.commons.service.forgot.AppUserForgotPasswordService;
 import io.rocketbase.commons.service.impersonate.ImpersonateService;
 import io.rocketbase.commons.service.invite.AppInviteService;
@@ -50,6 +51,9 @@ public class AuthApiAutoConfiguration {
     @Resource
     private ImpersonateService impersonateService;
 
+    @Resource
+    private ChangeAppUserWithConfirmService changeAppUserWithConfirmService;
+
     @Bean
     @ConditionalOnMissingBean
     public AppInviteApi appInviteApi() {
@@ -65,7 +69,7 @@ public class AuthApiAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public AuthenticationApi authenticationApi() {
-        return new AuthenticationApiService(appUserService, appUserConverter);
+        return new AuthenticationApiService(appUserService, appUserConverter, changeAppUserWithConfirmService);
     }
 
     @Bean

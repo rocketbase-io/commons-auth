@@ -26,7 +26,8 @@ public class FormsProperties {
                 prefixPath + "login",
                 prefixPath + "logout",
                 prefixPath + "forgot",
-                prefixPath + "reset-password"
+                prefixPath + "reset-password",
+                prefixPath + "verify-email"
         };
     }
 

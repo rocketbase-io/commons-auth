@@ -110,6 +110,33 @@ public class DefaultMailContentConfig implements MailContentConfig {
         return messageSource.getMessage("auth.email.invite.subject", new Object[]{emailProperties.getSubjectPrefix(), invite.getInvitor()}, currentLocale).trim();
     }
 
+    @Override
+    public HtmlTextEmail changeEmail(AppUserReference user, String newEmailAddress, String actionUrl) {
+        Locale currentLocale = LocaleContextHolder.getLocale();
+        EmailTemplateConfigBuilder builder = EmailTemplateBuilder.builder();
+        // header
+        buildHeader(CHANGE_EMAIL, builder);
+        // title
+        buildTitle(CHANGE_EMAIL, builder, messageSource.getMessage("auth.email.emailChange.header", new Object[]{}, currentLocale));
+        // intro text
+        builder.text(messageSource.getMessage("auth.email.emailChange.hi", new Object[]{user.getUsername()}, currentLocale)).and()
+                .text(messageSource.getMessage("auth.email.emailChange.pleaseVerifyNewEmail", new Object[]{}, currentLocale));
+        // button
+        buildButton(CHANGE_EMAIL, builder, messageSource.getMessage("auth.email.emailChange.button", new Object[]{}, currentLocale), actionUrl);
+        // greeting / footer...
+        return builder
+                .text(getGreeting()).and()
+                .footerText(getFooter(currentLocale)).center().and()
+                .copyright(emailProperties.getCopyrightName()).url(emailProperties.getCopyrightUrl())
+                .build();
+    }
+
+    @Override
+    public String changeEmailSubject(AppUserReference user) {
+        Locale currentLocale = LocaleContextHolder.getLocale();
+        return messageSource.getMessage("auth.email.emailChange.subject", new Object[]{emailProperties.getSubjectPrefix()}, currentLocale).trim();
+    }
+
     protected ColorStyleSimple getButtonColor(MailType type) {
         switch (type) {
             case REGISTER:
@@ -118,6 +145,8 @@ public class DefaultMailContentConfig implements MailContentConfig {
                 return ColorStyleSimple.RED_STYLE;
             case INVITE:
                 return ColorStyleSimple.GREEN_STYLE;
+            case CHANGE_EMAIL:
+                return ColorStyleSimple.YELLOW_STYLE;
         }
         return ColorStyleSimple.BASE_STYLE;
     }
@@ -178,6 +207,6 @@ public class DefaultMailContentConfig implements MailContentConfig {
     }
 
     protected enum MailType {
-        REGISTER, FORGOT, INVITE
+        REGISTER, FORGOT, INVITE, CHANGE_EMAIL
     }
 }
