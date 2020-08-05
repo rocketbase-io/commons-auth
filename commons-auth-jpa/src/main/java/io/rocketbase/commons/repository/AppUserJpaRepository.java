@@ -1,6 +1,8 @@
 package io.rocketbase.commons.repository;
 
 import io.rocketbase.commons.model.AppUserJpaEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -19,4 +21,8 @@ public interface AppUserJpaRepository extends PagingAndSortingRepository<AppUser
 
     @Query("select a from AppUserJpaEntity a left join fetch a.keyValueMap left join fetch a.roles where a.email = :email")
     Optional<AppUserJpaEntity> findByEmail(@Param("email") String email);
+
+    @Query(value = "select a from AppUserJpaEntity a left join fetch a.keyValueMap left join fetch a.roles",
+            countQuery = "select count(a) from AppUserJpaEntity a")
+    Page<AppUserJpaEntity> findAll(Pageable pageable);
 }
