@@ -13,8 +13,10 @@ import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
 import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
+import io.rocketbase.commons.event.EmailChangeEvent;
 import io.rocketbase.commons.event.PasswordEvent;
 import io.rocketbase.commons.event.UpdateProfileEvent;
+import io.rocketbase.commons.event.UsernameChangeEvent;
 import io.rocketbase.commons.exception.*;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.model.AppUserReference;
@@ -390,9 +392,13 @@ public class DefaultAppUserService implements AppUserService {
         invalidateCache(entity);
 
         validationService.usernameIsValid("newUsername", newUsername);
+        String oldUsername = entity.getUsername();
         entity.setUsername(newUsername);
 
-        return appUserPersistenceService.save(entity);
+        entity = appUserPersistenceService.save(entity);
+
+        applicationEventPublisher.publishEvent(new UsernameChangeEvent(this, oldUsername, entity));
+        return entity;
     }
 
     @Override
@@ -402,9 +408,13 @@ public class DefaultAppUserService implements AppUserService {
         invalidateCache(entity);
 
         validationService.emailIsValid("newEmail", newEmail);
+        String oldEmail = entity.getEmail();
         entity.setEmail(newEmail);
 
-        return appUserPersistenceService.save(entity);
+        entity = appUserPersistenceService.save(entity);
+
+        applicationEventPublisher.publishEvent(new EmailChangeEvent(this, oldEmail, entity));
+        return entity;
     }
 
     @Override

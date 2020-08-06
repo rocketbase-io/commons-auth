@@ -5,12 +5,15 @@ import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
 @Getter
-public class UpdateProfileEvent extends ApplicationEvent {
+public class UsernameChangeEvent extends ApplicationEvent {
 
+    private final String oldUsername;
     private final AppUserEntity appUserEntity;
 
-    public UpdateProfileEvent(Object source, AppUserEntity appUserEntity) {
+
+    public UsernameChangeEvent(Object source, String oldUsername, AppUserEntity appUserEntity) {
         super(source);
+        this.oldUsername = oldUsername;
         this.appUserEntity = appUserEntity;
     }
 }

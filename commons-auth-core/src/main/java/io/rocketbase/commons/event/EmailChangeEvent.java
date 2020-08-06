@@ -5,12 +5,15 @@ import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
 @Getter
-public class UpdateProfileEvent extends ApplicationEvent {
+public class EmailChangeEvent extends ApplicationEvent {
 
+    private final String oldEmailAddress;
     private final AppUserEntity appUserEntity;
 
-    public UpdateProfileEvent(Object source, AppUserEntity appUserEntity) {
+
+    public EmailChangeEvent(Object source, String oldEmailAddress, AppUserEntity appUserEntity) {
         super(source);
+        this.oldEmailAddress = oldEmailAddress;
         this.appUserEntity = appUserEntity;
     }
 }
