@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "description": "Handles authentication + authorization with registration-, invite and password-reset flows.",
-    "version": "3.1.0",
+    "version": "4.0.0",
     "title": "commons-auth api",
     "contact": {
       "name": "rocketbase.io",
@@ -227,6 +227,108 @@
         "deprecated": false
       }
     },
+    "/auth/change-username": {
+      "put": {
+        "tags": [
+          "authentication"
+        ],
+        "summary": "change username",
+        "description": "change username of logged in user",
+        "operationId": "changeUsernameUsingPUT",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "usernameChange",
+            "description": "usernameChange",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UsernameChangeRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/AppUserRead"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/auth/change-email": {
+      "put": {
+        "tags": [
+          "authentication"
+        ],
+        "summary": "change email",
+        "description": "change email of logged in user",
+        "operationId": "changeEmailUsingPUT",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "*/*"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "emailChange",
+            "description": "emailChange",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EmailChangeRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ExpirationInfo-AppUserRead"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
     "/auth/register": {
       "post": {
         "tags": [
@@ -256,7 +358,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/definitions/AppUserRead"
+              "$ref": "#/definitions/ExpirationInfo-AppUserRead"
             }
           },
           "201": {
@@ -302,7 +404,10 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/ExpirationInfo-AppUserRead"
+            }
           },
           "201": {
             "description": "Created"
@@ -1619,6 +1724,27 @@
       },
       "title": "PageableResult-AppUserRead"
     },
+    "ExpirationInfo-AppUserRead": {
+      "type": "object",
+      "properties": {
+        "detail": {
+          "$ref": "#/definitions/AppUserRead"
+        },
+        "expires": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expiresAfter": {
+          "type": "integer",
+          "format": "int32",
+          "description": "expired after x seconds"
+        },
+        "expired": {
+          "type": "boolean"
+        }
+      },
+      "title": "ExpirationInfo-AppUserRead"
+    },
     "PageableResult-AppInviteRead": {
       "type": "object",
       "properties": {
@@ -1686,6 +1812,24 @@
         }
       },
       "title": "PasswordChangeRequest"
+    },
+    "UsernameChangeRequest": {
+      "type": "object",
+      "properties": {
+        "newUsername": {
+          "type": "string"
+        }
+      },
+      "title": "UsernameChangeRequest"
+    },
+    "EmailChangeRequest": {
+      "type": "object",
+      "properties": {
+        "newEmail": {
+          "type": "string"
+        }
+      },
+      "title": "EmailChangeRequest"
     },
     "PerformPasswordResetRequest": {
       "type": "object",
