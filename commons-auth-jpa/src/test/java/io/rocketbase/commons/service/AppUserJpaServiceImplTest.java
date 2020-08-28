@@ -235,7 +235,7 @@ public class AppUserJpaServiceImplTest {
         // given
         QueryAppUser query = QueryAppUser.builder()
                 .enabled(true)
-                .keyValue("WORKSPACE", "1")
+                .keyValue("workspace", "1")
                 .build();
 
         // when
@@ -254,7 +254,7 @@ public class AppUserJpaServiceImplTest {
         // given
         QueryAppUser query = QueryAppUser.builder()
                 .enabled(true)
-                .keyValue("WORKSPACE", "1")
+                .keyValue("workspace", "1")
                 .freetext("ma")
                 .build();
 

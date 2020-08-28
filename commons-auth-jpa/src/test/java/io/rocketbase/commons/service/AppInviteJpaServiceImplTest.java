@@ -215,7 +215,7 @@ public class AppInviteJpaServiceImplTest {
         // given
         QueryAppInvite query = QueryAppInvite.builder()
                 .expired(false)
-                .keyValue("WORKSPACE", "1")
+                .keyValue("workspace", "1")
                 .build();
 
         // when
@@ -225,6 +225,9 @@ public class AppInviteJpaServiceImplTest {
         assertThat(result, notNullValue());
         for (AppInviteJpaEntity e : result.getContent()) {
             assertThat(e.getKeyValue("workspace"), equalTo("1"));
+            if (e.getExpiration()  != null && e.getExpiration().isBefore(Instant.now())) {
+                assertThat("expired", false);
+            }
         }
     }
 
@@ -233,7 +236,7 @@ public class AppInviteJpaServiceImplTest {
         // given
         QueryAppInvite query = QueryAppInvite.builder()
                 .expired(false)
-                .keyValue("WORKSPACE", "1")
+                .keyValue("workspace", "1")
                 .invitor("ma")
                 .build();
 
