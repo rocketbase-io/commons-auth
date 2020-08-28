@@ -63,7 +63,7 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJ
                 criteriaQuery.distinct(true);
                 MapJoin<AppUserJpaEntity, String, String> mapJoin = root.joinMap("keyValueMap");
                 for (Map.Entry<String, String> keyEntry : query.getKeyValues().entrySet()) {
-                    furtherFilters.add(cb.and(cb.equal(mapJoin.key(), keyEntry.getKey().toLowerCase()), cb.equal(cb.lower(mapJoin.value()), keyEntry.getValue().toLowerCase())));
+                    furtherFilters.add(cb.and(cb.equal(mapJoin.key(), keyEntry.getKey()), cb.equal(mapJoin.value(), keyEntry.getValue())));
                 }
             }
             if (!furtherFilters.isEmpty()) {

@@ -859,7 +859,7 @@
             "in": "query",
             "required": false,
             "type": "string",
-            "description": "user needs to have key with value match (case-insensitive). format: keyValue=KEY;VALUE"
+            "description": "user needs to have key with value match. format: keyValue=KEY;VALUE"
           },
           {
             "name": "enabled",
@@ -1074,7 +1074,7 @@
             "in": "query",
             "required": false,
             "type": "string",
-            "description": "invite needs to have key with value match (case-insensitive). format: keyValue=KEY;VALUE"
+            "description": "invite needs to have key with value match. format: keyValue=KEY;VALUE"
           }
         ],
         "responses": {
@@ -1429,7 +1429,8 @@
           "type": "object",
           "additionalProperties": {
             "type": "string"
-          }
+          },
+          "description": "Allowed key chars are a-Z, 0-9 and _-. (max 50 chars); Value max 4000 chars"
         },
         "admin": {
           "type": "boolean"
@@ -1486,7 +1487,8 @@
           "type": "object",
           "additionalProperties": {
             "type": "string"
-          }
+          },
+          "description": "Allowed key chars are a-Z, 0-9 and _-. (max 50 chars); Value max 4000 chars"
         },
         "inviteUrl": {
           "type": "string",
@@ -1623,7 +1625,8 @@
           "type": "object",
           "additionalProperties": {
             "type": "string"
-          }
+          },
+          "description": "will removed key that have value of null; will only add/replace new/existing key values; not mentioned key will still stay the same;"
         },
         "password": {
           "type": "string"

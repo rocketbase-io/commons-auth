@@ -44,7 +44,7 @@ public class AppInviteJpaServiceImpl implements AppInvitePersistenceService<AppI
                 criteriaQuery.distinct(true);
                 MapJoin<AppUserJpaEntity, String, String> mapJoin = root.joinMap("keyValueMap");
                 for (Map.Entry<String, String> keyEntry : query.getKeyValues().entrySet()) {
-                    predicates.add(cb.and(cb.equal(mapJoin.key(), keyEntry.getKey().toLowerCase()), cb.equal(cb.lower(mapJoin.value()), keyEntry.getValue().toLowerCase())));
+                    predicates.add(cb.and(cb.equal(mapJoin.key(), keyEntry.getKey()), cb.equal(mapJoin.value(), keyEntry.getValue())));
                 }
             }
 
