@@ -52,7 +52,8 @@ public class AppInviteJpaEntity implements AppInviteEntity {
             indexes = @Index(name = "idx_invite_keyvalue_pairs", columnList = "invite_id")
     )
     @MapKeyColumn(name = "field_key", length = 50)
-    @Column(name = "field_value", length = 4000, nullable = false)
+    @Lob
+    @Column(name = "field_value", nullable = false)
     @Builder.Default
     private Map<String, String> keyValueMap = new HashMap<>();
 

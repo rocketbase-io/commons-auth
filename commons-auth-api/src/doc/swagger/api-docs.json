@@ -1430,7 +1430,7 @@
           "additionalProperties": {
             "type": "string"
           },
-          "description": "Allowed key chars are a-Z, 0-9 and _-. (max 50 chars); Value max 4000 chars"
+          "description": "Allowed key chars are a-Z, 0-9 and _-. (max 50 chars)"
         },
         "admin": {
           "type": "boolean"
