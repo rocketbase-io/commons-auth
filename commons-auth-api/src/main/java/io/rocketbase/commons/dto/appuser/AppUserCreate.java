@@ -46,5 +46,6 @@ public class AppUserCreate implements Serializable {
     @Nullable
     private List<String> roles;
 
-    private boolean enabled;
+    @Builder.Default
+    private boolean enabled = true;
 }
