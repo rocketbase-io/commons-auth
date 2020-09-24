@@ -125,7 +125,9 @@ public class JwtTokenService implements Serializable {
         Map<String, String> keyValues = AppUserConverter.filterInvisibleKeys(appUserToken.getKeyValues());
         if (keyValues != null) {
             for (Map.Entry<String, String> entry : keyValues.entrySet()) {
-                jwtBuilder.claim(KEY_VALUE_PREFIX + entry.getKey(), entry.getValue());
+                if (!entry.getKey().startsWith("#")) {
+                    jwtBuilder.claim(KEY_VALUE_PREFIX + entry.getKey(), entry.getValue());
+                }
             }
         }
         return jwtBuilder.compact();
