@@ -24,6 +24,6 @@ public interface EntityWithKeyValue<T> extends HasKeyValue {
     default void checkKeyValue(String key, String value) {
         Assert.hasLength(key, "Key must not be empty");
         Assert.state(key.length() <= 50, "Key is too long - at least 50 chars");
-        Assert.state(key.toLowerCase().matches("[a-zA-Z0-9_\\-\\.\\#]+"), "Allowed key chars are a-Z, 0-9 and _-.#");
+        Assert.state(key.matches("[a-zA-Z0-9_\\-\\.\\#]+"), "Allowed key chars are a-Z, 0-9 and _-.#");
     }
 }

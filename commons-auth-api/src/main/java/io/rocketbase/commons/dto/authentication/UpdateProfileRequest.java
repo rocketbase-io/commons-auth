@@ -1,12 +1,11 @@
 package io.rocketbase.commons.dto.authentication;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import io.rocketbase.commons.model.AppUserReference;
+import lombok.*;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 @Data
@@ -30,6 +29,16 @@ public class UpdateProfileRequest implements Serializable {
      * not mentioned key will still stay the same
      */
     @Nullable
+    @Singular
     private Map<String, String> keyValues;
+
+    public static UpdateProfileRequest init(AppUserReference user) {
+        return UpdateProfileRequest.builder()
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .avatar(user.getAvatar())
+                .keyValues(new HashMap<>())
+                .build();
+    }
 
 }

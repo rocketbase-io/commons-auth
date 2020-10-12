@@ -42,7 +42,7 @@ public class CommonsPrincipal implements AppUserToken, Principal {
     public static String getCurrentKeyValue(String key) {
         CommonsPrincipal current = getCurrent();
         if (current != null) {
-            return current.getKeyValues() != null ? current.getKeyValues().getOrDefault(key.toLowerCase(), null) : null;
+            return current.getKeyValues() != null ? current.getKeyValues().getOrDefault(key, null) : null;
         }
         return null;
     }

@@ -47,7 +47,7 @@ public class AppInviteMongoServiceImpl implements AppInvitePersistenceService<Ap
             if (query.getKeyValues() != null && !query.getKeyValues().isEmpty()) {
                 for (Map.Entry<String, String> kv : query.getKeyValues().entrySet()) {
                     Pattern valuePattern = Pattern.compile(kv.getValue(), Pattern.CASE_INSENSITIVE);
-                    result.addCriteria(Criteria.where("keyValueMap." + kv.getKey().toLowerCase()).is(valuePattern));
+                    result.addCriteria(Criteria.where("keyValueMap." + kv.getKey()).is(valuePattern));
                 }
             }
         }

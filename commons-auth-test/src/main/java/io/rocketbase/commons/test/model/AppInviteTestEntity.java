@@ -58,29 +58,7 @@ public class AppInviteTestEntity implements AppInviteEntity {
     }
 
     @Override
-    public AppInviteEntity addKeyValue(String key, String value) {
-        checkKeyValue(key, value);
-        keyValueMap.put(key.toLowerCase(), value);
-        return this;
-    }
-
-    @Override
-    public void removeKeyValue(String key) {
-        keyValueMap.remove(key.toLowerCase());
-    }
-
-    @Override
     public Map<String, String> getKeyValues() {
-        return keyValueMap != null ? ImmutableMap.copyOf(keyValueMap) : null;
-    }
-
-    @Override
-    public boolean hasKeyValue(String key) {
-        return keyValueMap != null && key != null && keyValueMap.containsKey(key.toLowerCase());
-    }
-
-    @Override
-    public String getKeyValue(String key) {
-        return keyValueMap != null && key != null ? keyValueMap.getOrDefault(key.toLowerCase(), null) : null;
+        return keyValueMap;
     }
 }
