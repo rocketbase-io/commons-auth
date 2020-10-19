@@ -2,8 +2,8 @@ package io.rocketbase.commons.dto.authentication;
 
 import io.rocketbase.commons.model.AppUserReference;
 import lombok.*;
+import org.springframework.lang.Nullable;
 
-import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;

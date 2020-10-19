@@ -1,8 +1,8 @@
 package io.rocketbase.commons.dto.appinvite;
 
 import lombok.*;
+import org.springframework.lang.Nullable;
 
-import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Map;
 

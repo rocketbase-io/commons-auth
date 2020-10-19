@@ -138,7 +138,7 @@ SOFTWARE.
                         <file>target/site/apidocs/javadoc.xml</file>
                     </javadocXmlFiles>
                     <optionalAnnotations>
-                        <optionalAnnotation>javax.annotation.Nullable</optionalAnnotation>
+                        <optionalAnnotation>org.springframework.lang.Nullable</optionalAnnotation>
                     </optionalAnnotations>
                     <optionalProperties>useSpecifiedAnnotations</optionalProperties>
                     <classPatterns>

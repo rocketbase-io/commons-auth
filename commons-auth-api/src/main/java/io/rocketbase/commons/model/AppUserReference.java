@@ -2,8 +2,8 @@ package io.rocketbase.commons.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.springframework.lang.Nullable;
 
-import javax.annotation.Nullable;
 import java.io.Serializable;
 
 @JsonDeserialize(as = SimpleAppUserReference.class)
