@@ -99,4 +99,8 @@ public class AppUserJpaEntity implements AppUserEntity {
     public Map<String, String> getKeyValues() {
         return keyValueMap;
     }
+
+    public AppUserJpaEntity(String id) {
+        this.id = id;
+    }
 }

@@ -70,4 +70,8 @@ public class AppInviteJpaEntity implements AppInviteEntity {
     public Map<String, String> getKeyValues() {
         return keyValueMap;
     }
+
+    public AppInviteJpaEntity(String id) {
+        this.id = id;
+    }
 }
