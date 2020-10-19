@@ -46,10 +46,10 @@ public class AppInviteJpaEntity implements AppInviteEntity {
 
     @ElementCollection
     @CollectionTable(
-            name = "co_invite_keyvalue_pairs",
+            name = "co_invite_keyvalue",
             joinColumns = @JoinColumn(name = "invite_id"),
-            uniqueConstraints = @UniqueConstraint(name = "uk_invite_keyvalue_pairs", columnNames = {"invite_id", "field_key"}),
-            indexes = @Index(name = "idx_invite_keyvalue_pairs", columnList = "invite_id")
+            uniqueConstraints = @UniqueConstraint(name = "uk_invite_keyvalue", columnNames = {"invite_id", "field_key"}),
+            indexes = @Index(name = "idx_invite_keyvalue", columnList = "invite_id")
     )
     @MapKeyColumn(name = "field_key", length = 50)
     @Lob
