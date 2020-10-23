@@ -133,6 +133,18 @@ Containing nearly all services and functions to perform any task within the appl
 | ![](assets/email/email-invite.png)  <br><br> invite person to application |  ![](assets/email/email-change-email.png)  <br><br> confirm new email-address |
 
 
+## commons-auth-email-postmark
+
+Preconfigures an EmailSender that uses [rocketbase/postmark-spring](https://github.com/rocketbase-io/postmark-spring) to sent emails via REST-API.
+
+
+|                      | default | explanation                   |
+| -------------------- | ------- | ----------------------------- |
+| postmark.token   | *required*   | server-api-token of postmark   |
+| postmark.api.url  | https://api.postmarkapp.com/      | normally no change is required   |
+| postmark.api.header | X-Postmark-Server-Token      | normally no change is required       |
+
+
 ## commons-auth-email-smtp
 
 Preconfigures an EmailSender that uses spring-boot-starter-mail to sent emails via SMTP.
