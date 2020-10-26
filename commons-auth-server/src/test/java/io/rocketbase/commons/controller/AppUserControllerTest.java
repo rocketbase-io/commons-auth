@@ -6,18 +6,19 @@ import io.rocketbase.commons.adapters.JwtTokenProvider;
 import io.rocketbase.commons.adapters.SimpleJwtTokenProvider;
 import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.dto.PageableResult;
-import io.rocketbase.commons.dto.appuser.AppUserCreate;
-import io.rocketbase.commons.dto.appuser.AppUserRead;
-import io.rocketbase.commons.dto.appuser.AppUserUpdate;
-import io.rocketbase.commons.dto.appuser.QueryAppUser;
+import io.rocketbase.commons.dto.appuser.*;
+import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.resource.AppUserResource;
 import io.rocketbase.commons.test.AppUserPersistenceTestService;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
+import io.rocketbase.commons.test.model.AppUserTestEntity;
+import io.rocketbase.commons.util.Nulls;
 import org.junit.Test;
 import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
+import java.time.Instant;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -103,6 +104,42 @@ public class AppUserControllerTest extends BaseIntegrationTestPrefixed {
         assertThat(response.getFirstName(), equalTo("firstName"));
         assertThat(response.getLastName(), equalTo("lastName"));
         assertThat(response.getRoles(), containsInAnyOrder(String.format("ROLE_%s", new AuthProperties().getRoleUser())));
+    }
+
+    @Test
+    public void resetPasswordValidPassword() {
+        // given
+        AppUserEntity user = getAppUser("admin");
+        JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), modifiedJwtTokenService.generateTokenBundle(user));
+        AppUserTestEntity entity = appUserPersistenceTestService.findByUsername(user.getUsername()).get();
+        String oldPassword = entity.getPassword() + "";
+        Instant oldLastTokenInvalidation = entity.getLastTokenInvalidation();
+
+        // when
+        AppUserResource appUserResource = new AppUserResource(new JwtRestTemplate(tokenProvider));
+        AppUserRead response = appUserResource.resetPassword(user.getId(), new AppUserResetPassword("?:KTxg^*m4Q>j57:"));
+
+        // then
+        assertThat(response, notNullValue());
+        entity = appUserPersistenceTestService.findByUsername(user.getUsername()).get();
+        assertThat(entity.getPassword().equals(oldPassword), equalTo(false));
+        assertThat(entity.getLastTokenInvalidation().isAfter(Nulls.notNull(oldLastTokenInvalidation, Instant.ofEpochMilli(0))), equalTo(true));
+    }
+
+    @Test
+    public void resetPasswordInvalidPassword() {
+        // given
+        AppUserEntity user = getAppUser("admin");
+        JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), modifiedJwtTokenService.generateTokenBundle(user));
+
+        // when
+        AppUserResource appUserResource = new AppUserResource(new JwtRestTemplate(tokenProvider));
+        try {
+            appUserResource.resetPassword(getAppUser().getId(), new AppUserResetPassword("abc"));
+        } catch (BadRequestException e) {
+            // then
+           assertThat(e.getErrorResponse().getMessage(), equalToIgnoringCase("Password not fitting requirements"));
+        }
     }
 
     @Test

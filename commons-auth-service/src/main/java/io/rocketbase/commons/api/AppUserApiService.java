@@ -5,10 +5,7 @@ import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.dto.PageableResult;
 import io.rocketbase.commons.dto.appinvite.AppInviteRead;
 import io.rocketbase.commons.dto.appinvite.InviteRequest;
-import io.rocketbase.commons.dto.appuser.AppUserCreate;
-import io.rocketbase.commons.dto.appuser.AppUserRead;
-import io.rocketbase.commons.dto.appuser.AppUserUpdate;
-import io.rocketbase.commons.dto.appuser.QueryAppUser;
+import io.rocketbase.commons.dto.appuser.*;
 import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppUserEntity;
@@ -45,8 +42,16 @@ public class AppUserApiService implements AppUserApi, BaseApiService {
     }
 
     @Override
-    public AppUserRead patch(String id, AppUserUpdate update) {
-        AppUserEntity entity = appUserService.patch(id, update);
+    public AppUserRead resetPassword(String usernameOrId, AppUserResetPassword reset) {
+        validationService.passwordIsValid("resetPassword", reset.getResetPassword());
+
+        AppUserEntity entity = appUserService.updatePasswordUnchecked(usernameOrId, reset.getResetPassword());
+        return userConverter.fromEntity(entity);
+    }
+
+    @Override
+    public AppUserRead patch(String usernameOrId, AppUserUpdate update) {
+        AppUserEntity entity = appUserService.patch(usernameOrId, update);
         return userConverter.fromEntity(entity);
     }
 

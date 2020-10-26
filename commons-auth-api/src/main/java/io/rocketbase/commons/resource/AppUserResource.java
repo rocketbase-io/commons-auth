@@ -6,10 +6,7 @@ import io.rocketbase.commons.convert.QueryAppUserConverter;
 import io.rocketbase.commons.dto.PageableResult;
 import io.rocketbase.commons.dto.appinvite.AppInviteRead;
 import io.rocketbase.commons.dto.appinvite.InviteRequest;
-import io.rocketbase.commons.dto.appuser.AppUserCreate;
-import io.rocketbase.commons.dto.appuser.AppUserRead;
-import io.rocketbase.commons.dto.appuser.AppUserUpdate;
-import io.rocketbase.commons.dto.appuser.QueryAppUser;
+import io.rocketbase.commons.dto.appuser.*;
 import lombok.SneakyThrows;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
@@ -72,11 +69,23 @@ public class AppUserResource implements BaseRestResource, AppUserApi {
     }
 
     @Override
+    public AppUserRead resetPassword(String usernameOrId, AppUserResetPassword reset) {
+        ResponseEntity<AppUserRead> response = restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
+                        .path(API_USER).pathSegment(usernameOrId, "password")
+                        .toUriString(),
+                HttpMethod.PUT,
+                new HttpEntity<>(reset, createHeaderWithLanguage()),
+                AppUserRead.class);
+
+        return response.getBody();
+    }
+
+    @Override
     @SneakyThrows
-    public AppUserRead patch(String id, AppUserUpdate update) {
+    public AppUserRead patch(String usernameOrId, AppUserUpdate update) {
         ResponseEntity<AppUserRead> response = restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
                         .path(API_USER)
-                        .path(id)
+                        .path(usernameOrId)
                         .toUriString(),
                 HttpMethod.PATCH,
                 new HttpEntity<>(update, createHeaderWithLanguage()),

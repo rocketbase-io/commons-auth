@@ -72,7 +72,10 @@ public class AppUserPersistenceTestService implements AppUserPersistenceService<
 
     @Override
     public AppUserTestEntity save(AppUserTestEntity entity) {
+        userMap.remove(entity.getUsername());
         userMap.put(entity.getUsername(), entity);
+        userMap.remove(entity.getId());
+        userMap.put(entity.getId(), entity);
         return userMap.get(entity.getUsername());
     }
 
@@ -94,6 +97,7 @@ public class AppUserPersistenceTestService implements AppUserPersistenceService<
     @Override
     public void delete(AppUserTestEntity entity) {
         userMap.remove(entity.getUsername());
+        userMap.remove(entity.getId());
     }
 
     @Override

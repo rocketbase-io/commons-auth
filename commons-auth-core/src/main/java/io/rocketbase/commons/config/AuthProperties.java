@@ -139,7 +139,8 @@ public class AuthProperties {
         String prefixPath = UrlParts.ensureStartsAndEndsWithSlash(prefix);
         return new String[]{
                 prefixPath + "api/user",
-                prefixPath + "api/user/*"
+                prefixPath + "api/user/*",
+                prefixPath + "api/user/*/*"
         };
     }
 
