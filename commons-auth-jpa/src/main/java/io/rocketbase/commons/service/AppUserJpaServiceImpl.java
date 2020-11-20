@@ -34,7 +34,7 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJ
     @Override
     @Transactional
     public Page<AppUserJpaEntity> findAll(QueryAppUser query, Pageable pageable) {
-        if (query == null) {
+        if (query == null || query.isEmpty()) {
             return repository.findAll(pageable);
         }
 
