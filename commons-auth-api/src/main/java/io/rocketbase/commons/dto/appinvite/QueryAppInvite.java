@@ -1,5 +1,6 @@
 package io.rocketbase.commons.dto.appinvite;
 
+import io.rocketbase.commons.model.HasKeyValue;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
@@ -14,7 +15,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class QueryAppInvite implements Serializable {
+public class QueryAppInvite implements Serializable, HasKeyValue {
 
     @Nullable
     private String invitor;

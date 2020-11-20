@@ -1,6 +1,10 @@
 package io.rocketbase.commons.dto.appuser;
 
+import io.rocketbase.commons.model.HasFirstAndLastName;
+import io.rocketbase.commons.model.HasKeyValue;
+import io.rocketbase.commons.util.Nulls;
 import lombok.*;
+import org.springframework.data.annotation.Transient;
 import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
@@ -14,7 +18,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class QueryAppUser implements Serializable {
+public class QueryAppUser implements Serializable, HasKeyValue, HasFirstAndLastName {
 
     @Nullable
     private String username;
@@ -44,4 +48,9 @@ public class QueryAppUser implements Serializable {
     private String hasRole;
     @Nullable
     private Boolean enabled;
+
+    @Transient
+    public boolean isEmpty() {
+        return !Nulls.anyNoneNullValue(username, firstName, lastName, email, keyValues, freetext, hasRole, enabled);
+    }
 }

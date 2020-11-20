@@ -1,5 +1,7 @@
 package io.rocketbase.commons.dto.appuser;
 
+import io.rocketbase.commons.model.HasFirstAndLastName;
+import io.rocketbase.commons.model.HasKeyValue;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
@@ -14,7 +16,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"password"})
-public class AppUserCreate implements Serializable {
+public class AppUserCreate implements Serializable, HasFirstAndLastName, HasKeyValue {
 
     @NotNull
     private String username;

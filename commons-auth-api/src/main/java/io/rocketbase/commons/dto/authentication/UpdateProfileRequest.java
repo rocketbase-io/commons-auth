@@ -1,6 +1,8 @@
 package io.rocketbase.commons.dto.authentication;
 
 import io.rocketbase.commons.model.AppUserReference;
+import io.rocketbase.commons.model.HasFirstAndLastName;
+import io.rocketbase.commons.model.HasKeyValue;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
@@ -12,7 +14,7 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateProfileRequest implements Serializable {
+public class UpdateProfileRequest implements Serializable, HasKeyValue, HasFirstAndLastName {
 
     @Nullable
     private String firstName;

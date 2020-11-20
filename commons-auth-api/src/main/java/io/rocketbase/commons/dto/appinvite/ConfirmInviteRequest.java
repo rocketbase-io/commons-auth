@@ -1,5 +1,6 @@
 package io.rocketbase.commons.dto.appinvite;
 
+import io.rocketbase.commons.model.HasFirstAndLastName;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
@@ -12,7 +13,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"password"})
-public class ConfirmInviteRequest implements Serializable {
+public class ConfirmInviteRequest implements Serializable, HasFirstAndLastName {
 
     @NotNull
     private String inviteId;

@@ -1,5 +1,7 @@
 package io.rocketbase.commons.dto.registration;
 
+import io.rocketbase.commons.model.HasFirstAndLastName;
+import io.rocketbase.commons.model.HasKeyValue;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
@@ -13,7 +15,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"password"})
-public class RegistrationRequest implements Serializable {
+public class RegistrationRequest implements Serializable, HasKeyValue, HasFirstAndLastName {
 
     @NotNull
     private String username;

@@ -91,14 +91,13 @@ SOFTWARE.
         </dependency>
     </dependencies>
 
-
-    <!--
     <build>
         <plugins>
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.1.1</version>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>xml-doclet</id>
@@ -112,7 +111,7 @@ SOFTWARE.
                             <docletArtifact>
                                 <groupId>com.github.markusbernhardt</groupId>
                                 <artifactId>xml-doclet</artifactId>
-                                <version>1.0.5</version>
+                                <version>1.0.6-SNAPSHOT</version>
                             </docletArtifact>
                         </configuration>
                     </execution>
@@ -122,7 +121,7 @@ SOFTWARE.
             <plugin>
                 <groupId>cz.habarta.typescript-generator</groupId>
                 <artifactId>typescript-generator-maven-plugin</artifactId>
-                <version>2.20.583</version>
+                <version>2.27.744</version>
                 <executions>
                     <execution>
                         <id>generate</id>
@@ -150,6 +149,7 @@ SOFTWARE.
                         <classPattern>io.rocketbase.commons.dto.validation.**</classPattern>
                         <classPattern>io.rocketbase.commons.model.AppUser*</classPattern>
                         <classPattern>io.rocketbase.commons.model.Has*</classPattern>
+                        <classPattern>io.rocketbase.commons.dto.validation.*Codes</classPattern>
                     </classPatterns>
                     <excludeClassPatterns>
                         <excludeClassPattern>**Builder</excludeClassPattern>
@@ -175,6 +175,11 @@ SOFTWARE.
                         <customTypeMapping>io.rocketbase.commons.dto.address.AddressDto:rest.AddressDto</customTypeMapping>
                         <customTypeMapping>io.rocketbase.commons.dto.address.ContactDto:rest.ContactDto</customTypeMapping>
                         <customTypeMapping>io.rocketbase.commons.dto.address.Gender:rest.Gender</customTypeMapping>
+                        <customTypeMapping>io.rocketbase.commons.model.HasKeyValue:rest.HasKeyValue</customTypeMapping>
+                        <customTypeMapping>io.rocketbase.commons.model.HasFirstAndLastName:rest.HasFirstAndLastName</customTypeMapping>
+                        <customTypeMapping>io.rocketbase.commons.translation.Translation:rest.Translation</customTypeMapping>
+                        <customTypeMapping>io.rocketbase.commons.dto.ErrorResponse:rest.ErrorResponse</customTypeMapping>
+                        <customTypeMapping><![CDATA[io.rocketbase.commons.dto.PageableResult<E>:rest.PageableResult]]></customTypeMapping>
                     </customTypeMappings>
                     <importDeclarations>
                         <import>import * as rest from "./commons-rest-api.d.ts"</import>
@@ -184,7 +189,7 @@ SOFTWARE.
                     <noTslintDisable>true</noTslintDisable>
                 </configuration>
             </plugin>
+            -->
         </plugins>
     </build>
-    -->
 </project>

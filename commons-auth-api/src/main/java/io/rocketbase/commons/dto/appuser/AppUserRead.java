@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.rocketbase.commons.model.AppUserReference;
 import io.rocketbase.commons.model.AppUserToken;
-import io.rocketbase.commons.model.HasKeyValue;
 import io.rocketbase.commons.model.SimpleAppUserReference;
 import lombok.*;
 import org.springframework.lang.Nullable;
@@ -20,7 +19,7 @@ import java.util.Map;
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 @JsonDeserialize(as = AppUserRead.class)
-public class AppUserRead implements AppUserToken, Serializable, HasKeyValue {
+public class AppUserRead implements AppUserToken, Serializable {
 
     private String id;
 

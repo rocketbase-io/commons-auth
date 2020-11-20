@@ -1,5 +1,7 @@
 package io.rocketbase.commons.dto.appinvite;
 
+import io.rocketbase.commons.model.HasFirstAndLastName;
+import io.rocketbase.commons.model.HasKeyValue;
 import lombok.*;
 
 import java.time.Instant;
@@ -11,7 +13,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class AppInviteRead {
+public class AppInviteRead implements HasKeyValue, HasFirstAndLastName {
     private String id;
 
     private String invitor;

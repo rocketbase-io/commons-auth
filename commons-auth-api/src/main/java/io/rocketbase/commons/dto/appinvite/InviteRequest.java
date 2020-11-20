@@ -1,6 +1,7 @@
 package io.rocketbase.commons.dto.appinvite;
 
 import io.rocketbase.commons.model.HasFirstAndLastName;
+import io.rocketbase.commons.model.HasKeyValue;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
@@ -16,7 +17,7 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class InviteRequest implements Serializable, HasFirstAndLastName {
+public class InviteRequest implements Serializable, HasFirstAndLastName, HasKeyValue {
 
     /**
      * name of invitor that will get displayed within email + form
