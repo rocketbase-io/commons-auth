@@ -16,6 +16,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 @RequiredArgsConstructor
@@ -33,7 +34,7 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
             Collection<GrantedAuthority> authorities = jwtTokenService.getAuthoritiesFromToken(login.getJwtTokenBundle().getToken());
             return new CommonsAuthenticationToken(authorities, login.getUser(), jwtTokenStoreProvider.getInstance(login.getJwtTokenBundle()));
         } catch (HttpClientErrorException e) {
-            if (e.getStatusCode().equals(HttpStatus.FORBIDDEN)) {
+            if (Arrays.asList(HttpStatus.FORBIDDEN, HttpStatus.UNAUTHORIZED).contains(e.getStatusCode())) {
                 throw new BadCredentialsException("wrong username/password", e);
             } else {
                 throw new InternalAuthenticationServiceException("got http error with status: " + e.getRawStatusCode(), e);
