@@ -8,6 +8,7 @@ import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.auth.LoginService;
 import io.rocketbase.commons.service.user.ActiveUserStore;
+import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.util.JwtTokenDecoder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,9 @@ public class OAuthLoginRefreshController {
 
     @Resource
     private LoginService loginService;
+
+    @Resource
+    private AppUserService appUserService;
 
     @Resource
     private ActiveUserStore activeUserStore;
@@ -52,7 +56,7 @@ public class OAuthLoginRefreshController {
 
         } else if (oAuthRequest.getGrantType().equals(GrantType.REFRESH_TOKEN)) {
             AppUserToken appUserToken = jwtTokenService.parseToken(oAuthRequest.getRefreshToken());
-            String accessToken = jwtTokenService.generateAccessToken(appUserToken);
+            String accessToken = jwtTokenService.generateAccessToken(appUserService.getByUsername(appUserToken.getUsername()));
             activeUserStore.addUser(appUserToken);
             response.accessToken(accessToken)
                     .refreshToken(oAuthRequest.getRefreshToken())
