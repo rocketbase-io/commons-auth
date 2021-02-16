@@ -47,12 +47,13 @@ public class ForgotPasswordResource implements BaseRestResource, ForgotPasswordA
     }
 
     @Override
-    public void resetPassword(PerformPasswordResetRequest performPasswordReset) {
-        ResponseEntity<Void> response = getRestTemplate()
+    public AppUserRead resetPassword(PerformPasswordResetRequest performPasswordReset) {
+        ResponseEntity<AppUserRead> response = getRestTemplate()
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/reset-password").toUriString(),
                         HttpMethod.PUT,
                         new HttpEntity<>(performPasswordReset, createHeaderWithLanguage()),
-                        Void.class);
+                        AppUserRead.class);
+        return response.getBody();
     }
 }

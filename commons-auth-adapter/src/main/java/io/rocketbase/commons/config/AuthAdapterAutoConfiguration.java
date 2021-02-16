@@ -1,7 +1,5 @@
 package io.rocketbase.commons.config;
 
-import io.rocketbase.commons.converter.AppInviteConverter;
-import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.security.CustomAuthoritiesProvider;
 import io.rocketbase.commons.security.EmptyCustomAuthoritiesProvider;
 import io.rocketbase.commons.security.JwtTokenService;
@@ -38,18 +36,6 @@ public class AuthAdapterAutoConfiguration {
     @ConditionalOnMissingBean
     public JwtTokenStoreProvider jwtTokenStoreProvider() {
         return tokenBundle -> new JwtTokenStoreHttp(authProperties.getBaseUrl(), tokenBundle);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public AppUserConverter appUserConverter() {
-        return new AppUserConverter();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public AppInviteConverter appInviteConverter() {
-        return new AppInviteConverter();
     }
 
 }

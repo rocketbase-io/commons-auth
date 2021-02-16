@@ -8,10 +8,10 @@ import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.exception.AuthErrorCodes;
 import io.rocketbase.commons.exception.BadRequestException;
+import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.resource.RegistrationResource;
+import io.rocketbase.commons.service.user.AppUserPersistenceService;
 import io.rocketbase.commons.service.user.DefaultAppUserService;
-import io.rocketbase.commons.test.AppUserPersistenceTestService;
-import io.rocketbase.commons.test.model.AppUserTestEntity;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -25,7 +25,7 @@ import static org.hamcrest.Matchers.notNullValue;
 public class RegistrationControllerTest extends BaseIntegrationTestPrefixed {
 
     @Resource
-    private AppUserPersistenceTestService appUserPersistenceTestService;
+    private AppUserPersistenceService<AppUserEntity> appUserPersistenceService;
 
     @Test
     public void registerSuccess() {
@@ -40,10 +40,10 @@ public class RegistrationControllerTest extends BaseIntegrationTestPrefixed {
 
         // then
         assertThat(response, notNullValue());
-        AppUserTestEntity appUser = appUserPersistenceTestService.findByUsername("new-user").get();
+        AppUserEntity appUser = appUserPersistenceService.findByUsername("new-user").get();
         assertThat(appUser.isEnabled(), equalTo(!new RegistrationProperties().isVerification()));
         assertThat(response.getExpires().isAfter(Instant.now()), equalTo(true));
-        assertThat(appUser.getKeyValueMap().getOrDefault(DefaultAppUserService.REGISTRATION_KV, null), notNullValue());
+        assertThat(appUser.getKeyValue(DefaultAppUserService.REGISTRATION_KV), notNullValue());
     }
 
     @Test
@@ -58,8 +58,8 @@ public class RegistrationControllerTest extends BaseIntegrationTestPrefixed {
         resource.register(registration);
 
         // when
-        AppUserTestEntity appUser = appUserPersistenceTestService.findByUsername("new-user").get();
-        String verification = appUser.getKeyValueMap().get(DefaultAppUserService.REGISTRATION_KV);
+        AppUserEntity appUser = appUserPersistenceService.findByUsername("new-user").get();
+        String verification = appUser.getKeyValues().get(DefaultAppUserService.REGISTRATION_KV);
         JwtTokenBundle response = resource.verify(verification);
         // then
         assertThat(response, notNullValue());

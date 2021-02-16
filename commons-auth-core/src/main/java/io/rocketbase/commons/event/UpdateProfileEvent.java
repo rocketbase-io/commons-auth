@@ -7,10 +7,10 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 public class UpdateProfileEvent extends ApplicationEvent {
 
-    private final AppUserEntity appUserEntity;
+    private final AppUserEntity appUser;
 
-    public UpdateProfileEvent(Object source, AppUserEntity appUserEntity) {
+    public UpdateProfileEvent(Object source, AppUserEntity appUser) {
         super(source);
-        this.appUserEntity = appUserEntity;
+        this.appUser = appUser;
     }
 }

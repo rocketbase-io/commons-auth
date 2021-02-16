@@ -6,12 +6,15 @@ import io.rocketbase.commons.config.RegistrationProperties;
 import io.rocketbase.commons.dto.ExpirationInfo;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.event.RegistrationEvent;
+import io.rocketbase.commons.exception.EmailDeliveryException;
 import io.rocketbase.commons.exception.VerificationException;
 import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.service.SimpleTokenService;
 import io.rocketbase.commons.service.SimpleTokenService.Token;
 import io.rocketbase.commons.service.email.AuthEmailService;
 import io.rocketbase.commons.service.user.AppUserService;
+import io.rocketbase.commons.service.user.AppUserTokenService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +40,9 @@ public class DefaultRegistrationService implements RegistrationService {
     private AppUserService appUserService;
 
     @Resource
+    private AppUserTokenService appUserTokenService;
+
+    @Resource
     private AuthEmailService emailService;
 
     @Resource
@@ -55,9 +61,9 @@ public class DefaultRegistrationService implements RegistrationService {
 
                 emailService.sentRegistrationEmail(entity, buildActionUrl(baseUrl, ActionType.VERIFICATION_REGISTRATION, token, registration.getVerificationUrl()));
             } catch (Exception e) {
-                log.error("couldn't sent email. please check your configuration. {}", e.getMessage());
-                appUserService.delete(entity);
-                throw e;
+                log.error("couldn't sent email. please check your configuration. registration has been deleted {}", e.getMessage());
+                appUserService.delete(entity.getId());
+                throw new EmailDeliveryException();
             }
         }
         applicationEventPublisher.publishEvent(new RegistrationEvent(this, entity, REGISTER));
@@ -65,7 +71,7 @@ public class DefaultRegistrationService implements RegistrationService {
         return expirationInfo;
     }
 
-    public AppUserEntity verifyRegistration(String verification) throws VerificationException {
+    public AppUserToken verifyRegistration(String verification) throws VerificationException {
         Token token = SimpleTokenService.parseToken(verification);
         if (!token.isValid()) {
             throw new VerificationException("verification");
@@ -81,7 +87,7 @@ public class DefaultRegistrationService implements RegistrationService {
 
         applicationEventPublisher.publishEvent(new RegistrationEvent(this, entity, VERIFIED));
 
-        return entity;
+        return appUserTokenService.lookup(entity);
     }
 
 

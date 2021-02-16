@@ -15,15 +15,14 @@ import io.rocketbase.commons.service.invite.AppInviteService;
 import io.rocketbase.commons.service.invite.DefaultAppInviteService;
 import io.rocketbase.commons.service.registration.DefaultRegistrationService;
 import io.rocketbase.commons.service.registration.RegistrationService;
-import io.rocketbase.commons.service.user.ActiveUserStore;
-import io.rocketbase.commons.service.user.ActiveUserStoreLocalCache;
-import io.rocketbase.commons.service.user.AppUserService;
-import io.rocketbase.commons.service.user.DefaultAppUserService;
+import io.rocketbase.commons.service.user.*;
 import io.rocketbase.commons.service.validation.DefaultValidationService;
 import io.rocketbase.commons.service.validation.ValidationErrorCodeService;
 import io.rocketbase.commons.service.validation.ValidationService;
+import io.rocketbase.commons.util.Snowflake;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -55,6 +54,12 @@ public class AuthServiceAutoConfiguration {
     @ConditionalOnMissingBean
     public ActiveUserStore activeUserStore() {
         return new ActiveUserStoreLocalCache(jwtProperties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public Snowflake snowflake() {
+        return new Snowflake();
     }
 
     @Bean
@@ -116,8 +121,8 @@ public class AuthServiceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ValidationService validationService() {
-        return new DefaultValidationService(usernameProperties, passwordProperties, appUserService(), validationErrorCodeService());
+    public ValidationService validationService(@Autowired AppUserPersistenceService appUserPersistenceService) {
+        return new DefaultValidationService(usernameProperties, passwordProperties, appUserPersistenceService, validationErrorCodeService());
     }
 
     @Bean(name = "authMessageSource")

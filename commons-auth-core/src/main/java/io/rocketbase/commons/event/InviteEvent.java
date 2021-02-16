@@ -9,26 +9,26 @@ import org.springframework.lang.Nullable;
 @Getter
 public class InviteEvent extends ApplicationEvent {
 
-    private final AppInviteEntity appInviteEntity;
+    private final AppInviteEntity appInvite;
     private final InviteProcessType type;
 
     /**
      * only filled in case on processType confirm
      */
     @Nullable
-    private AppUserEntity appUserEntity;
+    private AppUserEntity appUser;
 
-    public InviteEvent(Object source, AppInviteEntity appInviteEntity, InviteProcessType type) {
+    public InviteEvent(Object source, AppInviteEntity appInvite, InviteProcessType type) {
         super(source);
-        this.appInviteEntity = appInviteEntity;
+        this.appInvite = appInvite;
         this.type = type;
     }
 
-    public InviteEvent(Object source, AppInviteEntity appInviteEntity, AppUserEntity appUserEntity) {
+    public InviteEvent(Object source, AppInviteEntity appInvite, AppUserEntity appUser) {
         super(source);
-        this.appInviteEntity = appInviteEntity;
+        this.appInvite = appInvite;
         this.type = InviteProcessType.CONFIRM;
-        this.appUserEntity = appUserEntity;
+        this.appUser = appUser;
     }
 
     public enum InviteProcessType {

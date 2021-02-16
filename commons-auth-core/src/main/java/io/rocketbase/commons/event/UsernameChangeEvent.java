@@ -8,12 +8,12 @@ import org.springframework.context.ApplicationEvent;
 public class UsernameChangeEvent extends ApplicationEvent {
 
     private final String oldUsername;
-    private final AppUserEntity appUserEntity;
+    private final AppUserEntity appUser;
 
 
-    public UsernameChangeEvent(Object source, String oldUsername, AppUserEntity appUserEntity) {
+    public UsernameChangeEvent(Object source, String oldUsername, AppUserEntity appUser) {
         super(source);
         this.oldUsername = oldUsername;
-        this.appUserEntity = appUserEntity;
+        this.appUser = appUser;
     }
 }

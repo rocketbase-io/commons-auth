@@ -1,37 +1,54 @@
 package io.rocketbase.commons.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.springframework.security.core.userdetails.UserDetails;
+import io.rocketbase.commons.model.user.UserProfile;
+import io.rocketbase.commons.model.user.UserSetting;
 
+import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.time.Instant;
-import java.util.List;
+import java.util.Set;
 
-public interface AppUserEntity extends UserDetails, AppUserToken, EntityWithKeyValue<AppUserEntity> {
+/**
+ * entity instance of user that is used by persistence layers internally
+ *
+ */
+public interface AppUserEntity extends Serializable, EntityWithKeyValue<AppUserEntity>, AppUserReference {
 
+    String getId();
+
+    @Size(max = 36)
     void setId(String id);
 
+    String getSystemRefId();
+
+    @Size(max = 100)
+    void setSystemRefId(String systemRefId);
+
+    String getUsername();
+
+    @Size(max = 255)
     void setUsername(String username);
 
     String getPassword();
 
     void setPassword(String password);
 
-    void setFirstName(String firstName);
-    
-    void setLastName(String lastName);
+    String getEmail();
 
+    @Size(max = 255)
     void setEmail(String email);
-
-    void setAvatar(String avatar);
-
-    void setRoles(List<String> roles);
 
     void setEnabled(boolean enabled);
 
-    Instant getCreated();
+    boolean isEnabled();
+
+    void setLocked(boolean locked);
+
+    boolean isLocked();
 
     /**
-     * @return null or date of last login with TimeZone UTC
+     * @return null or date of last login
      */
     Instant getLastLogin();
 
@@ -52,6 +69,27 @@ public interface AppUserEntity extends UserDetails, AppUserToken, EntityWithKeyV
      */
     void updateLastTokenInvalidation();
 
+    Set<Long> getCapabilityIds();
+
+    void setCapabilityIds(Set<Long> capabilityIds);
+
+    Set<Long> getGroupIds();
+
+    void setGroupIds(Set<Long> groupIds);
+
+    Long getActiveTeamId();
+
+    void setActiveTeamId(Long teamId);
+
+    UserProfile getProfile();
+
+    void setProfile(UserProfile userProfile);
+
+    UserSetting getSetting();
+
+    void setSetting(UserSetting userSetting);
+
+    Instant getCreated();
 
     /**
      * convert current instance to a simple reference copy
@@ -63,26 +101,37 @@ public interface AppUserEntity extends UserDetails, AppUserToken, EntityWithKeyV
         return SimpleAppUserReference.builder()
                 .id(getId())
                 .username(getUsername())
-                .firstName(getFirstName())
-                .lastName(getLastName())
                 .email(getEmail())
-                .avatar(getAvatar())
+                .profile(getProfile())
                 .build();
     }
 
-
-    @JsonIgnore
-    default boolean isAccountNonExpired() {
-        return true;
+    /**
+     * deprecated since 5.0.0<br>
+     * should be removed - use UserProfile instead
+     */
+    @Deprecated
+    default String getAvatar() {
+        return getProfile() != null ? getProfile().getAvatar() : null;
     }
 
-    @JsonIgnore
-    default boolean isAccountNonLocked() {
-        return true;
+    /**
+     * deprecated since 5.0.0<br>
+     * should be removed - use UserProfile instead
+     */
+    @Deprecated
+    default String getFirstName() {
+        return getProfile() != null ? getProfile().getFirstName() : null;
     }
 
-    @JsonIgnore
-    default boolean isCredentialsNonExpired() {
-        return true;
+    /**
+     * deprecated since 5.0.0<br>
+     * should be removed - use UserProfile instead
+     */
+    @Deprecated
+    default String getLastName() {
+        return getProfile() != null ? getProfile().getLastName() : null;
     }
+
+
 }

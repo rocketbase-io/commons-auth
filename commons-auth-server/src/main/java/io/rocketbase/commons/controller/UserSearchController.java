@@ -5,7 +5,7 @@ import io.rocketbase.commons.dto.PageableResult;
 import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.model.AppUserReference;
-import io.rocketbase.commons.service.AppUserPersistenceService;
+import io.rocketbase.commons.service.user.AppUserPersistenceService;
 import io.rocketbase.commons.service.user.AppUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;

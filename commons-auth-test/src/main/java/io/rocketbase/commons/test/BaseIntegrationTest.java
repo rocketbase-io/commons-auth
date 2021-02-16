@@ -2,6 +2,7 @@ package io.rocketbase.commons.test;
 
 
 import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.test.adapters.AuthRestTestTemplate;
 import lombok.Getter;
@@ -24,38 +25,20 @@ public abstract class BaseIntegrationTest {
     protected String baseUrl;
 
     @Resource
-    private AppUserPersistenceTestService appUserPersistenceTestService;
-
-    @Resource
     private JwtTokenService jwtTokenService;
 
-    protected AppUserEntity getAppUser() {
-        return getAppUser("user");
-    }
-
-    protected AppUserEntity getAppAdminUser() {
-        return getAppUser("admin");
+    protected AuthRestTestTemplate getAuthRestTemplate(AppUserToken token) {
+        return new AuthRestTestTemplate(token, jwtTokenService);
     }
 
     protected AppUserEntity getAppUser(String username) {
-        return appUserPersistenceTestService.findByUsername(username).get();
-    }
-
-    protected AuthRestTestTemplate getAuthRestTemplate() {
-        return getAuthRestTemplate("user");
-    }
-
-    protected AuthRestTestTemplate getAuthRestAdminTemplate() {
-        return getAuthRestTemplate("admin");
-    }
-
-    protected AuthRestTestTemplate getAuthRestTemplate(String username) {
-        return new AuthRestTestTemplate(getAppUser(username), jwtTokenService);
+        // TODO: need implementation
+        return null;
     }
 
     @Before
     public void beforeEachTest() {
-        appUserPersistenceTestService.resetData();
+        // appUserPersistenceTestService.resetData();
     }
 
 }

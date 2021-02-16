@@ -3,11 +3,12 @@ package io.rocketbase.commons.security;
 import com.google.common.collect.ImmutableMap;
 import io.rocketbase.commons.config.JwtProperties;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
-import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.model.SimpleAppUserToken;
+import io.rocketbase.commons.model.TokenParseResult;
+import io.rocketbase.commons.model.user.SimpleUserProfile;
+import org.assertj.core.util.Sets;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -18,15 +19,17 @@ public class JwtTokenServiceTest {
     @Test
     public void generateTokenBundle() {
         // given
-        SimpleAppUserToken appUserToken = SimpleAppUserToken.builder()
+        SimpleAppUserToken appUserToken = SimpleAppUserToken.builderToken()
                 .id(UUID.randomUUID().toString())
                 .username("test")
-                .firstName("firstName")
-                .lastName("lastName")
+                .profile(SimpleUserProfile.builder()
+                        .firstName("firstName")
+                        .lastName("lastName")
+                        .avatar("https://i.pravatar.cc/300")
+                        .build())
                 .email("sample@rocketbase.io")
-                .avatar("https://i.pravatar.cc/300")
-                .roles(Arrays.asList("ROLE_USER"))
-                .keyValueMap(ImmutableMap.of("special", "v1", "clientId", "1233"))
+                .capabilities(Sets.newLinkedHashSet("blog/post"))
+                .keyValues(ImmutableMap.of("special", "v1", "clientId", "1233"))
                 .build();
 
         JwtProperties jwtProperties = new JwtProperties();
@@ -35,22 +38,22 @@ public class JwtTokenServiceTest {
 
         // when
         JwtTokenBundle jwtTokenBundle = jwtTokenService.generateTokenBundle(appUserToken);
-        AppUserToken parsedAppUserToken = jwtTokenService.parseToken(jwtTokenBundle.getToken());
+        TokenParseResult meta = jwtTokenService.parseToken(jwtTokenBundle.getToken());
 
         // then
         assertThat(jwtTokenBundle, notNullValue());
         assertThat(jwtTokenBundle.getToken(), notNullValue());
         assertThat(jwtTokenBundle.getRefreshToken(), notNullValue());
-        assertThat(appUserToken, equalTo(parsedAppUserToken));
+        assertThat(appUserToken, equalTo(meta.getUser()));
     }
 
     @Test
     public void checkKeyValueFiltered() {
         // given
-        SimpleAppUserToken appUserToken = SimpleAppUserToken.builder()
+        SimpleAppUserToken appUserToken = SimpleAppUserToken.builderToken()
                 .id(UUID.randomUUID().toString())
-                .roles(Arrays.asList("ROLE_USER"))
-                .keyValueMap(ImmutableMap.of("_secret", "v1", "clientId", "1233", "#hidden", "hidden"))
+                .capabilities(Sets.newLinkedHashSet("ROLE_USER"))
+                .keyValues(ImmutableMap.of("_secret", "v1", "clientId", "1233", "#hidden", "hidden"))
                 .build();
 
         JwtProperties jwtProperties = new JwtProperties();
@@ -59,17 +62,17 @@ public class JwtTokenServiceTest {
 
         // when
         JwtTokenBundle jwtTokenBundle = jwtTokenService.generateTokenBundle(appUserToken);
-        AppUserToken parsedAppUserToken = jwtTokenService.parseToken(jwtTokenBundle.getToken());
+        TokenParseResult meta = jwtTokenService.parseToken(jwtTokenBundle.getToken());
 
         // then
         assertThat(jwtTokenBundle, notNullValue());
         assertThat(jwtTokenBundle.getToken(), notNullValue());
         assertThat(jwtTokenBundle.getRefreshToken(), notNullValue());
-        assertThat(parsedAppUserToken.getId(), equalTo(appUserToken.getId()));
-        assertThat(parsedAppUserToken.getRoles(), equalTo(appUserToken.getRoles()));
-        assertThat(parsedAppUserToken.getKeyValues().size(), equalTo(1));
-        assertThat(parsedAppUserToken.getKeyValue("#hidden"), nullValue());
-        assertThat(parsedAppUserToken.getKeyValue("_secret"), nullValue());
-        assertThat(parsedAppUserToken.getKeyValue("clientId"), equalTo("1233"));
+        assertThat(meta.getUser().getId(), equalTo(appUserToken.getId()));
+        assertThat(meta.getUser().getCapabilities(), equalTo(appUserToken.getCapabilities()));
+        assertThat(meta.getUser().getKeyValues().size(), equalTo(1));
+        assertThat(meta.getUser().getKeyValue("#hidden"), nullValue());
+        assertThat(meta.getUser().getKeyValue("_secret"), nullValue());
+        assertThat(meta.getUser().getKeyValue("clientId"), equalTo("1233"));
     }
 }

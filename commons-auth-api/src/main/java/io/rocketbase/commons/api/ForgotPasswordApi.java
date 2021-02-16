@@ -9,6 +9,6 @@ public interface ForgotPasswordApi {
 
     ExpirationInfo<AppUserRead> forgotPassword(ForgotPasswordRequest forgotPassword);
 
-    void resetPassword(PerformPasswordResetRequest performPasswordReset);
+    AppUserRead resetPassword(PerformPasswordResetRequest performPasswordReset);
 
 }

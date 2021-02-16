@@ -2,11 +2,11 @@ package io.rocketbase.commons.service.email;
 
 import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppUserReference;
-import io.rocketbase.mail.model.HtmlTextEmail;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.util.Pair;
 
 import javax.annotation.Resource;
 
@@ -26,36 +26,32 @@ public class DefaultEmailService implements AuthEmailService {
     @Override
     @SneakyThrows
     public void sentRegistrationEmail(AppUserReference user, String verificationUrl) {
-        HtmlTextEmail htmlTextEmail = mailContentConfig.register(user, verificationUrl);
-
-        sentEmail(new EmailAddress(user.getEmail()), mailContentConfig.registerSubject(user), htmlTextEmail);
+        Pair<String, String> content = mailContentConfig.register(user, verificationUrl);
+        sentEmail(new EmailAddress(user.getEmail()), mailContentConfig.registerSubject(user), content);
     }
 
     @Override
     @SneakyThrows
     public void sentForgotPasswordEmail(AppUserReference user, String verificationUrl) {
-        HtmlTextEmail htmlTextEmail = mailContentConfig.forgotPassword(user, verificationUrl);
-
-        sentEmail(new EmailAddress(user.getEmail()), mailContentConfig.forgotPasswordSubject(user), htmlTextEmail);
+        Pair<String, String> content = mailContentConfig.forgotPassword(user, verificationUrl);
+        sentEmail(new EmailAddress(user.getEmail()), mailContentConfig.forgotPasswordSubject(user), content);
     }
 
     @Override
     @SneakyThrows
     public void sentInviteEmail(AppInviteEntity invite, String verificationUrl) {
-        HtmlTextEmail htmlTextEmail = mailContentConfig.invite(invite, verificationUrl);
-
-        sentEmail(new EmailAddress(invite.getEmail()), mailContentConfig.inviteSubject(invite), htmlTextEmail);
+        Pair<String, String> content = mailContentConfig.invite(invite, verificationUrl);
+        sentEmail(new EmailAddress(invite.getEmail()), mailContentConfig.inviteSubject(invite), content);
     }
 
     @Override
     public void sentChangeEmailAddressEmail(AppUserReference user, String newEmailAddress, String verificationUrl) {
-        HtmlTextEmail htmlTextEmail = mailContentConfig.changeEmail(user, newEmailAddress, verificationUrl);
-
-        sentEmail(new EmailAddress(newEmailAddress), mailContentConfig.changeEmailSubject(user), htmlTextEmail);
+        Pair<String, String> content = mailContentConfig.changeEmail(user, newEmailAddress, verificationUrl);
+        sentEmail(new EmailAddress(newEmailAddress), mailContentConfig.changeEmailSubject(user), content);
     }
 
-    public void sentEmail(EmailAddress to, String subject, HtmlTextEmail htmlTextEmail) {
-        emailSender.sentEmail(to, subject, htmlTextEmail.getHtml(), htmlTextEmail.getText(), getFrom());
+    public void sentEmail(EmailAddress to, String subject, Pair<String, String> content) {
+        emailSender.sentEmail(to, subject, content.getFirst(), content.getSecond(), getFrom());
     }
 
 }

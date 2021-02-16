@@ -12,6 +12,6 @@ public interface AppInviteApi {
 
     AppInviteRead invite(InviteRequest inviteRequest);
 
-    void delete(String id);
+    void delete(Long id);
 
 }

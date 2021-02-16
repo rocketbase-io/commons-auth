@@ -1,9 +1,11 @@
 package io.rocketbase.commons.service;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import io.rocketbase.commons.Application;
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.model.AppUserMongoEntity;
+import io.rocketbase.commons.service.user.AppUserPersistenceService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -38,7 +39,7 @@ public class AppUserMongoServiceImplTest {
                 .firstName("Marten")
                 .lastName("Prieß")
                 .email("marten@rocketbase.io")
-                .roles(Arrays.asList("ADMIN"))
+                .roles(Sets.newHashSet("ADMIN"))
                 .keyValueMap(ImmutableMap.<String, String>builder().put("workspace", "1").build())
                 .enabled(true)
                 .build());
@@ -48,7 +49,7 @@ public class AppUserMongoServiceImplTest {
                 .firstName("Niels")
                 .lastName("Schelbach")
                 .email("niels@rocketbase.io")
-                .roles(Arrays.asList("USER"))
+                .roles(Sets.newHashSet("USER"))
                 .keyValueMap(ImmutableMap.<String, String>builder().put("workspace", "1").put("language", "en").build())
                 .enabled(true)
                 .build());
@@ -58,7 +59,7 @@ public class AppUserMongoServiceImplTest {
                 .firstName("Sample")
                 .lastName("User")
                 .email("sampled@rocketbase.io")
-                .roles(Arrays.asList("user"))
+                .roles(Sets.newHashSet("user"))
                 .enabled(false)
                 .build());
         service.save(AppUserMongoEntity.builder()
@@ -66,7 +67,7 @@ public class AppUserMongoServiceImplTest {
                 .username("service")
                 .firstName("Service")
                 .email("servicee@rocketbase.io")
-                .roles(Arrays.asList("service"))
+                .roles(Sets.newHashSet("service"))
                 .enabled(true)
                 .build());
     }

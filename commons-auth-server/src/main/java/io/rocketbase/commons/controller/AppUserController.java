@@ -46,7 +46,7 @@ public class AppUserController implements BaseController {
         Page<AppUserEntity> entities = appUserService.findAll(queryConverter.fromParams(params),
                 parsePageRequest(params, Sort.by("username")));
 
-        return PageableResult.contentPage(appUserConverter.fromEntities(entities.getContent()), entities);
+        return PageableResult.contentPage(appUserConverter.toRead(entities.getContent()), entities);
     }
 
     @RequestMapping(method = RequestMethod.POST, path = "/api/user", consumes = APPLICATION_JSON_VALUE)
@@ -55,7 +55,7 @@ public class AppUserController implements BaseController {
         validationService.registrationIsValid(create.getUsername(), create.getPassword(), create.getEmail());
 
         AppUserEntity entity = appUserService.initializeUser(create);
-        return appUserConverter.fromEntity(entity);
+        return appUserConverter.toRead(entity);
     }
 
     @RequestMapping(method = RequestMethod.PUT, path = "/api/user/{id}/password", consumes = APPLICATION_JSON_VALUE)
@@ -64,20 +64,19 @@ public class AppUserController implements BaseController {
         validationService.passwordIsValid("resetPassword", reset.getResetPassword());
 
         AppUserEntity entity = appUserService.updatePasswordUnchecked(id, reset.getResetPassword());
-        return appUserConverter.fromEntity(entity);
+        return appUserConverter.toRead(entity);
     }
 
     @RequestMapping(method = RequestMethod.PATCH, path = "/api/user/{id}", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public AppUserRead patch(@PathVariable("id") String id, @RequestBody @NotNull @Validated AppUserUpdate update) {
         AppUserEntity entity = appUserService.patch(id, update);
-        return appUserConverter.fromEntity(entity);
+        return appUserConverter.toRead(entity);
     }
 
     @RequestMapping(method = RequestMethod.DELETE, path = "/api/user/{id}")
     public void delete(@PathVariable("id") String id) {
-        AppUserEntity entity = getById(id);
-        appUserService.delete(entity);
+        appUserService.delete(id);
     }
 
 

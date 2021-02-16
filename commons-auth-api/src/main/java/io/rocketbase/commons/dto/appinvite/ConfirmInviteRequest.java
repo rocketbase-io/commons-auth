@@ -16,7 +16,7 @@ import java.io.Serializable;
 public class ConfirmInviteRequest implements Serializable, HasFirstAndLastName {
 
     @NotNull
-    private String inviteId;
+    private Long inviteId;
 
     @NotNull
     private String username;

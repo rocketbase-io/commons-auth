@@ -8,10 +8,9 @@ import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
 import io.rocketbase.commons.dto.validation.TokenErrorCodes;
 import io.rocketbase.commons.dto.validation.UsernameErrorCodes;
 import io.rocketbase.commons.exception.*;
-import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.service.SimpleTokenService;
-import io.rocketbase.commons.service.ValidationUserLookupService;
 import io.rocketbase.commons.service.email.EmailAddress;
+import io.rocketbase.commons.service.user.AppUserPersistenceService;
 import io.rocketbase.commons.util.Nulls;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,11 +26,11 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
-public class DefaultValidationService implements ValidationService {
+public class DefaultValidationService implements ValidationService, PassayConfig {
 
     final UsernameProperties usernameProperties;
     final PasswordProperties passwordProperties;
-    final ValidationUserLookupService userLookupService;
+    final AppUserPersistenceService appUserPersistenceService;
     final ValidationErrorCodeService validationErrorCodeService;
 
     private Pattern userMatcher;
@@ -127,8 +126,7 @@ public class DefaultValidationService implements ValidationService {
             if (!getUserMatcher().matcher(username).matches()) {
                 errorCodes.add(UsernameErrorCodes.NOT_ALLOWED_CHAR);
             }
-            AppUserToken found = userLookupService.getByUsername(username);
-            if (found != null) {
+            if (appUserPersistenceService.findByUsername(username.toLowerCase()).isPresent()) {
                 errorCodes.add(UsernameErrorCodes.ALREADY_TAKEN);
             }
         }
@@ -158,7 +156,7 @@ public class DefaultValidationService implements ValidationService {
             if (!emailAddr.isValid()) {
                 errorCodes.add(EmailErrorCodes.INVALID);
             }
-            if (userLookupService.findByEmail(email).isPresent()) {
+            if (appUserPersistenceService.findByEmail(email.toLowerCase()).isPresent()) {
                 errorCodes.add(EmailErrorCodes.ALREADY_TAKEN);
             }
             // max length within jpa entity

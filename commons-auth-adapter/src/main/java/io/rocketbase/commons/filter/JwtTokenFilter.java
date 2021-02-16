@@ -1,11 +1,9 @@
 package io.rocketbase.commons.filter;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.MalformedJwtException;
 import io.rocketbase.commons.config.JwtProperties;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
-import io.rocketbase.commons.model.AppUserToken;
+import io.rocketbase.commons.model.TokenParseResult;
 import io.rocketbase.commons.security.CommonsAuthenticationToken;
 import io.rocketbase.commons.security.CustomAuthoritiesProvider;
 import io.rocketbase.commons.security.JwtTokenService;
@@ -43,11 +41,14 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        String authToken = getAuthToken(request);
-        String username = getValidatedUsername(authToken);
-
         try {
-            tryToAuthenticate(authToken, username, request);
+            TokenParseResult parsedToken = null;
+            try {
+                parsedToken = jwtTokenService.parseToken(getAuthToken(request));
+            } catch (JwtException jwtException) {
+                log.warn("invalid token: {}", jwtException.getMessage());
+            }
+            tryToAuthenticate(parsedToken, request);
             chain.doFilter(request, response);
         } catch (Exception e) {
             int status = HttpStatus.BAD_REQUEST.value();
@@ -71,42 +72,20 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         return authToken;
     }
 
-    protected String getValidatedUsername(String authToken) {
-        if (authToken != null) {
-            try {
-                return jwtTokenService.getUsernameFromToken(authToken);
-            } catch (IllegalArgumentException e) {
-                log.error("an error occured during getting username from token. {}", e.getMessage());
-            } catch (ExpiredJwtException e) {
-                log.warn("the token is expired and not valid anymore");
-            } catch (MalformedJwtException e) {
-                log.warn("the token has invalid format. {}", e.getMessage());
-            } catch (JwtException e) {
-                log.error("other token exception: {}", e.getMessage());
+    protected Authentication tryToAuthenticate(TokenParseResult parsedToken, HttpServletRequest request) {
+        if (parsedToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+            Collection<GrantedAuthority> authorities = parsedToken.getAuthoritiesFromToken();
+            authorities.addAll(customAuthoritiesProvider.getExtraSecurityContextAuthorities(parsedToken.getUser(), request));
+
+            CommonsAuthenticationToken authentication = new CommonsAuthenticationToken(authorities, parsedToken.getUser(),
+                    jwtTokenStoreProvider.getInstance(new JwtTokenBundle(parsedToken.getToken(), null)));
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            if (log.isTraceEnabled()) {
+                log.trace("authenticated user {} with {}, setting security context", parsedToken.getUser().getUsername(), authorities);
             }
-        }
-        return null;
-    }
-
-    protected Authentication tryToAuthenticate(String authToken, String username, HttpServletRequest request) {
-        if (username != null && SecurityContextHolder.getContext()
-                .getAuthentication() == null) {
-            if (jwtTokenService.validateToken(authToken, username, null)) {
-                AppUserToken appUserToken = jwtTokenService.parseToken(authToken);
-
-                Collection<GrantedAuthority> authorities = jwtTokenService.getAuthoritiesFromToken(authToken);
-                authorities.addAll(customAuthoritiesProvider.getExtraSecurityContextAuthorities(appUserToken, request));
-
-                CommonsAuthenticationToken authentication = new CommonsAuthenticationToken(authorities, appUserToken,
-                        jwtTokenStoreProvider.getInstance(new JwtTokenBundle(authToken, null)));
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                if (log.isTraceEnabled()) {
-                    log.trace("authenticated user {} with {}, setting security context", username, authorities);
-                }
-                SecurityContextHolder.getContext()
-                        .setAuthentication(authentication);
-                return authentication;
-            }
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            return authentication;
         }
         return null;
     }

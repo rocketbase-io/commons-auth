@@ -70,10 +70,9 @@ public class AppInviteResource implements BaseRestResource, AppInviteApi {
 
     @Override
     @SneakyThrows
-    public void delete(String id) {
+    public void delete(Long id) {
         restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
-                        .path(API_INVITE)
-                        .path(id)
+                        .pathSegment(API_INVITE, String.valueOf(id))
                         .toUriString(),
                 HttpMethod.DELETE,
                 new HttpEntity<>(createHeaderWithLanguage()),

@@ -1,14 +1,15 @@
 package io.rocketbase.commons.service;
 
+import com.google.common.collect.Sets;
 import io.rocketbase.commons.BaseIntegrationTestPrefixed;
 import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.adapters.JwtTokenProvider;
 import io.rocketbase.commons.adapters.SimpleJwtTokenProvider;
+import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.authentication.LoginRequest;
 import io.rocketbase.commons.dto.authentication.LoginResponse;
-import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.resource.AuthenticationResource;
 import io.rocketbase.commons.resource.LoginResource;
 import io.rocketbase.commons.service.user.ActiveUserStore;
@@ -56,16 +57,22 @@ public class ActiveUserStoreIntegrationTest extends BaseIntegrationTestPrefixed 
         // given
 
         // when
-        AuthenticationResource authenticationResource = new AuthenticationResource(new JwtRestTemplate(getTokenProvider(getAppUser())));
+        AuthenticationResource authenticationResource = new AuthenticationResource(new JwtRestTemplate(getTokenProvider(getAppUser("user"))));
         AppUserRead responseUser = authenticationResource.getAuthenticated();
 
         LoginResource loginResource = new LoginResource(getBaseUrl());
         LoginResponse loginResponse = loginResource.login(LoginRequest.builder()
-                .username(getAppAdminUser().getEmail())
+                .username(getAppUser("admin").getEmail())
                 .password("pw")
                 .build());
 
-        AppUserEntity newUser = appUserService.initializeUser("test-123", "pw", "other@test.com", false);
+        AppUserEntity newUser = appUserService.initializeUser(
+                AppUserCreate.builder()
+                        .username("test-123")
+                        .password("pw")
+                        .email("other@test.com")
+                        .capabilities(Sets.newHashSet("user"))
+                        .build());
         try {
             loginResource.login(LoginRequest.builder()
                     .username(newUser.getUsername())

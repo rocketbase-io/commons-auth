@@ -205,6 +205,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+        // Best to use Argon2PasswordEncoder or SCryptPasswordEncoder over BCryptPasswordEncoder
         return new BCryptPasswordEncoder();
     }
 

@@ -1,7 +1,9 @@
 package io.rocketbase.commons.controller;
 
+import com.google.common.collect.Sets;
 import io.rocketbase.commons.BaseIntegrationTestPrefixed;
 import io.rocketbase.commons.config.EmailProperties;
+import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.dto.forgot.ForgotPasswordRequest;
 import io.rocketbase.commons.resource.ForgotPasswordResource;
 import io.rocketbase.commons.service.user.AppUserService;
@@ -30,7 +32,12 @@ public class ForgotPasswordControllerTest extends BaseIntegrationTestPrefixed {
 
         String email = "forget@rocketbase.io";
         ForgotPasswordResource forgotPasswordResource = new ForgotPasswordResource(getBaseUrl());
-        appUserService.initializeUser("forget", "pw", email, false);
+        appUserService.initializeUser(AppUserCreate.builder()
+                .username("forgot")
+                .password("pw")
+                .email(email)
+                .capabilities(Sets.newHashSet("user"))
+                .build());
 
         // when
         forgotPasswordResource.forgotPassword(new ForgotPasswordRequest(null, email, null, null));
@@ -49,7 +56,12 @@ public class ForgotPasswordControllerTest extends BaseIntegrationTestPrefixed {
         String username = "forgot-pw";
         String email = "forget@rocketbase.io";
         ForgotPasswordResource forgotPasswordResource = new ForgotPasswordResource(getBaseUrl());
-        appUserService.initializeUser(username, "pw", email, false);
+        appUserService.initializeUser(AppUserCreate.builder()
+                .username(username)
+                .password("pw")
+                .email(email)
+                .capabilities(Sets.newHashSet("user"))
+                .build());
 
         // when
         forgotPasswordResource.forgotPassword(new ForgotPasswordRequest(username, null, null, null));

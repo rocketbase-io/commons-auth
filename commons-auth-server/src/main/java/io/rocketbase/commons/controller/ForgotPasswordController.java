@@ -9,7 +9,6 @@ import io.rocketbase.commons.dto.forgot.PerformPasswordResetRequest;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.service.forgot.AppUserForgotPasswordService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,13 +38,13 @@ public class ForgotPasswordController implements BaseController {
         ExpirationInfo<AppUserEntity> expirationInfo = appUserForgotPasswordService.requestPasswordReset(forgotPassword, getBaseUrl(request));
         return ResponseEntity.ok(ExpirationInfo.<AppUserRead>builder()
                 .expires(expirationInfo.getExpires())
-                .detail(appUserConverter.fromEntity(expirationInfo.getDetail()))
+                .detail(appUserConverter.toRead(expirationInfo.getDetail()))
                 .build());
     }
 
     @RequestMapping(value = "/auth/reset-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> resetPassword(@RequestBody @NotNull @Validated PerformPasswordResetRequest performPasswordReset) {
-        appUserForgotPasswordService.resetPassword(performPasswordReset);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<AppUserRead> resetPassword(@RequestBody @NotNull @Validated PerformPasswordResetRequest performPasswordReset) {
+        AppUserEntity entity = appUserForgotPasswordService.resetPassword(performPasswordReset);
+        return ResponseEntity.ok(appUserConverter.toRead(entity));
     }
 }

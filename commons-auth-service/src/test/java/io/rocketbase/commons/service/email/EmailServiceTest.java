@@ -24,7 +24,7 @@ public class EmailServiceTest extends BaseIntegrationTest {
     @Test
     public void simpleSendRegistrationEmail() throws Exception {
         // given
-        AppUserEntity user = getAppUser();
+        AppUserEntity user = getAppUser("user");
 
         EmailProperties emailProperties = new EmailProperties();
 
@@ -41,7 +41,7 @@ public class EmailServiceTest extends BaseIntegrationTest {
     @Test
     public void germanRegistrationEmail() throws Exception {
         // given
-        AppUserEntity user = getAppUser();
+        AppUserEntity user = getAppUser("user");
 
         EmailProperties emailProperties = new EmailProperties();
         LocaleContextHolder.setLocale(Locale.GERMAN);

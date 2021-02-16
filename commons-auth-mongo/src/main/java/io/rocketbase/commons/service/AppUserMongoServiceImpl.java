@@ -2,6 +2,7 @@ package io.rocketbase.commons.service;
 
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.model.AppUserMongoEntity;
+import io.rocketbase.commons.service.user.AppUserPersistenceService;
 import io.rocketbase.commons.util.Nulls;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -130,7 +131,7 @@ public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUse
         return AppUserMongoEntity.builder()
                 .id(UUID.randomUUID().toString())
                 .created(Instant.now())
-                .roles(new ArrayList<>())
+                .roles(new HashSet<>())
                 .build();
     }
 }

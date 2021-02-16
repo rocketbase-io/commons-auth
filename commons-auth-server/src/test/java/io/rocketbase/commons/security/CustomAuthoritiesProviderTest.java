@@ -5,7 +5,8 @@ import io.rocketbase.commons.config.JwtProperties;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.model.SimpleAppUserToken;
-import io.rocketbase.commons.util.RolesAuthoritiesConverter;
+import io.rocketbase.commons.model.TokenParseResult;
+import io.rocketbase.commons.util.CapacityAuthoritiesConverter;
 import org.junit.Test;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -45,13 +46,14 @@ public class CustomAuthoritiesProviderTest extends BaseIntegrationTestPrefixed {
         config.setSecret("NHU3eCFBJUQqRy1LYU5kUmdVa1hwMnM1djh5L0I/RShIK01iUWVTaFZtWXEzdDZ3OXokQyZGKUpATmNSZlVqVw==");
         JwtTokenService service = new JwtTokenService(config, myOwnImplementation());
         // when
-        JwtTokenBundle jwtTokenBundle = service.generateTokenBundle(SimpleAppUserToken.builder()
+        JwtTokenBundle jwtTokenBundle = service.generateTokenBundle(SimpleAppUserToken.builderToken()
                 .username(username)
-                .roles(RolesAuthoritiesConverter.convertToDtos(authorities))
+                .capabilities(CapacityAuthoritiesConverter.convertToDtos(authorities))
                 .build());
         // then
         assertThat(jwtTokenBundle, notNullValue());
-        assertThat(service.getAuthoritiesFromToken(jwtTokenBundle.getToken()),
+        TokenParseResult parsedToken = service.parseToken(jwtTokenBundle.getToken());
+        assertThat(parsedToken.getAuthoritiesFromToken(),
                 containsInAnyOrder(new SimpleGrantedAuthority("TOKEN_EXTRA"), new SimpleGrantedAuthority("ROLE_USER")));
 
     }

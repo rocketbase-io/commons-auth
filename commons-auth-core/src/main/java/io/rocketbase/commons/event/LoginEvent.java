@@ -7,10 +7,10 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 public class LoginEvent extends ApplicationEvent {
 
-    private final AppUserEntity appUserEntity;
+    private final AppUserEntity appUser;
 
-    public LoginEvent(Object source, AppUserEntity appUserEntity) {
+    public LoginEvent(Object source, AppUserEntity appUser) {
         super(source);
-        this.appUserEntity = appUserEntity;
+        this.appUser = appUser;
     }
 }

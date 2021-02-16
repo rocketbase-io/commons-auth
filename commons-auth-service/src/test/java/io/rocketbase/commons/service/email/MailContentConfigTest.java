@@ -1,20 +1,27 @@
 package io.rocketbase.commons.service.email;
 
+import com.google.common.collect.Sets;
+import io.rocketbase.commons.dto.appteam.AppTeamInvite;
 import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppUserReference;
 import io.rocketbase.commons.model.SimpleAppUserReference;
+import io.rocketbase.commons.model.user.SimpleUserProfile;
 import io.rocketbase.commons.test.BaseIntegrationTest;
-import io.rocketbase.commons.test.model.AppInviteTestEntity;
-import io.rocketbase.mail.model.HtmlTextEmail;
+import io.rocketbase.commons.test.model.SimpleAppInvite;
+import lombok.Builder;
+import lombok.Data;
 import org.junit.Test;
 import org.simplejavamail.api.email.Email;
 import org.simplejavamail.api.mailer.Mailer;
 import org.simplejavamail.email.EmailBuilder;
 import org.simplejavamail.mailer.MailerBuilder;
+import org.springframework.data.util.Pair;
 
 import javax.annotation.Resource;
 import java.time.Instant;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
@@ -35,14 +42,14 @@ public class MailContentConfigTest extends BaseIntegrationTest {
         return mailer;
     }
 
-    protected void sentEmail(String subject, HtmlTextEmail content) {
+    protected void sentEmail(String subject, Pair<String, String> content) {
         try {
             Email email = EmailBuilder.startingBlank()
                     .to("melistik@icloud.com")
                     .from("service@rocketbase.io")
                     .withSubject(subject)
-                    .withHTMLText(content.getHtml())
-                    .withPlainText(content.getText())
+                    .withHTMLText(content.getFirst())
+                    .withPlainText(content.getSecond())
                     .buildEmail();
             getMailer().sendMail(email);
         } catch (Exception e) {
@@ -55,10 +62,18 @@ public class MailContentConfigTest extends BaseIntegrationTest {
     public void register() {
         // given
         String actionUrl = "http://localhost:8080/?action=register";
-        AppUserReference appUserReference = new SimpleAppUserReference("id", "username", "firstName", "lastName", "email@email.com", null);
+        AppUserReference appUserReference = SimpleAppUserReference.builder()
+                .id("id")
+                .username("username")
+                .email("email@email.com")
+                .profile(SimpleUserProfile.builder()
+                        .firstName("firstName")
+                        .lastName("lastName")
+                        .build())
+                .build();
 
         // when
-        HtmlTextEmail htmlTextEmail = mailContentConfig.register(appUserReference, actionUrl);
+        Pair<String, String> htmlTextEmail = mailContentConfig.register(appUserReference, actionUrl);
         String subject = mailContentConfig.registerSubject(appUserReference);
         sentEmail(subject, htmlTextEmail);
 
@@ -71,10 +86,18 @@ public class MailContentConfigTest extends BaseIntegrationTest {
     public void forgotPassword() {
         // given
         String actionUrl = "http://localhost:8080/?action=forgot";
-        AppUserReference appUserReference = new SimpleAppUserReference("id", "username", "firstName", "lastName", "email@email.com", null);
+        AppUserReference appUserReference = SimpleAppUserReference.builder()
+                .id("id")
+                .username("username")
+                .email("email@email.com")
+                .profile(SimpleUserProfile.builder()
+                        .firstName("firstName")
+                        .lastName("lastName")
+                        .build())
+                .build();
 
         // when
-        HtmlTextEmail htmlTextEmail = mailContentConfig.forgotPassword(appUserReference, actionUrl);
+        Pair<String, String> htmlTextEmail = mailContentConfig.forgotPassword(appUserReference, actionUrl);
         String subject = mailContentConfig.forgotPasswordSubject(appUserReference);
         sentEmail(subject, htmlTextEmail);
 
@@ -87,7 +110,7 @@ public class MailContentConfigTest extends BaseIntegrationTest {
     public void invite() {
         // given
         String actionUrl = "http://localhost:8080/?action=forgot";
-        AppInviteEntity inviteEntity = AppInviteTestEntity.builder()
+        AppInviteEntity inviteEntity = SimpleAppInvite.builder()
                 .email("email@email.com")
                 .firstName("firstName")
                 .lastName("lastName")
@@ -95,12 +118,12 @@ public class MailContentConfigTest extends BaseIntegrationTest {
                 .invitor("invitor")
                 .message("My longer message from the other side\n" +
                         "Try also a linebreak :)")
-                .roles(Arrays.asList("ROLE_1", "ROLE_2"))
+                .capabilities(Sets.newHashSet(1L, 2L))
                 .expiration(Instant.now().plusSeconds(600))
                 .build();
 
         // when
-        HtmlTextEmail htmlTextEmail = mailContentConfig.invite(inviteEntity, actionUrl);
+        Pair<String, String> htmlTextEmail = mailContentConfig.invite(inviteEntity, actionUrl);
         String subject = mailContentConfig.inviteSubject(inviteEntity);
         sentEmail(subject, htmlTextEmail);
 
@@ -114,16 +137,41 @@ public class MailContentConfigTest extends BaseIntegrationTest {
     public void changeEmail() {
         // given
         String actionUrl = "http://localhost:8080/?action=change-mail";
-        AppUserReference appUserReference = new SimpleAppUserReference("id", "username", "firstName", "lastName", "email@email.com", null);
+        AppUserReference appUserReference = SimpleAppUserReference.builder()
+                .id("id")
+                .username("username")
+                .email("email@email.com")
+                .profile(SimpleUserProfile.builder()
+                        .firstName("firstName")
+                        .lastName("lastName")
+                        .build())
+                .build();
 
         // when
-        HtmlTextEmail htmlTextEmail = mailContentConfig.changeEmail(appUserReference, "new-email@rocketbase.com", actionUrl);
+        Pair<String, String> htmlTextEmail = mailContentConfig.changeEmail(appUserReference, "new-email@rocketbase.com", actionUrl);
         String subject = mailContentConfig.changeEmailSubject(appUserReference);
         sentEmail(subject, htmlTextEmail);
 
         // then
         assertThat(htmlTextEmail, notNullValue());
         assertThat(subject, notNullValue());
+    }
+
+    @Data
+    @Builder
+    public static class AppInviteTestEntity implements AppInviteEntity<String, String> {
+        private Long id;
+        private String invitor;
+        private String message;
+        private String firstName;
+        private String lastName;
+        private String email;
+        private Set<String> capabilities;
+        private Map<String, String> keyValues = new HashMap<>();
+        private Set<String> groups;
+        private Instant expiration;
+        private Instant created;
+        private AppTeamInvite teamInvite;
     }
 
 }

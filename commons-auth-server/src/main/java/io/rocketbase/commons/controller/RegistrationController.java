@@ -6,6 +6,7 @@ import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.registration.RegistrationService;
 import lombok.extern.slf4j.Slf4j;
@@ -41,15 +42,14 @@ public class RegistrationController implements BaseController {
         ExpirationInfo<AppUserEntity> expirationInfo = registrationService.register(registration, getBaseUrl(request));
         return ResponseEntity.ok(ExpirationInfo.<AppUserRead>builder()
                 .expires(expirationInfo.getExpires())
-                .detail(appUserConverter.fromEntity(expirationInfo.getDetail()))
+                .detail(appUserConverter.toRead(expirationInfo.getDetail()))
                 .build());
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/verify")
     @ResponseBody
     public ResponseEntity<JwtTokenBundle> verify(@RequestParam("verification") String verification) {
-        AppUserEntity entity = registrationService.verifyRegistration(verification);
-
-        return ResponseEntity.ok(jwtTokenService.generateTokenBundle(entity));
+        AppUserToken appUserToken = registrationService.verifyRegistration(verification);
+        return ResponseEntity.ok(jwtTokenService.generateTokenBundle(appUserToken));
     }
 }

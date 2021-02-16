@@ -3,7 +3,7 @@ package io.rocketbase.commons.filter;
 import io.rocketbase.commons.api.LoginApi;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.handler.LoginSuccessCookieHandler;
-import io.rocketbase.commons.model.AppUserToken;
+import io.rocketbase.commons.model.TokenParseResult;
 import io.rocketbase.commons.security.CommonsAuthenticationToken;
 import io.rocketbase.commons.security.CustomAuthoritiesProvider;
 import io.rocketbase.commons.security.JwtTokenService;
@@ -52,18 +52,18 @@ public class LoginCookieFilter extends OncePerRequestFilter {
                     // get new accessToken
                     String accessToken = loginApi.getNewAccessToken(cookieRefreshToken);
                     // use accessToken in order to get also keyValues etc
-                    AppUserToken appUserToken = jwtTokenService.parseToken(accessToken);
+                    TokenParseResult parsedToken = jwtTokenService.parseToken(accessToken);
 
-                    Collection<GrantedAuthority> authorities = jwtTokenService.getAuthoritiesFromToken(accessToken);
+                    Collection<GrantedAuthority> authorities = parsedToken.getAuthoritiesFromToken();
                     if (customAuthoritiesProvider != null) {
-                        authorities.addAll(customAuthoritiesProvider.getExtraSecurityContextAuthorities(appUserToken, request));
+                        authorities.addAll(customAuthoritiesProvider.getExtraSecurityContextAuthorities(parsedToken.getUser(), request));
                     }
 
-                    CommonsAuthenticationToken authentication = new CommonsAuthenticationToken(authorities, appUserToken,
+                    CommonsAuthenticationToken authentication = new CommonsAuthenticationToken(authorities, parsedToken.getUser(),
                             jwtTokenStoreProvider.getInstance(new JwtTokenBundle(accessToken, cookieRefreshToken)));
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     if (log.isTraceEnabled()) {
-                        log.trace("authenticated user {} with {}, setting security context", appUserToken.getUsername(), authorities);
+                        log.trace("authenticated user {} with {}, setting security context", parsedToken.getUser().getUsername(), authorities);
                     }
                     SecurityContextHolder.getContext()
                             .setAuthentication(authentication);

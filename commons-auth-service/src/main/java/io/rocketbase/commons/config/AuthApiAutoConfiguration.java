@@ -11,10 +11,11 @@ import io.rocketbase.commons.service.impersonate.ImpersonateService;
 import io.rocketbase.commons.service.invite.AppInviteService;
 import io.rocketbase.commons.service.registration.RegistrationService;
 import io.rocketbase.commons.service.user.AppUserService;
+import io.rocketbase.commons.service.user.AppUserTokenService;
 import io.rocketbase.commons.service.validation.ValidationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -31,7 +32,7 @@ public class AuthApiAutoConfiguration {
     private AppUserService appUserService;
 
     @Resource
-    private AppUserConverter appUserConverter;
+    private AppUserTokenService appUserTokenService;
 
     @Resource
     private RegistrationService registrationService;
@@ -54,6 +55,15 @@ public class AuthApiAutoConfiguration {
     @Resource
     private ChangeAppUserWithConfirmService changeAppUserWithConfirmService;
 
+    @Resource
+    private LoginService loginService;
+
+    @Resource
+    private AppUserConverter appUserConverter;
+
+    @Resource
+    private ApplicationEventPublisher applicationEventPublisher;
+
     @Bean
     @ConditionalOnMissingBean
     public AppInviteApi appInviteApi() {
@@ -69,19 +79,19 @@ public class AuthApiAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public AuthenticationApi authenticationApi() {
-        return new AuthenticationApiService(appUserService, appUserConverter, changeAppUserWithConfirmService);
+        return new AuthenticationApiService(appUserService, appUserConverter, changeAppUserWithConfirmService, applicationEventPublisher);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public ForgotPasswordApi forgotPasswordApi() {
-        return new ForgotPasswordApiService(forgotPasswordService);
+        return new ForgotPasswordApiService(forgotPasswordService, appUserConverter);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public ImpersonateApi impersonateApi() {
-        return new ImpersonateApiService(impersonateService, appUserService);
+        return new ImpersonateApiService(impersonateService, appUserTokenService);
     }
 
     @Bean
@@ -92,8 +102,8 @@ public class AuthApiAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public LoginApi loginApi(@Autowired LoginService loginService) {
-        return new LoginApiService(loginService, jwtTokenService, appUserService);
+    public LoginApi loginApi() {
+        return new LoginApiService(loginService, jwtTokenService, appUserTokenService);
     }
 
     @Bean

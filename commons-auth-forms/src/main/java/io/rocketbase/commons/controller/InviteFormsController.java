@@ -38,7 +38,7 @@ public class InviteFormsController extends AbstractFormsController {
     }
 
     @GetMapping("${auth.forms.prefix:}/invite")
-    public String verify(@RequestParam(value = "inviteId", required = false) String inviteId, Model model) {
+    public String verify(@RequestParam(value = "inviteId", required = false) Long inviteId, Model model) {
         try {
             AppInviteRead info = inviteApi.verify(inviteId);
             model.addAttribute("validInvite", true);
@@ -108,7 +108,7 @@ public class InviteFormsController extends AbstractFormsController {
     public static class InviteForm implements Serializable {
 
         @NotNull
-        private String inviteId;
+        private Long inviteId;
 
         private String invitor;
 

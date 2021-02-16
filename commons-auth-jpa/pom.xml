@@ -65,6 +65,13 @@ SOFTWARE.
             <optional>true</optional>
         </dependency>
 
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-jpamodelgen</artifactId>
+            <version>5.4.27.Final</version>
+            <scope>provided</scope>
+        </dependency>
+
 
         <!-- tests -->
         <dependency>
@@ -81,6 +88,12 @@ SOFTWARE.
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

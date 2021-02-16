@@ -31,7 +31,7 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         try {
             LoginResponse login = loginApi.login(new LoginRequest(authentication.getName(), String.valueOf(authentication.getCredentials())));
-            Collection<GrantedAuthority> authorities = jwtTokenService.getAuthoritiesFromToken(login.getJwtTokenBundle().getToken());
+            Collection<GrantedAuthority> authorities = jwtTokenService.parseToken(login.getJwtTokenBundle().getToken()).getAuthoritiesFromToken();
             return new CommonsAuthenticationToken(authorities, login.getUser(), jwtTokenStoreProvider.getInstance(login.getJwtTokenBundle()));
         } catch (HttpClientErrorException e) {
             if (Arrays.asList(HttpStatus.FORBIDDEN, HttpStatus.UNAUTHORIZED).contains(e.getStatusCode())) {

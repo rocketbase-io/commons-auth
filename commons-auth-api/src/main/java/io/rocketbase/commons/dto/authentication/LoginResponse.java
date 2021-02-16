@@ -1,6 +1,6 @@
 package io.rocketbase.commons.dto.authentication;
 
-import io.rocketbase.commons.dto.appuser.AppUserRead;
+import io.rocketbase.commons.model.AppUserToken;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +15,6 @@ import java.io.Serializable;
 public class LoginResponse implements Serializable {
 
     private JwtTokenBundle jwtTokenBundle;
-    private AppUserRead user;
+    private AppUserToken user;
 
 }

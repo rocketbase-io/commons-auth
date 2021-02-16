@@ -1,0 +1,90 @@
+@startuml
+
+hide methods
+
+
+class AppUserEntity {
+    id: UUID
+    systemRefId: String
+    username: String
+    firstName: String
+    lastName: String
+    password: String
+    email: String
+    avatar: String
+    enabled: boolean
+    created: Instant
+    lastUpdate: Instant
+    lastLogin: Instant
+    lastTokenInvalidation: Instant
+}
+
+class AppCapability {
+    id: Long
+    key: String
+    description: String
+}
+
+AppCapability -> AppCapability: parent
+
+class AppUserKeyValue {
+    key: String
+    value: String
+}
+
+AppUserEntity -u-> AppCapability: capabilities
+AppUserEntity  -d-> AppUserKeyValue : keyValues
+
+class AppUserGroup {
+    id: Long
+    name: String
+    systemRefId: String
+    description: String
+}
+
+AppUserGroup -> AppUserGroup: parent
+AppUserEntity -> AppUserGroup: groups
+AppUserGroup  -u-> AppCapability : capabilities
+
+class AppUserGroupKeyValue {
+    key: String
+    value: String
+}
+
+AppUserGroup -d-> AppUserGroupKeyValue : keyValues
+
+
+class AppTeam {
+    id: Long
+    name: String
+    systemRefId: String
+    description: String
+    personal: boolean
+}
+
+enum AppTeamRole {
+    OWNER
+    MEMBER
+}
+
+class AppTeamMembers {
+}
+
+AppTeamMembers -d-> AppTeam: team
+AppTeamMembers -d-> AppUserEntity: user
+AppTeamMembers -l-> AppTeamRole: role
+AppUserEntity --u-> AppTeam: activeTeam
+
+class AuthAudit {
+    id: Long
+    timestamp: Instant
+    userId: String
+    eventType: String
+    eventDetail: String
+    source: String
+    identifier: String
+}
+
+
+
+@enduml

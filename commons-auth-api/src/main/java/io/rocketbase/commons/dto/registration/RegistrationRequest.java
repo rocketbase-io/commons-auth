@@ -7,6 +7,7 @@ import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -18,16 +19,20 @@ import java.util.Map;
 public class RegistrationRequest implements Serializable, HasKeyValue, HasFirstAndLastName {
 
     @NotNull
+    @Size(max = 255)
     private String username;
 
     @Nullable
+    @Size(max = 100)
     private String firstName;
 
     @Nullable
+    @Size(max = 100)
     private String lastName;
 
     @NotNull
     @Email
+    @Size(max = 255)
     private String email;
 
     @NotNull

@@ -1,9 +1,11 @@
 package io.rocketbase.commons.service;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import io.rocketbase.commons.Application;
 import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
 import io.rocketbase.commons.model.AppInviteMongoEntity;
+import io.rocketbase.commons.service.invite.AppInvitePersistenceService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +19,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.annotation.Resource;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,7 +44,7 @@ public class AppInviteMongoServiceImplTest {
                 .invitor("Marten")
                 .message("Please and join our Team from rocketbase.io")
                 .email("valid@rocketbase.io")
-                .roles(Arrays.asList("USER", "SERVICE"))
+                .roles(Sets.newHashSet("USER", "SERVICE"))
                 .keyValueMap(ImmutableMap.<String, String>builder().put("workspace", "1").put("special", "abc").put("_secret", "secure").build())
                 .build());
         service.save(AppInviteMongoEntity.builder()
@@ -53,7 +54,7 @@ public class AppInviteMongoServiceImplTest {
                 .invitor("Lukas")
                 .message("...")
                 .email("hello@rocketbase.io")
-                .roles(Arrays.asList("SERVICE"))
+                .roles(Sets.newHashSet("SERVICE"))
                 .build());
         service.save(AppInviteMongoEntity.builder()
                 .id("3ac876a7-5156-499d-8f86-3b137e7fdcbc")
@@ -62,7 +63,7 @@ public class AppInviteMongoServiceImplTest {
                 .invitor("System Invalid")
                 .message("Please and join our Team from rocketbase.io")
                 .email("expired@rocketbase.io")
-                .roles(Arrays.asList("USER", "SERVICE"))
+                .roles(Sets.newHashSet("USER", "SERVICE"))
                 .keyValueMap(ImmutableMap.<String, String>builder().put("workspace", "1").build())
                 .build());
     }
@@ -136,7 +137,7 @@ public class AppInviteMongoServiceImplTest {
         entity.setMessage("My little message");
         entity.setEmail("new@rocketbase.io");
         entity.setExpiration(Instant.now().plus(10, ChronoUnit.DAYS));
-        entity.setRoles(Arrays.asList("USER", "SERVICE"));
+        entity.setRoles(Sets.newHashSet("USER", "SERVICE"));
         entity.addKeyValue("_secure", "geheim123");
         entity.addKeyValue("client", "abc");
 

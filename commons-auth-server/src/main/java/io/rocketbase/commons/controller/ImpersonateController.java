@@ -2,7 +2,6 @@ package io.rocketbase.commons.controller;
 
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.exception.NotFoundException;
-import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.security.CommonsPrincipal;
 import io.rocketbase.commons.service.impersonate.ImpersonateService;
 import io.rocketbase.commons.service.user.ActiveUserStore;

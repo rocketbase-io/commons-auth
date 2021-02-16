@@ -1,16 +1,14 @@
 package io.rocketbase.commons.security;
 
+import com.google.common.collect.Sets;
 import io.rocketbase.commons.config.JwtProperties;
-import io.rocketbase.commons.model.AppUserEntity;
-import io.rocketbase.commons.test.model.AppUserTestEntity;
+import io.rocketbase.commons.model.AppUserToken;
+import io.rocketbase.commons.model.SimpleAppUserToken;
+import io.rocketbase.commons.model.TokenParseResult;
 import org.junit.Test;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,78 +25,77 @@ public class JwtTokenServiceTest {
         return service;
     }
 
-    private AppUserEntity genAppUser() {
-        return AppUserTestEntity.builder()
+    private AppUserToken genAppUser() {
+        return SimpleAppUserToken.builderToken()
                 .id(UUID.randomUUID().toString())
                 .username("user")
                 .email("email@rocketbase.io")
-                .enabled(true)
-                .roles(Arrays.asList("USER"))
+                .capabilities(Sets.newHashSet("USER"))
                 .build();
     }
 
     @Test
     public void getUsernameFromToken() {
         // given
-        AppUserEntity appUser = genAppUser();
+        AppUserToken appUser = genAppUser();
         String token = getInstance().generateAccessToken(Instant.now(), appUser);
 
         // when
-        String username = getInstance().getUsernameFromToken(token);
+        TokenParseResult parseToken = getInstance().parseToken(token);
 
         // then
-        assertThat(username, notNullValue());
-        assertThat(username, equalTo("user"));
+        assertThat(parseToken, notNullValue());
+        assertThat(parseToken.getUser().getUsername(), equalTo("user"));
 
     }
 
     @Test
     public void getAuthoritiesFromToken() {
         // given
-        AppUserEntity appUser = genAppUser();
+        AppUserToken appUser = genAppUser();
         String token = getInstance().generateAccessToken(Instant.now(), appUser);
 
         // when
-        Collection<? extends GrantedAuthority> authorities = getInstance().getAuthoritiesFromToken(token);
+        TokenParseResult parseToken = getInstance().parseToken(token);
 
         // then
-        assertThat(authorities, notNullValue());
-        assertThat(authorities.size(), equalTo(1));
-        assertThat(new ArrayList<>(authorities).get(0).getAuthority(), endsWith("USER"));
+        assertThat(parseToken, notNullValue());
+        assertThat(parseToken.getUser().getCapabilities().size(), equalTo(1));
+        assertThat(parseToken.getUser().getCapabilities(), containsInAnyOrder("USER"));
     }
 
     @Test
     public void getIssuedAtDateFromToken() {
         // given
         Instant beforeCreate = Instant.now().minusSeconds(2);
-        AppUserEntity appUser = genAppUser();
+        AppUserToken appUser = genAppUser();
         String token = getInstance().generateAccessToken(Instant.now(), appUser);
         Instant afterCreate = Instant.now().plusSeconds(2);
 
         // when
-        Instant issued = getInstance().getIssuedAtDateFromToken(token);
+        TokenParseResult parseToken = getInstance().parseToken(token);
 
         // then
-        assertThat(issued, notNullValue());
-        assertThat(issued.isAfter(beforeCreate), equalTo(true));
-        assertThat(issued.isBefore(afterCreate), equalTo(true));
+        assertThat(parseToken, notNullValue());
+        assertThat(parseToken.getIssuedAt().isAfter(beforeCreate), equalTo(true));
+        assertThat(parseToken.getIssuedAt().isBefore(afterCreate), equalTo(true));
     }
 
     @Test
     public void getExpirationDateFromToken() {
         // given
         Instant beforeCreate = Instant.now().minusSeconds(2);
-        AppUserEntity appUser = genAppUser();
+        AppUserToken appUser = genAppUser();
         String token = getInstance().generateAccessToken(Instant.now(), appUser);
 
         // when
-        Instant expired = getInstance().getExpirationDateFromToken(token);
+        TokenParseResult parseToken = getInstance().parseToken(token);
 
         // then
-        assertThat(expired, notNullValue());
-        assertThat(expired.isAfter(beforeCreate
+        assertThat(parseToken, notNullValue());
+        assertThat(parseToken.getExpiration().isAfter(beforeCreate
                 .plusSeconds(60 * getInstance().jwtProperties.getAccessTokenExpiration())), equalTo(true));
-        assertThat(expired.isBefore(beforeCreate
+        assertThat(parseToken.getExpiration().isBefore(beforeCreate
                 .plusSeconds(60 * (getInstance().jwtProperties.getAccessTokenExpiration() + 1))), equalTo(true));
 
     }
@@ -106,28 +103,26 @@ public class JwtTokenServiceTest {
     @Test
     public void validateToken() {
         // given
-        AppUserEntity appUser = genAppUser();
+        AppUserToken appUser = genAppUser();
 
         // when
         String token = getInstance().generateAccessToken(Instant.now(), appUser);
 
         // then
-        assertThat(getInstance().validateToken(token, genAppUser()), equalTo(true));
+        assertThat(getInstance().validateToken(token, genAppUser().getUsername(), null), equalTo(true));
     }
 
     @Test
     public void validateIssued() throws Exception {
         // given
-        AppUserEntity appUser = genAppUser();
-        appUser.updateLastTokenInvalidation();
-        Thread.sleep(1001);
-
+        AppUserToken appUser = genAppUser();
         String token = getInstance().generateAccessToken(Instant.now(), appUser);
+        Thread.sleep(100);
 
         // when
-        Boolean validateToken = getInstance().validateToken(token, appUser);
+        Boolean validateToken = getInstance().validateToken(token, appUser.getUsername(), Instant.now());
 
         // then
-        assertThat(validateToken, equalTo(true));
+        assertThat(validateToken, equalTo(false));
     }
 }

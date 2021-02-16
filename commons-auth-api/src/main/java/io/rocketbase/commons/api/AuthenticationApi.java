@@ -4,10 +4,11 @@ import io.rocketbase.commons.dto.ExpirationInfo;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.EmailChangeRequest;
 import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
-import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
 import io.rocketbase.commons.dto.authentication.UsernameChangeRequest;
 import io.rocketbase.commons.exception.EmailValidationException;
 import io.rocketbase.commons.exception.UsernameValidationException;
+import io.rocketbase.commons.model.user.UserProfile;
+import io.rocketbase.commons.model.user.UserSetting;
 
 public interface AuthenticationApi {
 
@@ -21,6 +22,8 @@ public interface AuthenticationApi {
 
     AppUserRead verifyEmail(String verification);
 
-    void updateProfile(UpdateProfileRequest updateProfile);
+    AppUserRead updateProfile(UserProfile userProfile);
+
+    AppUserRead updateSetting(UserSetting userSetting);
 
 }

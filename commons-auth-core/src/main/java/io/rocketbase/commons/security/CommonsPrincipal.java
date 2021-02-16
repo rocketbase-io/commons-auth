@@ -1,21 +1,26 @@
 package io.rocketbase.commons.security;
 
+import io.rocketbase.commons.dto.appgroup.AppGroupShort;
+import io.rocketbase.commons.dto.appteam.AppUserMembership;
 import io.rocketbase.commons.model.AppUserToken;
+import io.rocketbase.commons.model.user.UserProfile;
+import io.rocketbase.commons.model.user.UserSetting;
 import io.rocketbase.commons.util.JwtTokenStore;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.io.Serializable;
 import java.security.Principal;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * within the security context the Authentication should be an instance of {@link CommonsAuthenticationToken} and it's principal is an instance of {@link CommonsPrincipal}<br>
  * this class provides some convenient static helps that simply the handling of the {@link SecurityContextHolder}
  */
 @NoArgsConstructor
-public class CommonsPrincipal implements AppUserToken, Principal {
+public class CommonsPrincipal implements AppUserToken, Principal, Serializable {
 
     private AppUserToken user;
 
@@ -80,18 +85,13 @@ public class CommonsPrincipal implements AppUserToken, Principal {
     }
 
     @Override
+    public String getSystemRefId() {
+        return user != null ? user.getSystemRefId() : null;
+    }
+
+    @Override
     public String getUsername() {
         return user != null ? user.getUsername() : null;
-    }
-
-    @Override
-    public String getFirstName() {
-        return user != null ? user.getFirstName() : null;
-    }
-
-    @Override
-    public String getLastName() {
-        return user != null ? user.getLastName() : null;
     }
 
     @Override
@@ -99,19 +99,71 @@ public class CommonsPrincipal implements AppUserToken, Principal {
         return user != null ? user.getEmail() : null;
     }
 
+    /**
+     * deprecated since 5.0.0<br>
+     * should be removed - use UserProfile instead
+     */
+    @Deprecated
+    @Override
+    public String getFirstName() {
+        return user != null && user.getProfile() != null ? user.getProfile().getFirstName() : null;
+    }
+
+    /**
+     * deprecated since 5.0.0<br>
+     * should be removed - use UserProfile instead
+     */
+    @Deprecated
+    @Override
+    public String getLastName() {
+        return user != null && user.getProfile() != null ? user.getProfile().getLastName() : null;
+    }
+
+    /**
+     * deprecated since 5.0.0<br>
+     * should be removed - use UserProfile instead
+     */
+    @Deprecated
     @Override
     public String getAvatar() {
-        return user != null ? user.getAvatar() : null;
+        return user != null && user.getProfile() != null ? user.getProfile().getAvatar() : null;
     }
 
     @Override
-    public List<String> getRoles() {
-        return user != null ? user.getRoles() : null;
+    public UserProfile getProfile() {
+        return null;
+    }
+
+    @Override
+    public UserSetting getSetting() {
+        return user != null ? user.getSetting() : null;
+    }
+
+    @Override
+    public Set<String> getCapabilities() {
+        return user != null ? user.getCapabilities() : null;
+    }
+
+    @Override
+    public Set<AppGroupShort> getGroups() {
+        return user != null ? user.getGroups() : null;
+    }
+
+    @Override
+    public AppUserMembership getActiveTeam() {
+        return user != null ? user.getActiveTeam() : null;
     }
 
     @Override
     public Map<String, String> getKeyValues() {
         return user != null ? user.getKeyValues() : null;
+    }
+
+    @Override
+    public void setKeyValues(Map<String, String> keyValues) {
+        if (user != null) {
+            user.setKeyValues(keyValues);
+        }
     }
 
     @Override

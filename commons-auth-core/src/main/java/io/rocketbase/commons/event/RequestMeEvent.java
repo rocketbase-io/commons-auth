@@ -7,10 +7,10 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 public class RequestMeEvent extends ApplicationEvent {
 
-    private final AppUserEntity appUserEntity;
+    private final AppUserEntity appUser;
 
-    public RequestMeEvent(Object source, AppUserEntity appUserEntity) {
+    public RequestMeEvent(Object source, AppUserEntity appUser) {
         super(source);
-        this.appUserEntity = appUserEntity;
+        this.appUser = appUser;
     }
 }

@@ -20,6 +20,7 @@ public class ModifiedJwtTokenService extends JwtTokenService {
     }
 
     public String generateExpiredToken(AppUserEntity user) {
-        return generateAccessToken(Instant.now().minusSeconds(60 * 60 * 24 * 100), user);
+        // TODO: fix
+        return generateAccessToken(Instant.now().minusSeconds(60 * 60 * 24 * 100), null); // user
     }
 }

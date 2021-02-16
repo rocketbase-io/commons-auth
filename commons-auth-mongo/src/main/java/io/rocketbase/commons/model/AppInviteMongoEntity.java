@@ -1,5 +1,6 @@
 package io.rocketbase.commons.model;
 
+import io.rocketbase.commons.dto.appteam.AppTeamInvite;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -10,8 +11,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 @Document(collection = "invite")
@@ -20,10 +21,10 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = {"id"})
-public class AppInviteMongoEntity implements AppInviteEntity {
+public class AppInviteMongoEntity implements AppInviteEntity<Long,Long> {
 
     @Id
-    private String id;
+    private Long id;
 
     @Indexed
     private String invitor;
@@ -38,7 +39,9 @@ public class AppInviteMongoEntity implements AppInviteEntity {
     @Email
     private String email;
 
-    private List<String> roles;
+    private Set<Long> capabilities;
+
+    private Set<Long> groups;
 
     @CreatedDate
     private Instant created;
@@ -47,10 +50,8 @@ public class AppInviteMongoEntity implements AppInviteEntity {
     private Instant expiration;
 
     @Builder.Default
-    private Map<String, String> keyValueMap = new HashMap<>();
+    private Map<String, String> keyValues = new HashMap<>();
 
-    @Override
-    public Map<String, String> getKeyValues() {
-        return keyValueMap;
-    }
+    private AppTeamInvite teamInvite;
+
 }

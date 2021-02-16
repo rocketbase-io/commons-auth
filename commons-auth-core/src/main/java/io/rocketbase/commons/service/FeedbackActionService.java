@@ -8,7 +8,7 @@ public interface FeedbackActionService {
 
     AuthProperties getAuthProperties();
 
-    default String buildActionUrl(String applicationBaseUrl, ActionType actionType, String token, String customUrl) {
+    default String buildActionUrl(String applicationBaseUrl, ActionType actionType, Object token, String customUrl) {
         String result = StringUtils.isEmpty(customUrl) ? buildBaseUrl(applicationBaseUrl, actionType) : customUrl;
 
         result += result.contains("?") ? "&" : "?";

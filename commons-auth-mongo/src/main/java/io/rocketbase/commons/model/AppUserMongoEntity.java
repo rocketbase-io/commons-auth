@@ -1,20 +1,19 @@
 package io.rocketbase.commons.model;
 
-import io.rocketbase.commons.util.RolesAuthoritiesConverter;
+import io.rocketbase.commons.model.user.UserProfile;
+import io.rocketbase.commons.model.user.UserSetting;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.security.core.GrantedAuthority;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 @Document(collection = "user")
@@ -23,18 +22,17 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = {"id"})
-public class AppUserMongoEntity implements AppUserEntity {
+public class AppUserMongoEntity implements AppUserEntity<Long,Long, Long> {
 
     @Id
     private String id;
 
+    @Indexed
+    private String systemRefId;
+
     @NotNull
     @Indexed(unique = true)
     private String username;
-
-    private String firstName;
-
-    private String lastName;
 
     @NotNull
     private String password;
@@ -44,9 +42,15 @@ public class AppUserMongoEntity implements AppUserEntity {
     @Email
     private String email;
 
-    private String avatar;
+    private UserProfile profile;
 
-    private List<String> roles;
+    private UserSetting setting;
+
+    private Set<Long> capabilities;
+
+    private Set<Long> groups;
+
+    private Long activeTeam;
 
     private boolean enabled;
 
@@ -58,7 +62,7 @@ public class AppUserMongoEntity implements AppUserEntity {
     private Instant lastTokenInvalidation;
 
     @Builder.Default
-    private Map<String, String> keyValueMap = new HashMap<>();
+    private Map<String, String> keyValues = new HashMap<>();
 
     public void updateLastLogin() {
         this.lastLogin = Instant.now();
@@ -67,15 +71,5 @@ public class AppUserMongoEntity implements AppUserEntity {
     @Override
     public void updateLastTokenInvalidation() {
         this.lastTokenInvalidation = Instant.now();
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return RolesAuthoritiesConverter.convert(getRoles());
-    }
-
-    @Override
-    public Map<String, String> getKeyValues() {
-        return keyValueMap;
     }
 }

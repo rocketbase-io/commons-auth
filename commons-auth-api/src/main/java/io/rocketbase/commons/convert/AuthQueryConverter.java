@@ -4,6 +4,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +33,12 @@ public interface AuthQueryConverter<T> {
 
     default void addString(UriComponentsBuilder uriBuilder, String key, String value) {
         if (uriBuilder != null && value != null && key != null) {
+            uriBuilder.queryParam(key, value);
+        }
+    }
+
+    default void addString(UriComponentsBuilder uriBuilder, String key, Collection<String> value) {
+        if (uriBuilder != null && value != null && !value.isEmpty() && key != null) {
             uriBuilder.queryParam(key, value);
         }
     }

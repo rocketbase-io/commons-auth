@@ -6,10 +6,11 @@ import io.rocketbase.commons.dto.ExpirationInfo;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.EmailChangeRequest;
 import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
-import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
 import io.rocketbase.commons.dto.authentication.UsernameChangeRequest;
 import io.rocketbase.commons.exception.EmailValidationException;
 import io.rocketbase.commons.exception.UsernameValidationException;
+import io.rocketbase.commons.model.user.UserProfile;
+import io.rocketbase.commons.model.user.UserSetting;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -103,16 +104,33 @@ public class AuthenticationResource implements BaseRestResource, AuthenticationA
     /**
      * update user profile details for logged in user
      *
-     * @param updateProfile change request
+     * @param userProfile change request
      */
     @Override
-    public void updateProfile(UpdateProfileRequest updateProfile) {
-        restTemplate
+    public AppUserRead updateProfile(UserProfile userProfile) {
+        ResponseEntity<AppUserRead> response = restTemplate
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/update-profile").toUriString(),
                         HttpMethod.PUT,
-                        new HttpEntity<>(updateProfile, createHeaderWithLanguage()),
-                        Void.class);
+                        new HttpEntity<>(userProfile, createHeaderWithLanguage()),
+                        AppUserRead.class);
+        return response.getBody();
+    }
+
+    /**
+     * update user settings for logged in user
+     *
+     * @param userSetting change request
+     */
+    @Override
+    public AppUserRead updateSetting(UserSetting userSetting) {
+        ResponseEntity<AppUserRead> response = restTemplate
+                .exchange(createUriComponentsBuilder(baseAuthApiUrl)
+                                .path("/auth/update-setting").toUriString(),
+                        HttpMethod.PUT,
+                        new HttpEntity<>(userSetting, createHeaderWithLanguage()),
+                        AppUserRead.class);
+        return response.getBody();
     }
 
 }

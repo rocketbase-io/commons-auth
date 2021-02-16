@@ -5,9 +5,11 @@ import io.rocketbase.commons.dto.authentication.LoginResponse;
 import io.rocketbase.commons.dto.authentication.OAuthLoginResponse;
 import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.model.AppUserToken;
+import io.rocketbase.commons.model.TokenParseResult;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.auth.LoginService;
 import io.rocketbase.commons.service.user.ActiveUserStore;
+import io.rocketbase.commons.service.user.AppUserTokenService;
 import io.rocketbase.commons.util.JwtTokenDecoder;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +30,9 @@ public class OAuthLoginRefreshController {
 
     @Resource
     private LoginService loginService;
+
+    @Resource
+    private AppUserTokenService appUserTokenService;
 
     @Resource
     private ActiveUserStore activeUserStore;
@@ -51,9 +56,13 @@ public class OAuthLoginRefreshController {
                     .refreshExpiresIn(getExpiresIn(loginResponse.getJwtTokenBundle().getRefreshToken()));
 
         } else if (oAuthRequest.getGrantType().equals(GrantType.REFRESH_TOKEN)) {
-            AppUserToken appUserToken = jwtTokenService.parseToken(oAuthRequest.getRefreshToken());
-            String accessToken = jwtTokenService.generateAccessToken(appUserToken);
-            activeUserStore.addUser(appUserToken);
+            // validate jwt
+            TokenParseResult parsedToken = jwtTokenService.parseToken(oAuthRequest.getRefreshToken());
+            // lookup user with rights
+            AppUserToken token = appUserTokenService.getByUsername(parsedToken.getUser().getUsername());
+            // generate accessToken
+            String accessToken = jwtTokenService.generateAccessToken(token);
+            activeUserStore.addUser(token);
             response.accessToken(accessToken)
                     .refreshToken(oAuthRequest.getRefreshToken())
                     .expiresIn(getExpiresIn(accessToken))

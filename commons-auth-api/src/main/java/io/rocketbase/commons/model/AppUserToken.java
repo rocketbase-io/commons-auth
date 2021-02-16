@@ -1,29 +1,29 @@
 package io.rocketbase.commons.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import io.rocketbase.commons.dto.appgroup.AppGroupShort;
+import io.rocketbase.commons.dto.appteam.AppUserMembership;
+import io.rocketbase.commons.model.user.UserSetting;
+import org.springframework.lang.Nullable;
 
-import java.util.List;
+import java.util.Set;
 
+/**
+ * extended {@link AppUserReference} with roles, keyValues and groups and activeTeam<br>
+ * all it's information will get stored within the jwt-token for example
+ */
 @JsonDeserialize(as = SimpleAppUserToken.class)
 public interface AppUserToken extends AppUserReference, HasKeyValue {
 
-    List<String> getRoles();
+    Set<String> getCapabilities();
 
-    /**
-     * checks if user has role with name (ignore cases)
-     *
-     * @param role name of role to search
-     * @return true when exists
-     */
-    default boolean hasRole(String role) {
-        if (getRoles() != null && role != null) {
-            for (String r : getRoles()) {
-                if (role.equalsIgnoreCase(r)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+    @Nullable
+    Set<AppGroupShort> getGroups();
+
+    @Nullable
+    AppUserMembership getActiveTeam();
+
+    @Nullable
+    UserSetting getSetting();
 
 }

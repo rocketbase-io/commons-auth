@@ -4,10 +4,6 @@ import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.config.FormsProperties;
 import io.rocketbase.commons.filter.JwtAuthenticationTokenFilter;
 import io.rocketbase.commons.security.TokenAuthenticationProvider;
-import io.rocketbase.commons.service.AppInvitePersistenceService;
-import io.rocketbase.commons.service.AppUserPersistenceService;
-import io.rocketbase.commons.test.AppInvitePersistenceTestService;
-import io.rocketbase.commons.test.AppUserPersistenceTestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -25,8 +21,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -77,22 +73,12 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new SCryptPasswordEncoder();
     }
 
     @Bean
     public JwtAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
         return new JwtAuthenticationTokenFilter();
-    }
-
-    @Bean
-    public AppUserPersistenceService appUserPersistenceService() {
-        return new AppUserPersistenceTestService();
-    }
-
-    @Bean
-    public AppInvitePersistenceService appInvitePersistenceService() {
-        return new AppInvitePersistenceTestService();
     }
 
     @Override
@@ -128,9 +114,9 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
             // invite form
             .antMatchers(formsProperties.getInviteEndpointPaths()).permitAll()
             // user-management is only allowed by ADMINS
-            .antMatchers(authProperties.getApiRestEndpointPaths()).hasRole(authProperties.getRoleAdmin())
-            .antMatchers(authProperties.getApiInviteRestEndpointPaths()).hasRole(authProperties.getRoleAdmin())
-            .antMatchers(authProperties.getImpersonateEndpointPaths()).hasRole(authProperties.getRoleAdmin())
+            .antMatchers(authProperties.getApiRestEndpointPaths()).hasRole("admin")
+            .antMatchers(authProperties.getApiInviteRestEndpointPaths()).hasRole("admin")
+            .antMatchers(authProperties.getImpersonateEndpointPaths()).hasRole("admin")
             .antMatchers(authProperties.getUserSearchRestEndpointPaths()).authenticated()
             // secure all other api-endpoints
             .antMatchers(authProperties.getPrefix()+"/api/**").authenticated()

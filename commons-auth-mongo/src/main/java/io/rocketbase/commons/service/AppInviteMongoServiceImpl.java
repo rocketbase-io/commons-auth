@@ -3,7 +3,9 @@ package io.rocketbase.commons.service;
 import com.mongodb.client.result.DeleteResult;
 import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
 import io.rocketbase.commons.model.AppInviteMongoEntity;
+import io.rocketbase.commons.service.invite.AppInvitePersistenceService;
 import io.rocketbase.commons.util.Nulls;
+import io.rocketbase.commons.util.Snowflake;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -14,13 +16,18 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.StringUtils;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 public class AppInviteMongoServiceImpl implements AppInvitePersistenceService<AppInviteMongoEntity> {
 
     private final MongoTemplate mongoTemplate;
+
+    private final Snowflake snowflake;
 
     @Override
     public Page<AppInviteMongoEntity> findAll(QueryAppInvite query, Pageable pageable) {
@@ -97,9 +104,10 @@ public class AppInviteMongoServiceImpl implements AppInvitePersistenceService<Ap
     @Override
     public AppInviteMongoEntity initNewInstance() {
         return AppInviteMongoEntity.builder()
-                .id(UUID.randomUUID().toString())
+                .id(snowflake.nextId())
                 .created(Instant.now())
-                .roles(new ArrayList<>())
+                .capabilities(new HashSet<>())
+                .groups(new HashSet<>())
                 .build();
     }
 

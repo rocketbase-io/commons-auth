@@ -5,12 +5,13 @@ import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.authentication.LoginResponse;
 import io.rocketbase.commons.event.LoginEvent;
 import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.model.AppUserTokenDetails;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.user.AppUserService;
+import io.rocketbase.commons.service.user.AppUserTokenService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -25,6 +26,9 @@ public class DefaultLoginService implements LoginService {
     private AppUserService appUserService;
 
     @Resource
+    private AppUserTokenService appUserTokenService;
+
+    @Resource
     private AppUserConverter appUserConverter;
 
     @Resource
@@ -37,18 +41,17 @@ public class DefaultLoginService implements LoginService {
 
     @Override
     public LoginResponse performLogin(String username, String password) {
-        UserDetails userDetails = appUserService.loadUserByUsername(username);
+        AppUserTokenDetails tokenDetails = (AppUserTokenDetails) appUserTokenService.loadUserByUsername(username);
 
-        userDetailsChecker.check(userDetails);
-        if (!passwordEncoder.matches(password, userDetails.getPassword())) {
+        userDetailsChecker.check(tokenDetails);
+        if (!passwordEncoder.matches(password, tokenDetails.getPassword())) {
             throw new BadCredentialsException("Invalid Credentials");
         }
 
-        AppUserEntity user = appUserService.updateLastLogin(userDetails.getUsername());
-
+        AppUserEntity user = appUserService.updateLastLogin(tokenDetails.getUsername());
         applicationEventPublisher.publishEvent(new LoginEvent(this, user));
 
-        JwtTokenBundle jwtTokenBundle = jwtTokenService.generateTokenBundle(user);
-        return new LoginResponse(jwtTokenBundle, appUserConverter.fromEntity(user));
+        JwtTokenBundle jwtTokenBundle = jwtTokenService.generateTokenBundle(tokenDetails.getAppUserToken());
+        return new LoginResponse(jwtTokenBundle, appUserConverter.toToken(user));
     }
 }

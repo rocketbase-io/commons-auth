@@ -9,13 +9,13 @@ import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.*;
 import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.model.user.SimpleUserProfile;
 import io.rocketbase.commons.resource.AuthenticationResource;
 import io.rocketbase.commons.resource.BasicResponseErrorHandler;
 import io.rocketbase.commons.resource.LoginResource;
 import io.rocketbase.commons.service.change.DefaultChangeAppUserWithConfirmService;
-import io.rocketbase.commons.test.AppUserPersistenceTestService;
+import io.rocketbase.commons.service.user.AppUserPersistenceService;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
-import io.rocketbase.commons.test.model.AppUserTestEntity;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
@@ -39,7 +39,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     private ModifiedJwtTokenService modifiedJwtTokenService;
 
     @Resource
-    private AppUserPersistenceTestService appUserPersistenceTestService;
+    private AppUserPersistenceService<AppUserEntity> appUserPersistenceService;
 
     @Test
     public void successLogin() {
@@ -63,7 +63,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     public void successLoginViaEmail() {
         // given
         LoginRequest login = LoginRequest.builder()
-                .username(getAppUser().getEmail())
+                .username(getAppUser("user").getEmail())
                 .password("pw")
                 .build();
 
@@ -115,7 +115,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     @Test
     public void getAuthenticated() {
         // given
-        AppUserEntity user = getAppUser();
+        AppUserEntity user = getAppUser("user");
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
 
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
@@ -134,7 +134,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     @Test
     public void getAuthenticatedUserRefreshToken() {
         // given
-        AppUserEntity user = getAppUser();
+        AppUserEntity user = getAppUser("user");
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
 
         SimpleJwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl());
@@ -156,7 +156,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     @Test
     public void getAuthenticatedWithInvalidRefreshToken() {
         // given
-        AppUserEntity user = getAppUser();
+        AppUserEntity user = getAppUser("user");
         SimpleJwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl());
         tokenProvider.setRefreshToken("---");
         tokenProvider.setToken(modifiedJwtTokenService.generateExpiredToken(user));
@@ -175,7 +175,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     @Test
     public void refreshToken() throws InterruptedException {
         // given
-        AppUserEntity user = getAppUser();
+        AppUserEntity user = getAppUser("user");
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
         String token = tokenBundle.getToken();
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
@@ -194,7 +194,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     @Test
     public void changePasswordSuccess() {
         // given
-        AppUserEntity user = getAppUser();
+        AppUserEntity user = getAppUser("user");
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
@@ -209,7 +209,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     @Test
     public void changePasswordFailure() {
         // given
-        AppUserEntity user = getAppUser();
+        AppUserEntity user = getAppUser("user");
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
@@ -233,14 +233,14 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     @Test
     public void updateProfile() {
         // given
-        AppUserEntity user = getAppUser();
+        AppUserEntity user = getAppUser("user");
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
 
         // when
         String avatar = "https://www.gravatar.com/avatar/fc40e22b7bcd7230b49c34b113d5dbc.jpg?s=160&d=retro";
-        resource.updateProfile(UpdateProfileRequest.builder()
+        resource.updateProfile(SimpleUserProfile.builder()
                 .firstName("firstName")
                 .lastName("lastName")
                 .avatar(avatar)
@@ -259,7 +259,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     @Test
     public void changeUsername() {
         // given
-        AppUserEntity user = getAppUser();
+        AppUserEntity user = getAppUser("user");
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
@@ -270,13 +270,13 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
 
         // then
         assertThat(appUserRead.getUsername(), equalTo(newUsername));
-        assertThat(appUserPersistenceTestService.findById(appUserRead.getId()).get().getUsername(), equalTo(newUsername));
+        assertThat(appUserPersistenceService.findById(appUserRead.getId()).get().getUsername(), equalTo(newUsername));
     }
 
     @Test
     public void changeUsernameUsed() {
         // given
-        AppUserEntity user = getAppUser();
+        AppUserEntity user = getAppUser("user");
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
@@ -296,7 +296,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     @Test
     public void changeEmailAddress() {
         // given
-        AppUserEntity user = getAppUser();
+        AppUserEntity user = getAppUser("user");
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
@@ -308,20 +308,20 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
         // then
         assertThat(expirationInfo.isExpired(), equalTo(false));
         assertThat(expirationInfo.getExpires(), notNullValue());
-        AppUserTestEntity appUser = appUserPersistenceTestService.findById(expirationInfo.getDetail().getId()).get();
+        AppUserEntity appUser = appUserPersistenceService.findById(expirationInfo.getDetail().getId()).get();
         assertThat(appUser.getKeyValue(DefaultChangeAppUserWithConfirmService.CHANGEMAIL_VALUE), equalTo(newEmail));
         assertThat(appUser.getEmail(), equalTo(user.getEmail()));
 
         String token = appUser.getKeyValue(DefaultChangeAppUserWithConfirmService.CHANGEMAIL_TOKEN);
         AppUserRead appUserRead = new AuthenticationResource(getBaseUrl(), new RestTemplate()).verifyEmail(token);
         assertThat(appUserRead.getEmail(), equalTo(newEmail));
-        assertThat(appUserPersistenceTestService.findById(expirationInfo.getDetail().getId()).get().getEmail(), equalTo(newEmail));
+        assertThat(appUserPersistenceService.findById(expirationInfo.getDetail().getId()).get().getEmail(), equalTo(newEmail));
     }
 
     @Test
     public void changeEmailAddressUsed() {
         // given
-        AppUserEntity user = getAppUser();
+        AppUserEntity user = getAppUser("user");
         JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));

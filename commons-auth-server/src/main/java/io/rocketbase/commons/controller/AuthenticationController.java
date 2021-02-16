@@ -3,16 +3,24 @@ package io.rocketbase.commons.controller;
 import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.dto.ExpirationInfo;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
+import io.rocketbase.commons.dto.appuser.AppUserUpdate;
 import io.rocketbase.commons.dto.authentication.*;
 import io.rocketbase.commons.event.RefreshTokenEvent;
 import io.rocketbase.commons.event.RequestMeEvent;
+import io.rocketbase.commons.event.UpdateProfileEvent;
+import io.rocketbase.commons.event.UpdateSettingEvent;
+import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.model.AppUserToken;
+import io.rocketbase.commons.model.user.UserProfile;
+import io.rocketbase.commons.model.user.UserSetting;
 import io.rocketbase.commons.security.CommonsAuthenticationToken;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.auth.LoginService;
 import io.rocketbase.commons.service.change.ChangeAppUserWithConfirmService;
 import io.rocketbase.commons.service.user.ActiveUserStore;
 import io.rocketbase.commons.service.user.AppUserService;
+import io.rocketbase.commons.service.user.AppUserTokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -38,6 +46,9 @@ public class AuthenticationController implements BaseController {
 
     @Resource
     private AppUserService appUserService;
+
+    @Resource
+    private AppUserTokenService appUserTokenService;
 
     @Resource
     private AppUserConverter appUserConverter;
@@ -70,8 +81,8 @@ public class AuthenticationController implements BaseController {
         }
         AppUserEntity entity = appUserService.getByUsername(authentication.getName());
         applicationEventPublisher.publishEvent(new RequestMeEvent(this, entity));
-        activeUserStore.addUser(entity);
-        return ResponseEntity.ok(appUserConverter.fromEntity(entity));
+        activeUserStore.addUser(appUserTokenService.lookup(entity));
+        return ResponseEntity.ok(appUserConverter.toRead(entity));
     }
 
     @RequestMapping(value = "/auth/change-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
@@ -89,7 +100,7 @@ public class AuthenticationController implements BaseController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         AppUserEntity entity = appUserService.changeUsername(((CommonsAuthenticationToken) authentication).getId(), usernameChange.getNewUsername());
-        return ResponseEntity.ok(appUserConverter.fromEntity(entity));
+        return ResponseEntity.ok(appUserConverter.toRead(entity));
     }
 
     @RequestMapping(value = "/auth/change-email", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
@@ -100,25 +111,40 @@ public class AuthenticationController implements BaseController {
         ExpirationInfo<AppUserEntity> expirationInfo = changeAppUserWithConfirmService.handleEmailChangeRequest(((CommonsAuthenticationToken) authentication).getId(), emailChange, getBaseUrl(request));
         return ResponseEntity.ok(ExpirationInfo.<AppUserRead>builder()
                 .expires(expirationInfo.getExpires())
-                .detail(appUserConverter.fromEntity(expirationInfo.getDetail()))
+                .detail(appUserConverter.toRead(expirationInfo.getDetail()))
                 .build());
     }
 
     @RequestMapping(value = "/auth/verify-email", method = RequestMethod.GET)
     public ResponseEntity<AppUserRead> changeEmail(@RequestParam("verification") String verification) {
         AppUserEntity entity = changeAppUserWithConfirmService.confirmEmailChange(verification);
-        return ResponseEntity.ok(appUserConverter.fromEntity(entity));
+        return ResponseEntity.ok(appUserConverter.toRead(entity));
     }
 
     @RequestMapping(value = "/auth/update-profile", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> updateProfile(@RequestBody @NotNull @Validated UpdateProfileRequest updateProfile, Authentication authentication) {
+    public ResponseEntity<AppUserRead> updateProfile(@RequestBody @NotNull @Validated UserProfile profile, Authentication authentication) {
         if (authentication == null || !(CommonsAuthenticationToken.class.isAssignableFrom(authentication.getClass()))) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         String username = ((CommonsAuthenticationToken) authentication).getUsername();
-        appUserService.updateProfile(username, updateProfile);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        AppUserEntity entity = appUserService.patch(username, AppUserUpdate.builder().profile(profile).build());
+        applicationEventPublisher.publishEvent(new UpdateProfileEvent(this, entity));
+
+        return ResponseEntity.ok(appUserConverter.toRead(entity));
+    }
+
+    @RequestMapping(value = "/auth/update-setting", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<AppUserRead> updateProfile(@RequestBody @NotNull @Validated UserSetting setting, Authentication authentication) {
+        if (authentication == null || !(CommonsAuthenticationToken.class.isAssignableFrom(authentication.getClass()))) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String username = ((CommonsAuthenticationToken) authentication).getUsername();
+        AppUserEntity entity = appUserService.patch(username, AppUserUpdate.builder().setting(setting).build());
+        applicationEventPublisher.publishEvent(new UpdateSettingEvent(this, entity));
+
+        return ResponseEntity.ok(appUserConverter.toRead(entity));
     }
 
     @RequestMapping(value = "/auth/refresh", method = RequestMethod.GET)
@@ -131,9 +157,9 @@ public class AuthenticationController implements BaseController {
                 .contains(new SimpleGrantedAuthority(JwtTokenService.REFRESH_TOKEN))) {
             return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).build();
         }
-        AppUserEntity entity = appUserService.getByUsername(((CommonsAuthenticationToken) authentication).getUsername());
-        applicationEventPublisher.publishEvent(new RefreshTokenEvent(this, entity));
-        activeUserStore.addUser(entity);
-        return ResponseEntity.ok(jwtTokenService.generateAccessToken(entity));
+        AppUserToken token = appUserTokenService.findByUsername(((CommonsAuthenticationToken) authentication).getUsername()).orElseThrow(NotFoundException::new);
+        applicationEventPublisher.publishEvent(new RefreshTokenEvent(this, token));
+        activeUserStore.addUser(token);
+        return ResponseEntity.ok(jwtTokenService.generateAccessToken(token));
     }
 }

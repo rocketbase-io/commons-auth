@@ -1,44 +1,72 @@
 package io.rocketbase.commons.model;
 
-import com.google.common.collect.ImmutableMap;
-import lombok.*;
+import io.rocketbase.commons.dto.appgroup.AppGroupShort;
+import io.rocketbase.commons.dto.appteam.AppUserMembership;
+import io.rocketbase.commons.model.user.UserProfile;
+import io.rocketbase.commons.model.user.UserSetting;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class SimpleAppUserToken implements AppUserToken {
+@EqualsAndHashCode(callSuper = true)
+public class SimpleAppUserToken extends SimpleAppUserReference implements AppUserToken {
 
-    private String id;
+    @Nullable
+    private Set<AppGroupShort> groups;
 
-    private String username;
+    private Set<String> capabilities;
 
-    private String firstName;
+    @Nullable
+    private AppUserMembership activeTeam;
 
-    private String lastName;
+    @Nullable
+    private Map<String, String> keyValues = new HashMap<>();
 
-    private String email;
+    @Nullable
+    private UserSetting setting;
 
-    private String avatar;
-
-    private List<String> roles;
-
-    @Getter(AccessLevel.PROTECTED)
-    @Setter(AccessLevel.PROTECTED)
-    private Map<String, String> keyValueMap = new HashMap<>();
-
-    public SimpleAppUserToken(String id, String username, List<String> roles) {
-        this.id = id;
-        this.username = username;
-        this.roles = roles;
+    public SimpleAppUserToken(String id, String username, Set<String> capabilities) {
+        super(id, username);
+        this.capabilities = capabilities;
     }
 
-    @Override
-    public Map<String, String> getKeyValues() {
-        return getKeyValueMap() != null ? ImmutableMap.copyOf(getKeyValueMap()) : null;
+    @Builder(builderMethodName = "builderToken")
+    public SimpleAppUserToken(String id, String systemRefId, String username, String email, UserProfile profile, Set<AppGroupShort> groups, Set<String> capabilities, AppUserMembership activeTeam, Map<String, String> keyValues, UserSetting setting) {
+        super(id, systemRefId, username, email, profile);
+        this.groups = groups;
+        this.capabilities = capabilities;
+        this.activeTeam = activeTeam;
+        this.keyValues = keyValues;
+        this.setting = setting;
+    }
+
+    public SimpleAppUserToken(AppUserReference reference, Set<AppGroupShort> groups, Set<String> capabilities, AppUserMembership activeTeam, Map<String, String> keyValues) {
+        super(reference.getId(), reference.getSystemRefId(), reference.getUsername(), reference.getEmail(), reference.getProfile());
+        this.groups = groups;
+        this.capabilities = capabilities;
+        this.activeTeam = activeTeam;
+        this.keyValues = keyValues;
+    }
+
+    public SimpleAppUserToken(AppUserToken other) {
+        setId(other.getId());
+        setSystemRefId(other.getSystemRefId());
+        setUsername(other.getUsername());
+        setEmail(other.getEmail());
+        setProfile(other.getProfile());
+        this.groups = other.getGroups() != null ? other.getGroups().stream().map(AppGroupShort::new).collect(Collectors.toSet()) : null;
+        this.capabilities = other.getCapabilities() != null ? new TreeSet<>(other.getCapabilities()) : null;
+        this.activeTeam = other.getActiveTeam() != null ? new AppUserMembership(other.getActiveTeam()) : null;
+        this.keyValues = other.getKeyValues() != null ? new HashMap<>(other.getKeyValues()) : null;
     }
 }

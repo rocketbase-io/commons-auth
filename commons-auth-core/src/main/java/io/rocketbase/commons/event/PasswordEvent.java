@@ -7,12 +7,12 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 public class PasswordEvent extends ApplicationEvent {
 
-    private final AppUserEntity appUserEntity;
+    private final AppUserEntity appUser;
     private final PasswordProcessType type;
 
-    public PasswordEvent(Object source, AppUserEntity appUserEntity, PasswordProcessType type) {
+    public PasswordEvent(Object source, AppUserEntity appUser, PasswordProcessType type) {
         super(source);
-        this.appUserEntity = appUserEntity;
+        this.appUser = appUser;
         this.type = type;
     }
 

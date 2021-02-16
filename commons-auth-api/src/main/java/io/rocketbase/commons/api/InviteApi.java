@@ -6,7 +6,7 @@ import io.rocketbase.commons.dto.appuser.AppUserRead;
 
 public interface InviteApi {
 
-    AppInviteRead verify(String inviteId);
+    AppInviteRead verify(Long inviteId);
 
     AppUserRead transformToUser(ConfirmInviteRequest confirmInvite);
 

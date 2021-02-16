@@ -5,7 +5,6 @@ import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.adapters.JwtTokenProvider;
 import io.rocketbase.commons.adapters.SimpleJwtTokenProvider;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
-import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.resource.ImpersonateResource;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
 import io.rocketbase.commons.util.JwtTokenBody;
@@ -15,7 +14,8 @@ import org.junit.Test;
 import javax.annotation.Resource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 
 public class ImpersonateControllerTest extends BaseIntegrationTestPrefixed {
 
@@ -38,6 +38,6 @@ public class ImpersonateControllerTest extends BaseIntegrationTestPrefixed {
         assertThat(response, notNullValue());
         JwtTokenBody jwtTokenBody = JwtTokenDecoder.decodeTokenBody(response.getToken());
         assertThat(jwtTokenBody.getUsername(), equalTo(user.getUsername()));
-        assertThat(jwtTokenBody.getScopes(), containsInAnyOrder("ROLE_" + user.getRoles().get(0)));
+        assertThat(jwtTokenBody.getScopes(), containsInAnyOrder(user.getCapabilities()));
     }
 }

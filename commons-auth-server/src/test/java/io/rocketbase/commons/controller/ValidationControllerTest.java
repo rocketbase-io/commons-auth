@@ -1,6 +1,8 @@
 package io.rocketbase.commons.controller;
 
+import com.google.common.collect.Sets;
 import io.rocketbase.commons.BaseIntegrationTestPrefixed;
+import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.dto.validation.*;
 import io.rocketbase.commons.resource.ValidationResource;
 import io.rocketbase.commons.service.SimpleTokenService;
@@ -58,7 +60,12 @@ public class ValidationControllerTest extends BaseIntegrationTestPrefixed {
     public void validateEmailInvalidAlreadyTaken() {
         // given
         String email = "sample@rocketbase.io";
-        appUserService.initializeUser("test-123", "pw", email, false);
+        appUserService.initializeUser(AppUserCreate.builder()
+                .username("test-123")
+                .password("pw")
+                .email(email)
+                .capabilities(Sets.newHashSet("user"))
+                .build());
 
         // when
         ValidationResponse<EmailErrorCodes> response = new ValidationResource(getBaseUrl()).validateEmail(email);

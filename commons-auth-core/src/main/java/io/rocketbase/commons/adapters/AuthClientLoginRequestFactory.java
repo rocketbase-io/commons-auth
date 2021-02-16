@@ -51,7 +51,7 @@ public class AuthClientLoginRequestFactory extends HttpComponentsClientHttpReque
                 refreshJwtTokenStore();
             }
         }
-        request.setHeader(jwtTokenStore.getHeaderName(), jwtTokenStore.getTokenHeader());
+        request.setHeader(getJwtTokenStore().getHeaderName(), getJwtTokenStore().getTokenHeader());
     }
 
     private JwtTokenStore getJwtTokenStore() {

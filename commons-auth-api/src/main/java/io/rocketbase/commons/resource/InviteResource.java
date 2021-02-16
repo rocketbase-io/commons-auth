@@ -39,7 +39,7 @@ public class InviteResource implements BaseRestResource, InviteApi {
     }
 
     @Override
-    public AppInviteRead verify(String inviteId) {
+    public AppInviteRead verify(Long inviteId) {
         ResponseEntity<AppInviteRead> response = getRestTemplate()
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path(AUTH_INVITE)

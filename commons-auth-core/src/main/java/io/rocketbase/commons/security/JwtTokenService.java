@@ -1,107 +1,83 @@
 package io.rocketbase.commons.security;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.jackson.io.JacksonDeserializer;
+import io.jsonwebtoken.jackson.io.JacksonSerializer;
+import io.jsonwebtoken.lang.Maps;
 import io.rocketbase.commons.config.JwtProperties;
-import io.rocketbase.commons.converter.AppUserConverter;
+import io.rocketbase.commons.converter.KeyValueConverter;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.model.SimpleAppUserToken;
-import io.rocketbase.commons.util.RolesAuthoritiesConverter;
+import io.rocketbase.commons.model.TokenParseResult;
+import io.rocketbase.commons.util.CapacityAuthoritiesConverter;
+import io.rocketbase.commons.util.Nulls;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import javax.crypto.spec.SecretKeySpec;
 import java.io.Serializable;
+import java.security.Key;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.*;
-import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
 public class JwtTokenService implements Serializable {
 
+    public static final SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS512;
+
     public static final String REFRESH_TOKEN = "REFRESH_TOKEN";
-    public static final String ROLES_KEY = "scopes";
-    public static final String USER_ID_KEY = "user_id";
-    public static final String FIRST_NAME_KEY = "given_name";
-    public static final String LAST_NAME_KEY = "family_name";
-    public static final String EMAIL_KEY = "email";
-    public static final String AVATAR_KEY = "picture";
-    public static final String KEY_VALUE_PREFIX = "kv_";
+    public static final String SCOPES_KEY = "scopes";
+    public static final String USER_KEY = "user";
 
     final JwtProperties jwtProperties;
     final CustomAuthoritiesProvider customAuthoritiesProvider;
 
-    public String getUsernameFromToken(String token) {
-        return getClaimFromToken(token, Claims::getSubject);
+    private Key getKey() {
+        return new SecretKeySpec(Decoders.BASE64.decode(jwtProperties.getSecret()), SIGNATURE_ALGORITHM.getJcaName());
     }
 
-    public Collection<GrantedAuthority> getAuthoritiesFromToken(String token) {
-        Claims claims = getAllClaimsFromToken(token);
-        List roles = (List) claims.getOrDefault(ROLES_KEY, Collections.emptyList());
-        List<GrantedAuthority> result = new ArrayList<>();
-        for (Object r : roles) {
-            result.add(new SimpleGrantedAuthority(String.valueOf(r)));
-        }
-        return result;
+    private Date convert(Instant ldt) {
+        return Date.from(ldt.atZone(ZoneOffset.UTC)
+                .toInstant());
     }
 
-    public Instant getIssuedAtDateFromToken(String token) {
-        Date issuedAt = getClaimFromToken(token, Claims::getIssuedAt);
-        return Instant.ofEpochMilli(issuedAt.getTime());
+    private JwtBuilder prepareBuilder(Instant ldt, long expirationMinutes, String username) {
+        return Jwts.builder()
+                .serializeToJsonWith(new JacksonSerializer<>())
+                .setIssuedAt(convert(ldt))
+                .setExpiration(convert(ldt.plusSeconds(expirationMinutes * 60)))
+                .signWith(getKey(), SIGNATURE_ALGORITHM)
+                .setSubject(username);
     }
 
-    public Instant getExpirationDateFromToken(String token) {
-        Date expiration = getClaimFromToken(token, Claims::getExpiration);
-        return Instant.ofEpochMilli(expiration.getTime());
+    public TokenParseResult parseToken(String token) throws JwtException {
+        Jws<Claims> jws = Jwts.parserBuilder()
+                .deserializeJsonWith(new JacksonDeserializer(Maps.of(USER_KEY, SimpleAppUserToken.class).build()))
+                .setSigningKey(getKey())
+                .build()
+                .parseClaimsJws(token);
+
+        SimpleAppUserToken appUserToken = jws.getBody().get(USER_KEY, SimpleAppUserToken.class);
+        Collection<String> scopes = (Collection) jws.getBody().getOrDefault(SCOPES_KEY, Collections.emptySet());
+        appUserToken.setCapabilities(new HashSet<>(scopes != null ? scopes : Collections.emptySet()));
+        Instant issuedAt = jws.getBody().getIssuedAt() != null ? Instant.ofEpochMilli(jws.getBody().getIssuedAt().getTime()) : null;
+        Instant expiration = jws.getBody().getExpiration() != null ? Instant.ofEpochMilli(jws.getBody().getExpiration().getTime()) : null;
+        return new TokenParseResult(token, appUserToken, issuedAt, expiration);
     }
-
-    public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = getAllClaimsFromToken(token);
-        return claimsResolver.apply(claims);
-    }
-
-    private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(jwtProperties.getSecret())
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-    public AppUserToken parseToken(String token) {
-        Claims claims = getAllClaimsFromToken(token);
-        Map<String, String> keyValues = null;
-        for (String key : claims.keySet()) {
-            if (key.startsWith(KEY_VALUE_PREFIX)) {
-                if (keyValues == null) {
-                    keyValues = new HashMap<>();
-                }
-                keyValues.put(key.replaceAll("^" + KEY_VALUE_PREFIX, ""), claims.get(key, String.class));
-            }
-        }
-
-        return SimpleAppUserToken.builder()
-                .id(claims.get(USER_ID_KEY, String.class))
-                .username(claims.getSubject())
-                .firstName(claims.get(FIRST_NAME_KEY, String.class))
-                .lastName(claims.get(LAST_NAME_KEY, String.class))
-                .email(claims.get(EMAIL_KEY, String.class))
-                .avatar(claims.get(AVATAR_KEY, String.class))
-                .roles((List) claims.getOrDefault(ROLES_KEY, Collections.emptyList()))
-                .keyValueMap(keyValues)
-                .build();
-    }
-
 
     public JwtTokenBundle generateTokenBundle(AppUserToken appUserToken) {
         Instant now = Instant.now();
         return new JwtTokenBundle(generateAccessToken(now, appUserToken),
                 prepareBuilder(now, jwtProperties.getRefreshTokenExpiration(), appUserToken.getUsername())
-                        .claim(USER_ID_KEY, appUserToken.getId())
-                        .claim(ROLES_KEY, Arrays.asList(REFRESH_TOKEN))
+                        .claim(SCOPES_KEY, Arrays.asList(REFRESH_TOKEN))
                         .compact());
     }
 
@@ -110,61 +86,48 @@ public class JwtTokenService implements Serializable {
     }
 
     protected String generateAccessToken(Instant ldt, AppUserToken appUserToken) {
-        List<GrantedAuthority> scopes = new ArrayList<>();
-        scopes.addAll(RolesAuthoritiesConverter.convert(appUserToken.getRoles()));
+        Set<GrantedAuthority> scopes = new HashSet<>();
+        if (appUserToken.getCapabilities() != null) {
+            scopes.addAll(appUserToken.getCapabilities()
+                    .stream().map(v -> new SimpleGrantedAuthority(v)).collect(Collectors.toSet()));
+        }
         scopes.addAll(customAuthoritiesProvider.getExtraTokenAuthorities(appUserToken));
 
+        SimpleAppUserToken jwtJsonUser = new SimpleAppUserToken(appUserToken);
+        jwtJsonUser.setCapabilities(null);
+        jwtJsonUser.setKeyValues(KeyValueConverter.filterInvisibleKeys(jwtJsonUser.getKeyValues()));
+
         JwtBuilder jwtBuilder = prepareBuilder(ldt, jwtProperties.getAccessTokenExpiration(), appUserToken.getUsername())
-                .claim(ROLES_KEY, RolesAuthoritiesConverter.convertToDtos(scopes))
-                .claim(USER_ID_KEY, appUserToken.getId())
-                .claim(FIRST_NAME_KEY, appUserToken.getFirstName())
-                .claim(LAST_NAME_KEY, appUserToken.getLastName())
-                .claim(EMAIL_KEY, appUserToken.getEmail())
-                .claim(AVATAR_KEY, appUserToken.getAvatar());
+                .claim(SCOPES_KEY, CapacityAuthoritiesConverter.convertToDtos(scopes))
+                .claim(USER_KEY, jwtJsonUser);
 
-        Map<String, String> keyValues = AppUserConverter.filterInvisibleKeys(appUserToken.getKeyValues());
-        if (keyValues != null) {
-            for (Map.Entry<String, String> entry : keyValues.entrySet()) {
-                if (!entry.getKey().startsWith("#")) {
-                    jwtBuilder.claim(KEY_VALUE_PREFIX + entry.getKey(), entry.getValue());
-                }
-            }
-        }
         return jwtBuilder.compact();
-    }
-
-    private JwtBuilder prepareBuilder(Instant ldt, long expirationMinutes, String username) {
-        return Jwts.builder()
-                .setIssuedAt(convert(ldt))
-                .setExpiration(convert(ldt.plusSeconds(expirationMinutes*60)))
-                .signWith(SignatureAlgorithm.HS512, jwtProperties.getSecret())
-                .setSubject(username);
-    }
-
-    private Date convert(Instant ldt) {
-        return Date.from(ldt.atZone(ZoneOffset.UTC)
-                .toInstant());
     }
 
     /**
      * check if token string is valid and fit expected username
      *
-     * @param token
-     * @param username
-     * @param lastTokenInvalidation
+     * @param token                 jwt string
+     * @param username              expected username
+     * @param lastTokenInvalidation optional (used to verify if token was created after last invalidation [for example password change or other security issues])
      * @return true in case of valid
      */
     public Boolean validateToken(String token, String username, Instant lastTokenInvalidation) {
+        TokenParseResult meta;
         try {
-            getAllClaimsFromToken(token);
+            meta = parseToken(token);
         } catch (JwtException e) {
             // should show catch expiration etc. exceptions
             if (log.isTraceEnabled()) {
-                log.trace("token is invalid", e);
+                log.trace("token is invalid. {}", e.getMessage());
             }
             return false;
         }
-        if (!getUsernameFromToken(token).equals(username)) {
+        if (!Nulls.noneNullValue(meta.getUser(), meta.getExpiration(), meta.getIssuedAt())) {
+            return false;
+        }
+
+        if (!meta.getUser().getUsername().equals(username)) {
             // username not fitting
             if (log.isTraceEnabled()) {
                 log.trace("token username differs");
@@ -175,9 +138,9 @@ public class JwtTokenService implements Serializable {
             return true;
         } else {
             // check if token creation is newer then last token invalidation
-            boolean validIssued = lastTokenInvalidation.isBefore(getIssuedAtDateFromToken(token));
+            boolean validIssued = lastTokenInvalidation.isBefore(meta.getIssuedAt());
             if (log.isTraceEnabled() && !validIssued) {
-                log.trace("token is issued {} before lastTokenInvalidation {}", getIssuedAtDateFromToken(token), lastTokenInvalidation);
+                log.trace("token is issued {} before lastTokenInvalidation {}", meta.getIssuedAt(), lastTokenInvalidation);
             }
             return validIssued;
         }

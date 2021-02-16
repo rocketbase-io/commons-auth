@@ -8,12 +8,12 @@ import org.springframework.context.ApplicationEvent;
 public class EmailChangeEvent extends ApplicationEvent {
 
     private final String oldEmailAddress;
-    private final AppUserEntity appUserEntity;
+    private final AppUserEntity appUser;
 
 
-    public EmailChangeEvent(Object source, String oldEmailAddress, AppUserEntity appUserEntity) {
+    public EmailChangeEvent(Object source, String oldEmailAddress, AppUserEntity appUser) {
         super(source);
         this.oldEmailAddress = oldEmailAddress;
-        this.appUserEntity = appUserEntity;
+        this.appUser = appUser;
     }
 }

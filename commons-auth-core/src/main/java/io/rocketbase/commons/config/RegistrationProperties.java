@@ -4,6 +4,9 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
 @ConfigurationProperties(prefix = "auth.registration")
 @Validated
@@ -21,6 +24,8 @@ public class RegistrationProperties {
      */
     private long verificationExpiration = 1440;
 
-    private String role = "USER";
+    private Set<Long> capabilityIds = new HashSet<>();
+
+    private Set<Long> groupIds = new HashSet<>();
 
 }

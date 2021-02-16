@@ -11,6 +11,7 @@ import io.rocketbase.mail.styling.ColorStyleSimple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.util.Pair;
 import org.springframework.util.StringUtils;
 
 import java.util.Locale;
@@ -23,8 +24,12 @@ public class DefaultMailContentConfig implements MailContentConfig {
     final EmailProperties emailProperties;
     final MessageSource messageSource;
 
+    private static Pair<String, String> convert(HtmlTextEmail htmlTextEmail) {
+        return Pair.of(htmlTextEmail.getHtml(), htmlTextEmail.getText());
+    }
+
     @Override
-    public HtmlTextEmail register(AppUserReference user, String actionUrl) {
+    public Pair<String, String> register(AppUserReference user, String actionUrl) {
         Locale currentLocale = LocaleContextHolder.getLocale();
         EmailTemplateConfigBuilder builder = EmailTemplateBuilder.builder();
         // header
@@ -37,11 +42,11 @@ public class DefaultMailContentConfig implements MailContentConfig {
         // button
         buildButton(REGISTER, builder, messageSource.getMessage("auth.email.register.button", new Object[]{}, currentLocale), actionUrl);
         // greeting / footer...
-        return builder
+        return convert(builder
                 .text(getGreeting()).and()
                 .footerText(getFooter(currentLocale)).center().and()
                 .copyright(emailProperties.getCopyrightName()).url(emailProperties.getCopyrightUrl())
-                .build();
+                .build());
     }
 
     @Override
@@ -51,7 +56,7 @@ public class DefaultMailContentConfig implements MailContentConfig {
     }
 
     @Override
-    public HtmlTextEmail forgotPassword(AppUserReference user, String actionUrl) {
+    public Pair<String, String> forgotPassword(AppUserReference user, String actionUrl) {
         Locale currentLocale = LocaleContextHolder.getLocale();
         EmailTemplateConfigBuilder builder = EmailTemplateBuilder.builder();
         // header
@@ -64,10 +69,10 @@ public class DefaultMailContentConfig implements MailContentConfig {
         // button
         buildButton(FORGOT, builder, messageSource.getMessage("auth.email.forgot.button", new Object[]{}, currentLocale), actionUrl);
         // greeting / footer...
-        return builder.text(getGreeting()).and()
+        return convert(builder.text(getGreeting()).and()
                 .footerText(getFooter(currentLocale)).center().and()
                 .copyright(emailProperties.getCopyrightName()).url(emailProperties.getCopyrightUrl())
-                .build();
+                .build());
     }
 
     @Override
@@ -77,7 +82,7 @@ public class DefaultMailContentConfig implements MailContentConfig {
     }
 
     @Override
-    public HtmlTextEmail invite(AppInviteEntity invite, String actionUrl) {
+    public Pair<String, String> invite(AppInviteEntity invite, String actionUrl) {
         Locale currentLocale = LocaleContextHolder.getLocale();
         EmailTemplateConfigBuilder builder = EmailTemplateBuilder.builder();
         // header
@@ -98,10 +103,10 @@ public class DefaultMailContentConfig implements MailContentConfig {
         // button
         buildButton(INVITE, builder, messageSource.getMessage("auth.email.invite.button", new Object[]{}, currentLocale), actionUrl);
         // greeting / footer...
-        return builder.text(getGreeting()).and()
+        return convert(builder.text(getGreeting()).and()
                 .footerText(getFooterInvite(invite, currentLocale)).center().and()
                 .copyright(emailProperties.getCopyrightName()).url(emailProperties.getCopyrightUrl())
-                .build();
+                .build());
     }
 
     @Override
@@ -111,7 +116,7 @@ public class DefaultMailContentConfig implements MailContentConfig {
     }
 
     @Override
-    public HtmlTextEmail changeEmail(AppUserReference user, String newEmailAddress, String actionUrl) {
+    public Pair<String, String> changeEmail(AppUserReference user, String newEmailAddress, String actionUrl) {
         Locale currentLocale = LocaleContextHolder.getLocale();
         EmailTemplateConfigBuilder builder = EmailTemplateBuilder.builder();
         // header
@@ -124,11 +129,11 @@ public class DefaultMailContentConfig implements MailContentConfig {
         // button
         buildButton(CHANGE_EMAIL, builder, messageSource.getMessage("auth.email.emailChange.button", new Object[]{}, currentLocale), actionUrl);
         // greeting / footer...
-        return builder
+        return convert(builder
                 .text(getGreeting()).and()
                 .footerText(getFooter(currentLocale)).center().and()
                 .copyright(emailProperties.getCopyrightName()).url(emailProperties.getCopyrightUrl())
-                .build();
+                .build());
     }
 
     @Override

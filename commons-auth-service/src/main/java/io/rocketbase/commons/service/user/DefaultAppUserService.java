@@ -10,18 +10,20 @@ import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.dto.appuser.AppUserUpdate;
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
-import io.rocketbase.commons.dto.authentication.UpdateProfileRequest;
 import io.rocketbase.commons.dto.registration.RegistrationRequest;
 import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
 import io.rocketbase.commons.event.EmailChangeEvent;
 import io.rocketbase.commons.event.PasswordEvent;
-import io.rocketbase.commons.event.UpdateProfileEvent;
 import io.rocketbase.commons.event.UsernameChangeEvent;
 import io.rocketbase.commons.exception.*;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.model.AppUserReference;
-import io.rocketbase.commons.service.AppUserPersistenceService;
+import io.rocketbase.commons.model.user.SimpleUserProfile;
+import io.rocketbase.commons.model.user.SimpleUserSetting;
+import io.rocketbase.commons.model.user.UserProfile;
 import io.rocketbase.commons.service.avatar.AvatarService;
+import io.rocketbase.commons.service.capability.AppCapabilityService;
+import io.rocketbase.commons.service.group.AppGroupService;
 import io.rocketbase.commons.service.validation.ValidationErrorCodeService;
 import io.rocketbase.commons.service.validation.ValidationService;
 import lombok.Builder;
@@ -29,18 +31,19 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import static io.rocketbase.commons.event.PasswordEvent.PasswordProcessType.CHANGED;
 
@@ -56,6 +59,12 @@ public class DefaultAppUserService implements AppUserService {
 
     @Resource
     protected AppUserPersistenceService<AppUserEntity> appUserPersistenceService;
+
+    @Resource
+    protected AppGroupService groupService;
+
+    @Resource
+    protected AppCapabilityService capabilityService;
 
     @Resource
     protected AvatarService avatarService;
@@ -94,6 +103,36 @@ public class DefaultAppUserService implements AppUserService {
         }
     }
 
+
+    /**
+     * used to check if key values have changed within cache
+     */
+    protected int getCacheHash(AppUserEntity entity) {
+        return String.format("%s.%s.%s", entity.getId(), entity.getUsername(), entity.getEmail()).hashCode();
+    }
+
+    protected AppUserEntity getEntityByUsernameOrId(String usernameOrId) {
+        Optional<AppUserEntity> optional = appUserPersistenceService.findByUsername(usernameOrId);
+        if (!optional.isPresent()) {
+            return appUserPersistenceService.findById(usernameOrId).orElseThrow(NotFoundException::new);
+        }
+        return optional.get();
+    }
+
+    protected AppUserEntity saveAndInvalidate(AppUserEntity entity) {
+        // keep original key hash - in some cases the key may change after save (for example email/user change...)
+        int hash = getCacheHash(entity);
+        invalidateCache(entity);
+
+        AppUserEntity saved = appUserPersistenceService.save(entity);
+        // in special cases also the new stored keys needs to get invalidated. for example after email-change an previous email-lookup should return Optional.of(AppUserEntity) now instead of Optional.empty()
+        if (getCacheHash(saved) != hash) {
+            invalidateCache(saved);
+        }
+
+        return saved;
+    }
+
     @Override
     public AppUserEntity getByUsername(String username) {
         Optional<AppUserEntity> userEntity;
@@ -127,9 +166,7 @@ public class DefaultAppUserService implements AppUserService {
     public AppUserEntity updateLastLogin(String usernameOrId) {
         AppUserEntity entity = getEntityByUsernameOrId(usernameOrId);
         entity.updateLastLogin();
-
-        invalidateCache(entity);
-        return appUserPersistenceService.save(entity);
+        return saveAndInvalidate(entity);
     }
 
     @Override
@@ -149,79 +186,36 @@ public class DefaultAppUserService implements AppUserService {
         AppUserEntity entity = getEntityByUsernameOrId(usernameOrId);
         entity.setPassword(passwordEncoder.encode(newPassword));
         entity.updateLastTokenInvalidation();
-
-        invalidateCache(entity);
-        entity = appUserPersistenceService.save(entity);
+        entity = saveAndInvalidate(entity);
 
         applicationEventPublisher.publishEvent(new PasswordEvent(this, entity, CHANGED));
-
         return entity;
     }
 
     @Override
     public AppUserEntity patch(String usernameOrId, AppUserUpdate update) {
         AppUserEntity entity = getEntityByUsernameOrId(usernameOrId);
-        if (shouldPatch(update.getFirstName())) {
-            entity.setFirstName(update.getFirstName());
+        if (update.getProfile() != null) {
+            entity.setProfile(checkAvatar(update.getProfile(), entity.getEmail()));
         }
-        if (shouldPatch(update.getLastName())) {
-            entity.setLastName(update.getLastName());
+        if (update.getSetting() != null) {
+            entity.setSetting(update.getSetting());
         }
-        if (update.getRoles() != null && !update.getRoles().isEmpty()) {
-            entity.setRoles(update.getRoles());
+        if (update.getCapabilityIds() != null && !update.getCapabilityIds().isEmpty()) {
+            entity.setCapabilityIds(update.getCapabilityIds());
         }
         if (update.getEnabled() != null) {
             entity.setEnabled(update.getEnabled());
         }
         handleKeyValues(entity, update.getKeyValues());
-
-        entity = appUserPersistenceService.save(entity);
-
-        if (shouldPatch(update.getPassword())) {
-            validationService.passwordIsValid("password", update.getPassword());
-            updatePasswordUnchecked(entity.getUsername(), update.getPassword());
-        }
-        invalidateCache(entity);
-        return entity;
-    }
-
-    @Override
-    public AppUserEntity updateProfile(String usernameOrId, UpdateProfileRequest updateProfile) {
-        AppUserEntity entity = getEntityByUsernameOrId(usernameOrId);
-        entity.setFirstName(updateProfile.getFirstName());
-        entity.setLastName(updateProfile.getLastName());
-
-        if (StringUtils.isEmpty(updateProfile.getAvatar()) && avatarService.isEnabled()) {
-            entity.setAvatar(avatarService.getAvatar(entity.getEmail()));
-        } else {
-            entity.setAvatar(updateProfile.getAvatar());
-        }
-
-        handleKeyValues(entity, updateProfile.getKeyValues());
-
-        invalidateCache(entity);
-        entity = appUserPersistenceService.save(entity);
-
-        applicationEventPublisher.publishEvent(new UpdateProfileEvent(this, entity));
-
-        return entity;
+        return saveAndInvalidate(entity);
     }
 
     @Override
     public AppUserEntity updateKeyValues(String usernameOrId, Map<String, String> keyValues) {
         AppUserEntity entity = getEntityByUsernameOrId(usernameOrId);
         handleKeyValues(entity, keyValues);
-
-        invalidateCache(entity);
-        return appUserPersistenceService.save(entity);
-    }
-
-    private AppUserEntity getEntityByUsernameOrId(String usernameOrId) {
-        Optional<AppUserEntity> optional = appUserPersistenceService.findByUsername(usernameOrId);
-        if (!optional.isPresent()) {
-            return appUserPersistenceService.findById(usernameOrId).orElseThrow(NotFoundException::new);
-        }
-        return optional.get();
+        return saveAndInvalidate(entity);
     }
 
     @Override
@@ -239,37 +233,6 @@ public class DefaultAppUserService implements AppUserService {
         }
     }
 
-    /**
-     * lookup user also via email-adress if used...
-     */
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        AppUserEntity entity = getByUsername(username);
-        if (entity == null) {
-            entity = findByEmail(username).orElseThrow(() -> new UsernameNotFoundException(String.format("user: %s not found", username)));
-        }
-        return entity;
-    }
-
-    @Override
-    public AppUserEntity initializeUserIfNotExists(String username, String password, String email, boolean admin) {
-        AppUserEntity result = getByUsername(username);
-        if (result == null) {
-            result = initializeUser(username, password, email, admin);
-        }
-        return result;
-    }
-
-    @Override
-    public AppUserEntity initializeUser(String username, String password, String email, boolean admin) throws UsernameNotFoundException, EmailValidationException {
-        return initializeUser(AppUserCreate.builder()
-                .username(username)
-                .password(password)
-                .email(email)
-                .admin(admin)
-                .enabled(true)
-                .build());
-    }
 
     @Override
     public AppUserEntity initializeUser(AppUserCreate userCreate) throws UsernameNotFoundException, EmailValidationException {
@@ -280,76 +243,46 @@ public class DefaultAppUserService implements AppUserService {
         instance.setUsername(userCreate.getUsername().toLowerCase());
         instance.setEmail(userCreate.getEmail().toLowerCase());
         instance.setPassword(passwordEncoder.encode(userCreate.getPassword()));
-        instance.setFirstName(userCreate.getFirstName());
-        instance.setLastName(userCreate.getLastName());
-        handleKeyValues(instance, userCreate.getKeyValues());
-
-        List<String> roles = new ArrayList<>();
-        if (userCreate.getAdmin() != null) {
-            roles.add(userCreate.getAdmin() ? authProperties.getRoleAdmin() : authProperties.getRoleUser());
-        }
-        if (userCreate.getRoles() != null) {
-            roles.addAll(userCreate.getRoles());
-        }
-        instance.setRoles(convertRoles(roles));
+        instance.setProfile(checkAvatar(SimpleUserProfile.builder()
+                .firstName(userCreate.getFirstName())
+                .lastName(userCreate.getLastName())
+                .avatar(userCreate.getAvatar())
+                .build(), userCreate.getEmail()));
+        instance.setSetting(SimpleUserSetting.init(LocaleContextHolder.getLocale()));
+        instance.setKeyValues(userCreate.getKeyValues());
+        instance.setCapabilityIds(userCreate.getCapabilityIds());
+        instance.setGroupIds(userCreate.getGroupIds());
         instance.setEnabled(userCreate.isEnabled());
-        if (StringUtils.isEmpty(userCreate.getAvatar()) && avatarService.isEnabled()) {
-            instance.setAvatar(avatarService.getAvatar(userCreate.getEmail()));
-        }
-        AppUserEntity entity = appUserPersistenceService.save(instance);
-        // invalid cache in case of email + username lookup for example
-        invalidateCache(entity);
-        return entity;
-    }
+        instance.setLocked(false);
 
-    @Override
-    public AppUserEntity updateEnabled(String usernameOrId, boolean enabled) {
-        AppUserEntity entity = getEntityByUsernameOrId(usernameOrId);
-        entity.setEnabled(enabled);
-        entity = appUserPersistenceService.save(entity);
-        invalidateCache(entity);
-        return entity;
-    }
+        instance.validateKeyValues();
 
-    protected List<String> convertRoles(List<String> roles) {
-        if (roles == null) {
-            return null;
-        }
-        return new ArrayList<>(roles.stream().map(r -> r.replaceAll("^ROLE_", ""))
-                .collect(Collectors.toSet()));
-    }
-
-    @Override
-    public AppUserEntity updateRoles(String usernameOrId, List<String> roles) {
-        AppUserEntity entity = getEntityByUsernameOrId(usernameOrId);
-        entity.setRoles(convertRoles(roles));
-        entity.updateLastTokenInvalidation();
-
-        invalidateCache(entity);
-        return appUserPersistenceService.save(entity);
+        return saveAndInvalidate(instance);
     }
 
     @Override
     public AppUserEntity registerUser(RegistrationRequest registration) throws RegistrationException {
         validationService.registrationIsValid(registration.getUsername(), registration.getPassword(), registration.getEmail());
 
+
         AppUserEntity instance = appUserPersistenceService.initNewInstance();
         instance.setUsername(registration.getUsername().toLowerCase());
         instance.setEmail(registration.getEmail().toLowerCase());
-        instance.setFirstName(registration.getFirstName());
-        instance.setLastName(registration.getLastName());
         instance.setPassword(passwordEncoder.encode(registration.getPassword()));
-        instance.setRoles(convertRoles(Arrays.asList(registrationProperties.getRole())));
+        instance.setProfile(checkAvatar(SimpleUserProfile.builder()
+                .firstName(registration.getFirstName())
+                .lastName(registration.getLastName())
+                .build(), registration.getEmail()));
+        instance.setSetting(SimpleUserSetting.init(LocaleContextHolder.getLocale()));
+        instance.setKeyValues(registration.getKeyValues());
+        instance.setCapabilityIds(registrationProperties.getCapabilityIds());
+        instance.setGroupIds(registrationProperties.getGroupIds());
         instance.setEnabled(!registrationProperties.isVerification());
-        if (avatarService.isEnabled()) {
-            instance.setAvatar(avatarService.getAvatar(registration.getEmail()));
-        }
-        handleKeyValues(instance, registration.getKeyValues());
+        instance.setLocked(false);
 
-        AppUserEntity entity = appUserPersistenceService.save(instance);
-        // invalid cache in case of email + username lookup for example
-        invalidateCache(entity);
-        return entity;
+        instance.validateKeyValues();
+
+        return saveAndInvalidate(instance);
     }
 
 
@@ -380,9 +313,7 @@ public class DefaultAppUserService implements AppUserService {
         keyValues.put(REGISTRATION_KV, null);
         handleKeyValues(entity, keyValues);
 
-        invalidateCache(entity);
-
-        appUserPersistenceService.save(entity);
+        saveAndInvalidate(entity);
     }
 
     @Override
@@ -395,8 +326,7 @@ public class DefaultAppUserService implements AppUserService {
         String oldUsername = entity.getUsername();
         entity.setUsername(newUsername);
 
-        entity = appUserPersistenceService.save(entity);
-
+        entity = saveAndInvalidate(entity);
         applicationEventPublisher.publishEvent(new UsernameChangeEvent(this, oldUsername, entity));
         return entity;
     }
@@ -411,21 +341,31 @@ public class DefaultAppUserService implements AppUserService {
         String oldEmail = entity.getEmail();
         entity.setEmail(newEmail);
 
-        entity = appUserPersistenceService.save(entity);
-
+        entity = saveAndInvalidate(entity);
         applicationEventPublisher.publishEvent(new EmailChangeEvent(this, oldEmail, entity));
         return entity;
     }
 
     @Override
-    public void delete(AppUserEntity user) {
-        appUserPersistenceService.delete(user);
-        invalidateCache(user);
+    public void delete(String usernameOrId) {
+        AppUserEntity entity = getEntityByUsernameOrId(usernameOrId);
+        appUserPersistenceService.delete(entity.getId());
+        invalidateCache(entity);
     }
 
     @Override
     public Page<AppUserEntity> findAll(QueryAppUser query, Pageable pageable) {
         return appUserPersistenceService.findAll(query, pageable);
+    }
+
+    protected UserProfile checkAvatar(UserProfile userProfile, String email) {
+        if (userProfile == null) {
+            return null;
+        }
+        if (StringUtils.isEmpty(userProfile.getAvatar()) && avatarService.isEnabled() && email != null) {
+            userProfile.setAvatar(avatarService.getAvatar(email));
+        }
+        return userProfile;
     }
 
     @Builder

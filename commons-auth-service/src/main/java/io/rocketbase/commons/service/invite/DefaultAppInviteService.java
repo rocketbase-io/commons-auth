@@ -13,7 +13,6 @@ import io.rocketbase.commons.exception.RegistrationException;
 import io.rocketbase.commons.exception.VerificationException;
 import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppUserEntity;
-import io.rocketbase.commons.service.AppInvitePersistenceService;
 import io.rocketbase.commons.service.email.AuthEmailService;
 import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.service.validation.ValidationService;
@@ -54,13 +53,9 @@ public class DefaultAppInviteService implements AppInviteService {
     @Resource
     private ApplicationEventPublisher applicationEventPublisher;
 
-
     @Override
     public AppInviteEntity createInvite(InviteRequest request, String baseUrl) throws BadRequestException {
-        AppInviteEntity dto = appInvitePersistenceService.initNewInstance();
-        appInviteConverter.updateEntity(dto, request);
-        dto.setExpiration(Instant.now().plus(authProperties.getInviteExpiration(), ChronoUnit.MINUTES));
-        AppInviteEntity entity = appInvitePersistenceService.save(dto);
+        AppInviteEntity entity = appInvitePersistenceService.invite(request, Instant.now().plus(authProperties.getInviteExpiration(), ChronoUnit.MINUTES));
 
         applicationEventPublisher.publishEvent(new InviteEvent(this, entity, CREATE));
 
@@ -69,14 +64,14 @@ public class DefaultAppInviteService implements AppInviteService {
     }
 
     @Override
-    public AppInviteEntity verifyInvite(String inviteId) throws VerificationException, NotFoundException {
-        AppInviteEntity inviteEntity = appInvitePersistenceService.findById(inviteId).orElseThrow(NotFoundException::new);
-        if (!inviteEntity.getExpiration().isAfter(Instant.now())) {
+    public AppInviteEntity verifyInvite(Long inviteId) throws VerificationException, NotFoundException {
+        AppInviteEntity invite = appInvitePersistenceService.findById(inviteId).orElseThrow(NotFoundException::new);
+        if (!invite.getExpiration().isAfter(Instant.now())) {
             throw new VerificationException("inviteId");
         }
-        applicationEventPublisher.publishEvent(new InviteEvent(this, inviteEntity, VERIFY));
+        applicationEventPublisher.publishEvent(new InviteEvent(this, invite, VERIFY));
 
-        return inviteEntity;
+        return invite;
     }
 
     @Override
@@ -85,6 +80,7 @@ public class DefaultAppInviteService implements AppInviteService {
         // validate username, password + email
         validationService.registrationIsValid(request.getUsername(), request.getPassword(), request.getEmail());
 
+        // TODO: Memebershop needs to get handeled here
         AppUserCreate userCreate = AppUserCreate.builder()
                 .username(request.getUsername().toLowerCase())
                 .password(request.getPassword())
@@ -92,15 +88,17 @@ public class DefaultAppInviteService implements AppInviteService {
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .keyValues(inviteEntity.getKeyValues())
-                .roles(inviteEntity.getRoles())
+                .capabilityIds(inviteEntity.getCapabilities())
+                .groupIds(inviteEntity.getGroups())
+                .enabled(true)
                 .build();
 
-        AppUserEntity appUserEntity = appUserService.initializeUser(userCreate);
+        AppUserEntity appUser = appUserService.initializeUser(userCreate);
 
-        applicationEventPublisher.publishEvent(new InviteEvent(this, inviteEntity, appUserEntity));
+        applicationEventPublisher.publishEvent(new InviteEvent(this, inviteEntity, appUser));
 
-        appInvitePersistenceService.delete(inviteEntity);
-        return appUserEntity;
+        appInvitePersistenceService.delete(inviteEntity.getId());
+        return appUser;
     }
 
     @Override
@@ -109,7 +107,8 @@ public class DefaultAppInviteService implements AppInviteService {
     }
 
     @Override
-    public void deleteInvite(String inviteId) {
-        appInvitePersistenceService.delete(appInvitePersistenceService.findById(inviteId).orElseThrow(NotFoundException::new));
+    public void deleteInvite(Long inviteId) {
+        AppInviteEntity entity = appInvitePersistenceService.findById(inviteId).orElseThrow(NotFoundException::new);
+        appInvitePersistenceService.delete(entity.getId());
     }
 }

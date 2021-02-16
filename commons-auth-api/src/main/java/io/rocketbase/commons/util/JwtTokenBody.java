@@ -1,7 +1,6 @@
 package io.rocketbase.commons.util;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,10 +23,6 @@ public class JwtTokenBody {
      * username
      */
     private String sub;
-
-    @Getter
-    @JsonProperty("user_id")
-    private String userId;
 
     @Getter
     /**
@@ -60,9 +55,9 @@ public class JwtTokenBody {
         return sub;
     }
 
-    public boolean hasRole(String name) {
+    public boolean hasCapability(String key) {
         return scopes != null && scopes.stream()
-                .filter(s -> s.equalsIgnoreCase(name))
+                .filter(s -> s.equals(key))
                 .findFirst().isPresent();
     }
 }

@@ -7,12 +7,12 @@ import org.springframework.context.ApplicationEvent;
 @Getter
 public class RegistrationEvent extends ApplicationEvent {
 
-    private final AppUserEntity appUserEntity;
+    private final AppUserEntity appUser;
     private final RegistrationProcessType type;
 
-    public RegistrationEvent(Object source, AppUserEntity appUserEntity, RegistrationProcessType type) {
+    public RegistrationEvent(Object source, AppUserEntity appUser, RegistrationProcessType type) {
         super(source);
-        this.appUserEntity = appUserEntity;
+        this.appUser = appUser;
         this.type = type;
     }
 

@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
-public class ValidationErrorCodeService {
+public class ValidationErrorCodeService implements PassayConfig {
 
     final UsernameProperties usernameProperties;
     final PasswordProperties passwordProperties;
@@ -36,7 +36,7 @@ public class ValidationErrorCodeService {
             case INSUFFICIENT_DIGIT:
                 return generateError(PasswordErrorCodes.INSUFFICIENT_DIGIT, e -> e.getValue(), field, passwordProperties.getDigit());
             case INSUFFICIENT_SPECIAL:
-                return generateError(PasswordErrorCodes.INSUFFICIENT_SPECIAL, e -> e.getValue(), field, ValidationService.SPECIAL.getCharacters(), passwordProperties.getSpecial());
+                return generateError(PasswordErrorCodes.INSUFFICIENT_SPECIAL, e -> e.getValue(), field, SPECIAL.getCharacters(), passwordProperties.getSpecial());
             default:
                 return generateError(error, e -> e.getValue(), field);
         }
@@ -60,7 +60,7 @@ public class ValidationErrorCodeService {
             case ALREADY_TAKEN:
                 return generateError(EmailErrorCodes.ALREADY_TAKEN, e -> e.getValue(), field, usernameProperties.getMinLength());
             case TOO_LONG:
-                return generateError(EmailErrorCodes.TOO_LONG, e -> e.getValue(), field, ValidationService.EMAIL_MAX_LENGTH);
+                return generateError(EmailErrorCodes.TOO_LONG, e -> e.getValue(), field, EMAIL_MAX_LENGTH);
             default:
                 return generateError(error, e -> e.getValue(), field);
         }

@@ -122,4 +122,16 @@ public class AuthServerAutoConfiguration {
     public VerificationExceptionHandler verificationExceptionHandler() {
         return new VerificationExceptionHandler();
     }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public EmailDeliveryExceptionHandler emailDeliveryExceptionHandler() {
+        return new EmailDeliveryExceptionHandler();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public JwtExceptionHandler jwtExceptionHandler() {
+        return new JwtExceptionHandler();
+    }
 }

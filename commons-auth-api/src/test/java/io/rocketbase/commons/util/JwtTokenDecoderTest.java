@@ -21,8 +21,8 @@ public class JwtTokenDecoderTest {
         assertThat(tokenBody, notNullValue());
         assertThat(tokenBody.getExpiration(), equalTo(Instant.ofEpochSecond(1521821135, 0)));
         assertThat(tokenBody.getIssuedAt(), equalTo(Instant.ofEpochSecond(1521817535, 0)));
-        assertThat(tokenBody.hasRole("USER"), equalTo(true));
-        assertThat(tokenBody.hasRole("--"), equalTo(false));
+        assertThat(tokenBody.hasCapability("USER"), equalTo(true));
+        assertThat(tokenBody.hasCapability("--"), equalTo(false));
         assertThat(tokenBody.getUsername(), equalTo("user"));
     }
 
@@ -50,7 +50,7 @@ public class JwtTokenDecoderTest {
 
         /**
          * claim looks like:
-         * {"iat":1563358441,"exp":1563362041,"sub":"test","scopes":["ROLE_ADMIN"],"user_id":"b64b31f4-2a2a-47d6-a56f-c0b242cecbe8","email":"test@rocketbase.io","picture":"https://www.gravatar.com/avatar/c89e6927a48b744a48fe16a1a73f7f1b.jpg?s=160&d=retro"}
+         * {"iat":1563358441,"exp":1563362041,"sub":"test","scopes":["ROLE_ADMIN"],"email":"test@rocketbase.io","picture":"https://www.gravatar.com/avatar/c89e6927a48b744a48fe16a1a73f7f1b.jpg?s=160&d=retro"}
          */
 
         // when
@@ -58,7 +58,6 @@ public class JwtTokenDecoderTest {
 
         // then
         assertThat(tokenBody, notNullValue());
-        assertThat(tokenBody.getUserId(), is("b64b31f4-2a2a-47d6-a56f-c0b242cecbe8"));
         assertThat(tokenBody.getUsername(), is("test"));
         assertThat(tokenBody.getExpiration(), is(Instant.ofEpochSecond(1563362041, 0)));
         assertThat(tokenBody.getScopes(), containsInAnyOrder("ROLE_ADMIN"));

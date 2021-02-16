@@ -4,20 +4,9 @@ import io.rocketbase.commons.util.UrlParts;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import javax.validation.constraints.NotEmpty;
-
 @Data
 @ConfigurationProperties(prefix = "auth")
 public class AuthProperties {
-
-    @NotEmpty
-    private String roleAdmin = "ADMIN";
-
-    @NotEmpty
-    private String roleUser = "USER";
-
-    @NotEmpty
-    private String tokenSecret = "E*iqzFiW#kSmAo8rO^V8%DRlQ#1f&B$i";
 
     /**
      * cache time in minutes <br>
@@ -125,6 +114,7 @@ public class AuthProperties {
                 prefixPath + "auth/me",
                 prefixPath + "auth/refresh",
                 prefixPath + "auth/update-profile",
+                prefixPath + "auth/update-setting",
                 prefixPath + "auth/change-password",
                 prefixPath + "auth/change-username",
                 prefixPath + "auth/change-email"

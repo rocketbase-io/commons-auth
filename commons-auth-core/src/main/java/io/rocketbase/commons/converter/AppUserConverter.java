@@ -2,27 +2,18 @@ package io.rocketbase.commons.converter;
 
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.model.AppUserEntity;
-import io.rocketbase.commons.util.RolesAuthoritiesConverter;
+import io.rocketbase.commons.model.AppUserToken;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
-public class AppUserConverter {
+public interface AppUserConverter<E extends AppUserEntity> {
 
-    public static Map<String, String> filterInvisibleKeys(Map<String, String> keyValues) {
-        if (keyValues == null) {
-            return null;
-        }
-        Map<String, String> map = new HashMap<>();
-        keyValues.entrySet().stream()
-                .filter(e -> !e.getKey().startsWith("_"))
-                .forEach(e -> map.put(e.getKey(), e.getValue()));
-        return map;
-    }
+    AppUserToken toToken(E entity);
 
-    public AppUserRead fromEntity(AppUserEntity entity) {
+    AppUserRead toRead(E entity);
+
+        /*
         if (entity == null) {
             return null;
         }
@@ -39,14 +30,14 @@ public class AppUserConverter {
                 .created(entity.getCreated())
                 .lastLogin(entity.getLastLogin())
                 .build();
-    }
+      */
 
-    public List<AppUserRead> fromEntities(List<AppUserEntity> entities) {
+    default List<AppUserRead> toRead(List<E> entities) {
         if (entities == null) {
             return null;
         }
         return entities.stream()
-                .map(e -> fromEntity(e))
+                .map(e -> toRead(e))
                 .collect(Collectors.toList());
     }
 

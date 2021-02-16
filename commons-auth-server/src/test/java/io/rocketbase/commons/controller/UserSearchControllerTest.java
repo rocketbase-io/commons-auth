@@ -7,7 +7,6 @@ import io.rocketbase.commons.adapters.JwtTokenProvider;
 import io.rocketbase.commons.adapters.SimpleJwtTokenProvider;
 import io.rocketbase.commons.dto.PageableResult;
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
-import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.model.AppUserReference;
 import io.rocketbase.commons.resource.UserSearchResource;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
@@ -47,9 +46,10 @@ public class UserSearchControllerTest extends BaseIntegrationTestPrefixed {
     @Test
     public void findWithAuthRestTemplate() {
         // given
+        AppUserEntity user = getAppUser("admin");
 
         // when
-        UserSearchResource userSearchResource = new UserSearchResource(getBaseUrl(), getAuthRestAdminTemplate());
+        UserSearchResource userSearchResource = new UserSearchResource(getBaseUrl(), getAuthRestTemplate(user));
         PageableResult<AppUserReference> response = userSearchResource.search(new QueryAppUser(), PageRequest.of(0, 10));
 
         // then

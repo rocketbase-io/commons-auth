@@ -1,26 +1,33 @@
 package io.rocketbase.commons.util;
 
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
+import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.exception.TokenRefreshException;
 import io.rocketbase.commons.model.AppUserToken;
+import io.rocketbase.commons.model.TokenParseResult;
 import io.rocketbase.commons.security.JwtTokenService;
+import io.rocketbase.commons.service.user.AppUserTokenService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class JwtTokenStoreService extends AbstractJwtTokenStore {
 
     private final JwtTokenService jwtTokenService;
+    private final AppUserTokenService appUserTokenService;
 
-    public JwtTokenStoreService(JwtTokenBundle tokenBundle, JwtTokenService jwtTokenService) {
+    public JwtTokenStoreService(JwtTokenBundle tokenBundle, JwtTokenService jwtTokenService, AppUserTokenService appUserTokenService) {
         super(tokenBundle);
         this.jwtTokenService = jwtTokenService;
+        this.appUserTokenService = appUserTokenService;
     }
 
     @Override
     public void refreshToken() throws TokenRefreshException {
         try {
-            AppUserToken token = jwtTokenService.parseToken(getTokenBundle().getRefreshToken());
-            tokenBundle.setToken(jwtTokenService.generateAccessToken(token));
+            TokenParseResult parsedToken = jwtTokenService.parseToken(getTokenBundle().getRefreshToken());
+            AppUserToken appUserToken = appUserTokenService.findByUsername(parsedToken.getUser().getUsername()).orElseThrow(NotFoundException::new);
+
+            tokenBundle.setToken(jwtTokenService.generateAccessToken(appUserToken));
 
             lastToken = null;
             exp = null;

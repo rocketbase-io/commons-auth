@@ -6,7 +6,6 @@ import io.rocketbase.commons.dto.PageableResult;
 import io.rocketbase.commons.dto.appinvite.AppInviteRead;
 import io.rocketbase.commons.dto.appinvite.InviteRequest;
 import io.rocketbase.commons.exception.NotFoundException;
-import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.service.invite.AppInviteService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -55,7 +54,7 @@ public class AppInviteController implements BaseController {
     }
 
     @RequestMapping(method = RequestMethod.DELETE, path = "/api/invite/{id}")
-    public void delete(@PathVariable("id") String id) throws NotFoundException {
+    public void delete(@PathVariable("id") Long id) throws NotFoundException {
         appInviteService.deleteInvite(id);
     }
 
