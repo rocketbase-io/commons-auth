@@ -50,6 +50,8 @@ SOFTWARE.
         <module>commons-auth-service</module>
         <module>commons-auth-email-smtp</module>
         <module>commons-auth-email-postmark</module>
+        <!-- only needed for jacoco aggregation -->
+        <module>coverage</module>
     </modules>
 
     <licenses>
@@ -137,6 +139,24 @@ SOFTWARE.
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
                     <version>${jacoco.version}</version>
+                    <executions>
+                        <!-- to avoid bugs in some situations -->
+                        <execution>
+                            <id>default-prepare-agent</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+
+                        <!-- create report during maven verify phase -->
+                        <execution>
+                            <id>report</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                     <configuration>
                         <excludes>
                             <exclude>**/*Repository.*</exclude>
@@ -144,6 +164,10 @@ SOFTWARE.
                             <exclude>**/io/rocketbase/commons/test/**</exclude>
                             <exclude>**/io/rocketbase/commons/dto/**</exclude>
                             <exclude>**/io/rocketbase/commons/config/**</exclude>
+                            <exclude>**/io/rocketbase/commons/event/**</exclude>
+                            <exclude>**/*_</exclude>
+                            <exclude>**/io/rocketbase/commons/exception/**</exclude>
+                            <exclude>**/io/rocketbase/commons/config/*Properties</exclude>
                         </excludes>
                     </configuration>
                 </plugin>

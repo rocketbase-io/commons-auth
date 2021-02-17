@@ -10,7 +10,7 @@ then
     mvn versions:commit
 
     echo "version set now perform deploy"
-    mvn --settings .travis/settings.xml clean deploy -DskipTests=true -B -U -Prelease
+    mvn --settings .travis/settings.xml clean deploy -B -U -Prelease
 else
     echo "not on a tag -> keep snapshot version in pom.xml"
 fi

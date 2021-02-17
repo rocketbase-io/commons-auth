@@ -18,15 +18,9 @@ before_script:
 script: mvn --settings .travis/settings.xml -U clean install
 # code climate upload coverage
 after_script:
-  - JACOCO_SOURCE_PATH=commons-auth-api/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.api.json commons-auth-api/target/site/jacoco/jacoco.xml
-  - JACOCO_SOURCE_PATH=commons-auth-core/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.core.json commons-auth-core/target/site/jacoco/jacoco.xml
-  - JACOCO_SOURCE_PATH=commons-auth-jpa/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.jpa.json commons-auth-jpa/target/site/jacoco/jacoco.xml
-  - JACOCO_SOURCE_PATH=commons-auth-mongo/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.mongo.json commons-auth-mongo/target/site/jacoco/jacoco.xml
-  - JACOCO_SOURCE_PATH=commons-auth-service/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.service.json commons-auth-service/target/site/jacoco/jacoco.xml
-  - JACOCO_SOURCE_PATH=commons-auth-server/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.server.json commons-auth-server/target/site/jacoco/jacoco.xml
-  - JACOCO_SOURCE_PATH=commons-auth-test/src/main/java ./cc-test-reporter format-coverage -t jacoco -o coverage/codeclimate.test.json commons-auth-test/target/site/jacoco/jacoco.xml
-  - ./cc-test-reporter sum-coverage coverage/codeclimate.*.json -p 6
-  - if [[ "$TRAVIS_TEST_RESULT" == 0 ]]; then ./cc-test-reporter upload-coverage; fi  # Upload coverage/codeclimate.json
+  - sed -e 's/<[\/]\?group[^>]*>//g' coverage/target/site/jacoco-aggregate/jacoco.xml > coverage/site/jacoco-aggregate/jacoco-cc.xml
+  - JACOCO_SOURCE_PATH="commons-auth-adapter/src/main/java commons-auth-api/src/main/java commons-auth-core/src/main/java commons-auth-email-postmark/src/main/java commons-auth-email-smtp/src/main/java commons-auth-forms/src/main/java commons-auth-jpa/src/main/java commons-auth-jpa/target/generated-sources/annotations commons-auth-mongo/src/main/java commons-auth-server/src/main/java commons-auth-service/src/main/java commons-auth-test/src/main/java" ./cc-test-reporter format-coverage -t jacoco coverage/target/site/jacoco-aggregate/jacoco-cc.xml
+  - ./cc-test-reporter upload-coverage
 ## release on tag
 deploy:
   - provider: script
