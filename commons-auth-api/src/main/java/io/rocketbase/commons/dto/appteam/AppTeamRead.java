@@ -1,5 +1,6 @@
 package io.rocketbase.commons.dto.appteam;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,19 +26,16 @@ public class AppTeamRead extends AppTeamShort implements Serializable {
 
     private Instant created;
 
-    private String createdBy;
-
     @Nullable
     private Map<String, String> keyValues;
 
     @Builder
-    public AppTeamRead(Long id, String name, String systemRefId, String description, boolean personal, Instant created, String createdBy, Map<String, String> keyValues) {
+    public AppTeamRead(Long id, String name, String systemRefId, String description, boolean personal, Instant created, Map<String, String> keyValues) {
         super(id, name);
         this.systemRefId = systemRefId;
         this.description = description;
         this.personal = personal;
         this.created = created;
-        this.createdBy = createdBy;
         this.keyValues = keyValues;
     }
 
@@ -48,7 +46,15 @@ public class AppTeamRead extends AppTeamShort implements Serializable {
         this.description = other.description;
         this.personal = other.personal;
         this.created = other.created;
-        this.createdBy = other.createdBy;
         this.keyValues = other.keyValues != null ? new HashMap<>(other.keyValues) : null;
+    }
+
+
+    @JsonIgnore
+    public AppTeamShort toShort() {
+        return new AppTeamShort(
+                getId(),
+                getName()
+        );
     }
 }

@@ -5,6 +5,7 @@ import io.rocketbase.commons.model.AppGroupEntity;
 import io.rocketbase.commons.service.capability.AppCapabilityService;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +14,7 @@ public class AppGroupConverter {
 
     private final AppCapabilityService appCapabilityService;
 
-    public AppGroupRead toRead(AppGroupEntity entity) {
+    public <G extends AppGroupEntity> AppGroupRead fromEntity(G entity) {
         if (entity == null) {
             return null;
         }
@@ -29,12 +30,12 @@ public class AppGroupConverter {
                 .build();
     }
 
-    public List<AppGroupRead> toRead(List<AppGroupEntity> entities) {
+    public <G extends AppGroupEntity> List<AppGroupRead> fromEntities(Collection<G> entities) {
         if (entities == null) {
             return null;
         }
         return entities.stream()
-                .map(e -> toRead(e))
+                .map(e -> fromEntity(e))
                 .collect(Collectors.toList());
     }
 }

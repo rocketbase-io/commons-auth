@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 public interface AppInvitePersistenceService<E extends AppInviteEntity> {
@@ -18,6 +19,8 @@ public interface AppInvitePersistenceService<E extends AppInviteEntity> {
     AppInviteEntity invite(InviteRequest request, Instant expiration);
 
     Optional<E> findById(Long id);
+
+    List<E> findAllById(Iterable<Long> ids);
 
     void delete(Long id);
 

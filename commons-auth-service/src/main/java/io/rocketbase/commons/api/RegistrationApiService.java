@@ -23,7 +23,7 @@ public class RegistrationApiService implements RegistrationApi, BaseApiService {
         ExpirationInfo<AppUserEntity> expirationInfo = registrationService.register(registration, getBaseUrl());
         return ExpirationInfo.<AppUserRead>builder()
                 .expires(expirationInfo.getExpires())
-                .detail(converter.toRead(expirationInfo.getDetail()))
+                .detail(converter.fromEntity(expirationInfo.getDetail()))
                 .build();
     }
 

@@ -36,13 +36,13 @@ public class ForgotPasswordResource implements BaseRestResource, ForgotPasswordA
     }
 
     @Override
-    public ExpirationInfo<AppUserRead> forgotPassword(ForgotPasswordRequest forgotPassword) {
-        ResponseEntity<ExpirationInfo<AppUserRead>> response = getRestTemplate()
+    public ExpirationInfo<Void> forgotPassword(ForgotPasswordRequest forgotPassword) {
+        ResponseEntity<ExpirationInfo<Void>> response = getRestTemplate()
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/forgot-password").toUriString(),
                         HttpMethod.PUT,
                         new HttpEntity<>(forgotPassword, createHeaderWithLanguage()),
-                        new ParameterizedTypeReference<ExpirationInfo<AppUserRead>>() {});
+                        new ParameterizedTypeReference<ExpirationInfo<Void>>() {});
         return response.getBody();
     }
 

@@ -1,5 +1,6 @@
 package io.rocketbase.commons.service.invite;
 
+import io.rocketbase.commons.dto.appinvite.InviteRequest;
 import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
 import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppInviteJpaEntity;
@@ -22,14 +23,14 @@ import java.util.Map;
 import java.util.Optional;
 
 @Transactional
-public class AppInviteJpaServiceImpl implements AppInvitePersistenceService<AppInviteJpaEntity>, JpaQueryHelper {
+public class AppInviteJpaPersistenceService implements AppInvitePersistenceService<AppInviteJpaEntity>, JpaQueryHelper {
 
     private final EntityManager em;
     private final Snowflake snowflake;
 
     private final SimpleJpaRepository<AppInviteJpaEntity, Long> repository;
 
-    public AppInviteJpaServiceImpl(EntityManager entityManager, Snowflake snowflake) {
+    public AppInviteJpaPersistenceService(EntityManager entityManager, Snowflake snowflake) {
         this.em = entityManager;
         this.snowflake = snowflake;
         this.repository = new SimpleJpaRepository<>(AppInviteJpaEntity.class, entityManager);
@@ -70,13 +71,6 @@ public class AppInviteJpaServiceImpl implements AppInvitePersistenceService<AppI
     }
 
     @Override
-    public Page<AppInviteEntity> findAllDto(QueryAppInvite query, Pageable pageable) {
-        findAll(query, pageable);
-
-        return null;
-    }
-
-    @Override
     public AppInviteJpaEntity save(AppInviteJpaEntity entity) {
         if (entity.getId() == null) {
             entity.setId(snowflake.nextId());
@@ -84,11 +78,12 @@ public class AppInviteJpaServiceImpl implements AppInvitePersistenceService<AppI
         if (entity.getCreated() == null) {
             entity.setCreated(Instant.now());
         }
+
         return repository.save(entity);
     }
 
     @Override
-    public AppInviteEntity saveDto(AppInviteEntity entity) {
+    public AppInviteEntity invite(InviteRequest request, Instant expiration) {
         return null;
     }
 
@@ -99,11 +94,9 @@ public class AppInviteJpaServiceImpl implements AppInvitePersistenceService<AppI
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Optional<AppInviteEntity> findDtoById(Long id) {
-        return Optional.empty();
+    public List<AppInviteJpaEntity> findAllById(Iterable<Long> ids) {
+        return repository.findAllById(ids);
     }
-
 
     @Override
     public void delete(Long id) {
@@ -121,5 +114,10 @@ public class AppInviteJpaServiceImpl implements AppInvitePersistenceService<AppI
         Root<AppInviteJpaEntity> root = delete.from(AppInviteJpaEntity.class);
         delete.where(cb.lessThan(root.get(AppInviteJpaEntity_.EXPIRATION), Instant.now()));
         return em.createQuery(delete).executeUpdate();
+    }
+
+    @Override
+    public AppInviteJpaEntity initNewInstance() {
+        return new AppInviteJpaEntity();
     }
 }

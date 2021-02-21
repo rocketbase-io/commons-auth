@@ -6,9 +6,12 @@ import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.converter.AppUserJpaConverter;
 import io.rocketbase.commons.model.AppInviteJpaEntity;
 import io.rocketbase.commons.model.AppUserJpaEntity;
-import io.rocketbase.commons.service.invite.AppInviteJpaServiceImpl;
+import io.rocketbase.commons.service.capability.AppCapabilityJpaPersistenceService;
+import io.rocketbase.commons.service.group.AppGroupJpaPersistenceService;
+import io.rocketbase.commons.service.invite.AppInviteJpaPersistenceService;
 import io.rocketbase.commons.service.invite.AppInvitePersistenceService;
-import io.rocketbase.commons.service.user.AppUserJpaServiceImpl;
+import io.rocketbase.commons.service.team.AppTeamJpaPersistenceService;
+import io.rocketbase.commons.service.user.AppUserJpaPersistenceService;
 import io.rocketbase.commons.service.user.AppUserPersistenceService;
 import io.rocketbase.commons.util.Snowflake;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +28,15 @@ public class AuthJpaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AppUserPersistenceService<AppUserJpaEntity> appUserPersistenceService(@Autowired EntityManager entityManager) {
-        return new AppUserJpaServiceImpl(entityManager);
+    public AppUserPersistenceService<AppUserJpaEntity> appUserPersistenceService(@Autowired EntityManager entityManager,
+                                                                                 @Autowired AppGroupJpaPersistenceService groupJpaPersistenceService, @Autowired AppCapabilityJpaPersistenceService capabilityJpaPersistenceService, @Autowired AppTeamJpaPersistenceService teamJpaPersistenceService) {
+        return new AppUserJpaPersistenceService(entityManager, groupJpaPersistenceService, capabilityJpaPersistenceService, teamJpaPersistenceService);
     }
 
     @Bean
     @ConditionalOnMissingBean
     public AppInvitePersistenceService<AppInviteJpaEntity> appInvitePersistenceService(@Autowired EntityManager entityManager, @Autowired Snowflake snowflake) {
-        return new AppInviteJpaServiceImpl(entityManager, snowflake);
+        return new AppInviteJpaPersistenceService(entityManager, snowflake);
     }
 
 

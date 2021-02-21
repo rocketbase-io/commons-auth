@@ -1,8 +1,8 @@
-package io.rocketbase.commons.service;
+package io.rocketbase.commons.service.user;
 
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.model.AppUserMongoEntity;
-import io.rocketbase.commons.service.user.AppUserPersistenceService;
+import io.rocketbase.commons.service.MongoQueryHelper;
 import io.rocketbase.commons.util.Nulls;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,7 +18,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
-public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUserMongoEntity> {
+public class AppUserMongoPersistenceService implements AppUserPersistenceService<AppUserMongoEntity>, MongoQueryHelper {
 
     private final MongoTemplate mongoTemplate;
 
@@ -71,9 +71,8 @@ public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUse
                         buildRegexCriteria("lastName", query.getFreetext()),
                         buildRegexCriteria("email", query.getFreetext())));
             }
-            if (!StringUtils.isEmpty(query.getHasRole())) {
-                Pattern rolePattern = Pattern.compile(query.getHasRole(), Pattern.CASE_INSENSITIVE);
-                result.addCriteria(Criteria.where("roles").in(Arrays.asList(rolePattern)));
+            if (!StringUtils.isEmpty(query.getCapabilityIds())) {
+                result.addCriteria(Criteria.where("capabilityIds").in(Arrays.asList(query.getCapabilityIds())));
             }
             if (query.getKeyValues() != null && !query.getKeyValues().isEmpty()) {
                 for (Map.Entry<String, String> kv : query.getKeyValues().entrySet()) {
@@ -84,14 +83,6 @@ public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUse
             result.addCriteria(Criteria.where("enabled").is(Nulls.notNull(query.getEnabled(), true)));
         }
         return result;
-    }
-
-    Criteria buildRegexCriteria(String where, String text) {
-        String pattern = text.trim() + "";
-        if (!pattern.contains(".*")) {
-            pattern = ".*" + pattern + ".*";
-        }
-        return Criteria.where(where).regex(pattern, "i");
     }
 
     @Override
@@ -111,18 +102,17 @@ public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUse
     }
 
     @Override
-    public long count() {
-        return mongoTemplate.count(new Query(), AppUserMongoEntity.class);
+    public List<AppUserMongoEntity> findAllById(Iterable<String> ids) {
+        return mongoTemplate.find(new Query(Criteria.where("_id")
+                .in(ids)), AppUserMongoEntity.class);
     }
 
     @Override
-    public void delete(AppUserMongoEntity entity) {
-        mongoTemplate.remove(new Query(Criteria.where("_id")
-                .is(entity.getId())), AppUserMongoEntity.class);
+    public void delete(String id) {
+        mongoTemplate.remove(new Query(Criteria.where("_id").is(id)), AppUserMongoEntity.class);
     }
 
-    @Override
-    public void deleteAll() {
+    void deleteAll() {
         mongoTemplate.findAllAndRemove(new Query(), AppUserMongoEntity.class);
     }
 
@@ -131,7 +121,8 @@ public class AppUserMongoServiceImpl implements AppUserPersistenceService<AppUse
         return AppUserMongoEntity.builder()
                 .id(UUID.randomUUID().toString())
                 .created(Instant.now())
-                .roles(new HashSet<>())
+                .capabilityIds(new HashSet<>())
+                .groupIds(new HashSet<>())
                 .build();
     }
 }

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 public interface AppInviteConverter<E extends AppInviteEntity> {
 
-    AppInviteRead toRead(E entity);
+    AppInviteRead fromEntity(E entity);
     /*
         if (entity == null) {
             return null;
@@ -29,12 +29,12 @@ public interface AppInviteConverter<E extends AppInviteEntity> {
                 .build();
      */
 
-    default List<AppInviteRead> toRead(List<E> entities) {
+    default List<AppInviteRead> fromEntities(List<E> entities) {
         if (entities == null) {
             return null;
         }
         return entities.stream()
-                .map(e -> toRead(e))
+                .map(e -> fromEntity(e))
                 .collect(Collectors.toList());
     }
 }

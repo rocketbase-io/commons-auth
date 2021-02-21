@@ -16,13 +16,13 @@ public class ForgotPasswordApiService implements ForgotPasswordApi, BaseApiServi
     private final AppUserConverter appUserConverter;
 
     @Override
-    public ExpirationInfo forgotPassword(ForgotPasswordRequest forgotPassword) {
+    public ExpirationInfo<Void> forgotPassword(ForgotPasswordRequest forgotPassword) {
         return forgotPasswordService.requestPasswordReset(forgotPassword, getBaseUrl());
     }
 
     @Override
     public AppUserRead resetPassword(PerformPasswordResetRequest performPasswordReset) {
         AppUserEntity entity = forgotPasswordService.resetPassword(performPasswordReset);
-        return appUserConverter.toRead(entity);
+        return appUserConverter.fromEntity(entity);
     }
 }

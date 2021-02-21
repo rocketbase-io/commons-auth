@@ -5,6 +5,9 @@ import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.model.*;
 import io.rocketbase.commons.model.embedded.UserProfileJpaEmbedded_;
 import io.rocketbase.commons.service.JpaQueryHelper;
+import io.rocketbase.commons.service.capability.AppCapabilityJpaPersistenceService;
+import io.rocketbase.commons.service.group.AppGroupJpaPersistenceService;
+import io.rocketbase.commons.service.team.AppTeamJpaPersistenceService;
 import io.rocketbase.commons.util.Nulls;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,24 +19,25 @@ import org.springframework.util.StringUtils;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Predicate;
+import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
-public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJpaEntity>, JpaQueryHelper {
+public class AppUserJpaPersistenceService implements AppUserPersistenceService<AppUserJpaEntity>, JpaQueryHelper {
 
     private final EntityManager entityManager;
     private final SimpleJpaRepository<AppUserJpaEntity, String> repository;
-    private final SimpleJpaRepository<AppGroupJpaEntity, Long> groupRepository;
-    private final SimpleJpaRepository<AppCapabilityJpaEntity, Long> capabilityRepository;
-    private final SimpleJpaRepository<AppTeamJpaEntity, Long> teamRepository;
+    private final AppGroupJpaPersistenceService groupJpaPersistenceService;
+    private final AppCapabilityJpaPersistenceService capabilityJpaPersistenceService;
+    private final AppTeamJpaPersistenceService teamJpaPersistenceService;
 
-    public AppUserJpaServiceImpl(EntityManager entityManager) {
+    public AppUserJpaPersistenceService(EntityManager entityManager,
+                                        AppGroupJpaPersistenceService groupJpaPersistenceService, AppCapabilityJpaPersistenceService capabilityJpaPersistenceService, AppTeamJpaPersistenceService teamJpaPersistenceService) {
         this.entityManager = entityManager;
         repository = new SimpleJpaRepository<>(AppUserJpaEntity.class, entityManager);
-        groupRepository = new SimpleJpaRepository<>(AppGroupJpaEntity.class, entityManager);
-        capabilityRepository = new SimpleJpaRepository<>(AppCapabilityJpaEntity.class, entityManager);
-        teamRepository = new SimpleJpaRepository<>(AppTeamJpaEntity.class, entityManager);
+        this.groupJpaPersistenceService = groupJpaPersistenceService;
+        this.capabilityJpaPersistenceService = capabilityJpaPersistenceService;
+        this.teamJpaPersistenceService = teamJpaPersistenceService;
     }
 
     @Override
@@ -57,6 +61,11 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJ
     @Override
     public Optional<AppUserJpaEntity> findById(String id) {
         return repository.findById(id);
+    }
+
+    @Override
+    public List<AppUserJpaEntity> findAllById(Iterable<String> ids) {
+        return repository.findAllById(ids);
     }
 
     @Override
@@ -114,22 +123,36 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJ
 
     @Override
     public AppUserJpaEntity save(AppUserJpaEntity entity) {
+        prePersist(entity);
+        handleHolder(entity);
+        return repository.save(entity);
+    }
+
+    protected void prePersist(AppUserJpaEntity entity) {
+        if (entity.getId() == null) {
+            entity.setId(UUID.randomUUID().toString());
+        }
+        if (entity.getCreated() == null) {
+            entity.setCreated(Instant.now());
+        }
+    }
+
+    protected void handleHolder(AppUserJpaEntity entity) {
         if (entity.getGroupHolder() != null) {
-            List<AppGroupJpaEntity> lookupGroups = groupRepository.findAllById(entity.getGroupHolder());
+            List<AppGroupJpaEntity> lookupGroups = groupJpaPersistenceService.findAllById(entity.getGroupHolder());
             entity.setGroups(Sets.newHashSet(lookupGroups));
         }
         if (entity.getCapabilityHolder() != null) {
-            List<AppCapabilityJpaEntity> lookupCapabilities = capabilityRepository.findAllById(entity.getCapabilityHolder());
+            List<AppCapabilityJpaEntity> lookupCapabilities = capabilityJpaPersistenceService.findAllById(entity.getCapabilityHolder());
             entity.setCapabilities(Sets.newHashSet(lookupCapabilities));
         }
         if (entity.getActiveTeamHolder() != null) {
-            Optional<AppTeamJpaEntity> lookupTeam = teamRepository.findById(entity.getActiveTeamId());
+            Optional<AppTeamJpaEntity> lookupTeam = teamJpaPersistenceService.findById(entity.getActiveTeamId());
             entity.setActiveTeam(lookupTeam.orElse(null));
             if (!lookupTeam.isPresent()) {
                 log.warn("set activeTeamId: {} not found. set for appUser: {} activeTeam to null", entity.getActiveTeamHolder(), entity.getId());
             }
         }
-        return repository.save(entity);
     }
 
     @Override
@@ -137,13 +160,13 @@ public class AppUserJpaServiceImpl implements AppUserPersistenceService<AppUserJ
         repository.deleteById(id);
     }
 
-    void deleteAll() {
-        repository.deleteAllInBatch();
+    @Override
+    public AppUserJpaEntity initNewInstance() {
+        return new AppUserJpaEntity(UUID.randomUUID().toString());
     }
 
-    protected Set<Long> lookCapabilities(Set<String> capabilities) {
-        Specification<AppCapabilityJpaEntity> specification = (root, criteriaQuery, cb) -> cb.in(root.get(AppCapabilityJpaEntity_.KEY_PATH).in(capabilities));
-        return capabilityRepository.findAll(specification).stream().map(AppCapabilityJpaEntity::getId).collect(Collectors.toSet());
+    void deleteAll() {
+        repository.deleteAllInBatch();
     }
 
 }

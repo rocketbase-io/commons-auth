@@ -1,57 +1,56 @@
 package io.rocketbase.commons.model;
 
-import io.rocketbase.commons.dto.appteam.AppTeamInvite;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.lang.Nullable;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-
-@Document(collection = "invite")
+@Document(collection = "co_group")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = {"id"})
-public class AppInviteMongoEntity implements AppInviteEntity {
+public class AppGroupMongoEntity implements AppGroupEntity {
 
     @Id
     private Long id;
 
+    @Nullable
     @Indexed
-    private String invitor;
-
-    private String message;
-
-    private String firstName;
-
-    private String lastName;
+    private String systemRefId;
 
     @NotNull
-    @Email
-    private String email;
+    private String name;
+
+    private String description;
+
+    @NotNull
+    private Long parentId;
+
+    @NotNull
+    private String namePath;
+
+    private boolean withChildren;
 
     private Set<Long> capabilityIds;
-
-    private Set<Long> groupIds;
-
-    @CreatedDate
-    private Instant created;
-
-    @Indexed
-    private Instant expiration;
 
     @Builder.Default
     private Map<String, String> keyValues = new HashMap<>();
 
-    private AppTeamInvite teamInvite;
+    @CreatedDate
+    private Instant created;
+
+    public AppGroupMongoEntity(Long id) {
+        this.id = id;
+    }
 
 }

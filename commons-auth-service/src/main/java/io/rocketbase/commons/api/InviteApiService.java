@@ -18,12 +18,12 @@ public class InviteApiService implements InviteApi {
 
     @Override
     public AppInviteRead verify(Long inviteId) {
-        return inviteConverter.toRead(appInviteService.verifyInvite(inviteId));
+        return inviteConverter.fromEntity(appInviteService.verifyInvite(inviteId));
     }
 
     @Override
     public AppUserRead transformToUser(ConfirmInviteRequest confirmInvite) {
         AppUserEntity userEntity = appInviteService.confirmInvite(confirmInvite);
-        return userConverter.toRead(userEntity);
+        return userConverter.fromEntity(userEntity);
     }
 }

@@ -33,7 +33,7 @@ public class AuthenticationApiService implements AuthenticationApi, BaseApiServi
         AppUserEntity entity = appUserService.findById(principal.getId())
                 .orElseThrow(NotFoundException::new);
 
-        return userConverter.toRead(entity);
+        return userConverter.fromEntity(entity);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class AuthenticationApiService implements AuthenticationApi, BaseApiServi
     public AppUserRead changeUsername(UsernameChangeRequest usernameChange) {
         CommonsPrincipal principal = getCurrentPrincipal();
         AppUserEntity entity = appUserService.changeUsername(principal.getId(), usernameChange.getNewUsername());
-        return userConverter.toRead(entity);
+        return userConverter.fromEntity(entity);
     }
 
     @Override
@@ -55,28 +55,28 @@ public class AuthenticationApiService implements AuthenticationApi, BaseApiServi
         ExpirationInfo<AppUserEntity> expirationInfo = changeAppUserWithConfirmService.handleEmailChangeRequest(principal.getId(), emailChange, getBaseUrl());
         return ExpirationInfo.<AppUserRead>builder()
                 .expires(expirationInfo.getExpires())
-                .detail(userConverter.toRead(expirationInfo.getDetail()))
+                .detail(userConverter.fromEntity(expirationInfo.getDetail()))
                 .build();
     }
 
     @Override
     public AppUserRead verifyEmail(String verification) {
         AppUserEntity entity = changeAppUserWithConfirmService.confirmEmailChange(verification);
-        return userConverter.toRead(entity);
+        return userConverter.fromEntity(entity);
     }
 
     @Override
     public AppUserRead updateProfile(UserProfile userProfile) {
         AppUserEntity entity = appUserService.patch(getCurrentPrincipal().getId(), AppUserUpdate.builder().profile(userProfile).build());
         applicationEventPublisher.publishEvent(new UpdateProfileEvent(this, entity));
-        return userConverter.toRead(entity);
+        return userConverter.fromEntity(entity);
     }
 
     @Override
     public AppUserRead updateSetting(UserSetting userSetting) {
         AppUserEntity entity = appUserService.patch(getCurrentPrincipal().getId(), AppUserUpdate.builder().setting(userSetting).build());
         applicationEventPublisher.publishEvent(new UpdateSettingEvent(this, entity));
-        return userConverter.toRead(entity);
+        return userConverter.fromEntity(entity);
     }
 
     protected CommonsPrincipal getCurrentPrincipal() {

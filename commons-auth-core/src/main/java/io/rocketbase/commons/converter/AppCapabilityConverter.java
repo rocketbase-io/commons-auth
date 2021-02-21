@@ -3,12 +3,13 @@ package io.rocketbase.commons.converter;
 import io.rocketbase.commons.dto.appcapability.AppCapabilityRead;
 import io.rocketbase.commons.model.AppCapabilityEntity;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class AppCapabilityConverter {
 
-    public AppCapabilityRead toRead(AppCapabilityEntity entity) {
+    public <C extends AppCapabilityEntity> AppCapabilityRead fromEntity(C entity) {
         if (entity == null) {
             return null;
         }
@@ -22,12 +23,12 @@ public class AppCapabilityConverter {
                 .build();
     }
 
-    public List<AppCapabilityRead> toRead(List<AppCapabilityEntity> entities) {
+    public <C extends AppCapabilityEntity> List<AppCapabilityRead> fromEntities(Collection<C> entities) {
         if (entities == null) {
             return null;
         }
         return entities.stream()
-                .map(e -> toRead(e))
+                .map(e -> fromEntity(e))
                 .collect(Collectors.toList());
     }
 }

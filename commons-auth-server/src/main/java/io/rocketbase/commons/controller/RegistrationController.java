@@ -42,7 +42,7 @@ public class RegistrationController implements BaseController {
         ExpirationInfo<AppUserEntity> expirationInfo = registrationService.register(registration, getBaseUrl(request));
         return ResponseEntity.ok(ExpirationInfo.<AppUserRead>builder()
                 .expires(expirationInfo.getExpires())
-                .detail(appUserConverter.toRead(expirationInfo.getDetail()))
+                .detail(appUserConverter.fromEntity(expirationInfo.getDetail()))
                 .build());
     }
 

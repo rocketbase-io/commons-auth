@@ -6,7 +6,6 @@ import io.rocketbase.commons.dto.ExpirationInfo;
 import io.rocketbase.commons.dto.forgot.ForgotPasswordRequest;
 import io.rocketbase.commons.dto.forgot.PerformPasswordResetRequest;
 import io.rocketbase.commons.event.PasswordEvent;
-import io.rocketbase.commons.exception.UnknownUserException;
 import io.rocketbase.commons.exception.VerificationException;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.service.SimpleTokenService;
@@ -16,6 +15,7 @@ import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.util.Nulls;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.util.StringUtils;
 
@@ -27,6 +27,7 @@ import static io.rocketbase.commons.event.PasswordEvent.PasswordProcessType.PROC
 import static io.rocketbase.commons.event.PasswordEvent.PasswordProcessType.REQUEST_RESET;
 import static io.rocketbase.commons.service.user.DefaultAppUserService.FORGOTPW_KV;
 
+@Slf4j
 @RequiredArgsConstructor
 public class DefaultAppUserForgotPasswordService implements AppUserForgotPasswordService {
 
@@ -43,18 +44,24 @@ public class DefaultAppUserForgotPasswordService implements AppUserForgotPasswor
     private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    public ExpirationInfo<AppUserEntity> requestPasswordReset(ForgotPasswordRequest forgotPassword, String baseUrl) {
+    public ExpirationInfo<Void> requestPasswordReset(ForgotPasswordRequest forgotPassword, String baseUrl) {
         AppUserEntity appUser = null;
-        if (forgotPassword.getUsername() != null) {
+        if (!StringUtils.isEmpty(forgotPassword.getUsername())) {
             appUser = appUserService.getByUsername(forgotPassword.getUsername());
-        } else if (forgotPassword.getEmail() != null) {
+        }
+        if (!StringUtils.isEmpty(forgotPassword.getEmail()) && appUser == null) {
             appUser = appUserService.findByEmail(forgotPassword.getEmail().toLowerCase()).orElse(null);
         }
+        Instant expires = Instant.now().plus(authProperties.getPasswordResetExpiration(), ChronoUnit.MINUTES);
+        ExpirationInfo<Void> info = ExpirationInfo.<Void>builder()
+                .expires(expires)
+                .build();
+
         if (appUser == null || !appUser.isEnabled()) {
-            throw new UnknownUserException(!StringUtils.isEmpty(forgotPassword.getEmail()), !StringUtils.isEmpty(forgotPassword.getUsername()));
+            log.debug("requested password reset for unkown username: {} / email: {}", forgotPassword.getUsername(), forgotPassword.getEmail());
+            return info;
         }
 
-        Instant expires = Instant.now().plus(authProperties.getPasswordResetExpiration(), ChronoUnit.MINUTES);
         String token = SimpleTokenService.generateToken(appUser.getUsername(), authProperties.getPasswordResetExpiration());
         appUserService.updateKeyValues(appUser.getUsername(), ImmutableMap.of(FORGOTPW_KV, token));
 
@@ -62,10 +69,7 @@ public class DefaultAppUserForgotPasswordService implements AppUserForgotPasswor
 
         applicationEventPublisher.publishEvent(new PasswordEvent(this, appUser, REQUEST_RESET));
 
-        return ExpirationInfo.<AppUserEntity>builder()
-                .expires(expires)
-                .detail(appUser)
-                .build();
+        return info;
     }
 
     @Override

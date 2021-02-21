@@ -82,7 +82,7 @@ public class AuthenticationController implements BaseController {
         AppUserEntity entity = appUserService.getByUsername(authentication.getName());
         applicationEventPublisher.publishEvent(new RequestMeEvent(this, entity));
         activeUserStore.addUser(appUserTokenService.lookup(entity));
-        return ResponseEntity.ok(appUserConverter.toRead(entity));
+        return ResponseEntity.ok(appUserConverter.fromEntity(entity));
     }
 
     @RequestMapping(value = "/auth/change-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
@@ -100,7 +100,7 @@ public class AuthenticationController implements BaseController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         AppUserEntity entity = appUserService.changeUsername(((CommonsAuthenticationToken) authentication).getId(), usernameChange.getNewUsername());
-        return ResponseEntity.ok(appUserConverter.toRead(entity));
+        return ResponseEntity.ok(appUserConverter.fromEntity(entity));
     }
 
     @RequestMapping(value = "/auth/change-email", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
@@ -111,14 +111,14 @@ public class AuthenticationController implements BaseController {
         ExpirationInfo<AppUserEntity> expirationInfo = changeAppUserWithConfirmService.handleEmailChangeRequest(((CommonsAuthenticationToken) authentication).getId(), emailChange, getBaseUrl(request));
         return ResponseEntity.ok(ExpirationInfo.<AppUserRead>builder()
                 .expires(expirationInfo.getExpires())
-                .detail(appUserConverter.toRead(expirationInfo.getDetail()))
+                .detail(appUserConverter.fromEntity(expirationInfo.getDetail()))
                 .build());
     }
 
     @RequestMapping(value = "/auth/verify-email", method = RequestMethod.GET)
     public ResponseEntity<AppUserRead> changeEmail(@RequestParam("verification") String verification) {
         AppUserEntity entity = changeAppUserWithConfirmService.confirmEmailChange(verification);
-        return ResponseEntity.ok(appUserConverter.toRead(entity));
+        return ResponseEntity.ok(appUserConverter.fromEntity(entity));
     }
 
     @RequestMapping(value = "/auth/update-profile", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
@@ -131,7 +131,7 @@ public class AuthenticationController implements BaseController {
         AppUserEntity entity = appUserService.patch(username, AppUserUpdate.builder().profile(profile).build());
         applicationEventPublisher.publishEvent(new UpdateProfileEvent(this, entity));
 
-        return ResponseEntity.ok(appUserConverter.toRead(entity));
+        return ResponseEntity.ok(appUserConverter.fromEntity(entity));
     }
 
     @RequestMapping(value = "/auth/update-setting", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
@@ -144,7 +144,7 @@ public class AuthenticationController implements BaseController {
         AppUserEntity entity = appUserService.patch(username, AppUserUpdate.builder().setting(setting).build());
         applicationEventPublisher.publishEvent(new UpdateSettingEvent(this, entity));
 
-        return ResponseEntity.ok(appUserConverter.toRead(entity));
+        return ResponseEntity.ok(appUserConverter.fromEntity(entity));
     }
 
     @RequestMapping(value = "/auth/refresh", method = RequestMethod.GET)

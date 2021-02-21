@@ -4,6 +4,7 @@ import io.rocketbase.commons.model.embedded.UserProfileJpaEmbedded;
 import io.rocketbase.commons.model.embedded.UserSettingJpaEmbedded;
 import io.rocketbase.commons.model.user.UserProfile;
 import io.rocketbase.commons.model.user.UserSetting;
+import io.rocketbase.commons.service.user.AppUserJpaPersistenceService;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
@@ -14,6 +15,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -65,7 +67,7 @@ public class AppUserJpaEntity implements AppUserEntity {
 
     /**
      * used only to keep api compatible with mongo<br>
-     * {@link io.rocketbase.commons.service.user.AppUserJpaServiceImpl} take care of holder and transpiles it to capabilities
+     * {@link AppUserJpaPersistenceService} take care of holder and transpiles it to capabilities
      */
     @Transient
     private Set<Long> capabilityHolder;
@@ -112,7 +114,7 @@ public class AppUserJpaEntity implements AppUserEntity {
 
     /**
      * used only to keep api compatible with mongo<br>
-     * {@link io.rocketbase.commons.service.user.AppUserJpaServiceImpl} take care of holder and transpiles it to groups
+     * {@link AppUserJpaPersistenceService} take care of holder and transpiles it to groups
      */
     @Transient
     private Set<Long> groupHolder;
@@ -133,7 +135,7 @@ public class AppUserJpaEntity implements AppUserEntity {
 
     /**
      * used only to keep api compatible with mongo<br>
-     * {@link io.rocketbase.commons.service.user.AppUserJpaServiceImpl} take care of holder and transpiles it to activeTeam
+     * {@link AppUserJpaPersistenceService} take care of holder and transpiles it to activeTeam
      */
     @Transient
     private Long activeTeamHolder;
@@ -185,5 +187,15 @@ public class AppUserJpaEntity implements AppUserEntity {
 
     public AppUserJpaEntity(String id) {
         this.id = id;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if (id == null) {
+            id = UUID.randomUUID().toString();
+        }
+        if (created == null) {
+            created = Instant.now();
+        }
     }
 }

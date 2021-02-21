@@ -80,7 +80,7 @@ public class DefaultAppInviteService implements AppInviteService {
         // validate username, password + email
         validationService.registrationIsValid(request.getUsername(), request.getPassword(), request.getEmail());
 
-        // TODO: Memebershop needs to get handeled here
+        // TODO: Memebership needs to get handeled here?
         AppUserCreate userCreate = AppUserCreate.builder()
                 .username(request.getUsername().toLowerCase())
                 .password(request.getPassword())
@@ -88,8 +88,8 @@ public class DefaultAppInviteService implements AppInviteService {
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .keyValues(inviteEntity.getKeyValues())
-                .capabilityIds(inviteEntity.getCapabilities())
-                .groupIds(inviteEntity.getGroups())
+                .capabilityIds(inviteEntity.getCapabilityIds())
+                .groupIds(inviteEntity.getGroupIds())
                 .enabled(true)
                 .build();
 

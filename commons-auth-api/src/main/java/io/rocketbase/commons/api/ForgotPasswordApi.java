@@ -7,7 +7,10 @@ import io.rocketbase.commons.dto.forgot.PerformPasswordResetRequest;
 
 public interface ForgotPasswordApi {
 
-    ExpirationInfo<AppUserRead> forgotPassword(ForgotPasswordRequest forgotPassword);
+    /**
+     * @return in any case an ExpirationInfo - whether the user was found or not - to hide user info from scrapers
+     */
+    ExpirationInfo<Void> forgotPassword(ForgotPasswordRequest forgotPassword);
 
     AppUserRead resetPassword(PerformPasswordResetRequest performPasswordReset);
 

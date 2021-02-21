@@ -1,57 +1,52 @@
 package io.rocketbase.commons.model;
 
-import io.rocketbase.commons.dto.appteam.AppTeamInvite;
+import io.rocketbase.commons.dto.appteam.AppTeamRole;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.lang.Nullable;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 
-@Document(collection = "invite")
+@Document(collection = "co_team")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = {"id"})
-public class AppInviteMongoEntity implements AppInviteEntity {
+public class AppTeamMongoEntity implements AppTeamEntity {
 
     @Id
     private Long id;
 
+    @Nullable
     @Indexed
-    private String invitor;
-
-    private String message;
-
-    private String firstName;
-
-    private String lastName;
+    private String systemRefId;
 
     @NotNull
-    @Email
-    private String email;
+    private String name;
 
-    private Set<Long> capabilityIds;
+    private String description;
 
-    private Set<Long> groupIds;
+    private boolean personal;
 
     @CreatedDate
     private Instant created;
 
-    @Indexed
-    private Instant expiration;
-
     @Builder.Default
     private Map<String, String> keyValues = new HashMap<>();
 
-    private AppTeamInvite teamInvite;
+    @Builder.Default
+    private Map<String, AppTeamRole> members = new HashMap<>();
+
+    public AppTeamMongoEntity(Long id) {
+        this.id = id;
+    }
 
 }

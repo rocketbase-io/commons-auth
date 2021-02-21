@@ -11,7 +11,7 @@ public interface AppUserConverter<E extends AppUserEntity> {
 
     AppUserToken toToken(E entity);
 
-    AppUserRead toRead(E entity);
+    AppUserRead fromEntity(E entity);
 
         /*
         if (entity == null) {
@@ -32,12 +32,12 @@ public interface AppUserConverter<E extends AppUserEntity> {
                 .build();
       */
 
-    default List<AppUserRead> toRead(List<E> entities) {
+    default List<AppUserRead> fromEntities(List<E> entities) {
         if (entities == null) {
             return null;
         }
         return entities.stream()
-                .map(e -> toRead(e))
+                .map(e -> fromEntity(e))
                 .collect(Collectors.toList());
     }
 

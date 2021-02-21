@@ -30,10 +30,10 @@ import static org.hamcrest.Matchers.notNullValue;
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
-public class AppInviteJpaServiceImplTest {
+public class AppInviteJpaPersistenceServiceTest {
 
     @Resource
-    private AppInviteJpaServiceImpl service;
+    private AppInviteJpaPersistenceService service;
 
     private static final List<Long> ids = Arrays.asList(1688465485600660000L, 1688465485600770000L, 1688465485600880000L);
 

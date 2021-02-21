@@ -4,6 +4,7 @@ import io.rocketbase.commons.dto.ErrorResponse;
 import io.rocketbase.commons.dto.authentication.LoginResponse;
 import io.rocketbase.commons.dto.authentication.OAuthLoginResponse;
 import io.rocketbase.commons.exception.BadRequestException;
+import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.model.TokenParseResult;
 import io.rocketbase.commons.security.JwtTokenService;
@@ -59,7 +60,7 @@ public class OAuthLoginRefreshController {
             // validate jwt
             TokenParseResult parsedToken = jwtTokenService.parseToken(oAuthRequest.getRefreshToken());
             // lookup user with rights
-            AppUserToken token = appUserTokenService.getByUsername(parsedToken.getUser().getUsername());
+            AppUserToken token = appUserTokenService.findByUsername(parsedToken.getUser().getUsername()).orElseThrow(NotFoundException::new);
             // generate accessToken
             String accessToken = jwtTokenService.generateAccessToken(token);
             activeUserStore.addUser(token);

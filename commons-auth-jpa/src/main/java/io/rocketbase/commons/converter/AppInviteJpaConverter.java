@@ -6,7 +6,7 @@ import io.rocketbase.commons.model.AppInviteJpaEntity;
 public class AppInviteJpaConverter implements AppInviteConverter<AppInviteJpaEntity> {
 
     @Override
-    public AppInviteRead toRead(AppInviteJpaEntity entity) {
+    public AppInviteRead fromEntity(AppInviteJpaEntity entity) {
         return null;
     }
 }

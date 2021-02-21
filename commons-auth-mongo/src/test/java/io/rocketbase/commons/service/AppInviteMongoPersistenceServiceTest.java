@@ -28,7 +28,7 @@ import static org.hamcrest.Matchers.notNullValue;
 @Slf4j
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
-public class AppInviteMongoServiceImplTest {
+public class AppInviteMongoPersistenceServiceTest {
 
     @Resource
     private AppInvitePersistenceService<AppInviteMongoEntity> service;

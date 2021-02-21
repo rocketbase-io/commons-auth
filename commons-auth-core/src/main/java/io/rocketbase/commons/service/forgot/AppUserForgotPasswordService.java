@@ -8,7 +8,12 @@ import io.rocketbase.commons.service.FeedbackActionService;
 
 public interface AppUserForgotPasswordService extends FeedbackActionService {
 
-    ExpirationInfo<AppUserEntity> requestPasswordReset(ForgotPasswordRequest forgotPassword, String baseUrl);
+    /**
+     * @param forgotPassword username or email to look for
+     * @param baseUrl        will be used as baseUrl for emails
+     * @return in any case an ExpirationInfo - whether the user was found or not - to hide user info from scrapers
+     */
+    ExpirationInfo<Void> requestPasswordReset(ForgotPasswordRequest forgotPassword, String baseUrl);
 
     AppUserEntity resetPassword(PerformPasswordResetRequest performPasswordReset);
 

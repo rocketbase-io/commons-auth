@@ -1,9 +1,11 @@
-package io.rocketbase.commons.service;
+package io.rocketbase.commons.service.invite;
 
 import com.mongodb.client.result.DeleteResult;
+import io.rocketbase.commons.dto.appinvite.InviteRequest;
 import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
+import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppInviteMongoEntity;
-import io.rocketbase.commons.service.invite.AppInvitePersistenceService;
+import io.rocketbase.commons.service.MongoQueryHelper;
 import io.rocketbase.commons.util.Nulls;
 import io.rocketbase.commons.util.Snowflake;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
-public class AppInviteMongoServiceImpl implements AppInvitePersistenceService<AppInviteMongoEntity> {
+public class AppInviteMongoPersistenceService implements AppInvitePersistenceService<AppInviteMongoEntity>, MongoQueryHelper {
 
     private final MongoTemplate mongoTemplate;
 
@@ -61,14 +63,6 @@ public class AppInviteMongoServiceImpl implements AppInvitePersistenceService<Ap
         return result;
     }
 
-    Criteria buildRegexCriteria(String where, String text) {
-        String pattern = text.trim() + "";
-        if (!pattern.contains(".*")) {
-            pattern = ".*" + pattern + ".*";
-        }
-        return Criteria.where(where).regex(pattern, "i");
-    }
-
     @Override
     public AppInviteMongoEntity save(AppInviteMongoEntity entity) {
         mongoTemplate.save(entity);
@@ -76,9 +70,13 @@ public class AppInviteMongoServiceImpl implements AppInvitePersistenceService<Ap
     }
 
     @Override
-    public Optional<AppInviteMongoEntity> findById(String id) {
-        AppInviteMongoEntity entity = mongoTemplate.findOne(new Query(Criteria.where("_id")
-                .is(id)), AppInviteMongoEntity.class);
+    public AppInviteEntity invite(InviteRequest request, Instant expiration) {
+        return null;
+    }
+
+    @Override
+    public Optional<AppInviteMongoEntity> findById(Long id) {
+        AppInviteMongoEntity entity = mongoTemplate.findOne(new Query(Criteria.where("_id").is(id)), AppInviteMongoEntity.class);
         if (entity != null) {
             return Optional.of(entity);
         }
@@ -86,18 +84,17 @@ public class AppInviteMongoServiceImpl implements AppInvitePersistenceService<Ap
     }
 
     @Override
-    public long count() {
-        return mongoTemplate.count(new Query(), AppInviteMongoEntity.class);
+    public List<AppInviteMongoEntity> findAllById(Iterable<Long> ids) {
+        return mongoTemplate.find(new Query(Criteria.where("_id")
+                .in(ids)), AppInviteMongoEntity.class);
     }
 
     @Override
-    public void delete(AppInviteMongoEntity entity) {
-        mongoTemplate.remove(new Query(Criteria.where("_id")
-                .is(entity.getId())), AppInviteMongoEntity.class);
+    public void delete(Long id) {
+        mongoTemplate.remove(new Query(Criteria.where("_id").is(id)), AppInviteMongoEntity.class);
     }
 
-    @Override
-    public void deleteAll() {
+    void deleteAll() {
         mongoTemplate.findAllAndRemove(new Query(), AppInviteMongoEntity.class);
     }
 
@@ -106,8 +103,8 @@ public class AppInviteMongoServiceImpl implements AppInvitePersistenceService<Ap
         return AppInviteMongoEntity.builder()
                 .id(snowflake.nextId())
                 .created(Instant.now())
-                .capabilities(new HashSet<>())
-                .groups(new HashSet<>())
+                .capabilityIds(new HashSet<>())
+                .groupIds(new HashSet<>())
                 .build();
     }
 

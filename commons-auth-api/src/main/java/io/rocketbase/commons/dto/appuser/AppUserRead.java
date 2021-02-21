@@ -45,6 +45,8 @@ public class AppUserRead implements AppUserReference, Serializable {
 
     private boolean enabled;
 
+    private boolean locked;
+
     private Instant created;
 
     @Nullable

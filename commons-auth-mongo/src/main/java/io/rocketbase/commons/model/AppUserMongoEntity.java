@@ -16,13 +16,13 @@ import java.util.Map;
 import java.util.Set;
 
 
-@Document(collection = "user")
+@Document(collection = "co_user")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = {"id"})
-public class AppUserMongoEntity implements AppUserEntity<Long,Long, Long> {
+public class AppUserMongoEntity implements AppUserEntity {
 
     @Id
     private String id;
@@ -46,13 +46,15 @@ public class AppUserMongoEntity implements AppUserEntity<Long,Long, Long> {
 
     private UserSetting setting;
 
-    private Set<Long> capabilities;
+    private Set<Long> capabilityIds;
 
-    private Set<Long> groups;
+    private Set<Long> groupIds;
 
-    private Long activeTeam;
+    private Long activeTeamId;
 
     private boolean enabled;
+
+    private boolean locked;
 
     @CreatedDate
     private Instant created;

@@ -1,11 +1,12 @@
 package io.rocketbase.commons.controller;
 
 import io.rocketbase.commons.converter.AppInviteConverter;
-import io.rocketbase.commons.converter.KeyValuesConverter;
+import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.dto.appinvite.AppInviteRead;
 import io.rocketbase.commons.dto.appinvite.ConfirmInviteRequest;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.model.AppInviteEntity;
+import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.service.invite.AppInviteService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -31,7 +32,7 @@ public class InviteController implements BaseController {
     private AppInviteConverter appInviteConverter;
 
     @Resource
-    private KeyValuesConverter keyValuesConverter;
+    private AppUserConverter appUserConverter;
 
     @RequestMapping(method = RequestMethod.GET, path = "/auth/invite")
     @ResponseBody
@@ -44,7 +45,7 @@ public class InviteController implements BaseController {
     @ResponseBody
     public ResponseEntity<AppUserRead> transformToUser(@RequestBody @NotNull @Validated ConfirmInviteRequest confirmInviteRequest) {
         AppUserEntity entity = appInviteService.confirmInvite(confirmInviteRequest);
-        return ResponseEntity.ok(keyValuesConverter.fromEntity(entity));
+        return ResponseEntity.ok(appUserConverter.fromEntity(entity));
     }
 
 }

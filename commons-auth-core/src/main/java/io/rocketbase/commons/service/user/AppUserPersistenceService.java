@@ -5,11 +5,14 @@ import io.rocketbase.commons.model.AppUserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface AppUserPersistenceService<E extends AppUserEntity> {
 
     Optional<E> findById(String id);
+
+    List<E> findAllById(Iterable<String> ids);
 
     Optional<E> findByUsername(String username);
 

@@ -20,12 +20,12 @@ public class AppInviteApiService implements AppInviteApi, BaseApiService {
     @Override
     public PageableResult<AppInviteRead> find(QueryAppInvite query, Pageable pageable) {
         Page<AppInviteEntity> page = appInviteService.findAll(query, pageable);
-        return PageableResult.contentPage(converter.toRead(page.getContent()), page);
+        return PageableResult.contentPage(converter.fromEntities(page.getContent()), page);
     }
 
     @Override
     public AppInviteRead invite(InviteRequest inviteRequest) {
-        return converter.toRead(appInviteService.createInvite(inviteRequest, getBaseUrl()));
+        return converter.fromEntity(appInviteService.createInvite(inviteRequest, getBaseUrl()));
     }
 
     @Override

@@ -34,17 +34,13 @@ public class ForgotPasswordController implements BaseController {
     private AppUserConverter appUserConverter;
 
     @RequestMapping(value = "/auth/forgot-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<ExpirationInfo<AppUserRead>> forgotPassword(HttpServletRequest request, @RequestBody @NotNull @Validated ForgotPasswordRequest forgotPassword) {
-        ExpirationInfo<AppUserEntity> expirationInfo = appUserForgotPasswordService.requestPasswordReset(forgotPassword, getBaseUrl(request));
-        return ResponseEntity.ok(ExpirationInfo.<AppUserRead>builder()
-                .expires(expirationInfo.getExpires())
-                .detail(appUserConverter.toRead(expirationInfo.getDetail()))
-                .build());
+    public ResponseEntity<ExpirationInfo<Void>> forgotPassword(HttpServletRequest request, @RequestBody @NotNull @Validated ForgotPasswordRequest forgotPassword) {
+        return ResponseEntity.ok(appUserForgotPasswordService.requestPasswordReset(forgotPassword, getBaseUrl(request)));
     }
 
     @RequestMapping(value = "/auth/reset-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<AppUserRead> resetPassword(@RequestBody @NotNull @Validated PerformPasswordResetRequest performPasswordReset) {
         AppUserEntity entity = appUserForgotPasswordService.resetPassword(performPasswordReset);
-        return ResponseEntity.ok(appUserConverter.toRead(entity));
+        return ResponseEntity.ok(appUserConverter.fromEntity(entity));
     }
 }

@@ -1,15 +1,12 @@
 package io.rocketbase.commons.service.email;
 
 import com.google.common.collect.Sets;
-import io.rocketbase.commons.dto.appteam.AppTeamInvite;
 import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppUserReference;
 import io.rocketbase.commons.model.SimpleAppUserReference;
 import io.rocketbase.commons.model.user.SimpleUserProfile;
 import io.rocketbase.commons.test.BaseIntegrationTest;
 import io.rocketbase.commons.test.model.SimpleAppInvite;
-import lombok.Builder;
-import lombok.Data;
 import org.junit.Test;
 import org.simplejavamail.api.email.Email;
 import org.simplejavamail.api.mailer.Mailer;
@@ -19,9 +16,6 @@ import org.springframework.data.util.Pair;
 
 import javax.annotation.Resource;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
@@ -118,7 +112,7 @@ public class MailContentConfigTest extends BaseIntegrationTest {
                 .invitor("invitor")
                 .message("My longer message from the other side\n" +
                         "Try also a linebreak :)")
-                .capabilities(Sets.newHashSet(1L, 2L))
+                .capabilityIds(Sets.newHashSet(1L, 2L))
                 .expiration(Instant.now().plusSeconds(600))
                 .build();
 
@@ -155,23 +149,6 @@ public class MailContentConfigTest extends BaseIntegrationTest {
         // then
         assertThat(htmlTextEmail, notNullValue());
         assertThat(subject, notNullValue());
-    }
-
-    @Data
-    @Builder
-    public static class AppInviteTestEntity implements AppInviteEntity<String, String> {
-        private Long id;
-        private String invitor;
-        private String message;
-        private String firstName;
-        private String lastName;
-        private String email;
-        private Set<String> capabilities;
-        private Map<String, String> keyValues = new HashMap<>();
-        private Set<String> groups;
-        private Instant expiration;
-        private Instant created;
-        private AppTeamInvite teamInvite;
     }
 
 }

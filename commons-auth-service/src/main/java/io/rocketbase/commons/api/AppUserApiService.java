@@ -29,7 +29,7 @@ public class AppUserApiService implements AppUserApi, BaseApiService {
     @Override
     public PageableResult<AppUserRead> find(QueryAppUser query, Pageable pageable) {
         Page<AppUserEntity> page = appUserService.findAll(query, pageable);
-        return PageableResult.contentPage(userConverter.toRead(page.getContent()), page);
+        return PageableResult.contentPage(userConverter.fromEntities(page.getContent()), page);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class AppUserApiService implements AppUserApi, BaseApiService {
         validationService.registrationIsValid(create.getUsername(), create.getPassword(), create.getEmail());
 
         AppUserEntity entity = appUserService.initializeUser(create);
-        return userConverter.toRead(entity);
+        return userConverter.fromEntity(entity);
     }
 
     @Override
@@ -45,13 +45,13 @@ public class AppUserApiService implements AppUserApi, BaseApiService {
         validationService.passwordIsValid("resetPassword", reset.getResetPassword());
 
         AppUserEntity entity = appUserService.updatePasswordUnchecked(usernameOrId, reset.getResetPassword());
-        return userConverter.toRead(entity);
+        return userConverter.fromEntity(entity);
     }
 
     @Override
     public AppUserRead patch(String usernameOrId, AppUserUpdate update) {
         AppUserEntity entity = appUserService.patch(usernameOrId, update);
-        return userConverter.toRead(entity);
+        return userConverter.fromEntity(entity);
     }
 
     @Override
@@ -62,6 +62,6 @@ public class AppUserApiService implements AppUserApi, BaseApiService {
     @Override
     public AppInviteRead invite(InviteRequest inviteRequest) {
         AppInviteEntity invite = appInviteService.createInvite(inviteRequest, getBaseUrl());
-        return inviteConverter.toRead(invite);
+        return inviteConverter.fromEntity(invite);
     }
 }
