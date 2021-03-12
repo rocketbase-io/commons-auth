@@ -17,6 +17,8 @@ import java.io.Serializable;
 @EqualsAndHashCode(of = "id")
 public class AppCapabilityShort implements Serializable {
 
+    public static AppCapabilityShort ROOT = new AppCapabilityShort(6291457024L, null);
+
     private Long id;
 
     /**

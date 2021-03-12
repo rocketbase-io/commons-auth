@@ -17,6 +17,9 @@ import java.io.Serializable;
 @EqualsAndHashCode(of = "id")
 public class AppGroupShort implements Serializable {
 
+
+    public static AppGroupShort ROOT = new AppGroupShort(6291457024L, null);
+
     private Long id;
 
     /**

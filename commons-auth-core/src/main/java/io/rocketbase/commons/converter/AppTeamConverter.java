@@ -23,6 +23,7 @@ public class AppTeamConverter {
                 .personal(entity.isPersonal())
                 .created(entity.getCreated())
                 .keyValues(KeyValueConverter.filterInvisibleKeys(entity.getKeyValues()))
+                .created(entity.getCreated())
                 .build();
     }
 

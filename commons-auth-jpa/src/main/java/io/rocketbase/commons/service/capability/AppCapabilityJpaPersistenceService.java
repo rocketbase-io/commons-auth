@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 import javax.persistence.EntityManager;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,7 +44,14 @@ public class AppCapabilityJpaPersistenceService implements AppCapabilityPersiste
 
     @Override
     public AppCapabilityJpaEntity save(AppCapabilityJpaEntity entity) {
-        return null;
+        if (entity.getId() == null) {
+            entity.setId(snowflake.nextId());
+        }
+        if (entity.getCreated() == null) {
+            entity.setCreated(Instant.now());
+        }
+
+        return repository.save(entity);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package io.rocketbase.commons.service.team;
 
-import io.rocketbase.commons.dto.appgroup.QueryAppGroup;
+import io.rocketbase.commons.dto.appteam.QueryAppTeam;
 import io.rocketbase.commons.model.AppTeamJpaEntity;
 import io.rocketbase.commons.service.JpaQueryHelper;
 import io.rocketbase.commons.util.Snowflake;
@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 import javax.persistence.EntityManager;
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 public class AppTeamJpaPersistenceService implements AppTeamPersistenceService<AppTeamJpaEntity>, JpaQueryHelper {
@@ -30,13 +32,25 @@ public class AppTeamJpaPersistenceService implements AppTeamPersistenceService<A
     }
 
     @Override
-    public Page<AppTeamJpaEntity> findAll(QueryAppGroup query, Pageable pageable) {
+    public List<AppTeamJpaEntity> findAllById(Iterable<Long> ids) {
+        return repository.findAllById(ids);
+    }
+
+    @Override
+    public Page<AppTeamJpaEntity> findAll(QueryAppTeam query, Pageable pageable) {
         return null;
     }
 
     @Override
     public AppTeamJpaEntity save(AppTeamJpaEntity entity) {
-        return null;
+        if (entity.getId() == null) {
+            entity.setId(snowflake.nextId());
+        }
+        if (entity.getCreated() == null) {
+            entity.setCreated(Instant.now());
+        }
+
+        return repository.save(entity);
     }
 
     @Override

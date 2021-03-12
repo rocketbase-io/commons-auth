@@ -6,7 +6,7 @@ import io.rocketbase.commons.Application;
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.model.AppUserJpaEntity;
 import io.rocketbase.commons.model.user.SimpleUserProfile;
-import io.rocketbase.commons.test.model.SimpleAppUser;
+import io.rocketbase.commons.test.model.SimpleAppUserEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +40,7 @@ public class AppUserJpaPersistenceServiceTest {
 
     @Before
     public void beforeEachTest() {
-        service.saveDto(SimpleAppUser.builder()
+        service.saveDto(SimpleAppUserEntity.builder()
                 .id("401fb225-057e-4e0a-a0ff-e99e76030d52")
                 .username("marten")
                 .profile(SimpleUserProfile.builder()
@@ -54,7 +54,7 @@ public class AppUserJpaPersistenceServiceTest {
                 .created(Instant.now())
                 .keyValues(ImmutableMap.of("workspace", "1"))
                 .build());
-        service.saveDto(SimpleAppUser.builder()
+        service.saveDto(SimpleAppUserEntity.builder()
                 .id("c3c58d60-e948-442f-9783-c0341c65a367")
                 .username("niels")
                 .profile(SimpleUserProfile.builder()
@@ -71,7 +71,7 @@ public class AppUserJpaPersistenceServiceTest {
                         .put("language", "en")
                         .build())
                 .build());
-        service.saveDto(SimpleAppUser.builder()
+        service.saveDto(SimpleAppUserEntity.builder()
                 .id("d74678ea-6689-4c6f-a055-e275b4a2a61c")
                 .username("sample")
                 .profile(SimpleUserProfile.builder()
@@ -84,7 +84,7 @@ public class AppUserJpaPersistenceServiceTest {
                 .enabled(false)
                 .created(Instant.now())
                 .build());
-        service.saveDto(SimpleAppUser.builder()
+        service.saveDto(SimpleAppUserEntity.builder()
                 .id("f55e3176-3fca-4100-bb26-853106269fb1")
                 .username("service")
                 .profile(SimpleUserProfile.builder()

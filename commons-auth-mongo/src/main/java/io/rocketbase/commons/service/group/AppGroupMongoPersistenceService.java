@@ -6,14 +6,18 @@ import io.rocketbase.commons.service.MongoQueryHelper;
 import io.rocketbase.commons.util.Snowflake;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
 public class AppGroupMongoPersistenceService implements AppGroupPersistenceService<AppGroupMongoEntity>, MongoQueryHelper {
@@ -39,11 +43,52 @@ public class AppGroupMongoPersistenceService implements AppGroupPersistenceServi
 
     @Override
     public Page<AppGroupMongoEntity> findAll(QueryAppGroup query, Pageable pageable) {
-        return null;
+
+        List<AppGroupMongoEntity> entities = mongoTemplate.find(getQuery(query).with(pageable), AppGroupMongoEntity.class);
+        long total = mongoTemplate.count(getQuery(query), AppGroupMongoEntity.class);
+
+        return new PageImpl<>(entities, pageable, total);
+    }
+
+    Query getQuery(QueryAppGroup query) {
+        Query result = new Query();
+        if (query != null) {
+            if (!StringUtils.isEmpty(query.getNamePath())) {
+                result.addCriteria(buildRegexCriteria("namePath", query.getNamePath()));
+            }
+            if (!StringUtils.isEmpty(query.getSystemRefId())) {
+                result.addCriteria(buildRegexCriteria("systemRefId", query.getSystemRefId()));
+            }
+            if (!StringUtils.isEmpty(query.getName())) {
+                result.addCriteria(buildRegexCriteria("name", query.getName()));
+            }
+            if (query.getParentIds() != null && !query.getParentIds().isEmpty()) {
+                result.addCriteria(Criteria.where("parentId").in(query.getParentIds()));
+            }
+            if (!StringUtils.isEmpty(query.getDescription())) {
+                result.addCriteria(buildRegexCriteria("description", query.getDescription()));
+            }
+            if (query.getIds() != null && !query.getIds().isEmpty()) {
+                result.addCriteria(Criteria.where("_id").in(query.getIds()));
+            }
+            if (query.getCapabilityIds() != null && !query.getCapabilityIds().isEmpty()) {
+                result.addCriteria(Criteria.where("capabilityIds").in(query.getCapabilityIds()));
+            }
+            if (query.getKeyValues() != null && !query.getKeyValues().isEmpty()) {
+                for (Map.Entry<String, String> kv : query.getKeyValues().entrySet()) {
+                    Pattern valuePattern = Pattern.compile(kv.getValue(), Pattern.CASE_INSENSITIVE);
+                    result.addCriteria(Criteria.where("keyValueMap." + kv.getKey()).is(valuePattern));
+                }
+            }
+        }
+        return result;
     }
 
     @Override
     public AppGroupMongoEntity save(AppGroupMongoEntity entity) {
+        if (entity.getId() == null) {
+            entity.setId(snowflake.nextId());
+        }
         mongoTemplate.save(entity);
         return entity;
     }

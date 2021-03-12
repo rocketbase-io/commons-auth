@@ -13,25 +13,6 @@ public interface AppUserConverter<E extends AppUserEntity> {
 
     AppUserRead fromEntity(E entity);
 
-        /*
-        if (entity == null) {
-            return null;
-        }
-        return AppUserRead.builder()
-                .id(entity.getId())
-                .username(entity.getUsername())
-                .firstName(entity.getFirstName())
-                .lastName(entity.getLastName())
-                .email(entity.getEmail())
-                .avatar(entity.getAvatar())
-                .roles(RolesAuthoritiesConverter.convertRoles(entity.getRoles()))
-                .keyValues(filterInvisibleKeys(entity.getKeyValues()))
-                .enabled(entity.isEnabled())
-                .created(entity.getCreated())
-                .lastLogin(entity.getLastLogin())
-                .build();
-      */
-
     default List<AppUserRead> fromEntities(List<E> entities) {
         if (entities == null) {
             return null;

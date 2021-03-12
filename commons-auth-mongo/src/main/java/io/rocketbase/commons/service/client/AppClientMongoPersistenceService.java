@@ -1,7 +1,7 @@
-package io.rocketbase.commons.service.capability;
+package io.rocketbase.commons.service.client;
 
-import io.rocketbase.commons.dto.appcapability.QueryAppCapability;
-import io.rocketbase.commons.model.AppCapabilityMongoEntity;
+import io.rocketbase.commons.dto.appclient.QueryAppClient;
+import io.rocketbase.commons.model.AppClientMongoEntity;
 import io.rocketbase.commons.service.MongoQueryHelper;
 import io.rocketbase.commons.util.Snowflake;
 import lombok.RequiredArgsConstructor;
@@ -18,15 +18,15 @@ import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class AppCapabilityMongoPersistenceService implements AppCapabilityPersistenceService<AppCapabilityMongoEntity>, MongoQueryHelper {
+public class AppClientMongoPersistenceService implements AppClientPersistenceService<AppClientMongoEntity>, MongoQueryHelper {
 
     private final MongoTemplate mongoTemplate;
 
     private final Snowflake snowflake;
 
     @Override
-    public Optional<AppCapabilityMongoEntity> findById(Long id) {
-        AppCapabilityMongoEntity entity = mongoTemplate.findOne(new Query(Criteria.where("_id").is(id)), AppCapabilityMongoEntity.class);
+    public Optional<AppClientMongoEntity> findById(Long id) {
+        AppClientMongoEntity entity = mongoTemplate.findOne(new Query(Criteria.where("_id").is(id)), AppClientMongoEntity.class);
         if (entity != null) {
             return Optional.of(entity);
         }
@@ -34,45 +34,44 @@ public class AppCapabilityMongoPersistenceService implements AppCapabilityPersis
     }
 
     @Override
-    public List<AppCapabilityMongoEntity> findAllById(Iterable<Long> ids) {
+    public List<AppClientMongoEntity> findAllById(Iterable<Long> ids) {
         return mongoTemplate.find(new Query(Criteria.where("_id")
-                .in(ids)), AppCapabilityMongoEntity.class);
+                .in(ids)), AppClientMongoEntity.class);
     }
 
     @Override
-    public Page<AppCapabilityMongoEntity> findAll(QueryAppCapability query, Pageable pageable) {
+    public Page<AppClientMongoEntity> findAll(QueryAppClient query, Pageable pageable) {
 
-        List<AppCapabilityMongoEntity> entities = mongoTemplate.find(getQuery(query).with(pageable), AppCapabilityMongoEntity.class);
-        long total = mongoTemplate.count(getQuery(query), AppCapabilityMongoEntity.class);
+        List<AppClientMongoEntity> entities = mongoTemplate.find(getQuery(query).with(pageable), AppClientMongoEntity.class);
+        long total = mongoTemplate.count(getQuery(query), AppClientMongoEntity.class);
 
         return new PageImpl<>(entities, pageable, total);
     }
 
-    Query getQuery(QueryAppCapability query) {
+    Query getQuery(QueryAppClient query) {
         Query result = new Query();
         if (query != null) {
-
-            if (!StringUtils.isEmpty(query.getKey())) {
-                result.addCriteria(buildRegexCriteria("key", query.getKey()));
+            if (!StringUtils.isEmpty(query.getSystemRefId())) {
+                result.addCriteria(buildRegexCriteria("systemRefId", query.getSystemRefId()));
+            }
+            if (!StringUtils.isEmpty(query.getName())) {
+                result.addCriteria(buildRegexCriteria("name", query.getName()));
             }
             if (!StringUtils.isEmpty(query.getDescription())) {
                 result.addCriteria(buildRegexCriteria("description", query.getDescription()));
             }
-            if (!StringUtils.isEmpty(query.getKeyPath())) {
-                result.addCriteria(buildRegexCriteria("keyPath", query.getKeyPath()));
-            }
             if (query.getIds() != null && !query.getIds().isEmpty()) {
                 result.addCriteria(Criteria.where("_id").in(query.getIds()));
             }
-            if (query.getParentIds() != null && !query.getParentIds().isEmpty()) {
-                result.addCriteria(Criteria.where("parentId").in(query.getParentIds()));
+            if (query.getCapabilityIds() != null && !query.getCapabilityIds().isEmpty()) {
+                result.addCriteria(Criteria.where("capabilityIds").in(query.getCapabilityIds()));
             }
         }
         return result;
     }
 
     @Override
-    public AppCapabilityMongoEntity save(AppCapabilityMongoEntity entity) {
+    public AppClientMongoEntity save(AppClientMongoEntity entity) {
         if (entity.getId() == null) {
             entity.setId(snowflake.nextId());
         }
@@ -82,12 +81,12 @@ public class AppCapabilityMongoPersistenceService implements AppCapabilityPersis
 
     @Override
     public void delete(Long id) {
-        mongoTemplate.remove(new Query(Criteria.where("_id").is(id)), AppCapabilityMongoEntity.class);
+        mongoTemplate.remove(new Query(Criteria.where("_id").is(id)), AppClientMongoEntity.class);
     }
 
     @Override
-    public AppCapabilityMongoEntity initNewInstance() {
-        return AppCapabilityMongoEntity.builder()
+    public AppClientMongoEntity initNewInstance() {
+        return AppClientMongoEntity.builder()
                 .id(snowflake.nextId())
                 .created(Instant.now())
                 .build();

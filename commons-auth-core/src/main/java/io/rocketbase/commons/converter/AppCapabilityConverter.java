@@ -20,6 +20,7 @@ public class AppCapabilityConverter {
                 .withChildren(entity.isWithChildren())
                 .description(entity.getDescription())
                 .parentId(entity.getParentId())
+                .created(entity.getCreated())
                 .build();
     }
 

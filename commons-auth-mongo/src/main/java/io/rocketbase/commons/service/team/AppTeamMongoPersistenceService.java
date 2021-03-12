@@ -1,15 +1,17 @@
 package io.rocketbase.commons.service.team;
 
-import io.rocketbase.commons.dto.appgroup.QueryAppGroup;
+import io.rocketbase.commons.dto.appteam.QueryAppTeam;
 import io.rocketbase.commons.model.AppTeamMongoEntity;
 import io.rocketbase.commons.service.MongoQueryHelper;
 import io.rocketbase.commons.util.Snowflake;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 import java.util.List;
@@ -38,12 +40,38 @@ public class AppTeamMongoPersistenceService implements AppTeamPersistenceService
     }
 
     @Override
-    public Page<AppTeamMongoEntity> findAll(QueryAppGroup query, Pageable pageable) {
-        return null;
+    public Page<AppTeamMongoEntity> findAll(QueryAppTeam query, Pageable pageable) {
+
+        List<AppTeamMongoEntity> entities = mongoTemplate.find(getQuery(query).with(pageable), AppTeamMongoEntity.class);
+        long total = mongoTemplate.count(getQuery(query), AppTeamMongoEntity.class);
+
+        return new PageImpl<>(entities, pageable, total);
+    }
+
+    Query getQuery(QueryAppTeam query) {
+        Query result = new Query();
+        if (query != null) {
+            if (!StringUtils.isEmpty(query.getName())) {
+                result.addCriteria(buildRegexCriteria("name", query.getName()));
+            }
+            if (!StringUtils.isEmpty(query.getDescription())) {
+                result.addCriteria(buildRegexCriteria("description", query.getDescription()));
+            }
+            if (query.getIds() != null && !query.getIds().isEmpty()) {
+                result.addCriteria(Criteria.where("_id").in(query.getIds()));
+            }
+            if (query.getPersonal() != null) {
+                result.addCriteria(Criteria.where("personal").is(query.getPersonal()));
+            }
+        }
+        return result;
     }
 
     @Override
     public AppTeamMongoEntity save(AppTeamMongoEntity entity) {
+        if (entity.getId() == null) {
+            entity.setId(snowflake.nextId());
+        }
         mongoTemplate.save(entity);
         return entity;
     }

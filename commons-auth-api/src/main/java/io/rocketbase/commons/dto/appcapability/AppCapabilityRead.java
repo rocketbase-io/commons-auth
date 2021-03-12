@@ -7,11 +7,14 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.Instant;
 
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class AppCapabilityRead extends AppCapabilityShort implements Serializable {
+
+    public static AppCapabilityRead ROOT = new AppCapabilityRead(6291457024L, null, null, true, "root capability", 6291457024L, Instant.ofEpochMilli(1577836800000L));
 
     private String key;
 
@@ -24,6 +27,8 @@ public class AppCapabilityRead extends AppCapabilityShort implements Serializabl
 
     private Long parentId;
 
+    private Instant created;
+
     @JsonIgnore
     public AppCapabilityShort toShort() {
         return new AppCapabilityShort(
@@ -33,11 +38,12 @@ public class AppCapabilityRead extends AppCapabilityShort implements Serializabl
     }
 
     @Builder
-    public AppCapabilityRead(Long id, String keyPath, String key, boolean withChildren, String description, Long parentId) {
+    public AppCapabilityRead(Long id, String keyPath, String key, boolean withChildren, String description, Long parentId, Instant created) {
         super(id, keyPath);
         this.key = key;
         this.withChildren = withChildren;
         this.description = description;
         this.parentId = parentId;
+        this.created = created;
     }
 }

@@ -5,9 +5,9 @@ import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.model.*;
 import io.rocketbase.commons.model.embedded.UserProfileJpaEmbedded_;
 import io.rocketbase.commons.service.JpaQueryHelper;
-import io.rocketbase.commons.service.capability.AppCapabilityJpaPersistenceService;
-import io.rocketbase.commons.service.group.AppGroupJpaPersistenceService;
-import io.rocketbase.commons.service.team.AppTeamJpaPersistenceService;
+import io.rocketbase.commons.service.capability.AppCapabilityPersistenceService;
+import io.rocketbase.commons.service.group.AppGroupPersistenceService;
+import io.rocketbase.commons.service.team.AppTeamPersistenceService;
 import io.rocketbase.commons.util.Nulls;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -27,12 +27,12 @@ public class AppUserJpaPersistenceService implements AppUserPersistenceService<A
 
     private final EntityManager entityManager;
     private final SimpleJpaRepository<AppUserJpaEntity, String> repository;
-    private final AppGroupJpaPersistenceService groupJpaPersistenceService;
-    private final AppCapabilityJpaPersistenceService capabilityJpaPersistenceService;
-    private final AppTeamJpaPersistenceService teamJpaPersistenceService;
+    private final AppGroupPersistenceService groupJpaPersistenceService;
+    private final AppCapabilityPersistenceService capabilityJpaPersistenceService;
+    private final AppTeamPersistenceService teamJpaPersistenceService;
 
     public AppUserJpaPersistenceService(EntityManager entityManager,
-                                        AppGroupJpaPersistenceService groupJpaPersistenceService, AppCapabilityJpaPersistenceService capabilityJpaPersistenceService, AppTeamJpaPersistenceService teamJpaPersistenceService) {
+                                        AppGroupPersistenceService groupJpaPersistenceService, AppCapabilityPersistenceService capabilityJpaPersistenceService, AppTeamPersistenceService teamJpaPersistenceService) {
         this.entityManager = entityManager;
         repository = new SimpleJpaRepository<>(AppUserJpaEntity.class, entityManager);
         this.groupJpaPersistenceService = groupJpaPersistenceService;

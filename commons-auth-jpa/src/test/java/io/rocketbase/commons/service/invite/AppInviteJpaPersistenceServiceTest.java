@@ -5,7 +5,7 @@ import com.google.common.collect.Sets;
 import io.rocketbase.commons.Application;
 import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
 import io.rocketbase.commons.model.AppInviteJpaEntity;
-import io.rocketbase.commons.test.model.SimpleAppInvite;
+import io.rocketbase.commons.test.model.SimpleAppInviteEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +41,7 @@ public class AppInviteJpaPersistenceServiceTest {
     public void beforeEachTest() {
         service.deleteAll();
 
-        service.saveDto(SimpleAppInvite.builder()
+        service.saveDto(SimpleAppInviteEntity.builder()
                 .id(ids.get(0))
                 .created(Instant.now())
                 .expiration(Instant.ofEpochSecond(1924988399))
@@ -53,7 +53,7 @@ public class AppInviteJpaPersistenceServiceTest {
                 .keyValue("special", "abc")
                 .keyValue("_secret", "secure")
                 .build());
-        service.saveDto(SimpleAppInvite.builder()
+        service.saveDto(SimpleAppInviteEntity.builder()
                 .id(ids.get(1))
                 .created(Instant.now())
                 .expiration(Instant.ofEpochSecond(1924988399))
@@ -62,7 +62,7 @@ public class AppInviteJpaPersistenceServiceTest {
                 .email("hello@rocketbase.io")
                 .capabilities(Sets.newHashSet("SERVICE"))
                 .build());
-        service.saveDto(SimpleAppInvite.builder()
+        service.saveDto(SimpleAppInviteEntity.builder()
                 .id(ids.get(3))
                 .created(Instant.now().minus(5, ChronoUnit.DAYS))
                 .expiration(Instant.now().minus(1, ChronoUnit.DAYS))
@@ -138,7 +138,7 @@ public class AppInviteJpaPersistenceServiceTest {
     @Test
     public void save() {
         // given
-        AppInviteEntity entity = SimpleAppInvite.builder()
+        AppInviteEntity entity = SimpleAppInviteEntity.builder()
                 .invitor("Invitor")
                 .message("My little message")
                 .email("new@rocketbase.io")

@@ -65,6 +65,9 @@ public class AppInviteMongoPersistenceService implements AppInvitePersistenceSer
 
     @Override
     public AppInviteMongoEntity save(AppInviteMongoEntity entity) {
+        if (entity.getId() == null) {
+            entity.setId(snowflake.nextId());
+        }
         mongoTemplate.save(entity);
         return entity;
     }

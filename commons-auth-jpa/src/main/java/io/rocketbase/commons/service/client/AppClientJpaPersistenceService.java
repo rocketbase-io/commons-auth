@@ -1,7 +1,7 @@
-package io.rocketbase.commons.service.group;
+package io.rocketbase.commons.service.client;
 
-import io.rocketbase.commons.dto.appgroup.QueryAppGroup;
-import io.rocketbase.commons.model.AppGroupJpaEntity;
+import io.rocketbase.commons.dto.appclient.QueryAppClient;
+import io.rocketbase.commons.model.AppClientJpaEntity;
 import io.rocketbase.commons.service.JpaQueryHelper;
 import io.rocketbase.commons.util.Snowflake;
 import org.springframework.data.domain.Page;
@@ -13,37 +13,37 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-public class AppGroupJpaPersistenceService implements AppGroupPersistenceService<AppGroupJpaEntity>, JpaQueryHelper {
+public class AppClientJpaPersistenceService implements AppClientPersistenceService<AppClientJpaEntity>, JpaQueryHelper {
 
     private final EntityManager em;
     private final Snowflake snowflake;
 
-    private final SimpleJpaRepository<AppGroupJpaEntity, Long> repository;
+    private final SimpleJpaRepository<AppClientJpaEntity, Long> repository;
 
 
-    public AppGroupJpaPersistenceService(EntityManager entityManager, Snowflake snowflake) {
+    public AppClientJpaPersistenceService(EntityManager entityManager, Snowflake snowflake) {
         this.em = entityManager;
         this.snowflake = snowflake;
-        this.repository = new SimpleJpaRepository<>(AppGroupJpaEntity.class, entityManager);
+        this.repository = new SimpleJpaRepository<>(AppClientJpaEntity.class, entityManager);
     }
 
     @Override
-    public Optional<AppGroupJpaEntity> findById(Long id) {
+    public Optional<AppClientJpaEntity> findById(Long id) {
         return repository.findById(id);
     }
 
     @Override
-    public List<AppGroupJpaEntity> findAllById(Iterable<Long> ids) {
+    public List<AppClientJpaEntity> findAllById(Iterable<Long> ids) {
         return repository.findAllById(ids);
     }
 
     @Override
-    public Page<AppGroupJpaEntity> findAll(QueryAppGroup query, Pageable pageable) {
+    public Page<AppClientJpaEntity> findAll(QueryAppClient query, Pageable pageable) {
         return null;
     }
 
     @Override
-    public AppGroupJpaEntity save(AppGroupJpaEntity entity) {
+    public AppClientJpaEntity save(AppClientJpaEntity entity) {
         if (entity.getId() == null) {
             entity.setId(snowflake.nextId());
         }
@@ -60,7 +60,7 @@ public class AppGroupJpaPersistenceService implements AppGroupPersistenceService
     }
 
     @Override
-    public AppGroupJpaEntity initNewInstance() {
-        return new AppGroupJpaEntity(snowflake.nextId());
+    public AppClientJpaEntity initNewInstance() {
+        return new AppClientJpaEntity(snowflake.nextId());
     }
 }

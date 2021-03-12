@@ -19,6 +19,8 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 public class AppGroupRead extends AppGroupShort implements HasKeyValue {
 
+    public static AppGroupRead ROOT = new AppGroupRead(6291457024L, null, null, "*",
+            "root group", true, 6291457024L, null, null, Instant.ofEpochMilli(1577836800000L));
 
     @Nullable
     private String systemRefId;

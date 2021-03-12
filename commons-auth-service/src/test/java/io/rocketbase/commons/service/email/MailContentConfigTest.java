@@ -6,7 +6,7 @@ import io.rocketbase.commons.model.AppUserReference;
 import io.rocketbase.commons.model.SimpleAppUserReference;
 import io.rocketbase.commons.model.user.SimpleUserProfile;
 import io.rocketbase.commons.test.BaseIntegrationTest;
-import io.rocketbase.commons.test.model.SimpleAppInvite;
+import io.rocketbase.commons.test.model.SimpleAppInviteEntity;
 import org.junit.Test;
 import org.simplejavamail.api.email.Email;
 import org.simplejavamail.api.mailer.Mailer;
@@ -104,7 +104,7 @@ public class MailContentConfigTest extends BaseIntegrationTest {
     public void invite() {
         // given
         String actionUrl = "http://localhost:8080/?action=forgot";
-        AppInviteEntity inviteEntity = SimpleAppInvite.builder()
+        AppInviteEntity inviteEntity = SimpleAppInviteEntity.builder()
                 .email("email@email.com")
                 .firstName("firstName")
                 .lastName("lastName")

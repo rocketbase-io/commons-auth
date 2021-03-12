@@ -1,20 +1,20 @@
-package io.rocketbase.commons.service.team;
+package io.rocketbase.commons.service.client;
 
-import io.rocketbase.commons.dto.appteam.QueryAppTeam;
-import io.rocketbase.commons.model.AppTeamEntity;
+import io.rocketbase.commons.dto.appclient.QueryAppClient;
+import io.rocketbase.commons.model.AppClientEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface AppTeamPersistenceService<E extends AppTeamEntity> {
+public interface AppClientPersistenceService<E extends AppClientEntity> {
 
     Optional<E> findById(Long id);
 
     List<E> findAllById(Iterable<Long> ids);
 
-    Page<E> findAll(QueryAppTeam query, Pageable pageable);
+    Page<E> findAll(QueryAppClient query, Pageable pageable);
 
     E save(E entity);
 
