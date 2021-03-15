@@ -59,27 +59,30 @@ public class AppUserMongoPersistenceService implements AppUserPersistenceService
                 result.addCriteria(buildRegexCriteria("username", query.getUsername()));
             }
             if (!StringUtils.isEmpty(query.getFirstName())) {
-                result.addCriteria(buildRegexCriteria("firstName", query.getFirstName()));
+                result.addCriteria(buildRegexCriteria("profile.firstName", query.getFirstName()));
             }
             if (!StringUtils.isEmpty(query.getLastName())) {
-                result.addCriteria(buildRegexCriteria("lastName", query.getLastName()));
+                result.addCriteria(buildRegexCriteria("profile.lastName", query.getLastName()));
             }
             if (!StringUtils.isEmpty(query.getEmail())) {
                 result.addCriteria(buildRegexCriteria("email", query.getEmail()));
             }
             if (!StringUtils.isEmpty(query.getFreetext())) {
                 result.addCriteria(new Criteria().orOperator(buildRegexCriteria("username", query.getFreetext()),
-                        buildRegexCriteria("firstName", query.getFreetext()),
-                        buildRegexCriteria("lastName", query.getFreetext()),
+                        buildRegexCriteria("profile.firstName", query.getFreetext()),
+                        buildRegexCriteria("profile.lastName", query.getFreetext()),
                         buildRegexCriteria("email", query.getFreetext())));
             }
-            if (!StringUtils.isEmpty(query.getCapabilityIds())) {
-                result.addCriteria(Criteria.where("capabilityIds").in(Arrays.asList(query.getCapabilityIds())));
+            if (query.getCapabilityIds() != null) {
+                result.addCriteria(Criteria.where("capabilityIds").in(query.getCapabilityIds()));
+            }
+            if (query.getGroupIds() != null) {
+                result.addCriteria(Criteria.where("groupIds").in(query.getGroupIds()));
             }
             if (query.getKeyValues() != null && !query.getKeyValues().isEmpty()) {
                 for (Map.Entry<String, String> kv : query.getKeyValues().entrySet()) {
                     Pattern valuePattern = Pattern.compile(kv.getValue(), Pattern.CASE_INSENSITIVE);
-                    result.addCriteria(Criteria.where("keyValueMap." + kv.getKey()).is(valuePattern));
+                    result.addCriteria(Criteria.where("keyValues." + kv.getKey()).is(valuePattern));
                 }
             }
             result.addCriteria(Criteria.where("enabled").is(Nulls.notNull(query.getEnabled(), true)));

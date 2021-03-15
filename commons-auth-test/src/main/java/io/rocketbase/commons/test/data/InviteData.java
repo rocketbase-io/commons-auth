@@ -44,8 +44,21 @@ public class InviteData {
             .teamInvite(new AppTeamInvite(TeamData.TEAM_TWO.getId(), AppTeamRole.MEMBER))
             .build();
 
-    public static SimpleAppInviteEntity INVITE_EXPIRED = SimpleAppInviteEntity.builder()
+    public static SimpleAppInviteEntity INVITE_THREE = SimpleAppInviteEntity.builder()
             .id(380059198755045603L)
+            .invitor("Harry")
+            .message("A longer Message to the invitor")
+            .firstName("Betty")
+            .email("betty@rocketbase.io")
+            .capabilityIds(ImmutableSet.of(CapabilityData.API_BLOG_CRUD.getId(), CapabilityData.API_BLOG_PUBLISH.getId()))
+            .keyValues(ImmutableMap.of("_secret", "secure"))
+            .groupIds(ImmutableSet.of(GroupData.DEPARTMENT_ONE_GROUP.getId()))
+            .expiration(Instant.now().plusSeconds(60 * 60 * 24 * 14)) // plus 14 days
+            .created(Instant.now()) // now
+            .build();
+
+    public static SimpleAppInviteEntity INVITE_EXPIRED = SimpleAppInviteEntity.builder()
+            .id(380059198755045604L)
             .invitor("Admin")
             .message("A longer Message to the invitor")
             .email("expired@rocketbase.io")
@@ -58,6 +71,6 @@ public class InviteData {
             .build();
 
     public static List<AppInviteEntity> getEntities() {
-        return Arrays.asList(INVITE_ONE, INVITE_TWO, INVITE_EXPIRED);
+        return Arrays.asList(INVITE_ONE, INVITE_TWO, INVITE_THREE, INVITE_EXPIRED);
     }
 }

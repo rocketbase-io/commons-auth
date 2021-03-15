@@ -36,7 +36,7 @@ public class AppUserMongoPersistenceServiceTest extends MongoPersistenceBaseTest
 
         // then
         assertThat(result, notNullValue());
-        assertThat(result.getTotalElements(), equalTo(4L));
+        assertThat(result.getTotalElements(), equalTo(6L));
     }
 
 
@@ -50,7 +50,7 @@ public class AppUserMongoPersistenceServiceTest extends MongoPersistenceBaseTest
 
         // then
         assertThat(result, notNullValue());
-        assertThat(result.getTotalElements(), equalTo(3L));
+        assertThat(result.getTotalElements(), equalTo(5L));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class AppUserMongoPersistenceServiceTest extends MongoPersistenceBaseTest
 
         // then
         assertThat(result, notNullValue());
-        assertThat(result.getTotalElements(), equalTo(3L));
+        assertThat(result.getTotalElements(), equalTo(5L));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class AppUserMongoPersistenceServiceTest extends MongoPersistenceBaseTest
         // then
         assertThat(result, notNullValue());
         assertThat(result.getTotalElements(), equalTo(1L));
-        assertThat(result.getContent().get(0).getUsername(), equalTo("niels"));
+        assertThat(result.getContent().get(0).getUsername(), equalTo("service"));
     }
 
     @Test
@@ -149,7 +149,7 @@ public class AppUserMongoPersistenceServiceTest extends MongoPersistenceBaseTest
         // then
         assertThat(result, notNullValue());
         assertThat(result.getTotalElements(), equalTo(1L));
-        assertThat(result.getContent().get(0).getUsername(), equalTo("marten"));
+        assertThat(result.getContent().get(0).getUsername(), equalTo("admin"));
     }
 
 
@@ -157,7 +157,7 @@ public class AppUserMongoPersistenceServiceTest extends MongoPersistenceBaseTest
     public void findAllKeyValues() {
         // given
         QueryAppUser query = QueryAppUser.builder()
-                .keyValues(ImmutableMap.of("workspace", "1", "language", "en"))
+                .keyValues(ImmutableMap.of("workspace", "1", "displayMode", "short"))
                 .build();
 
         // when
@@ -167,6 +167,6 @@ public class AppUserMongoPersistenceServiceTest extends MongoPersistenceBaseTest
         assertThat(result, notNullValue());
         assertThat(result.getTotalElements(), equalTo(1L));
         assertThat(result.getContent().get(0).getKeyValue("workspace"), equalTo("1"));
-        assertThat(result.getContent().get(0).getKeyValue("language"), equalTo("en"));
+        assertThat(result.getContent().get(0).getKeyValue("displayMode"), equalTo("short"));
     }
 }

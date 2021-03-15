@@ -143,7 +143,7 @@ public abstract class UserData {
                     .build())
             .email("admin@rocketbase.io")
             .groupIds(Sets.newHashSet(GroupData.ADMIN_GROUP.getId()))
-            .keyValues(ImmutableMap.of("displayMode", "short"))
+            .keyValues(ImmutableMap.of("workspace", "1", "displayMode", "short"))
             .password("password")
             .enabled(true)
             .created(Instant.ofEpochSecond(1609459200)) // 2020-01-01

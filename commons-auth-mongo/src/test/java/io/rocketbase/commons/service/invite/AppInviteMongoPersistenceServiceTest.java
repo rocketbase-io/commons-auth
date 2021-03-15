@@ -38,7 +38,7 @@ public class AppInviteMongoPersistenceServiceTest extends MongoPersistenceBaseTe
 
         // then
         assertThat(result, notNullValue());
-        assertThat(result.getTotalElements(), equalTo(3L));
+        assertThat(result.getTotalElements(), equalTo(4L));
     }
 
 
@@ -52,9 +52,10 @@ public class AppInviteMongoPersistenceServiceTest extends MongoPersistenceBaseTe
 
         // then
         assertThat(result, notNullValue());
-        assertThat(result.getTotalElements(), equalTo(2L));
-        assertThat(result.getContent().get(0).getEmail(), equalTo("hello@rocketbase.io"));
-        assertThat(result.getContent().get(1).getEmail(), equalTo("valid@rocketbase.io"));
+        assertThat(result.getTotalElements(), equalTo(3L));
+        assertThat(result.getContent().get(0).getEmail(), equalTo("betty@rocketbase.io"));
+        assertThat(result.getContent().get(1).getEmail(), equalTo("hello@rocketbase.io"));
+        assertThat(result.getContent().get(2).getEmail(), equalTo("valid@rocketbase.io"));
     }
 
     @Test
@@ -86,7 +87,7 @@ public class AppInviteMongoPersistenceServiceTest extends MongoPersistenceBaseTe
         // then
         assertThat(result, notNullValue());
         assertThat(result.getTotalElements(), equalTo(1L));
-        assertThat(result.getContent().get(0).getEmail(), equalTo("valid@rocketbase.io"));
+        assertThat(result.getContent().get(0).getEmail(), equalTo("hello@rocketbase.io"));
     }
 
     @Test
