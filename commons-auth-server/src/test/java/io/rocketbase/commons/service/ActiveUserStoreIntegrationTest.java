@@ -1,20 +1,23 @@
 package io.rocketbase.commons.service;
 
 import com.google.common.collect.Sets;
-import io.rocketbase.commons.BaseIntegrationTestPrefixed;
+import io.rocketbase.commons.BaseIntegrationTest;
 import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.adapters.JwtTokenProvider;
 import io.rocketbase.commons.adapters.SimpleJwtTokenProvider;
+import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.authentication.LoginRequest;
 import io.rocketbase.commons.dto.authentication.LoginResponse;
+import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.resource.AuthenticationResource;
 import io.rocketbase.commons.resource.LoginResource;
 import io.rocketbase.commons.service.user.ActiveUserStore;
 import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
+import io.rocketbase.commons.test.data.CapabilityData;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.web.client.HttpClientErrorException;
@@ -25,10 +28,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 
-public class ActiveUserStoreIntegrationTest extends BaseIntegrationTestPrefixed {
+public class ActiveUserStoreIntegrationTest extends BaseIntegrationTest {
 
     @Resource
     private AppUserService appUserService;
+
+    @Resource
+    private AppUserConverter appUserConverter;
 
     @Resource
     private ActiveUserStore activeUserStore;
@@ -71,7 +77,7 @@ public class ActiveUserStoreIntegrationTest extends BaseIntegrationTestPrefixed 
                         .username("test-123")
                         .password("pw")
                         .email("other@test.com")
-                        .capabilities(Sets.newHashSet("user"))
+                        .capabilityIds(Sets.newHashSet(CapabilityData.USER_READ.getId()))
                         .build());
         try {
             loginResource.login(LoginRequest.builder()
@@ -88,7 +94,7 @@ public class ActiveUserStoreIntegrationTest extends BaseIntegrationTestPrefixed 
     }
 
     protected JwtTokenProvider getTokenProvider(AppUserEntity user) {
-        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
+        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(appUserConverter.toToken(user));
 
         SimpleJwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl());
         tokenProvider.setRefreshToken(tokenBundle.getRefreshToken());

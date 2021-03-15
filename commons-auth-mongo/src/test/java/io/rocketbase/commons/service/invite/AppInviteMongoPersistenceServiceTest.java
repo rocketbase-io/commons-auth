@@ -1,20 +1,17 @@
-package io.rocketbase.commons.service;
+package io.rocketbase.commons.service.invite;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
-import io.rocketbase.commons.Application;
 import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
 import io.rocketbase.commons.model.AppInviteMongoEntity;
-import io.rocketbase.commons.service.invite.AppInvitePersistenceService;
+import io.rocketbase.commons.service.MongoPersistenceBaseTest;
+import io.rocketbase.commons.test.data.CapabilityData;
+import io.rocketbase.commons.test.data.InviteData;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import java.time.Instant;
@@ -26,47 +23,10 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 @Slf4j
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
-public class AppInviteMongoPersistenceServiceTest {
+public class AppInviteMongoPersistenceServiceTest extends MongoPersistenceBaseTest {
 
     @Resource
     private AppInvitePersistenceService<AppInviteMongoEntity> service;
-
-    @Before
-    public void beforeEachTest() {
-        service.deleteAll();
-
-        service.save(AppInviteMongoEntity.builder()
-                .id("1314202d-e866-4452-b7fc-781e87d44c6c")
-                .created(Instant.now())
-                .expiration(Instant.ofEpochSecond(1924988399))
-                .invitor("Marten")
-                .message("Please and join our Team from rocketbase.io")
-                .email("valid@rocketbase.io")
-                .roles(Sets.newHashSet("USER", "SERVICE"))
-                .keyValueMap(ImmutableMap.<String, String>builder().put("workspace", "1").put("special", "abc").put("_secret", "secure").build())
-                .build());
-        service.save(AppInviteMongoEntity.builder()
-                .id("d182397f-2a30-4006-afe8-a2d8ec427142")
-                .created(Instant.now())
-                .expiration(Instant.ofEpochSecond(1924988399))
-                .invitor("Lukas")
-                .message("...")
-                .email("hello@rocketbase.io")
-                .roles(Sets.newHashSet("SERVICE"))
-                .build());
-        service.save(AppInviteMongoEntity.builder()
-                .id("3ac876a7-5156-499d-8f86-3b137e7fdcbc")
-                .created(Instant.now().minus(5, ChronoUnit.DAYS))
-                .expiration(Instant.now().minus(1, ChronoUnit.DAYS))
-                .invitor("System Invalid")
-                .message("Please and join our Team from rocketbase.io")
-                .email("expired@rocketbase.io")
-                .roles(Sets.newHashSet("USER", "SERVICE"))
-                .keyValueMap(ImmutableMap.<String, String>builder().put("workspace", "1").build())
-                .build());
-    }
 
     @Test
     public void findAllNullQuery() {
@@ -137,7 +97,7 @@ public class AppInviteMongoPersistenceServiceTest {
         entity.setMessage("My little message");
         entity.setEmail("new@rocketbase.io");
         entity.setExpiration(Instant.now().plus(10, ChronoUnit.DAYS));
-        entity.setRoles(Sets.newHashSet("USER", "SERVICE"));
+        entity.setCapabilityIds(Sets.newHashSet(CapabilityData.API_ROOT.getId(), CapabilityData.USER_OBJECT.getId()));
         entity.addKeyValue("_secure", "geheim123");
         entity.addKeyValue("client", "abc");
 
@@ -148,7 +108,7 @@ public class AppInviteMongoPersistenceServiceTest {
         assertThat(result, notNullValue());
         assertThat(result.getMessage(), equalTo(entity.getMessage()));
         assertThat(result.getEmail(), equalTo(entity.getEmail()));
-        assertThat(result.getRoles(), equalTo(entity.getRoles()));
+        assertThat(result.getCapabilityIds(), equalTo(entity.getCapabilityIds()));
         assertThat(result.getExpiration(), equalTo(entity.getExpiration()));
     }
 
@@ -157,7 +117,7 @@ public class AppInviteMongoPersistenceServiceTest {
         // given
 
         // when
-        Optional<AppInviteMongoEntity> result = service.findById("1314202d-e866-4452-b7fc-781e87d44c6c");
+        Optional<AppInviteMongoEntity> result = service.findById(1124L);
 
         // then
         assertThat(result, notNullValue());
@@ -165,39 +125,16 @@ public class AppInviteMongoPersistenceServiceTest {
     }
 
     @Test
-    public void count() {
-        // given
-
-        // when
-        long result = service.count();
-
-        // then
-        assertThat(result, equalTo(3L));
-    }
-
-    @Test
     public void delete() {
         // given
 
         // when
-        service.delete(service.findById("1314202d-e866-4452-b7fc-781e87d44c6c").get());
-        Optional<AppInviteMongoEntity> result = service.findById("1314202d-e866-4452-b7fc-781e87d44c6c");
+        service.delete(InviteData.INVITE_TWO.getId());
+        Optional<AppInviteMongoEntity> result = service.findById(InviteData.INVITE_TWO.getId());
 
         // then
         assertThat(result, notNullValue());
         assertThat(result.isPresent(), equalTo(false));
-    }
-
-    @Test
-    public void deleteAll() {
-        // given
-
-        // when
-        service.deleteAll();
-        long result = service.count();
-
-        // then
-        assertThat(result, equalTo(0L));
     }
 
     @Test
@@ -215,8 +152,7 @@ public class AppInviteMongoPersistenceServiceTest {
     public void findAllKeyValues() {
         // given
         QueryAppInvite query = QueryAppInvite.builder()
-                .keyValue("workspace", "1")
-                .keyValue("_secret","secure")
+                .keyValues(ImmutableMap.of("workspace", "1", "_secret","secure"))
                 .build();
 
         // when

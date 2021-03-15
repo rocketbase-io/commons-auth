@@ -1,36 +1,30 @@
 package io.rocketbase.commons.controller;
 
-import io.rocketbase.commons.BaseIntegrationTestPrefixed;
+import io.rocketbase.commons.BaseIntegrationTest;
 import io.rocketbase.commons.adapters.AuthRestTemplate;
 import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.adapters.JwtTokenProvider;
-import io.rocketbase.commons.adapters.SimpleJwtTokenProvider;
 import io.rocketbase.commons.dto.PageableResult;
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
+import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.model.AppUserReference;
 import io.rocketbase.commons.resource.UserSearchResource;
-import io.rocketbase.commons.test.ModifiedJwtTokenService;
 import org.junit.Test;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.Resource;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-public class UserSearchControllerTest extends BaseIntegrationTestPrefixed {
-
-    @Resource
-    private ModifiedJwtTokenService modifiedJwtTokenService;
+public class UserSearchControllerTest extends BaseIntegrationTest {
 
     @Test
     public void find() {
         // given
-        AppUserEntity user = getAppUser("admin");
-        JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), modifiedJwtTokenService.generateTokenBundle(user));
+        JwtTokenProvider tokenProvider = getTokenProvider("admin");
 
         // when
         UserSearchResource userSearchResource = new UserSearchResource(new JwtRestTemplate(tokenProvider));
@@ -63,7 +57,7 @@ public class UserSearchControllerTest extends BaseIntegrationTestPrefixed {
     public void findByValidUsername() {
         // given
         AppUserEntity user = getAppUser("admin");
-        JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), modifiedJwtTokenService.generateTokenBundle(user));
+        JwtTokenProvider tokenProvider = getTokenProvider("admin");
 
         // when
         UserSearchResource userSearchResource = new UserSearchResource(new JwtRestTemplate(tokenProvider));
@@ -78,8 +72,7 @@ public class UserSearchControllerTest extends BaseIntegrationTestPrefixed {
     @Test
     public void findByInvalidUsername() {
         // given
-        AppUserEntity user = getAppUser("admin");
-        JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), modifiedJwtTokenService.generateTokenBundle(user));
+        JwtTokenProvider tokenProvider = getTokenProvider("admin");
 
         // when
         UserSearchResource userSearchResource = new UserSearchResource(new JwtRestTemplate(tokenProvider));

@@ -1,11 +1,10 @@
-package io.rocketbase.commons.service;
+package io.rocketbase.commons.service.validation;
 
+import io.rocketbase.commons.BaseIntegrationTest;
 import io.rocketbase.commons.dto.validation.PasswordErrorCodes;
 import io.rocketbase.commons.dto.validation.UsernameErrorCodes;
 import io.rocketbase.commons.exception.RegistrationException;
 import io.rocketbase.commons.exception.ValidationErrorCode;
-import io.rocketbase.commons.service.validation.DefaultValidationService;
-import io.rocketbase.commons.test.BaseIntegrationTest;
 import org.junit.Test;
 
 import javax.annotation.Resource;

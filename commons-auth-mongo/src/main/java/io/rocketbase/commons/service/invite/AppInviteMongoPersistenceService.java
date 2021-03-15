@@ -31,10 +31,12 @@ public class AppInviteMongoPersistenceService implements AppInvitePersistenceSer
 
     private final Snowflake snowflake;
 
+    private final String collectionName;
+
     @Override
     public Page<AppInviteMongoEntity> findAll(QueryAppInvite query, Pageable pageable) {
-        List<AppInviteMongoEntity> entities = mongoTemplate.find(getQuery(query).with(pageable), AppInviteMongoEntity.class);
-        long total = mongoTemplate.count(getQuery(query), AppInviteMongoEntity.class);
+        List<AppInviteMongoEntity> entities = mongoTemplate.find(getQuery(query).with(pageable), AppInviteMongoEntity.class, collectionName);
+        long total = mongoTemplate.count(getQuery(query), AppInviteMongoEntity.class, collectionName);
 
         return new PageImpl<>(entities, pageable, total);
     }
@@ -68,7 +70,7 @@ public class AppInviteMongoPersistenceService implements AppInvitePersistenceSer
         if (entity.getId() == null) {
             entity.setId(snowflake.nextId());
         }
-        mongoTemplate.save(entity);
+        mongoTemplate.save(entity, collectionName);
         return entity;
     }
 
@@ -79,7 +81,7 @@ public class AppInviteMongoPersistenceService implements AppInvitePersistenceSer
 
     @Override
     public Optional<AppInviteMongoEntity> findById(Long id) {
-        AppInviteMongoEntity entity = mongoTemplate.findOne(new Query(Criteria.where("_id").is(id)), AppInviteMongoEntity.class);
+        AppInviteMongoEntity entity = mongoTemplate.findOne(new Query(Criteria.where("_id").is(id)), AppInviteMongoEntity.class, collectionName);
         if (entity != null) {
             return Optional.of(entity);
         }
@@ -89,16 +91,16 @@ public class AppInviteMongoPersistenceService implements AppInvitePersistenceSer
     @Override
     public List<AppInviteMongoEntity> findAllById(Iterable<Long> ids) {
         return mongoTemplate.find(new Query(Criteria.where("_id")
-                .in(ids)), AppInviteMongoEntity.class);
+                .in(ids)), AppInviteMongoEntity.class, collectionName);
     }
 
     @Override
     public void delete(Long id) {
-        mongoTemplate.remove(new Query(Criteria.where("_id").is(id)), AppInviteMongoEntity.class);
+        mongoTemplate.remove(new Query(Criteria.where("_id").is(id)), AppInviteMongoEntity.class, collectionName);
     }
 
     void deleteAll() {
-        mongoTemplate.findAllAndRemove(new Query(), AppInviteMongoEntity.class);
+        mongoTemplate.findAllAndRemove(new Query(), AppInviteMongoEntity.class, collectionName);
     }
 
     @Override

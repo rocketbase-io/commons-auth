@@ -13,7 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SimpleAppInvite implements AppInviteEntity {
+public class SimpleAppInviteEntity implements AppInviteEntity {
 
     private Long id;
 

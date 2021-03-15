@@ -2,25 +2,21 @@ package io.rocketbase.commons.service.invite;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
-import io.rocketbase.commons.Application;
 import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
+import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppInviteJpaEntity;
-import io.rocketbase.commons.test.model.SimpleAppInviteEntity;
+import io.rocketbase.commons.service.JpaPersistenceBaseTest;
+import io.rocketbase.commons.test.data.CapabilityData;
+import io.rocketbase.commons.test.data.InviteData;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -28,51 +24,10 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 @Slf4j
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
-public class AppInviteJpaPersistenceServiceTest {
+public class AppInviteJpaPersistenceServiceTest extends JpaPersistenceBaseTest {
 
     @Resource
     private AppInviteJpaPersistenceService service;
-
-    private static final List<Long> ids = Arrays.asList(1688465485600660000L, 1688465485600770000L, 1688465485600880000L);
-
-    @Before
-    public void beforeEachTest() {
-        service.deleteAll();
-
-        service.saveDto(SimpleAppInviteEntity.builder()
-                .id(ids.get(0))
-                .created(Instant.now())
-                .expiration(Instant.ofEpochSecond(1924988399))
-                .invitor("Marten")
-                .message("Please and join our Team from rocketbase.io")
-                .email("valid@rocketbase.io")
-                .capabilities(Sets.newHashSet("USER", "SERVICE"))
-                .keyValue("workspace", "1")
-                .keyValue("special", "abc")
-                .keyValue("_secret", "secure")
-                .build());
-        service.saveDto(SimpleAppInviteEntity.builder()
-                .id(ids.get(1))
-                .created(Instant.now())
-                .expiration(Instant.ofEpochSecond(1924988399))
-                .invitor("Lukas")
-                .message("...")
-                .email("hello@rocketbase.io")
-                .capabilities(Sets.newHashSet("SERVICE"))
-                .build());
-        service.saveDto(SimpleAppInviteEntity.builder()
-                .id(ids.get(3))
-                .created(Instant.now().minus(5, ChronoUnit.DAYS))
-                .expiration(Instant.now().minus(1, ChronoUnit.DAYS))
-                .invitor("System Invalid")
-                .message("Please and join our Team from rocketbase.io")
-                .email("expired@rocketbase.io")
-                .capabilities(Sets.newHashSet("USER", "SERVICE"))
-                .keyValue("workspace", "1")
-                .build());
-    }
 
     @Test
     public void findAllNullQuery() {
@@ -80,7 +35,7 @@ public class AppInviteJpaPersistenceServiceTest {
         QueryAppInvite query = null;
 
         // when
-        Page<AppInviteEntity> result = service.findAll(query, PageRequest.of(0, 10));
+        Page<AppInviteJpaEntity> result = service.findAll(query, PageRequest.of(0, 10));
 
         // then
         assertThat(result, notNullValue());
@@ -94,7 +49,7 @@ public class AppInviteJpaPersistenceServiceTest {
         QueryAppInvite query = QueryAppInvite.builder().build();
 
         // when
-        Page<AppInviteEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("email")));
+        Page<AppInviteJpaEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("email")));
 
         // then
         assertThat(result, notNullValue());
@@ -111,7 +66,7 @@ public class AppInviteJpaPersistenceServiceTest {
                 .build();
 
         // when
-        Page<AppInviteEntity> result = service.findAll(query, PageRequest.of(0, 10));
+        Page<AppInviteJpaEntity> result = service.findAll(query, PageRequest.of(0, 10));
 
         // then
         assertThat(result, notNullValue());
@@ -127,7 +82,7 @@ public class AppInviteJpaPersistenceServiceTest {
                 .build();
 
         // when
-        Page<AppInviteEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("email")));
+        Page<AppInviteJpaEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("email")));
 
         // then
         assertThat(result, notNullValue());
@@ -138,18 +93,17 @@ public class AppInviteJpaPersistenceServiceTest {
     @Test
     public void save() {
         // given
-        AppInviteEntity entity = SimpleAppInviteEntity.builder()
+        AppInviteJpaEntity entity = AppInviteJpaEntity.builder()
                 .invitor("Invitor")
                 .message("My little message")
                 .email("new@rocketbase.io")
                 .expiration(Instant.now().plus(10, ChronoUnit.DAYS))
-                .capabilities(Sets.newHashSet("USER", "SERVICE"))
-                .keyValue("_secure", "geheim123")
-                .keyValue("client", "abc")
+                .capabilityIds(Sets.newHashSet(CapabilityData.USER_READ.getId(), CapabilityData.API_ROOT.getId()))
+                .keyValues(ImmutableMap.of("_secure", "geheim123", "client", "abc"))
                 .build();
 
         // when
-        AppInviteEntity result = service.saveDto(entity);
+        AppInviteJpaEntity result = service.save(entity);
 
         // then
         assertThat(result, notNullValue());
@@ -166,7 +120,7 @@ public class AppInviteJpaPersistenceServiceTest {
         // given
 
         // when
-        Optional<AppInviteJpaEntity> result = service.findById(ids.get(0));
+        Optional<AppInviteJpaEntity> result = service.findById(InviteData.INVITE_ONE.getId());
 
         // then
         assertThat(result, notNullValue());
@@ -178,8 +132,8 @@ public class AppInviteJpaPersistenceServiceTest {
         // given
 
         // when
-        service.delete(ids.get(0));
-        Optional<AppInviteJpaEntity> result = service.findById(ids.get(0));
+        service.delete(InviteData.INVITE_ONE.getId());
+        Optional<AppInviteJpaEntity> result = service.findById(InviteData.INVITE_ONE.getId());
 
         // then
         assertThat(result, notNullValue());
@@ -205,7 +159,7 @@ public class AppInviteJpaPersistenceServiceTest {
                 .keyValues(ImmutableMap.of("workspace", "1"))
                 .build();
         // when
-        Page<AppInviteEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("email")));
+        Page<AppInviteJpaEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("email")));
 
         // then
         assertThat(result, notNullValue());
@@ -227,7 +181,7 @@ public class AppInviteJpaPersistenceServiceTest {
                 .build();
 
         // when
-        Page<AppInviteEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("email")));
+        Page<AppInviteJpaEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("email")));
 
         // then
         assertThat(result, notNullValue());

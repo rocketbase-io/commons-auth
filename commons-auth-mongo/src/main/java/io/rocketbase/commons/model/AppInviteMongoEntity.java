@@ -14,14 +14,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static io.rocketbase.commons.model.AppInviteMongoEntity.COLLECTION_NAME;
 
-@Document(collection = "invite")
+
+@Document(collection = COLLECTION_NAME)
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = {"id"})
 public class AppInviteMongoEntity implements AppInviteEntity {
+
+    public static final String COLLECTION_NAME = "co_invite";
 
     @Id
     private Long id;

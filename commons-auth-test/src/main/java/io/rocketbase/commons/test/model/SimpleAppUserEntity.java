@@ -16,7 +16,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @EqualsAndHashCode(of = "id")
-public class SimpleAppUser implements AppUserEntity, AppUserReference {
+public class SimpleAppUserEntity implements AppUserEntity, AppUserReference {
 
     private String id;
 

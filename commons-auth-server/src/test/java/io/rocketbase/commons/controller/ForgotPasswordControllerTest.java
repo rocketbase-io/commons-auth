@@ -1,13 +1,14 @@
 package io.rocketbase.commons.controller;
 
 import com.google.common.collect.Sets;
-import io.rocketbase.commons.BaseIntegrationTestPrefixed;
+import io.rocketbase.commons.BaseIntegrationTest;
 import io.rocketbase.commons.config.EmailProperties;
 import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.dto.forgot.ForgotPasswordRequest;
 import io.rocketbase.commons.resource.ForgotPasswordResource;
 import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.test.EmailSenderTest;
+import io.rocketbase.commons.test.data.CapabilityData;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,7 +18,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.startsWith;
 
-public class ForgotPasswordControllerTest extends BaseIntegrationTestPrefixed {
+public class ForgotPasswordControllerTest extends BaseIntegrationTest {
 
     @Resource
     private AppUserService appUserService;
@@ -36,7 +37,7 @@ public class ForgotPasswordControllerTest extends BaseIntegrationTestPrefixed {
                 .username("forgot")
                 .password("pw")
                 .email(email)
-                .capabilities(Sets.newHashSet("user"))
+                .capabilityIds(Sets.newHashSet(CapabilityData.API_BLOG_CRUD.getId()))
                 .build());
 
         // when
@@ -60,7 +61,7 @@ public class ForgotPasswordControllerTest extends BaseIntegrationTestPrefixed {
                 .username(username)
                 .password("pw")
                 .email(email)
-                .capabilities(Sets.newHashSet("user"))
+                .capabilityIds(Sets.newHashSet(CapabilityData.API_BLOG_CRUD.getId()))
                 .build());
 
         // when

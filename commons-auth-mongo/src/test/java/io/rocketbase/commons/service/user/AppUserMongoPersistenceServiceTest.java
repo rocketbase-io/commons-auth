@@ -1,20 +1,17 @@
-package io.rocketbase.commons.service;
+package io.rocketbase.commons.service.user;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
-import io.rocketbase.commons.Application;
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.model.AppUserMongoEntity;
-import io.rocketbase.commons.service.user.AppUserPersistenceService;
+import io.rocketbase.commons.service.MongoPersistenceBaseTest;
+import io.rocketbase.commons.test.data.CapabilityData;
+import io.rocketbase.commons.test.data.GroupData;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 
@@ -24,54 +21,10 @@ import static org.hamcrest.Matchers.notNullValue;
 
 
 @Slf4j
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
-public class AppUserMongoPersistenceServiceTest {
+public class AppUserMongoPersistenceServiceTest extends MongoPersistenceBaseTest {
 
     @Resource
     private AppUserPersistenceService<AppUserMongoEntity> service;
-
-    @Before
-    public void beforeEachTest() {
-        service.save(AppUserMongoEntity.builder()
-                .id("401fb225-057e-4e0a-a0ff-e99e76030d52")
-                .username("marten")
-                .firstName("Marten")
-                .lastName("Prieß")
-                .email("marten@rocketbase.io")
-                .roles(Sets.newHashSet("ADMIN"))
-                .keyValueMap(ImmutableMap.<String, String>builder().put("workspace", "1").build())
-                .enabled(true)
-                .build());
-        service.save(AppUserMongoEntity.builder()
-                .id("c3c58d60-e948-442f-9783-c0341c65a367")
-                .username("niels")
-                .firstName("Niels")
-                .lastName("Schelbach")
-                .email("niels@rocketbase.io")
-                .roles(Sets.newHashSet("USER"))
-                .keyValueMap(ImmutableMap.<String, String>builder().put("workspace", "1").put("language", "en").build())
-                .enabled(true)
-                .build());
-        service.save(AppUserMongoEntity.builder()
-                .id("d74678ea-6689-4c6f-a055-e275b4a2a61c")
-                .username("sample")
-                .firstName("Sample")
-                .lastName("User")
-                .email("sampled@rocketbase.io")
-                .roles(Sets.newHashSet("user"))
-                .enabled(false)
-                .build());
-        service.save(AppUserMongoEntity.builder()
-                .id("f55e3176-3fca-4100-bb26-853106269fb1")
-                .username("service")
-                .firstName("Service")
-                .email("servicee@rocketbase.io")
-                .roles(Sets.newHashSet("service"))
-                .enabled(true)
-                .build());
-    }
-
 
     @Test
     public void findAllNullQuery() {
@@ -167,10 +120,10 @@ public class AppUserMongoPersistenceServiceTest {
     }
 
     @Test
-    public void findAllQueryHasRole() {
+    public void findAllQueryWithCapability() {
         // given
         QueryAppUser query = QueryAppUser.builder()
-                .hasRole("uSeR")
+                .capabilityIds(Sets.newHashSet(CapabilityData.USER_READ.getId()))
                 .enabled(true)
                 .build();
 
@@ -184,10 +137,10 @@ public class AppUserMongoPersistenceServiceTest {
     }
 
     @Test
-    public void findAllQueryHasRoleAdmin() {
+    public void findAllQueryWithGroup() {
         // given
         QueryAppUser query = QueryAppUser.builder()
-                .hasRole("ADMIN")
+                .groupIds(Sets.newHashSet(GroupData.ADMIN_GROUP.getId()))
                 .build();
 
         // when
@@ -204,8 +157,7 @@ public class AppUserMongoPersistenceServiceTest {
     public void findAllKeyValues() {
         // given
         QueryAppUser query = QueryAppUser.builder()
-                .keyValue("workspace", "1")
-                .keyValue("language", "en")
+                .keyValues(ImmutableMap.of("workspace", "1", "language", "en"))
                 .build();
 
         // when

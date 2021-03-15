@@ -13,14 +13,18 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.rocketbase.commons.model.AppTeamMongoEntity.COLLECTION_NAME;
 
-@Document(collection = "co_team")
+
+@Document(collection = COLLECTION_NAME)
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = {"id"})
 public class AppTeamMongoEntity implements AppTeamEntity {
+
+    public static final String COLLECTION_NAME = "co_team";
 
     @Id
     private Long id;

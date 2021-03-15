@@ -16,6 +16,8 @@ import java.time.Instant;
 @EqualsAndHashCode(of = {"id"})
 public class AppCapabilityMongoEntity implements AppCapabilityEntity {
 
+    public static final String COLLECTION_NAME = "co_capacity";
+
     @Id
     private Long id;
 

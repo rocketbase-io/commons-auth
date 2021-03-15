@@ -22,10 +22,12 @@ public class AppUserMongoPersistenceService implements AppUserPersistenceService
 
     private final MongoTemplate mongoTemplate;
 
+    private final String collectionName;
+
     @Override
     public Optional<AppUserMongoEntity> findByUsername(String username) {
         AppUserMongoEntity entity = mongoTemplate.findOne(new Query(Criteria.where("username")
-                .is(username)), AppUserMongoEntity.class);
+                .is(username)), AppUserMongoEntity.class, collectionName);
         if (entity != null) {
             return Optional.of(entity);
         }
@@ -35,7 +37,7 @@ public class AppUserMongoPersistenceService implements AppUserPersistenceService
     @Override
     public Optional<AppUserMongoEntity> findByEmail(String email) {
         AppUserMongoEntity entity = mongoTemplate.findOne(new Query(Criteria.where("email")
-                .is(email)), AppUserMongoEntity.class);
+                .is(email)), AppUserMongoEntity.class, collectionName);
         if (entity != null) {
             return Optional.of(entity);
         }
@@ -44,8 +46,8 @@ public class AppUserMongoPersistenceService implements AppUserPersistenceService
 
     @Override
     public Page<AppUserMongoEntity> findAll(QueryAppUser query, Pageable pageable) {
-        List<AppUserMongoEntity> entities = mongoTemplate.find(getQuery(query).with(pageable), AppUserMongoEntity.class);
-        long total = mongoTemplate.count(getQuery(query), AppUserMongoEntity.class);
+        List<AppUserMongoEntity> entities = mongoTemplate.find(getQuery(query).with(pageable), AppUserMongoEntity.class, collectionName);
+        long total = mongoTemplate.count(getQuery(query), AppUserMongoEntity.class, collectionName);
 
         return new PageImpl<>(entities, pageable, total);
     }
@@ -87,14 +89,14 @@ public class AppUserMongoPersistenceService implements AppUserPersistenceService
 
     @Override
     public AppUserMongoEntity save(AppUserMongoEntity entity) {
-        mongoTemplate.save(entity);
+        mongoTemplate.save(entity, collectionName);
         return entity;
     }
 
     @Override
     public Optional<AppUserMongoEntity> findById(String id) {
         AppUserMongoEntity entity = mongoTemplate.findOne(new Query(Criteria.where("_id")
-                .is(id)), AppUserMongoEntity.class);
+                .is(id)), AppUserMongoEntity.class, collectionName);
         if (entity != null) {
             return Optional.of(entity);
         }
@@ -104,16 +106,16 @@ public class AppUserMongoPersistenceService implements AppUserPersistenceService
     @Override
     public List<AppUserMongoEntity> findAllById(Iterable<String> ids) {
         return mongoTemplate.find(new Query(Criteria.where("_id")
-                .in(ids)), AppUserMongoEntity.class);
+                .in(ids)), AppUserMongoEntity.class, collectionName);
     }
 
     @Override
     public void delete(String id) {
-        mongoTemplate.remove(new Query(Criteria.where("_id").is(id)), AppUserMongoEntity.class);
+        mongoTemplate.remove(new Query(Criteria.where("_id").is(id)), AppUserMongoEntity.class, collectionName);
     }
 
     void deleteAll() {
-        mongoTemplate.findAllAndRemove(new Query(), AppUserMongoEntity.class);
+        mongoTemplate.findAllAndRemove(new Query(), AppUserMongoEntity.class, collectionName);
     }
 
     @Override

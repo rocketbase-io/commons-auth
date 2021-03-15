@@ -1,9 +1,10 @@
 package io.rocketbase.commons.service.email;
 
+import io.rocketbase.commons.BaseIntegrationTest;
 import io.rocketbase.commons.config.EmailProperties;
 import io.rocketbase.commons.model.AppUserEntity;
-import io.rocketbase.commons.test.BaseIntegrationTest;
 import io.rocketbase.commons.test.EmailSenderTest;
+import io.rocketbase.commons.test.data.UserData;
 import org.junit.Test;
 import org.springframework.context.i18n.LocaleContextHolder;
 
@@ -24,7 +25,7 @@ public class EmailServiceTest extends BaseIntegrationTest {
     @Test
     public void simpleSendRegistrationEmail() throws Exception {
         // given
-        AppUserEntity user = getAppUser("user");
+        AppUserEntity user = UserData.MARTEN;
 
         EmailProperties emailProperties = new EmailProperties();
 
@@ -41,7 +42,7 @@ public class EmailServiceTest extends BaseIntegrationTest {
     @Test
     public void germanRegistrationEmail() throws Exception {
         // given
-        AppUserEntity user = getAppUser("user");
+        AppUserEntity user = UserData.MARTEN;
 
         EmailProperties emailProperties = new EmailProperties();
         LocaleContextHolder.setLocale(Locale.GERMAN);

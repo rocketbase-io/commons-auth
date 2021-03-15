@@ -15,14 +15,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static io.rocketbase.commons.model.AppUserMongoEntity.COLLECTION_NAME;
 
-@Document(collection = "co_user")
+
+@Document(collection = COLLECTION_NAME)
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = {"id"})
 public class AppUserMongoEntity implements AppUserEntity {
+
+    public static final String COLLECTION_NAME = "co_user";
 
     @Id
     private String id;

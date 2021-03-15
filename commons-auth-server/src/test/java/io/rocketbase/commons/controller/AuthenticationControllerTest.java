@@ -1,6 +1,6 @@
 package io.rocketbase.commons.controller;
 
-import io.rocketbase.commons.BaseIntegrationTestPrefixed;
+import io.rocketbase.commons.BaseIntegrationTest;
 import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.adapters.JwtTokenProvider;
 import io.rocketbase.commons.adapters.SimpleJwtTokenProvider;
@@ -30,7 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
-public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
+public class AuthenticationControllerTest extends BaseIntegrationTest {
 
     @Resource
     private AuthenticationController authenticationController;
@@ -116,7 +116,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     public void getAuthenticated() {
         // given
         AppUserEntity user = getAppUser("user");
-        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
+        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(toToken(user));
 
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
 
@@ -135,7 +135,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     public void getAuthenticatedUserRefreshToken() {
         // given
         AppUserEntity user = getAppUser("user");
-        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
+        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(toToken(user));
 
         SimpleJwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl());
         tokenProvider.setRefreshToken(tokenBundle.getRefreshToken());
@@ -176,7 +176,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     public void refreshToken() throws InterruptedException {
         // given
         AppUserEntity user = getAppUser("user");
-        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
+        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(toToken(user));
         String token = tokenBundle.getToken();
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
 
@@ -195,7 +195,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     public void changePasswordSuccess() {
         // given
         AppUserEntity user = getAppUser("user");
-        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
+        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(toToken(user));
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
 
@@ -210,7 +210,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     public void changePasswordFailure() {
         // given
         AppUserEntity user = getAppUser("user");
-        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
+        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(toToken(user));
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
 
@@ -234,7 +234,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     public void updateProfile() {
         // given
         AppUserEntity user = getAppUser("user");
-        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
+        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(toToken(user));
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
 
@@ -260,7 +260,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     public void changeUsername() {
         // given
         AppUserEntity user = getAppUser("user");
-        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
+        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(toToken(user));
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
 
@@ -277,7 +277,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     public void changeUsernameUsed() {
         // given
         AppUserEntity user = getAppUser("user");
-        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
+        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(toToken(user));
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
 
@@ -297,7 +297,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     public void changeEmailAddress() {
         // given
         AppUserEntity user = getAppUser("user");
-        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
+        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(toToken(user));
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
 
@@ -322,7 +322,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTestPrefixed {
     public void changeEmailAddressUsed() {
         // given
         AppUserEntity user = getAppUser("user");
-        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(user);
+        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(toToken(user));
         JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), tokenBundle);
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
 

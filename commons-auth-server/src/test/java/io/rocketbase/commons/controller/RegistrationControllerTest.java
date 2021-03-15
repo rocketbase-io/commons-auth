@@ -1,6 +1,6 @@
 package io.rocketbase.commons.controller;
 
-import io.rocketbase.commons.BaseIntegrationTestPrefixed;
+import io.rocketbase.commons.BaseIntegrationTest;
 import io.rocketbase.commons.config.RegistrationProperties;
 import io.rocketbase.commons.dto.ExpirationInfo;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
@@ -22,7 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
-public class RegistrationControllerTest extends BaseIntegrationTestPrefixed {
+public class RegistrationControllerTest extends BaseIntegrationTest {
 
     @Resource
     private AppUserPersistenceService<AppUserEntity> appUserPersistenceService;

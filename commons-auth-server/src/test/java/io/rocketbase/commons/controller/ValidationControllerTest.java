@@ -1,12 +1,13 @@
 package io.rocketbase.commons.controller;
 
 import com.google.common.collect.Sets;
-import io.rocketbase.commons.BaseIntegrationTestPrefixed;
+import io.rocketbase.commons.BaseIntegrationTest;
 import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.dto.validation.*;
 import io.rocketbase.commons.resource.ValidationResource;
 import io.rocketbase.commons.service.SimpleTokenService;
 import io.rocketbase.commons.service.user.AppUserService;
+import io.rocketbase.commons.test.data.CapabilityData;
 import org.junit.Test;
 
 import javax.annotation.Resource;
@@ -14,7 +15,7 @@ import javax.annotation.Resource;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-public class ValidationControllerTest extends BaseIntegrationTestPrefixed {
+public class ValidationControllerTest extends BaseIntegrationTest {
 
     @Resource
     private AppUserService appUserService;
@@ -64,7 +65,7 @@ public class ValidationControllerTest extends BaseIntegrationTestPrefixed {
                 .username("test-123")
                 .password("pw")
                 .email(email)
-                .capabilities(Sets.newHashSet("user"))
+                .capabilityIds(Sets.newHashSet(CapabilityData.USER_READ.getId()))
                 .build());
 
         // when

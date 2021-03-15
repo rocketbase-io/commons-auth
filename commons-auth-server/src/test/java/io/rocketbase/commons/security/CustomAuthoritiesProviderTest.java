@@ -1,6 +1,6 @@
 package io.rocketbase.commons.security;
 
-import io.rocketbase.commons.BaseIntegrationTestPrefixed;
+import io.rocketbase.commons.BaseIntegrationTest;
 import io.rocketbase.commons.config.JwtProperties;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.model.AppUserToken;
@@ -20,7 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.notNullValue;
 
-public class CustomAuthoritiesProviderTest extends BaseIntegrationTestPrefixed {
+public class CustomAuthoritiesProviderTest extends BaseIntegrationTest {
 
     public CustomAuthoritiesProvider myOwnImplementation() {
         return new CustomAuthoritiesProvider() {

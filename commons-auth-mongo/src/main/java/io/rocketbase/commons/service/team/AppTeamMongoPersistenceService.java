@@ -24,9 +24,11 @@ public class AppTeamMongoPersistenceService implements AppTeamPersistenceService
 
     private final Snowflake snowflake;
 
+    private final String collectionName;
+
     @Override
     public Optional<AppTeamMongoEntity> findById(Long id) {
-        AppTeamMongoEntity entity = mongoTemplate.findOne(new Query(Criteria.where("_id").is(id)), AppTeamMongoEntity.class);
+        AppTeamMongoEntity entity = mongoTemplate.findOne(new Query(Criteria.where("_id").is(id)), AppTeamMongoEntity.class, collectionName);
         if (entity != null) {
             return Optional.of(entity);
         }
@@ -36,14 +38,14 @@ public class AppTeamMongoPersistenceService implements AppTeamPersistenceService
     @Override
     public List<AppTeamMongoEntity> findAllById(Iterable<Long> ids) {
         return mongoTemplate.find(new Query(Criteria.where("_id")
-                .in(ids)), AppTeamMongoEntity.class);
+                .in(ids)), AppTeamMongoEntity.class, collectionName);
     }
 
     @Override
     public Page<AppTeamMongoEntity> findAll(QueryAppTeam query, Pageable pageable) {
 
-        List<AppTeamMongoEntity> entities = mongoTemplate.find(getQuery(query).with(pageable), AppTeamMongoEntity.class);
-        long total = mongoTemplate.count(getQuery(query), AppTeamMongoEntity.class);
+        List<AppTeamMongoEntity> entities = mongoTemplate.find(getQuery(query).with(pageable), AppTeamMongoEntity.class, collectionName);
+        long total = mongoTemplate.count(getQuery(query), AppTeamMongoEntity.class, collectionName);
 
         return new PageImpl<>(entities, pageable, total);
     }
@@ -72,13 +74,13 @@ public class AppTeamMongoPersistenceService implements AppTeamPersistenceService
         if (entity.getId() == null) {
             entity.setId(snowflake.nextId());
         }
-        mongoTemplate.save(entity);
+        mongoTemplate.save(entity, collectionName);
         return entity;
     }
 
     @Override
     public void delete(Long id) {
-        mongoTemplate.remove(new Query(Criteria.where("_id").is(id)), AppTeamMongoEntity.class);
+        mongoTemplate.remove(new Query(Criteria.where("_id").is(id)), AppTeamMongoEntity.class, collectionName);
     }
 
     @Override

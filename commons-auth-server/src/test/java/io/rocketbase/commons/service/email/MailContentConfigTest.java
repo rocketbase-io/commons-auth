@@ -1,11 +1,11 @@
 package io.rocketbase.commons.service.email;
 
 import com.google.common.collect.Sets;
+import io.rocketbase.commons.BaseIntegrationTest;
 import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppUserReference;
 import io.rocketbase.commons.model.SimpleAppUserReference;
 import io.rocketbase.commons.model.user.SimpleUserProfile;
-import io.rocketbase.commons.test.BaseIntegrationTest;
 import io.rocketbase.commons.test.model.SimpleAppInviteEntity;
 import org.junit.Test;
 import org.simplejavamail.api.email.Email;

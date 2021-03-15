@@ -11,13 +11,17 @@ import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.Set;
 
-@Document(collection = "co_client")
+import static io.rocketbase.commons.model.AppClientMongoEntity.COLLECTION_NAME;
+
+@Document(collection = COLLECTION_NAME)
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = {"id"})
 public class AppClientMongoEntity implements AppClientEntity {
+
+    public static final String COLLECTION_NAME = "co_client";
 
     @Id
     private Long id;

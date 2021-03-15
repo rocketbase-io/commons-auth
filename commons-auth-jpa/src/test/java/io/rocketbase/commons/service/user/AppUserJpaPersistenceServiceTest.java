@@ -2,101 +2,27 @@ package io.rocketbase.commons.service.user;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
-import io.rocketbase.commons.Application;
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.model.AppUserJpaEntity;
-import io.rocketbase.commons.model.user.SimpleUserProfile;
-import io.rocketbase.commons.test.model.SimpleAppUserEntity;
+import io.rocketbase.commons.service.JpaPersistenceBaseTest;
+import io.rocketbase.commons.test.data.CapabilityData;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
-import javax.transaction.Transactional;
-import java.time.Instant;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 @Slf4j
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@Transactional
-public class AppUserJpaPersistenceServiceTest {
+public class AppUserJpaPersistenceServiceTest extends JpaPersistenceBaseTest {
 
     @Resource
     private AppUserPersistenceService<AppUserJpaEntity> service;
-
-    @Resource
-    private PasswordEncoder passwordEncoder;
-
-    @Before
-    public void beforeEachTest() {
-        service.saveDto(SimpleAppUserEntity.builder()
-                .id("401fb225-057e-4e0a-a0ff-e99e76030d52")
-                .username("marten")
-                .profile(SimpleUserProfile.builder()
-                        .firstName("Marten")
-                        .lastName("Prieß")
-                        .build())
-                .email("marten@rocketbase.io")
-                .capabilities(Sets.newHashSet("ADMIN"))
-                .password(passwordEncoder.encode("password"))
-                .enabled(true)
-                .created(Instant.now())
-                .keyValues(ImmutableMap.of("workspace", "1"))
-                .build());
-        service.saveDto(SimpleAppUserEntity.builder()
-                .id("c3c58d60-e948-442f-9783-c0341c65a367")
-                .username("niels")
-                .profile(SimpleUserProfile.builder()
-                        .firstName("Niels")
-                        .lastName("Schelbach")
-                        .build())
-                .email("niels@rocketbase.io")
-                .capabilities(Sets.newHashSet("USER"))
-                .password(passwordEncoder.encode("password"))
-                .enabled(true)
-                .created(Instant.now())
-                .keyValues(ImmutableMap.<String,String>builder()
-                        .put("workspace", "1")
-                        .put("language", "en")
-                        .build())
-                .build());
-        service.saveDto(SimpleAppUserEntity.builder()
-                .id("d74678ea-6689-4c6f-a055-e275b4a2a61c")
-                .username("sample")
-                .profile(SimpleUserProfile.builder()
-                        .firstName("Sample")
-                        .lastName("User")
-                        .build())
-                .email("sampled@rocketbase.io")
-                .capabilities(Sets.newHashSet("user"))
-                .password(passwordEncoder.encode("password"))
-                .enabled(false)
-                .created(Instant.now())
-                .build());
-        service.saveDto(SimpleAppUserEntity.builder()
-                .id("f55e3176-3fca-4100-bb26-853106269fb1")
-                .username("service")
-                .profile(SimpleUserProfile.builder()
-                        .firstName("Service")
-                        .build())
-                .email("servicee@rocketbase.io")
-                .capabilities(Sets.newHashSet("service"))
-                .password(passwordEncoder.encode("password"))
-                .enabled(true)
-                .created(Instant.now())
-                .build());
-    }
 
     @Test
     public void findAllNullQuery() {
@@ -104,7 +30,7 @@ public class AppUserJpaPersistenceServiceTest {
         QueryAppUser query = null;
 
         // when
-        Page<AppUserEntity> result = service.findAll(query, PageRequest.of(0, 10));
+        Page<AppUserJpaEntity> result = service.findAll(query, PageRequest.of(0, 10));
 
         // then
         assertThat(result, notNullValue());
@@ -118,7 +44,7 @@ public class AppUserJpaPersistenceServiceTest {
         QueryAppUser query = QueryAppUser.builder().build();
 
         // when
-        Page<AppUserEntity> result = service.findAll(query, PageRequest.of(0, 10));
+        Page<AppUserJpaEntity> result = service.findAll(query, PageRequest.of(0, 10));
 
         // then
         assertThat(result, notNullValue());
@@ -133,7 +59,7 @@ public class AppUserJpaPersistenceServiceTest {
                 .build();
 
         // when
-        Page<AppUserEntity> result = service.findAll(query, PageRequest.of(0, 10));
+        Page<AppUserJpaEntity> result = service.findAll(query, PageRequest.of(0, 10));
 
         // then
         assertThat(result, notNullValue());
@@ -150,7 +76,7 @@ public class AppUserJpaPersistenceServiceTest {
                 .build();
 
         // when
-        Page<AppUserEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("username")));
+        Page<AppUserJpaEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("username")));
 
         // then
         assertThat(result, notNullValue());
@@ -168,7 +94,7 @@ public class AppUserJpaPersistenceServiceTest {
                 .build();
 
         // when
-        Page<AppUserEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("username")));
+        Page<AppUserJpaEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("username")));
 
         // then
         assertThat(result, notNullValue());
@@ -184,7 +110,7 @@ public class AppUserJpaPersistenceServiceTest {
                 .build();
 
         // when
-        Page<AppUserEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("username")));
+        Page<AppUserJpaEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("username")));
 
         // then
         assertThat(result, notNullValue());
@@ -195,12 +121,12 @@ public class AppUserJpaPersistenceServiceTest {
     public void findAllQueryHasRole() {
         // given
         QueryAppUser query = QueryAppUser.builder()
-                .capabilities(Sets.newHashSet("uSeR"))
+                .capabilityIds(Sets.newHashSet(CapabilityData.USER_OBJECT.getId()))
                 .enabled(true)
                 .build();
 
         // when
-        Page<AppUserEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("username")));
+        Page<AppUserJpaEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("username")));
 
         // then
         assertThat(result, notNullValue());
@@ -212,11 +138,11 @@ public class AppUserJpaPersistenceServiceTest {
     public void findAllQueryHasRoleAdmin() {
         // given
         QueryAppUser query = QueryAppUser.builder()
-                .capabilities(Sets.newHashSet("ADMIN"))
+                .capabilityIds(Sets.newHashSet(CapabilityData.ROOT.getId()))
                 .build();
 
         // when
-        Page<AppUserEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("username")));
+        Page<AppUserJpaEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("username")));
 
         // then
         assertThat(result, notNullValue());
@@ -227,7 +153,7 @@ public class AppUserJpaPersistenceServiceTest {
     @Test
     public void buildLikeString() {
         // given
-        AppUserJpaPersistenceService appUserJpaService = new AppUserJpaPersistenceService(null, null);
+        AppUserJpaPersistenceService appUserJpaService = new AppUserJpaPersistenceService(null, null, null, null);
 
         // when
         String simple = appUserJpaService.buildLikeString("simple");
@@ -252,12 +178,12 @@ public class AppUserJpaPersistenceServiceTest {
                 .build();
 
         // when
-        Page<AppUserEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("username")));
+        Page<AppUserJpaEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("username")));
 
         // then
         assertThat(result, notNullValue());
         assertThat(result.getTotalElements(), equalTo(2L));
-        for (AppUserEntity e : result.getContent()) {
+        for (AppUserJpaEntity e : result.getContent()) {
             assertThat(e.getKeyValue("workspace"), equalTo("1"));
         }
     }
@@ -272,7 +198,7 @@ public class AppUserJpaPersistenceServiceTest {
                 .build();
 
         // when
-        Page<AppUserEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("username")));
+        Page<AppUserJpaEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("username")));
 
         // then
         assertThat(result, notNullValue());

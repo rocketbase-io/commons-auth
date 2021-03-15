@@ -24,9 +24,11 @@ public class AppClientMongoPersistenceService implements AppClientPersistenceSer
 
     private final Snowflake snowflake;
 
+    private final String collectionName;
+
     @Override
     public Optional<AppClientMongoEntity> findById(Long id) {
-        AppClientMongoEntity entity = mongoTemplate.findOne(new Query(Criteria.where("_id").is(id)), AppClientMongoEntity.class);
+        AppClientMongoEntity entity = mongoTemplate.findOne(new Query(Criteria.where("_id").is(id)), AppClientMongoEntity.class, collectionName);
         if (entity != null) {
             return Optional.of(entity);
         }
@@ -36,14 +38,14 @@ public class AppClientMongoPersistenceService implements AppClientPersistenceSer
     @Override
     public List<AppClientMongoEntity> findAllById(Iterable<Long> ids) {
         return mongoTemplate.find(new Query(Criteria.where("_id")
-                .in(ids)), AppClientMongoEntity.class);
+                .in(ids)), AppClientMongoEntity.class, collectionName);
     }
 
     @Override
     public Page<AppClientMongoEntity> findAll(QueryAppClient query, Pageable pageable) {
 
-        List<AppClientMongoEntity> entities = mongoTemplate.find(getQuery(query).with(pageable), AppClientMongoEntity.class);
-        long total = mongoTemplate.count(getQuery(query), AppClientMongoEntity.class);
+        List<AppClientMongoEntity> entities = mongoTemplate.find(getQuery(query).with(pageable), AppClientMongoEntity.class, collectionName);
+        long total = mongoTemplate.count(getQuery(query), AppClientMongoEntity.class, collectionName);
 
         return new PageImpl<>(entities, pageable, total);
     }
@@ -75,13 +77,13 @@ public class AppClientMongoPersistenceService implements AppClientPersistenceSer
         if (entity.getId() == null) {
             entity.setId(snowflake.nextId());
         }
-        mongoTemplate.save(entity);
+        mongoTemplate.save(entity, collectionName);
         return entity;
     }
 
     @Override
     public void delete(Long id) {
-        mongoTemplate.remove(new Query(Criteria.where("_id").is(id)), AppClientMongoEntity.class);
+        mongoTemplate.remove(new Query(Criteria.where("_id").is(id)), AppClientMongoEntity.class, collectionName);
     }
 
     @Override

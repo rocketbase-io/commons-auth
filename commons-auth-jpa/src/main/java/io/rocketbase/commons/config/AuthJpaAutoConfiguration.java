@@ -4,12 +4,15 @@ import io.rocketbase.commons.converter.*;
 import io.rocketbase.commons.model.*;
 import io.rocketbase.commons.service.capability.AppCapabilityJpaPersistenceService;
 import io.rocketbase.commons.service.capability.AppCapabilityPersistenceService;
+import io.rocketbase.commons.service.client.AppClientJpaPersistenceService;
+import io.rocketbase.commons.service.client.AppClientPersistenceService;
 import io.rocketbase.commons.service.group.AppGroupJpaPersistenceService;
 import io.rocketbase.commons.service.group.AppGroupPersistenceService;
 import io.rocketbase.commons.service.invite.AppInviteJpaPersistenceService;
 import io.rocketbase.commons.service.invite.AppInvitePersistenceService;
 import io.rocketbase.commons.service.team.AppTeamJpaPersistenceService;
 import io.rocketbase.commons.service.team.AppTeamPersistenceService;
+import io.rocketbase.commons.service.team.AppTeamService;
 import io.rocketbase.commons.service.user.AppUserJpaPersistenceService;
 import io.rocketbase.commons.service.user.AppUserPersistenceService;
 import io.rocketbase.commons.util.Snowflake;
@@ -30,7 +33,7 @@ public class AuthJpaAutoConfiguration {
     private AppCapabilityConverter appCapabilityConverter;
 
     @Resource
-    private AppTeamConverter appTeamConverter;
+    private AppTeamService appTeamService;
 
     @Bean
     @ConditionalOnMissingBean
@@ -65,8 +68,14 @@ public class AuthJpaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    public AppClientPersistenceService<AppClientJpaEntity> appClientPersistenceService(@Autowired EntityManager entityManager, @Autowired Snowflake snowflake) {
+        return new AppClientJpaPersistenceService(entityManager, snowflake);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
     public AppUserConverter<AppUserJpaEntity> appUserConverter(@Autowired AppGroupConverter<AppGroupJpaEntity> appGroupConverter) {
-        return new AppUserJpaConverter(appGroupConverter, appCapabilityConverter, appTeamConverter);
+        return new AppUserJpaConverter(appGroupConverter, appCapabilityConverter, appTeamService);
     }
 
     @Bean
@@ -79,5 +88,11 @@ public class AuthJpaAutoConfiguration {
     @ConditionalOnMissingBean
     public AppGroupConverter<AppGroupJpaEntity> appGroupConverter() {
         return new AppGroupJpaConverter(appCapabilityConverter);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AppClientConverter<AppClientJpaEntity> appClientConverter() {
+        return new AppClientJpaConverter(appCapabilityConverter);
     }
 }

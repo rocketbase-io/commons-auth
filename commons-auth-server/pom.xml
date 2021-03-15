@@ -11,6 +11,9 @@
 
     <artifactId>commons-auth-server</artifactId>
 
+    <properties>
+        <simple-java-mail.version>6.5.0</simple-java-mail.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -91,6 +94,29 @@
             <groupId>io.rocketbase.commons</groupId>
             <artifactId>commons-auth-test</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rocketbase.commons</groupId>
+            <artifactId>commons-auth-mongo</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.flapdoodle.embed</groupId>
+            <artifactId>de.flapdoodle.embed.mongo</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.simplejavamail</groupId>
+            <artifactId>simple-java-mail</artifactId>
+            <version>${simple-java-mail.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

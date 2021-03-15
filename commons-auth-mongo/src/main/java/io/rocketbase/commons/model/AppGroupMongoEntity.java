@@ -13,13 +13,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-@Document(collection = "co_group")
+import static io.rocketbase.commons.model.AppGroupMongoEntity.COLLECTION_NAME;
+
+@Document(collection = COLLECTION_NAME)
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = {"id"})
 public class AppGroupMongoEntity implements AppGroupEntity {
+
+    public static final String COLLECTION_NAME = "co_group";
 
     @Id
     private Long id;
