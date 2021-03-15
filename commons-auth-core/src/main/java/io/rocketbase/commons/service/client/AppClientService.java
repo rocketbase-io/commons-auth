@@ -1,6 +1,6 @@
 package io.rocketbase.commons.service.client;
 
-import io.rocketbase.commons.dto.appclient.AppClientRead;
+import io.rocketbase.commons.dto.appclient.AppClientWrite;
 import io.rocketbase.commons.dto.appclient.QueryAppClient;
 import io.rocketbase.commons.model.AppClientEntity;
 import org.springframework.data.domain.Page;
@@ -10,9 +10,11 @@ import java.util.Optional;
 
 public interface AppClientService {
 
-    Page<AppClientRead> findAll(QueryAppClient query, Pageable pageable);
+    Page<AppClientEntity> findAll(QueryAppClient query, Pageable pageable);
 
-    AppClientEntity save(AppClientEntity entity);
+    AppClientEntity create(AppClientWrite write);
+
+    AppClientEntity update(Long id, AppClientWrite write);
 
     Optional<AppClientEntity> findById(Long id);
 

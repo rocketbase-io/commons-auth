@@ -34,9 +34,13 @@ public class AppCapabilityJpaEntity implements AppCapabilityEntity {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_capacity__parent"))
     private AppCapabilityJpaEntity parent;
 
-    @Setter
     @Transient
-    private Long parentId;
+    private Long parentHolder;
+
+    @Transient
+    public void setParentId(Long id) {
+        parentHolder = id;
+    }
 
     @Transient
     public Long getParentId() {

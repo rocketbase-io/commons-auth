@@ -3,6 +3,7 @@ package io.rocketbase.commons.model;
 import io.rocketbase.commons.dto.appteam.AppTeamInvite;
 import io.rocketbase.commons.model.converter.SetPhoneNumberConverter;
 import io.rocketbase.commons.service.invite.AppInviteJpaPersistenceService;
+import io.rocketbase.commons.service.user.AppUserJpaPersistenceService;
 import lombok.*;
 
 import javax.persistence.*;
@@ -63,7 +64,12 @@ public class AppInviteJpaEntity implements AppInviteEntity {
      * {@link AppInviteJpaPersistenceService} take care of holder and transpiles it to capabilities
      */
     @Transient
-    private Set<Long> capabilityIds;
+    private Set<Long> capabilityHolder;
+
+    @Transient
+    public void setCapabilityIds(Set<Long> ids) {
+        capabilityHolder = ids;
+    }
 
     @Transient
     public Set<Long> getCapabilityIds() {
@@ -99,13 +105,17 @@ public class AppInviteJpaEntity implements AppInviteEntity {
             })
     private Set<AppGroupJpaEntity> groups;
 
-
     /**
      * used only to keep api compatible with mongo<br>
-     * {@link AppInviteJpaPersistenceService} take care of holder and transpiles it to groups
+     * {@link AppUserJpaPersistenceService} take care of holder and transpiles it to groups
      */
     @Transient
-    private Set<Long> groupIds;
+    private Set<Long> groupHolder;
+
+    @Transient
+    public void setGroupIds(Set<Long> ids) {
+        groupHolder = ids;
+    }
 
     @Transient
     public Set<Long> getGroupIds() {

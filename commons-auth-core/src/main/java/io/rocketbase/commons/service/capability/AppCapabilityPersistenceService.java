@@ -14,6 +14,8 @@ public interface AppCapabilityPersistenceService<E extends AppCapabilityEntity> 
 
     List<E> findAllById(Iterable<Long> ids);
 
+    List<E> findAllByParentId(Iterable<Long> ids);
+
     Page<E> findAll(QueryAppCapability query, Pageable pageable);
 
     E save(E entity);

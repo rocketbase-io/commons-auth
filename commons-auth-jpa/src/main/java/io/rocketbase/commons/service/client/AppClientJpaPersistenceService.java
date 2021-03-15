@@ -1,6 +1,8 @@
 package io.rocketbase.commons.service.client;
 
+import com.google.common.collect.Sets;
 import io.rocketbase.commons.dto.appclient.QueryAppClient;
+import io.rocketbase.commons.model.AppCapabilityJpaEntity;
 import io.rocketbase.commons.model.AppClientJpaEntity;
 import io.rocketbase.commons.service.JpaQueryHelper;
 import io.rocketbase.commons.util.Snowflake;
@@ -19,12 +21,14 @@ public class AppClientJpaPersistenceService implements AppClientPersistenceServi
     private final Snowflake snowflake;
 
     private final SimpleJpaRepository<AppClientJpaEntity, Long> repository;
+    private final SimpleJpaRepository<AppCapabilityJpaEntity, Long> capabilityRepository;
 
 
     public AppClientJpaPersistenceService(EntityManager entityManager, Snowflake snowflake) {
         this.em = entityManager;
         this.snowflake = snowflake;
         this.repository = new SimpleJpaRepository<>(AppClientJpaEntity.class, entityManager);
+        this.capabilityRepository = new SimpleJpaRepository<>(AppCapabilityJpaEntity.class, entityManager);
     }
 
     @Override
@@ -49,6 +53,9 @@ public class AppClientJpaPersistenceService implements AppClientPersistenceServi
         }
         if (entity.getCreated() == null) {
             entity.setCreated(Instant.now());
+        }
+        if (entity.getCapabilityHolder() != null) {
+            entity.setCapabilities(Sets.newHashSet(capabilityRepository.findAllById(entity.getCapabilityHolder())));
         }
 
         return repository.save(entity);

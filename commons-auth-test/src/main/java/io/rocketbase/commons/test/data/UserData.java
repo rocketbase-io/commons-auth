@@ -44,7 +44,7 @@ public abstract class UserData {
             .lastTokenInvalidation(Instant.ofEpochSecond(1612310400)) // 2020-02-03
             .created(Instant.ofEpochSecond(1612137600)) // 2020-02-01
             .keyValues(ImmutableMap.of("workspace", "1"))
-            .activeTeamId(TeamData.TEAM_ONE.getId())
+            .activeTeamId(TeamData.TEAM_IDS.get(0))
             .build();
 
     public static SimpleAppUserEntity NIELS = SimpleAppUserEntity.builder()
@@ -68,7 +68,7 @@ public abstract class UserData {
             .groupIds(Sets.newHashSet(GroupData.DEPARTMENT_TWO_GROUP.getId()))
             .password("password")
             .enabled(true)
-            .activeTeamId(TeamData.TEAM_TWO.getId())
+            .activeTeamId(TeamData.TEAM_IDS.get(1))
             .created(Instant.ofEpochSecond(1613088000)) // 2020-02-12
             .keyValues(ImmutableMap.<String, String>builder()
                     .put("workspace", "1")
@@ -113,7 +113,7 @@ public abstract class UserData {
             .groupIds(Sets.newHashSet(GroupData.DEPARTMENT_TWO_GROUP.getId()))
             .password("password")
             .enabled(false)
-            .activeTeamId(TeamData.TEAM_TWO.getId())
+            .activeTeamId(TeamData.TEAM_IDS.get(2))
             .created(Instant.ofEpochSecond(1614211200)) // 2020-02-25
             .build();
 

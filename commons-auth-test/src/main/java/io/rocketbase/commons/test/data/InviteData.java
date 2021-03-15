@@ -19,9 +19,12 @@ public class InviteData {
             .invitor("Max Mustermann")
             .message("A longer Message to the invitor")
             .firstName("Lisa")
-            .email("lisa@email.com")
+            .email("valid@rocketbase.io")
             .capabilityIds(ImmutableSet.of(CapabilityData.ROOT.getId()))
-            .keyValues(ImmutableMap.of("clientId", "1"))
+            .keyValues(ImmutableMap.of("workspace", "1",
+                    "special", "abc",
+                    "_secret", "secure"
+            ))
             .groupIds(ImmutableSet.of(GroupData.DEPARTMENT_ONE_GROUP.getId()))
             .expiration(Instant.now().plusSeconds(60 * 60 * 24 * 14)) // plus 14 days
             .created(Instant.now()) // now
@@ -29,12 +32,12 @@ public class InviteData {
 
     public static SimpleAppInviteEntity INVITE_TWO = SimpleAppInviteEntity.builder()
             .id(380059198755045602L)
-            .invitor("Admin")
+            .invitor("Marten")
             .message("A longer Message to the invitor")
             .lastName("Müller")
-            .email("mueller@web.de")
+            .email("hello@rocketbase.io")
             .capabilityIds(ImmutableSet.of(CapabilityData.API_BLOG_CRUD.getId(), CapabilityData.USER_READ.getId()))
-            .keyValues(ImmutableMap.of("clientId", "2"))
+            .keyValues(ImmutableMap.of("workspace", "2"))
             .groupIds(ImmutableSet.of(GroupData.DEPARTMENT_ONE_GROUP.getId()))
             .expiration(Instant.now().plusSeconds(60 * 60 * 24 * 14)) // plus 14 days
             .created(Instant.now()) // now
@@ -45,9 +48,9 @@ public class InviteData {
             .id(380059198755045603L)
             .invitor("Admin")
             .message("A longer Message to the invitor")
-            .email("wellknown@email.com")
+            .email("expired@rocketbase.io")
             .capabilityIds(ImmutableSet.of(CapabilityData.API_ROOT.getId()))
-            .keyValues(ImmutableMap.of("clientId", "1"))
+            .keyValues(ImmutableMap.of("workspace", "1"))
             .groupIds(ImmutableSet.of(GroupData.ADMIN_GROUP.getId()))
             .expiration(Instant.ofEpochSecond(1613088000)) // 2020-02-12
             .created(Instant.ofEpochSecond(1612137600)) // 2020-02-01

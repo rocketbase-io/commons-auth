@@ -2,6 +2,7 @@ package io.rocketbase.commons.service.group;
 
 import io.rocketbase.commons.dto.appgroup.AppGroupRead;
 import io.rocketbase.commons.dto.appgroup.AppGroupShort;
+import io.rocketbase.commons.dto.appgroup.AppGroupWrite;
 import io.rocketbase.commons.dto.appgroup.QueryAppGroup;
 import io.rocketbase.commons.model.AppGroupEntity;
 import org.springframework.data.domain.Page;
@@ -15,9 +16,11 @@ import java.util.stream.Collectors;
 
 public interface AppGroupService {
 
-    Page<AppGroupRead> findAll(QueryAppGroup query, Pageable pageable);
+    Page<AppGroupEntity> findAll(QueryAppGroup query, Pageable pageable);
 
-    AppGroupEntity save(AppGroupEntity entity);
+    AppGroupEntity create(AppGroupWrite write, Long parentId);
+
+    AppGroupEntity update(Long id, AppGroupWrite write);
 
     Optional<AppGroupEntity> findById(Long id);
 

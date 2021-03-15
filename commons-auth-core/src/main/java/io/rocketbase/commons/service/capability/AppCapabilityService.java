@@ -18,15 +18,13 @@ public interface AppCapabilityService {
 
     Page<AppCapabilityEntity> findAll(QueryAppCapability query, Pageable pageable);
 
-    AppCapabilityEntity save(AppCapabilityEntity entity);
-
     Optional<AppCapabilityEntity> findById(Long id);
 
     List<AppCapabilityEntity> findByIds(Collection<Long> ids);
 
     AppCapabilityEntity create(AppCapabilityWrite write, Long parentId);
 
-    AppCapabilityRead update(Long id, AppCapabilityWrite write);
+    AppCapabilityEntity update(Long id, AppCapabilityWrite write);
 
     /**
      * will delete also their children-tree

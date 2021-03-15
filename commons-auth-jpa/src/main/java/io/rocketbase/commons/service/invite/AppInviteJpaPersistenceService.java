@@ -1,10 +1,9 @@
 package io.rocketbase.commons.service.invite;
 
+import com.google.common.collect.Sets;
 import io.rocketbase.commons.dto.appinvite.InviteRequest;
 import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
-import io.rocketbase.commons.model.AppInviteEntity;
-import io.rocketbase.commons.model.AppInviteJpaEntity;
-import io.rocketbase.commons.model.AppInviteJpaEntity_;
+import io.rocketbase.commons.model.*;
 import io.rocketbase.commons.service.JpaQueryHelper;
 import io.rocketbase.commons.util.Nulls;
 import io.rocketbase.commons.util.Snowflake;
@@ -29,11 +28,15 @@ public class AppInviteJpaPersistenceService implements AppInvitePersistenceServi
     private final Snowflake snowflake;
 
     private final SimpleJpaRepository<AppInviteJpaEntity, Long> repository;
+    private final SimpleJpaRepository<AppCapabilityJpaEntity, Long> capabilityRepository;
+    private final SimpleJpaRepository<AppGroupJpaEntity, Long> groupRepository;
 
     public AppInviteJpaPersistenceService(EntityManager entityManager, Snowflake snowflake) {
         this.em = entityManager;
         this.snowflake = snowflake;
         this.repository = new SimpleJpaRepository<>(AppInviteJpaEntity.class, entityManager);
+        this.capabilityRepository = new SimpleJpaRepository<>(AppCapabilityJpaEntity.class, entityManager);
+        this.groupRepository = new SimpleJpaRepository<>(AppGroupJpaEntity.class, entityManager);
     }
 
     @Override
@@ -77,6 +80,12 @@ public class AppInviteJpaPersistenceService implements AppInvitePersistenceServi
         }
         if (entity.getCreated() == null) {
             entity.setCreated(Instant.now());
+        }
+        if (entity.getCapabilityHolder() != null) {
+            entity.setCapabilities(Sets.newHashSet(capabilityRepository.findAllById(entity.getCapabilityHolder())));
+        }
+        if (entity.getGroupHolder() != null) {
+            entity.setGroups(Sets.newHashSet(groupRepository.findAllById(entity.getGroupHolder())));
         }
 
         return repository.save(entity);

@@ -117,7 +117,7 @@ public class AppInviteMongoPersistenceServiceTest extends MongoPersistenceBaseTe
         // given
 
         // when
-        Optional<AppInviteMongoEntity> result = service.findById(1124L);
+        Optional<AppInviteMongoEntity> result = service.findById(InviteData.INVITE_ONE.getId());
 
         // then
         assertThat(result, notNullValue());

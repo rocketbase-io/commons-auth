@@ -1,6 +1,9 @@
 package io.rocketbase.commons.service.group;
 
+import com.google.common.collect.Sets;
 import io.rocketbase.commons.dto.appgroup.QueryAppGroup;
+import io.rocketbase.commons.exception.NotFoundException;
+import io.rocketbase.commons.model.AppCapabilityJpaEntity;
 import io.rocketbase.commons.model.AppGroupJpaEntity;
 import io.rocketbase.commons.service.JpaQueryHelper;
 import io.rocketbase.commons.util.Snowflake;
@@ -19,12 +22,14 @@ public class AppGroupJpaPersistenceService implements AppGroupPersistenceService
     private final Snowflake snowflake;
 
     private final SimpleJpaRepository<AppGroupJpaEntity, Long> repository;
+    private final SimpleJpaRepository<AppCapabilityJpaEntity, Long> capabilityRepository;
 
 
     public AppGroupJpaPersistenceService(EntityManager entityManager, Snowflake snowflake) {
         this.em = entityManager;
         this.snowflake = snowflake;
         this.repository = new SimpleJpaRepository<>(AppGroupJpaEntity.class, entityManager);
+        this.capabilityRepository = new SimpleJpaRepository<>(AppCapabilityJpaEntity.class, entityManager);
     }
 
     @Override
@@ -49,6 +54,12 @@ public class AppGroupJpaPersistenceService implements AppGroupPersistenceService
         }
         if (entity.getCreated() == null) {
             entity.setCreated(Instant.now());
+        }
+        if (entity.getParentHolder() != null) {
+            entity.setParent(repository.findById(entity.getParentHolder()).orElseThrow(NotFoundException::new));
+        }
+        if (entity.getCapabilityHolder() != null) {
+            entity.setCapabilities(Sets.newHashSet(capabilityRepository.findAllById(entity.getCapabilityHolder())));
         }
 
         return repository.save(entity);

@@ -1,20 +1,35 @@
 package io.rocketbase.commons.config;
 
+import io.rocketbase.commons.converter.AppCapabilityConverter;
+import io.rocketbase.commons.converter.AppGroupConverter;
+import io.rocketbase.commons.converter.AppTeamConverter;
 import io.rocketbase.commons.service.auth.DefaultLoginService;
 import io.rocketbase.commons.service.auth.LoginService;
 import io.rocketbase.commons.service.avatar.AvatarService;
 import io.rocketbase.commons.service.avatar.GravatarService;
+import io.rocketbase.commons.service.capability.AppCapabilityPersistenceService;
+import io.rocketbase.commons.service.capability.AppCapabilityService;
+import io.rocketbase.commons.service.capability.DefaultAppCapabilityService;
 import io.rocketbase.commons.service.change.ChangeAppUserWithConfirmService;
 import io.rocketbase.commons.service.change.DefaultChangeAppUserWithConfirmService;
+import io.rocketbase.commons.service.client.AppClientPersistenceService;
+import io.rocketbase.commons.service.client.AppClientService;
+import io.rocketbase.commons.service.client.DefaultAppClientService;
 import io.rocketbase.commons.service.email.*;
 import io.rocketbase.commons.service.forgot.AppUserForgotPasswordService;
 import io.rocketbase.commons.service.forgot.DefaultAppUserForgotPasswordService;
+import io.rocketbase.commons.service.group.AppGroupPersistenceService;
+import io.rocketbase.commons.service.group.AppGroupService;
+import io.rocketbase.commons.service.group.DefaultAppGroupService;
 import io.rocketbase.commons.service.impersonate.DefaultImpersonateService;
 import io.rocketbase.commons.service.impersonate.ImpersonateService;
 import io.rocketbase.commons.service.invite.AppInviteService;
 import io.rocketbase.commons.service.invite.DefaultAppInviteService;
 import io.rocketbase.commons.service.registration.DefaultRegistrationService;
 import io.rocketbase.commons.service.registration.RegistrationService;
+import io.rocketbase.commons.service.team.AppTeamPersistenceService;
+import io.rocketbase.commons.service.team.AppTeamService;
+import io.rocketbase.commons.service.team.DefaultAppTeamService;
 import io.rocketbase.commons.service.user.*;
 import io.rocketbase.commons.service.validation.DefaultValidationService;
 import io.rocketbase.commons.service.validation.ValidationErrorCodeService;
@@ -82,11 +97,46 @@ public class AuthServiceAutoConfiguration {
         return new DefaultRegistrationService(authProperties, registrationProperties);
     }
 
-
     @Bean
     @ConditionalOnMissingBean
     public AppInviteService appInviteService() {
         return new DefaultAppInviteService(authProperties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AppCapabilityService appCapabilityService(@Autowired AppCapabilityPersistenceService appCapabilityPersistenceService, @Autowired AppCapabilityConverter appCapabilityConverter) {
+        return new DefaultAppCapabilityService(appCapabilityPersistenceService, appCapabilityConverter);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AppClientService appClientService(@Autowired AppClientPersistenceService appClientPersistenceService) {
+        return new DefaultAppClientService(appClientPersistenceService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AppGroupService appGroupService(@Autowired AppGroupPersistenceService appGroupPersistenceService, @Autowired AppGroupConverter appGroupConverter) {
+        return new DefaultAppGroupService(appGroupPersistenceService, appGroupConverter);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AppTeamService appTeamService(@Autowired AppTeamPersistenceService appTeamPersistenceService, @Autowired AppTeamConverter appTeamConverter) {
+        return new DefaultAppTeamService(appTeamPersistenceService, appTeamConverter);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AppTeamConverter appTeamConverter() {
+        return new AppTeamConverter();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AppCapabilityConverter appCapabilityConverter() {
+        return new AppCapabilityConverter();
     }
 
     @Bean
@@ -99,6 +149,12 @@ public class AuthServiceAutoConfiguration {
     @ConditionalOnMissingBean
     public AppUserService appUserService() {
         return new DefaultAppUserService(authProperties, registrationProperties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AppUserTokenService appUserTokenService(@Autowired AppUserService appUserService) {
+        return new DefaultAppUserTokenService(appUserService);
     }
 
     @Bean

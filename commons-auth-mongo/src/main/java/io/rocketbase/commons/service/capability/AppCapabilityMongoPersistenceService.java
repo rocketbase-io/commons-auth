@@ -42,6 +42,12 @@ public class AppCapabilityMongoPersistenceService implements AppCapabilityPersis
     }
 
     @Override
+    public List<AppCapabilityMongoEntity> findAllByParentId(Iterable<Long> ids) {
+        return mongoTemplate.find(new Query(Criteria.where("parentId")
+                .in(ids)), AppCapabilityMongoEntity.class, collectionName);
+    }
+
+    @Override
     public Page<AppCapabilityMongoEntity> findAll(QueryAppCapability query, Pageable pageable) {
 
         List<AppCapabilityMongoEntity> entities = mongoTemplate.find(getQuery(query).with(pageable), AppCapabilityMongoEntity.class, collectionName);

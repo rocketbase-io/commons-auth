@@ -11,9 +11,11 @@ import java.util.List;
 
 public abstract class TeamData {
 
+    // solve recursion dep to UserData
+    public static List<Long> TEAM_IDS = Arrays.asList(38005872272616450L, 38005872272616451L, 38005872272616451L);
 
     public static SimpleAppTeamEntity TEAM_ONE = SimpleAppTeamEntity.builder()
-            .id(38005872272616450L)
+            .id(TEAM_IDS.get(0))
             .name("one")
             .description("the one and only")
             .personal(true)
@@ -23,7 +25,7 @@ public abstract class TeamData {
             .build();
 
     public static SimpleAppTeamEntity TEAM_TWO = SimpleAppTeamEntity.builder()
-            .id(38005872272616451L)
+            .id(TEAM_IDS.get(1))
             .name("two")
             .description("two is the one!")
             .personal(false)
@@ -33,7 +35,7 @@ public abstract class TeamData {
             .build();
 
     public static SimpleAppTeamEntity TEAM_THREE = SimpleAppTeamEntity.builder()
-            .id(38005872272616451L)
+            .id(TEAM_IDS.get(2))
             .name("three")
             .description("three my favorite number ;)")
             .personal(false)

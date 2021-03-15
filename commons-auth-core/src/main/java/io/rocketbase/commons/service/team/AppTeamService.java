@@ -1,6 +1,7 @@
 package io.rocketbase.commons.service.team;
 
 import io.rocketbase.commons.dto.appteam.AppTeamRead;
+import io.rocketbase.commons.dto.appteam.AppTeamWrite;
 import io.rocketbase.commons.dto.appteam.AppUserMembership;
 import io.rocketbase.commons.dto.appteam.QueryAppTeam;
 import io.rocketbase.commons.model.AppTeamEntity;
@@ -14,9 +15,11 @@ import java.util.Set;
 
 public interface AppTeamService {
 
-    Page<AppTeamRead> findAll(QueryAppTeam query, Pageable pageable);
+    Page<AppTeamEntity> findAll(QueryAppTeam query, Pageable pageable);
 
-    AppTeamEntity save(AppTeamEntity entity);
+    AppTeamEntity create(AppTeamWrite write);
+
+    AppTeamEntity update(Long id, AppTeamWrite write);
 
     Optional<AppTeamEntity> findById(Long id);
 

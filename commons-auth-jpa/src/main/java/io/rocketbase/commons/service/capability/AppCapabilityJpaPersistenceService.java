@@ -1,11 +1,14 @@
 package io.rocketbase.commons.service.capability;
 
 import io.rocketbase.commons.dto.appcapability.QueryAppCapability;
+import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.model.AppCapabilityJpaEntity;
+import io.rocketbase.commons.model.AppCapabilityJpaEntity_;
 import io.rocketbase.commons.service.JpaQueryHelper;
 import io.rocketbase.commons.util.Snowflake;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 import javax.persistence.EntityManager;
@@ -38,6 +41,14 @@ public class AppCapabilityJpaPersistenceService implements AppCapabilityPersiste
     }
 
     @Override
+    public List<AppCapabilityJpaEntity> findAllByParentId(Iterable<Long> ids) {
+        Specification<AppCapabilityJpaEntity> specification = (root, criteriaQuery, cb) -> {
+            return cb.and(root.get(AppCapabilityJpaEntity_.PARENT).get(AppCapabilityJpaEntity_.ID).in(ids));
+        };
+        return repository.findAll(specification);
+    }
+
+    @Override
     public Page<AppCapabilityJpaEntity> findAll(QueryAppCapability query, Pageable pageable) {
         return null;
     }
@@ -49,6 +60,9 @@ public class AppCapabilityJpaPersistenceService implements AppCapabilityPersiste
         }
         if (entity.getCreated() == null) {
             entity.setCreated(Instant.now());
+        }
+        if (entity.getParentHolder() != null) {
+            entity.setParent(repository.findById(entity.getParentHolder()).orElseThrow(NotFoundException::new));
         }
 
         return repository.save(entity);

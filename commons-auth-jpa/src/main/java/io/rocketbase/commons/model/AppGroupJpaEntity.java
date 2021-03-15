@@ -1,5 +1,6 @@
 package io.rocketbase.commons.model;
 
+import io.rocketbase.commons.service.invite.AppInviteJpaPersistenceService;
 import lombok.*;
 import org.springframework.lang.Nullable;
 
@@ -47,7 +48,12 @@ public class AppGroupJpaEntity implements AppGroupEntity {
     private AppGroupJpaEntity parent;
 
     @Transient
-    private Long parentId;
+    private Long parentHolder;
+
+    @Transient
+    public void setParentId(Long id) {
+        parentHolder = id;
+    }
 
     @Transient
     public Long getParentId() {
@@ -77,9 +83,17 @@ public class AppGroupJpaEntity implements AppGroupEntity {
     )
     private Set<AppCapabilityJpaEntity> capabilities;
 
-    @Setter
+    /**
+     * used only to keep api compatible with mongo<br>
+     * {@link AppInviteJpaPersistenceService} take care of holder and transpiles it to groups
+     */
     @Transient
-    private Set<Long> capabilityIds;
+    private Set<Long> capabilityHolder;
+
+    @Transient
+    public void setCapabilityIds(Set<Long> ids) {
+        capabilityHolder = ids;
+    }
 
     @Transient
     public Set<Long> getCapabilityIds() {

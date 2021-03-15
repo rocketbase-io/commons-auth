@@ -98,7 +98,7 @@ public class AppInviteJpaPersistenceServiceTest extends JpaPersistenceBaseTest {
                 .message("My little message")
                 .email("new@rocketbase.io")
                 .expiration(Instant.now().plus(10, ChronoUnit.DAYS))
-                .capabilityIds(Sets.newHashSet(CapabilityData.USER_READ.getId(), CapabilityData.API_ROOT.getId()))
+                .capabilityHolder(Sets.newHashSet(CapabilityData.USER_READ.getId(), CapabilityData.API_ROOT.getId()))
                 .keyValues(ImmutableMap.of("_secure", "geheim123", "client", "abc"))
                 .build();
 
