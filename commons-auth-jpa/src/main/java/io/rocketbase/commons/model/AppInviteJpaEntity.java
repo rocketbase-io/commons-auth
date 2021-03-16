@@ -4,7 +4,10 @@ import io.rocketbase.commons.dto.appteam.AppTeamInvite;
 import io.rocketbase.commons.model.converter.SetPhoneNumberConverter;
 import io.rocketbase.commons.service.invite.AppInviteJpaPersistenceService;
 import io.rocketbase.commons.service.user.AppUserJpaPersistenceService;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -12,6 +15,7 @@ import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,7 +26,6 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = {"id"})
 public class AppInviteJpaEntity implements AppInviteEntity {
 
     @Id
@@ -136,6 +139,18 @@ public class AppInviteJpaEntity implements AppInviteEntity {
 
     public AppInviteJpaEntity(Long id) {
         this.id = id;
+    }
+
+    public boolean equals(final Object o) {
+        if (o == this) return true;
+        if (!(o instanceof AppInviteEntity)) return false;
+        final AppInviteEntity other = (AppInviteEntity) o;
+        return Objects.equals(this.getId(), other.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
 }

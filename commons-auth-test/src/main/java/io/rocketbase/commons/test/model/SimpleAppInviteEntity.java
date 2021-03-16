@@ -7,6 +7,7 @@ import lombok.*;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -39,4 +40,17 @@ public class SimpleAppInviteEntity implements AppInviteEntity {
     private Instant created;
 
     private AppTeamInvite teamInvite;
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this) return true;
+        if (!(o instanceof AppInviteEntity)) return false;
+        final AppInviteEntity other = (AppInviteEntity) o;
+        return Objects.equals(this.getId(), other.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

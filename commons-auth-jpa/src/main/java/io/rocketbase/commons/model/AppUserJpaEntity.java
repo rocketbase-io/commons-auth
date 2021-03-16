@@ -5,17 +5,17 @@ import io.rocketbase.commons.model.embedded.UserSettingJpaEmbedded;
 import io.rocketbase.commons.model.user.UserProfile;
 import io.rocketbase.commons.model.user.UserSetting;
 import io.rocketbase.commons.service.user.AppUserJpaPersistenceService;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = {"id"})
 public class AppUserJpaEntity implements AppUserEntity {
 
     @Id
@@ -197,5 +196,17 @@ public class AppUserJpaEntity implements AppUserEntity {
         if (created == null) {
             created = Instant.now();
         }
+    }
+
+    public boolean equals(final Object o) {
+        if (o == this) return true;
+        if (!(o instanceof AppUserEntity)) return false;
+        final AppUserEntity other = (AppUserEntity) o;
+        return Objects.equals(this.getId(), other.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

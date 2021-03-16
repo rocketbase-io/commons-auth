@@ -1,6 +1,9 @@
 package io.rocketbase.commons.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -9,6 +12,7 @@ import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Set;
 
 import static io.rocketbase.commons.model.AppClientMongoEntity.COLLECTION_NAME;
@@ -18,7 +22,6 @@ import static io.rocketbase.commons.model.AppClientMongoEntity.COLLECTION_NAME;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = {"id"})
 public class AppClientMongoEntity implements AppClientEntity {
 
     public static final String COLLECTION_NAME = "co_client";
@@ -44,6 +47,18 @@ public class AppClientMongoEntity implements AppClientEntity {
 
     public AppClientMongoEntity(Long id) {
         this.id = id;
+    }
+
+    public boolean equals(final Object o) {
+        if (o == this) return true;
+        if (!(o instanceof AppClientEntity)) return false;
+        final AppClientEntity other = (AppClientEntity) o;
+        return Objects.equals(this.getId(), other.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
 }

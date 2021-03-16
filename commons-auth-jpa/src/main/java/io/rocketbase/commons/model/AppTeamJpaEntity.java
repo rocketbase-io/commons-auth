@@ -1,7 +1,10 @@
 package io.rocketbase.commons.model;
 
 import io.rocketbase.commons.dto.appteam.AppTeamRole;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
@@ -9,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Entity
 @Table(name = "co_team",
@@ -19,7 +23,6 @@ import java.util.Map;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = {"id"})
 public class AppTeamJpaEntity implements AppTeamEntity {
 
     @Id
@@ -76,6 +79,18 @@ public class AppTeamJpaEntity implements AppTeamEntity {
 
     public AppTeamJpaEntity(Long id) {
         this.id = id;
+    }
+
+    public boolean equals(final Object o) {
+        if (o == this) return true;
+        if (!(o instanceof AppTeamEntity)) return false;
+        final AppTeamEntity other = (AppTeamEntity) o;
+        return Objects.equals(this.getId(), other.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
 }

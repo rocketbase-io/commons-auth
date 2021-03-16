@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Set;
 
 
@@ -29,4 +30,17 @@ public class SimpleAppClientEntity implements AppClientEntity {
     private Set<String> redirectUrls;
 
     private Instant created;
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this) return true;
+        if (!(o instanceof AppClientEntity)) return false;
+        final AppClientEntity other = (AppClientEntity) o;
+        return Objects.equals(this.getId(), other.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

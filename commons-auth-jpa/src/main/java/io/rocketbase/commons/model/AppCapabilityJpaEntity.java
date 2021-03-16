@@ -1,12 +1,16 @@
 package io.rocketbase.commons.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.Instant;
+import java.util.Objects;
 
 @Entity
 @Table(name = "co_capacity",
@@ -17,7 +21,6 @@ import java.time.Instant;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = {"id"})
 public class AppCapabilityJpaEntity implements AppCapabilityEntity {
 
     @Id
@@ -59,6 +62,18 @@ public class AppCapabilityJpaEntity implements AppCapabilityEntity {
 
     public AppCapabilityJpaEntity(Long id) {
         this.id = id;
+    }
+
+    public boolean equals(final Object o) {
+        if (o == this) return true;
+        if (!(o instanceof AppCapabilityEntity)) return false;
+        final AppCapabilityEntity other = (AppCapabilityEntity) o;
+        return Objects.equals(this.getId(), other.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
 }

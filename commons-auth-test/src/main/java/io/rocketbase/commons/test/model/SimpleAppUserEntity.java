@@ -9,6 +9,7 @@ import lombok.*;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -58,5 +59,18 @@ public class SimpleAppUserEntity implements AppUserEntity, AppUserReference {
     @Override
     public void updateLastTokenInvalidation() {
         lastTokenInvalidation = Instant.now();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this) return true;
+        if (!(o instanceof AppUserEntity)) return false;
+        final AppUserEntity other = (AppUserEntity) o;
+        return Objects.equals(this.getId(), other.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

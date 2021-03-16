@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.Objects;
 
 @Data
 @AllArgsConstructor
@@ -28,7 +29,18 @@ public class SimpleAppCapabilityEntity implements AppCapabilityEntity {
 
     private Instant created;
 
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this) return true;
+        if (!(o instanceof AppCapabilityEntity)) return false;
+        final AppCapabilityEntity other = (AppCapabilityEntity) o;
+        return Objects.equals(this.getId(), other.getId());
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
 
 
