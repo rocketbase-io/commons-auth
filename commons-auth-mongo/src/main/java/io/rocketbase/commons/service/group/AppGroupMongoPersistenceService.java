@@ -1,6 +1,9 @@
 package io.rocketbase.commons.service.group;
 
+import com.google.common.collect.Lists;
+import io.rocketbase.commons.dto.appgroup.AppGroupRead;
 import io.rocketbase.commons.dto.appgroup.QueryAppGroup;
+import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.model.AppGroupMongoEntity;
 import io.rocketbase.commons.service.MongoQueryHelper;
 import io.rocketbase.commons.util.Snowflake;
@@ -14,10 +17,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.StringUtils;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class AppGroupMongoPersistenceService implements AppGroupPersistenceService<AppGroupMongoEntity>, MongoQueryHelper {
@@ -40,7 +42,13 @@ public class AppGroupMongoPersistenceService implements AppGroupPersistenceServi
     @Override
     public List<AppGroupMongoEntity> findAllById(Iterable<Long> ids) {
         return mongoTemplate.find(new Query(Criteria.where("_id")
-                .in(ids)), AppGroupMongoEntity.class, collectionName);
+                .in(Lists.newArrayList(ids))), AppGroupMongoEntity.class, collectionName);
+    }
+
+    @Override
+    public List<AppGroupMongoEntity> findAllByParentId(Iterable<Long> ids) {
+        return mongoTemplate.find(new Query(Criteria.where("parentId")
+                .in(Lists.newArrayList(ids))), AppGroupMongoEntity.class, collectionName);
     }
 
     @Override
@@ -97,7 +105,11 @@ public class AppGroupMongoPersistenceService implements AppGroupPersistenceServi
 
     @Override
     public void delete(Long id) {
-        mongoTemplate.remove(new Query(Criteria.where("_id").is(id)), AppGroupMongoEntity.class, collectionName);
+        if (AppGroupRead.ROOT.getId().equals(id)) {
+            throw new BadRequestException("root is not deletable!");
+        }
+        Set<AppGroupMongoEntity> resolved = resolveTree(Arrays.asList(id));
+        mongoTemplate.remove(new Query(Criteria.where("_id").in(resolved.stream().map(AppGroupMongoEntity::getId).collect(Collectors.toList()))), AppGroupMongoEntity.class, collectionName);
     }
 
     @Override

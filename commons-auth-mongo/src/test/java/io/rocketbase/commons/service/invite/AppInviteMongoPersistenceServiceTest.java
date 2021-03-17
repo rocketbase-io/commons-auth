@@ -103,14 +103,17 @@ public class AppInviteMongoPersistenceServiceTest extends MongoPersistenceBaseTe
         entity.addKeyValue("client", "abc");
 
         // when
-        AppInviteMongoEntity result = service.save(entity);
+        service.save(entity);
+        AppInviteMongoEntity result = service.findById(entity.getId()).get();
 
         // then
         assertThat(result, notNullValue());
+        assertThat(result.getId(), equalTo(entity.getId()));
+        assertThat(result.getCreated().truncatedTo(ChronoUnit.SECONDS), equalTo(entity.getCreated().truncatedTo(ChronoUnit.SECONDS)));
         assertThat(result.getMessage(), equalTo(entity.getMessage()));
         assertThat(result.getEmail(), equalTo(entity.getEmail()));
         assertThat(result.getCapabilityIds(), equalTo(entity.getCapabilityIds()));
-        assertThat(result.getExpiration(), equalTo(entity.getExpiration()));
+        assertThat(result.getExpiration().truncatedTo(ChronoUnit.SECONDS), equalTo(entity.getExpiration().truncatedTo(ChronoUnit.SECONDS)));
     }
 
     @Test

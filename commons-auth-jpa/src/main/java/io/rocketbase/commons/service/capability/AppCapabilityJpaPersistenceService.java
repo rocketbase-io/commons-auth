@@ -1,7 +1,11 @@
 package io.rocketbase.commons.service.capability;
 
+import com.google.common.collect.Lists;
+import io.rocketbase.commons.dto.appcapability.AppCapabilityRead;
 import io.rocketbase.commons.dto.appcapability.QueryAppCapability;
+import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.exception.NotFoundException;
+import io.rocketbase.commons.model.AppCapabilityEntity;
 import io.rocketbase.commons.model.AppCapabilityJpaEntity;
 import io.rocketbase.commons.model.AppCapabilityJpaEntity_;
 import io.rocketbase.commons.service.JpaQueryHelper;
@@ -13,8 +17,8 @@ import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 import javax.persistence.EntityManager;
 import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class AppCapabilityJpaPersistenceService implements AppCapabilityPersistenceService<AppCapabilityJpaEntity>, JpaQueryHelper {
 
@@ -43,7 +47,7 @@ public class AppCapabilityJpaPersistenceService implements AppCapabilityPersiste
     @Override
     public List<AppCapabilityJpaEntity> findAllByParentId(Iterable<Long> ids) {
         Specification<AppCapabilityJpaEntity> specification = (root, criteriaQuery, cb) -> {
-            return cb.and(root.get(AppCapabilityJpaEntity_.PARENT).get(AppCapabilityJpaEntity_.ID).in(ids));
+            return cb.and(root.get(AppCapabilityJpaEntity_.PARENT).get(AppCapabilityJpaEntity_.ID).in(Lists.newArrayList(ids)));
         };
         return repository.findAll(specification);
     }
@@ -70,7 +74,13 @@ public class AppCapabilityJpaPersistenceService implements AppCapabilityPersiste
 
     @Override
     public void delete(Long id) {
-        repository.deleteById(id);
+        if (AppCapabilityRead.ROOT.getId().equals(id)) {
+            throw new BadRequestException("root is not deletable!");
+        }
+        Set<AppCapabilityJpaEntity> resolved = resolveTree(Arrays.asList(id));
+        for (AppCapabilityJpaEntity e : resolved.stream().sorted(Comparator.comparing(AppCapabilityEntity::getDepth).reversed()).collect(Collectors.toList())) {
+            repository.deleteById(e.getId());
+        }
     }
 
     @Override

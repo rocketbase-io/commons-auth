@@ -1,20 +1,26 @@
 package io.rocketbase.commons.service.group;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import io.rocketbase.commons.dto.appgroup.AppGroupRead;
 import io.rocketbase.commons.dto.appgroup.QueryAppGroup;
+import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.model.AppCapabilityJpaEntity;
+import io.rocketbase.commons.model.AppGroupEntity;
 import io.rocketbase.commons.model.AppGroupJpaEntity;
+import io.rocketbase.commons.model.AppGroupJpaEntity_;
 import io.rocketbase.commons.service.JpaQueryHelper;
 import io.rocketbase.commons.util.Snowflake;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 import javax.persistence.EntityManager;
 import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class AppGroupJpaPersistenceService implements AppGroupPersistenceService<AppGroupJpaEntity>, JpaQueryHelper {
 
@@ -43,6 +49,14 @@ public class AppGroupJpaPersistenceService implements AppGroupPersistenceService
     }
 
     @Override
+    public List<AppGroupJpaEntity> findAllByParentId(Iterable<Long> ids) {
+        Specification<AppGroupJpaEntity> specification = (root, criteriaQuery, cb) -> {
+            return cb.and(root.get(AppGroupJpaEntity_.PARENT).get(AppGroupJpaEntity_.ID).in(Lists.newArrayList(ids)));
+        };
+        return repository.findAll(specification);
+    }
+
+    @Override
     public Page<AppGroupJpaEntity> findAll(QueryAppGroup query, Pageable pageable) {
         return null;
     }
@@ -67,7 +81,13 @@ public class AppGroupJpaPersistenceService implements AppGroupPersistenceService
 
     @Override
     public void delete(Long id) {
-        repository.deleteById(id);
+        if (AppGroupRead.ROOT.getId().equals(id)) {
+            throw new BadRequestException("root is not deletable!");
+        }
+        Set<AppGroupJpaEntity> resolved = resolveTree(Arrays.asList(id));
+        for (AppGroupJpaEntity e : resolved.stream().sorted(Comparator.comparing(AppGroupEntity::getDepth).reversed()).collect(Collectors.toList())) {
+            repository.deleteById(e.getId());
+        }
     }
 
     @Override

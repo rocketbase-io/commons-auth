@@ -1,5 +1,6 @@
 package io.rocketbase.commons.service.user;
 
+import com.google.common.collect.Lists;
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.model.AppUserMongoEntity;
 import io.rocketbase.commons.service.MongoQueryHelper;
@@ -109,7 +110,7 @@ public class AppUserMongoPersistenceService implements AppUserPersistenceService
     @Override
     public List<AppUserMongoEntity> findAllById(Iterable<String> ids) {
         return mongoTemplate.find(new Query(Criteria.where("_id")
-                .in(ids)), AppUserMongoEntity.class, collectionName);
+                .in(Lists.newArrayList(ids))), AppUserMongoEntity.class, collectionName);
     }
 
     @Override

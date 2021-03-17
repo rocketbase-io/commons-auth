@@ -12,7 +12,7 @@ import java.util.List;
 public abstract class TeamData {
 
     // solve recursion dep to UserData
-    public static List<Long> TEAM_IDS = Arrays.asList(38005872272616450L, 38005872272616451L, 38005872272616451L);
+    public static List<Long> TEAM_IDS = Arrays.asList(38005872272616450L, 38005872272616451L, 38005872272616452L);
 
     public static SimpleAppTeamEntity TEAM_ONE = SimpleAppTeamEntity.builder()
             .id(TEAM_IDS.get(0))

@@ -1,6 +1,7 @@
 package io.rocketbase.commons.model;
 
 import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -62,5 +63,9 @@ public interface AppGroupEntity extends Serializable, EntityWithKeyValue<AppGrou
     void setWithChildren(boolean withChildren);
 
     Instant getCreated();
+
+    default int getDepth() {
+        return StringUtils.countOccurrencesOf(getNamePath(), "/");
+    }
 
 }

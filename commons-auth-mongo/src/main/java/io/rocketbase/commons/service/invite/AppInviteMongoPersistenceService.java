@@ -1,5 +1,6 @@
 package io.rocketbase.commons.service.invite;
 
+import com.google.common.collect.Lists;
 import com.mongodb.client.result.DeleteResult;
 import io.rocketbase.commons.dto.appinvite.InviteRequest;
 import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
@@ -91,7 +92,7 @@ public class AppInviteMongoPersistenceService implements AppInvitePersistenceSer
     @Override
     public List<AppInviteMongoEntity> findAllById(Iterable<Long> ids) {
         return mongoTemplate.find(new Query(Criteria.where("_id")
-                .in(ids)), AppInviteMongoEntity.class, collectionName);
+                .in(Lists.newArrayList(ids))), AppInviteMongoEntity.class, collectionName);
     }
 
     @Override

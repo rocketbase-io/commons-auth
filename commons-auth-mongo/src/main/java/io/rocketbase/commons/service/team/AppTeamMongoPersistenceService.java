@@ -1,5 +1,6 @@
 package io.rocketbase.commons.service.team;
 
+import com.google.common.collect.Lists;
 import io.rocketbase.commons.dto.appteam.QueryAppTeam;
 import io.rocketbase.commons.model.AppTeamMongoEntity;
 import io.rocketbase.commons.service.MongoQueryHelper;
@@ -38,7 +39,7 @@ public class AppTeamMongoPersistenceService implements AppTeamPersistenceService
     @Override
     public List<AppTeamMongoEntity> findAllById(Iterable<Long> ids) {
         return mongoTemplate.find(new Query(Criteria.where("_id")
-                .in(ids)), AppTeamMongoEntity.class, collectionName);
+                .in(Lists.newArrayList(ids))), AppTeamMongoEntity.class, collectionName);
     }
 
     @Override

@@ -1,6 +1,9 @@
 package io.rocketbase.commons.service.capability;
 
+import com.google.common.collect.Lists;
+import io.rocketbase.commons.dto.appcapability.AppCapabilityRead;
 import io.rocketbase.commons.dto.appcapability.QueryAppCapability;
+import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.model.AppCapabilityMongoEntity;
 import io.rocketbase.commons.service.MongoQueryHelper;
 import io.rocketbase.commons.util.Snowflake;
@@ -14,8 +17,11 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.StringUtils;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class AppCapabilityMongoPersistenceService implements AppCapabilityPersistenceService<AppCapabilityMongoEntity>, MongoQueryHelper {
@@ -38,13 +44,13 @@ public class AppCapabilityMongoPersistenceService implements AppCapabilityPersis
     @Override
     public List<AppCapabilityMongoEntity> findAllById(Iterable<Long> ids) {
         return mongoTemplate.find(new Query(Criteria.where("_id")
-                .in(ids)), AppCapabilityMongoEntity.class, collectionName);
+                .in(Lists.newArrayList(ids))), AppCapabilityMongoEntity.class, collectionName);
     }
 
     @Override
     public List<AppCapabilityMongoEntity> findAllByParentId(Iterable<Long> ids) {
         return mongoTemplate.find(new Query(Criteria.where("parentId")
-                .in(ids)), AppCapabilityMongoEntity.class, collectionName);
+                .in(Lists.newArrayList(ids))), AppCapabilityMongoEntity.class, collectionName);
     }
 
     @Override
@@ -90,7 +96,11 @@ public class AppCapabilityMongoPersistenceService implements AppCapabilityPersis
 
     @Override
     public void delete(Long id) {
-        mongoTemplate.remove(new Query(Criteria.where("_id").is(id)), AppCapabilityMongoEntity.class, collectionName);
+        if (AppCapabilityRead.ROOT.getId().equals(id)) {
+            throw new BadRequestException("root is not deletable!");
+        }
+        Set<AppCapabilityMongoEntity> resolved = resolveTree(Arrays.asList(id));
+        mongoTemplate.remove(new Query(Criteria.where("_id").in(resolved.stream().map(AppCapabilityMongoEntity::getId).collect(Collectors.toList()))), AppCapabilityMongoEntity.class, collectionName);
     }
 
     @Override

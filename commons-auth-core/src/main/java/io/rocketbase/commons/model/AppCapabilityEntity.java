@@ -1,6 +1,7 @@
 package io.rocketbase.commons.model;
 
 import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -52,5 +53,18 @@ public interface AppCapabilityEntity extends Serializable {
     void setWithChildren(boolean withChildren);
 
     Instant getCreated();
+
+    /**
+     * calculated parent count
+     * <ul>
+     *     <li>parent0.parent1.key has depth 2</li>
+     *     <li>key has depth 0</li>
+     * </ul>
+     */
+    default int getDepth() {
+        return StringUtils.countOccurrencesOf(getKeyPath(), ".");
+    }
+
+
 
 }

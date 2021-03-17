@@ -1,5 +1,6 @@
 package io.rocketbase.commons.service.client;
 
+import com.google.common.collect.Lists;
 import io.rocketbase.commons.dto.appclient.QueryAppClient;
 import io.rocketbase.commons.model.AppClientMongoEntity;
 import io.rocketbase.commons.service.MongoQueryHelper;
@@ -38,7 +39,7 @@ public class AppClientMongoPersistenceService implements AppClientPersistenceSer
     @Override
     public List<AppClientMongoEntity> findAllById(Iterable<Long> ids) {
         return mongoTemplate.find(new Query(Criteria.where("_id")
-                .in(ids)), AppClientMongoEntity.class, collectionName);
+                .in(Lists.newArrayList(ids))), AppClientMongoEntity.class, collectionName);
     }
 
     @Override
