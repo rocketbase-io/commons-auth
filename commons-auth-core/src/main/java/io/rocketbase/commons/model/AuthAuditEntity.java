@@ -18,40 +18,39 @@ public interface AuthAuditEntity extends Serializable {
 
     Instant getTimestamp();
 
-    @NotNull
-    void setTimestamp(Instant timestamp);
+    void setTimestamp(@NotNull Instant timestamp);
 
     String getUserId();
 
-    @NotNull
-    @Size(max = 36)
-    void setUserId(String userId);
+    void setUserId(@NotNull
+                   @Size(max = 36)
+                           String userId);
 
     String getEventType();
 
-    @NotNull
-    @Size(max = 12)
-    void setEventType(String eventType);
+    void setEventType(@NotNull
+                      @Size(max = 12)
+                              String eventType);
 
     String getEventDetail();
 
-    @NotNull
-    @Size(max = 20)
-    void setEventDetail(String eventDetail);
+    void setEventDetail(@NotNull
+                        @Size(max = 20)
+                                String eventDetail);
 
     String getSource();
 
-    @NotNull
-    @Size(max = 40)
-    void setSource(String source);
+    void setSource(@NotNull
+                   @Size(max = 40)
+                           String source);
 
     String getIdentifier();
 
     /**
      * max it's a uuid or key of keyValue
      */
-    @Nullable
-    @Size(max = 50)
-    void setIdentifier(String identifier);
+    void setIdentifier(@Nullable
+                       @Size(max = 50)
+                               String identifier);
 
 }

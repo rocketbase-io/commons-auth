@@ -39,6 +39,10 @@ public class SimpleAppInviteEntity implements AppInviteEntity {
 
     private Instant created;
 
+    private String modifiedBy;
+
+    private Instant modified;
+
     private AppTeamInvite teamInvite;
 
     @Override

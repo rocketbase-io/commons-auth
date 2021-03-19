@@ -9,13 +9,20 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -29,10 +36,11 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class AppUserJpaEntity implements AppUserEntity {
 
     @Id
-    @Column(length = 36)
+    @Column(name = "id", length = 36)
     private String id;
 
     @Nullable
@@ -40,13 +48,16 @@ public class AppUserJpaEntity implements AppUserEntity {
     private String systemRefId;
 
     @NotNull
+    @Column(name = "username")
     private String username;
 
     @NotNull
+    @Column(name = "password")
     private String password;
 
     @NotNull
     @Email
+    @Column(name = "email")
     private String email;
 
     @ManyToMany
@@ -129,7 +140,7 @@ public class AppUserJpaEntity implements AppUserEntity {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_user__team"))
+    @JoinColumn(name = "active_team_id", foreignKey = @ForeignKey(name = "fk_user__team"))
     private AppTeamJpaEntity activeTeam;
 
     /**
@@ -149,12 +160,11 @@ public class AppUserJpaEntity implements AppUserEntity {
         return activeTeam == null ? null : activeTeam.getId();
     }
 
+    @Column(name = "enabled")
     private boolean enabled;
 
+    @Column(name = "locked")
     private boolean locked;
-
-    @NotNull
-    private Instant created;
 
     @Column(name = "last_login")
     private Instant lastLogin;
@@ -184,18 +194,22 @@ public class AppUserJpaEntity implements AppUserEntity {
         this.setting = new UserSettingJpaEmbedded(userSetting);
     }
 
+    @NotNull
+    @CreatedDate
+    @Column(name = "created")
+    private Instant created;
+
+    @LastModifiedBy
+    @Column(name = "modified_by", length = 36)
+    private String modifiedBy;
+
+    @NotNull
+    @LastModifiedDate
+    @Column(name = "modified")
+    private Instant modified;
+
     public AppUserJpaEntity(String id) {
         this.id = id;
-    }
-
-    @PrePersist
-    public void prePersist() {
-        if (id == null) {
-            id = UUID.randomUUID().toString();
-        }
-        if (created == null) {
-            created = Instant.now();
-        }
     }
 
     public boolean equals(final Object o) {
@@ -208,5 +222,27 @@ public class AppUserJpaEntity implements AppUserEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "AppUserJpaEntity{" +
+                "id='" + id + '\'' +
+                ", systemRefId='" + systemRefId + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", keyValues=" + keyValues +
+                ", activeTeamId=" + (activeTeam != null ? activeTeam.getId() : null) +
+                ", enabled=" + enabled +
+                ", locked=" + locked +
+                ", lastLogin=" + lastLogin +
+                ", lastTokenInvalidation=" + lastTokenInvalidation +
+                ", profile=" + profile +
+                ", setting=" + setting +
+                ", created=" + created +
+                ", modifiedBy='" + modifiedBy + '\'' +
+                ", modified=" + modified +
+                '}';
     }
 }

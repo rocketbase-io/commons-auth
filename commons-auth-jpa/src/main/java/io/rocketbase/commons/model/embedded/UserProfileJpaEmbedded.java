@@ -9,9 +9,7 @@ import io.rocketbase.commons.model.user.UserProfile;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Embeddable;
+import javax.persistence.*;
 import java.util.Set;
 
 @Embeddable
@@ -19,12 +17,14 @@ import java.util.Set;
 @NoArgsConstructor
 public class UserProfileJpaEmbedded implements UserProfile {
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "gender", length = 10)
     private Gender gender;
 
-    @Column(length = 10)
+    @Column(name = "salutation", length = 10)
     private String salutation;
 
-    @Column(length = 10)
+    @Column(name = "title", length = 10)
     private String title;
 
     @Column(name = "first_name", length = 100)
@@ -33,10 +33,10 @@ public class UserProfileJpaEmbedded implements UserProfile {
     @Column(name = "last_name", length = 100)
     private String lastName;
 
-    @Column(length = 2000)
+    @Column(name = "avatar", length = 2000)
     private String avatar;
 
-    @Column(length = 500)
+    @Column(name = "about", length = 500)
     private String about;
 
     @Column(name = "phone_number_json", length = 2000)
@@ -47,16 +47,16 @@ public class UserProfileJpaEmbedded implements UserProfile {
     @Convert(converter = SetOnlineProfileConverter.class)
     private Set<OnlineProfile> onlineProfiles;
 
-    @Column(length = 255)
+    @Column(name = "location", length = 255)
     private String location;
 
-    @Column(length = 2)
+    @Column(name = "country", length = 2)
     private String country;
 
     @Column(name = "job_title", length = 100)
     private String jobTitle;
 
-    @Column(length = 100)
+    @Column(name = "organization", length = 100)
     private String organization;
 
     public UserProfileJpaEmbedded(UserProfile userProfile) {

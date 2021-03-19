@@ -32,4 +32,8 @@ public class AppClientRead implements Serializable {
 
     private Instant created;
 
+    private String modifiedBy;
+
+    private Instant modified;
+
 }

@@ -43,6 +43,10 @@ public class AppInviteRead implements HasKeyValue, HasFirstAndLastName {
 
     private Instant created;
 
+    private String modifiedBy;
+
+    private Instant modified;
+
     private Instant expiration;
 
     /**

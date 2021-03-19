@@ -63,6 +63,9 @@ public class AppClientMongoPersistenceService implements AppClientPersistenceSer
             if (!StringUtils.isEmpty(query.getDescription())) {
                 result.addCriteria(buildRegexCriteria("description", query.getDescription()));
             }
+            if (!StringUtils.isEmpty(query.getRedirectUrl())) {
+                result.addCriteria(buildRegexCriteria("redirectUrls", query.getRedirectUrl()));
+            }
             if (query.getIds() != null && !query.getIds().isEmpty()) {
                 result.addCriteria(Criteria.where("_id").in(query.getIds()));
             }

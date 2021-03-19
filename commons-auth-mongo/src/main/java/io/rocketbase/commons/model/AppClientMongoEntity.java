@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.Nullable;
@@ -22,7 +24,7 @@ import static io.rocketbase.commons.model.AppClientMongoEntity.COLLECTION_NAME;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AppClientMongoEntity implements AppClientEntity {
+public class  AppClientMongoEntity implements AppClientEntity {
 
     public static final String COLLECTION_NAME = "co_client";
 
@@ -42,8 +44,16 @@ public class AppClientMongoEntity implements AppClientEntity {
 
     private Set<String> redirectUrls;
 
+    @NotNull
     @CreatedDate
     private Instant created;
+
+    @LastModifiedBy
+    private String modifiedBy;
+
+    @NotNull
+    @LastModifiedDate
+    private Instant modified;
 
     public AppClientMongoEntity(Long id) {
         this.id = id;

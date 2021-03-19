@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -50,8 +52,16 @@ public class AppInviteMongoEntity implements AppInviteEntity {
 
     private Set<Long> groupIds;
 
+    @NotNull
     @CreatedDate
     private Instant created;
+
+    @LastModifiedBy
+    private String modifiedBy;
+
+    @NotNull
+    @LastModifiedDate
+    private Instant modified;
 
     @Indexed
     private Instant expiration;

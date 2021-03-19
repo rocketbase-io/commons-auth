@@ -6,6 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
@@ -26,9 +30,11 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class AppClientJpaEntity implements AppClientEntity {
 
     @Id
+    @Column(name = "id")
     private Long id;
 
     @Nullable
@@ -36,10 +42,10 @@ public class AppClientJpaEntity implements AppClientEntity {
     private String systemRefId;
 
     @NotNull
-    @Column(length = 100)
+    @Column(name = "name", length = 100)
     private String name;
 
-    @Column(length = 500)
+    @Column(name = "description", length = 500)
     private String description;
 
     @ManyToMany
@@ -80,7 +86,18 @@ public class AppClientJpaEntity implements AppClientEntity {
     private Set<String> redirectUrls;
 
     @NotNull
+    @CreatedDate
+    @Column(name = "created")
     private Instant created;
+
+    @LastModifiedBy
+    @Column(name = "modified_by", length = 36)
+    private String modifiedBy;
+
+    @NotNull
+    @LastModifiedDate
+    @Column(name = "modified")
+    private Instant modified;
 
     public AppClientJpaEntity(Long id) {
         this.id = id;
@@ -98,4 +115,17 @@ public class AppClientJpaEntity implements AppClientEntity {
         return Objects.hash(id);
     }
 
+    @Override
+    public String toString() {
+        return "AppClientJpaEntity{" +
+                "id=" + id +
+                ", systemRefId='" + systemRefId + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", redirectUrls=" + redirectUrls +
+                ", created=" + created +
+                ", modifiedBy='" + modifiedBy + '\'' +
+                ", modified=" + modified +
+                '}';
+    }
 }

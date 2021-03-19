@@ -38,6 +38,10 @@ public class SimpleAppGroupEntity implements AppGroupEntity {
 
     private Instant created;
 
+    private String modifiedBy;
+
+    private Instant modified;
+
     @Override
     public boolean equals(final Object o) {
         if (o == this) return true;

@@ -3,7 +3,6 @@ package io.rocketbase.commons.service.invite;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
-import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppInviteJpaEntity;
 import io.rocketbase.commons.service.JpaPersistenceBaseTest;
 import io.rocketbase.commons.test.data.CapabilityData;
@@ -39,7 +38,7 @@ public class AppInviteJpaPersistenceServiceTest extends JpaPersistenceBaseTest {
 
         // then
         assertThat(result, notNullValue());
-        assertThat(result.getTotalElements(), equalTo(3L));
+        assertThat(result.getTotalElements(), equalTo(4L));
     }
 
 
@@ -53,9 +52,10 @@ public class AppInviteJpaPersistenceServiceTest extends JpaPersistenceBaseTest {
 
         // then
         assertThat(result, notNullValue());
-        assertThat(result.getTotalElements(), equalTo(2L));
-        assertThat(result.getContent().get(0).getEmail(), equalTo("hello@rocketbase.io"));
-        assertThat(result.getContent().get(1).getEmail(), equalTo("valid@rocketbase.io"));
+        assertThat(result.getTotalElements(), equalTo(3L));
+        assertThat(result.getContent().get(0).getEmail(), equalTo("betty@rocketbase.io"));
+        assertThat(result.getContent().get(1).getEmail(), equalTo("hello@rocketbase.io"));
+        assertThat(result.getContent().get(2).getEmail(), equalTo("valid@rocketbase.io"));
     }
 
     @Test
@@ -87,32 +87,35 @@ public class AppInviteJpaPersistenceServiceTest extends JpaPersistenceBaseTest {
         // then
         assertThat(result, notNullValue());
         assertThat(result.getTotalElements(), equalTo(1L));
-        assertThat(result.getContent().get(0).getEmail(), equalTo("valid@rocketbase.io"));
+        assertThat(result.getContent().get(0).getEmail(), equalTo("hello@rocketbase.io"));
     }
 
     @Test
     public void save() {
         // given
-        AppInviteJpaEntity entity = AppInviteJpaEntity.builder()
-                .invitor("Invitor")
-                .message("My little message")
-                .email("new@rocketbase.io")
-                .expiration(Instant.now().plus(10, ChronoUnit.DAYS))
-                .capabilityHolder(Sets.newHashSet(CapabilityData.USER_READ.getId(), CapabilityData.API_ROOT.getId()))
-                .keyValues(ImmutableMap.of("_secure", "geheim123", "client", "abc"))
-                .build();
+        AppInviteJpaEntity entity = service.initNewInstance();
+        entity.setInvitor("Invitor");
+        entity.setMessage("My little message");
+        entity.setEmail("new@rocketbase.io");
+        entity.setExpiration(Instant.now().plus(10, ChronoUnit.DAYS));
+        entity.setCapabilityIds(Sets.newHashSet(CapabilityData.API_ROOT.getId(), CapabilityData.USER_OBJECT.getId()));
+        entity.addKeyValue("_secure", "geheim123");
+        entity.addKeyValue("client", "abc");
 
         // when
-        AppInviteJpaEntity result = service.save(entity);
+        service.save(entity);
+        AppInviteJpaEntity result = service.findById(entity.getId()).get();
 
         // then
         assertThat(result, notNullValue());
+        assertThat(result.getId(), equalTo(entity.getId()));
+        assertThat(result.getCreated(), notNullValue());
+        assertThat(result.getModified(), notNullValue());
+        assertThat(result.getModifiedBy(), notNullValue());
         assertThat(result.getMessage(), equalTo(entity.getMessage()));
         assertThat(result.getEmail(), equalTo(entity.getEmail()));
-        assertThat(result.getCapabilities(), equalTo(entity.getCapabilities()));
-        assertThat(result.getExpiration(), equalTo(entity.getExpiration()));
-        assertThat(result.getKeyValue("_secure"), equalTo("geheim123"));
-        assertThat(result.hasKeyValue("client"), equalTo("abc"));
+        assertThat(result.getCapabilityIds(), equalTo(entity.getCapabilityIds()));
+        assertThat(result.getExpiration().truncatedTo(ChronoUnit.SECONDS), equalTo(entity.getExpiration().truncatedTo(ChronoUnit.SECONDS)));
     }
 
     @Test
@@ -132,8 +135,8 @@ public class AppInviteJpaPersistenceServiceTest extends JpaPersistenceBaseTest {
         // given
 
         // when
-        service.delete(InviteData.INVITE_ONE.getId());
-        Optional<AppInviteJpaEntity> result = service.findById(InviteData.INVITE_ONE.getId());
+        service.delete(InviteData.INVITE_TWO.getId());
+        Optional<AppInviteJpaEntity> result = service.findById(InviteData.INVITE_TWO.getId());
 
         // then
         assertThat(result, notNullValue());
@@ -152,39 +155,19 @@ public class AppInviteJpaPersistenceServiceTest extends JpaPersistenceBaseTest {
     }
 
     @Test
-    public void findAllWithKeyValue() {
+    public void findAllKeyValues() {
         // given
         QueryAppInvite query = QueryAppInvite.builder()
-                .expired(false)
-                .keyValues(ImmutableMap.of("workspace", "1"))
-                .build();
-        // when
-        Page<AppInviteJpaEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("email")));
-
-        // then
-        assertThat(result, notNullValue());
-        for (AppInviteEntity e : result.getContent()) {
-            assertThat(e.getKeyValue("workspace"), equalTo("1"));
-            if (e.getExpiration()  != null && e.getExpiration().isBefore(Instant.now())) {
-                assertThat("expired", false);
-            }
-        }
-    }
-
-    @Test
-    public void findAllWithKeyValueAndOtherFilters() {
-        // given
-        QueryAppInvite query = QueryAppInvite.builder()
-                .expired(false)
-                .keyValues(ImmutableMap.of("workspace", "1"))
-                .invitor("ma")
+                .keyValues(ImmutableMap.of("workspace", "1", "_secret","secure"))
                 .build();
 
         // when
-        Page<AppInviteJpaEntity> result = service.findAll(query, PageRequest.of(0, 10, Sort.by("email")));
+        Page<AppInviteJpaEntity> result = service.findAll(query, PageRequest.of(0, 10));
 
         // then
         assertThat(result, notNullValue());
         assertThat(result.getTotalElements(), equalTo(1L));
+        assertThat(result.getContent().get(0).getKeyValue("workspace"), equalTo("1"));
+        assertThat(result.getContent().get(0).getKeyValue("_secret"), equalTo("secure"));
     }
 }

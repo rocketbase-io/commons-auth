@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.Nullable;
@@ -53,8 +55,16 @@ public class AppGroupMongoEntity implements AppGroupEntity {
     @Builder.Default
     private Map<String, String> keyValues = new HashMap<>();
 
+    @NotNull
     @CreatedDate
     private Instant created;
+
+    @LastModifiedBy
+    private String modifiedBy;
+
+    @NotNull
+    @LastModifiedDate
+    private Instant modified;
 
     public AppGroupMongoEntity(Long id) {
         this.id = id;

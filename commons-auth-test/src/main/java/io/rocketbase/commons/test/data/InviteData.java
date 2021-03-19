@@ -28,6 +28,8 @@ public class InviteData {
             .groupIds(ImmutableSet.of(GroupData.DEPARTMENT_ONE_GROUP.getId()))
             .expiration(Instant.now().plusSeconds(60 * 60 * 24 * 14)) // plus 14 days
             .created(Instant.now()) // now
+            .modified(Instant.now())
+            .modifiedBy("test")
             .build();
 
     public static SimpleAppInviteEntity INVITE_TWO = SimpleAppInviteEntity.builder()
@@ -41,6 +43,8 @@ public class InviteData {
             .groupIds(ImmutableSet.of(GroupData.DEPARTMENT_ONE_GROUP.getId()))
             .expiration(Instant.now().plusSeconds(60 * 60 * 24 * 14)) // plus 14 days
             .created(Instant.now()) // now
+            .modified(Instant.now())
+            .modifiedBy("test")
             .teamInvite(new AppTeamInvite(TeamData.TEAM_TWO.getId(), AppTeamRole.MEMBER))
             .build();
 
@@ -55,6 +59,8 @@ public class InviteData {
             .groupIds(ImmutableSet.of(GroupData.DEPARTMENT_ONE_GROUP.getId()))
             .expiration(Instant.now().plusSeconds(60 * 60 * 24 * 14)) // plus 14 days
             .created(Instant.now()) // now
+            .modified(Instant.now())
+            .modifiedBy("test")
             .build();
 
     public static SimpleAppInviteEntity INVITE_EXPIRED = SimpleAppInviteEntity.builder()
@@ -67,6 +73,8 @@ public class InviteData {
             .groupIds(ImmutableSet.of(GroupData.ADMIN_GROUP.getId()))
             .expiration(Instant.ofEpochSecond(1613088000)) // 2020-02-12
             .created(Instant.ofEpochSecond(1612137600)) // 2020-02-01
+            .modified(Instant.ofEpochSecond(1612137600))
+            .modifiedBy("test")
             .teamInvite(new AppTeamInvite(TeamData.TEAM_ONE.getId(), AppTeamRole.OWNER))
             .build();
 

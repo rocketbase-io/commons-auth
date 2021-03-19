@@ -32,7 +32,7 @@ public class QueryAppClient implements Serializable {
     private Set<Long> capabilityIds;
 
     @Nullable
-    private Set<String> redirectUrls;
+    private String redirectUrl;
 
     @Nullable
     private String description;

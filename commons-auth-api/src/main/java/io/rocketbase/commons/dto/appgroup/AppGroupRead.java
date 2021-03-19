@@ -19,8 +19,8 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 public class AppGroupRead extends AppGroupShort implements HasKeyValue {
 
-    public static AppGroupRead ROOT = new AppGroupRead(6291457024L, null, null, "*",
-            "root group", true, 6291457024L, null, null, Instant.ofEpochMilli(1577836800000L));
+    public static AppGroupRead ROOT = new AppGroupRead(6291457024L, "", null, "*",
+            "root group", true, 6291457024L, null, null, Instant.ofEpochMilli(1577836800000L), "commons-auth", Instant.ofEpochMilli(1577836800000L));
 
     @Nullable
     private String systemRefId;
@@ -43,6 +43,10 @@ public class AppGroupRead extends AppGroupShort implements HasKeyValue {
 
     private Instant created;
 
+    private String modifiedBy;
+
+    private Instant modified;
+
     @JsonIgnore
     public AppGroupShort toShort() {
         return new AppGroupShort(
@@ -52,7 +56,7 @@ public class AppGroupRead extends AppGroupShort implements HasKeyValue {
     }
 
     @Builder
-    public AppGroupRead(Long id, String namePath, String systemRefId, String name, String description, boolean withChildren, Long parentId, Set<AppCapabilityShort> capabilities, Map<String, String> keyValues, Instant created) {
+    public AppGroupRead(Long id, String namePath, String systemRefId, String name, String description, boolean withChildren, Long parentId, Set<AppCapabilityShort> capabilities, Map<String, String> keyValues, Instant created, String modifiedBy,  Instant modified) {
         super(id, namePath);
         this.systemRefId = systemRefId;
         this.name = name;
@@ -62,6 +66,8 @@ public class AppGroupRead extends AppGroupShort implements HasKeyValue {
         this.capabilities = capabilities;
         this.keyValues = keyValues;
         this.created = created;
+        this.modifiedBy = modifiedBy;
+        this.modified = modified;
     }
 
     /**

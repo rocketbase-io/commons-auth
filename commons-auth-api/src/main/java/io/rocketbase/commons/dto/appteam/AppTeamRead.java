@@ -26,17 +26,23 @@ public class AppTeamRead extends AppTeamShort implements Serializable {
 
     private Instant created;
 
+    private String modifiedBy;
+
+    private Instant modified;
+
     @Nullable
     private Map<String, String> keyValues;
 
     @Builder
-    public AppTeamRead(Long id, String name, String systemRefId, String description, boolean personal, Instant created, Map<String, String> keyValues) {
+    public AppTeamRead(Long id, String name, String systemRefId, String description, boolean personal, Map<String, String> keyValues, Instant created, String modifiedBy,  Instant modified) {
         super(id, name);
         this.systemRefId = systemRefId;
         this.description = description;
         this.personal = personal;
-        this.created = created;
         this.keyValues = keyValues;
+        this.created = created;
+        this.modifiedBy = modifiedBy;
+        this.modified = modified;
     }
 
     public AppTeamRead(AppTeamRead other) {
@@ -46,6 +52,8 @@ public class AppTeamRead extends AppTeamShort implements Serializable {
         this.description = other.description;
         this.personal = other.personal;
         this.created = other.created;
+        this.modifiedBy = other.modifiedBy;
+        this.modified = other.modified;
         this.keyValues = other.keyValues != null ? new HashMap<>(other.keyValues) : null;
     }
 

@@ -20,28 +20,23 @@ public interface AppInviteEntity extends Serializable, EntityWithKeyValue<AppInv
 
     String getInvitor();
 
-    @Size(max = 255)
-    void setInvitor(String invitor);
+    void setInvitor(@Size(max = 255) String invitor);
 
     String getMessage();
 
-    @Size(max = 4000)
-    void setMessage(String message);
+    void setMessage(@Size(max = 4000) String message);
 
     String getFirstName();
 
-    @Size(max = 100)
-    void setFirstName(String firstName);
+    void setFirstName(@Size(max = 100) String firstName);
 
     String getLastName();
 
-    @Size(max = 100)
-    void setLastName(String lastName);
+    void setLastName(@Size(max = 100) String lastName);
 
     String getEmail();
 
-    @Size(max = 255)
-    void setEmail(String email);
+    void setEmail(@Size(max = 255) String email);
 
     Set<Long> getCapabilityIds();
 
@@ -60,6 +55,10 @@ public interface AppInviteEntity extends Serializable, EntityWithKeyValue<AppInv
     Instant getExpiration();
 
     Instant getCreated();
+
+    Instant getModified();
+
+    String getModifiedBy();
 
     /**
      * fullname fallback if null use email

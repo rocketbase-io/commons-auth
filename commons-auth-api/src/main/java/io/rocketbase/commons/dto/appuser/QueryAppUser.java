@@ -68,6 +68,6 @@ public class QueryAppUser implements Serializable, HasKeyValue, HasFirstAndLastN
 
     @Transient
     public boolean isEmpty() {
-        return !Nulls.anyNoneNullValue(username, firstName, lastName, email, keyValues, freetext, capabilityIds, enabled);
+        return !Nulls.anyNoneNullValue(username, firstName, lastName, email, systemRefId, keyValues, freetext, capabilityIds, groupIds, enabled);
     }
 }

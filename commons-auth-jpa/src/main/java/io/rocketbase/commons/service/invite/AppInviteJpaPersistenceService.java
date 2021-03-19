@@ -48,9 +48,9 @@ public class AppInviteJpaPersistenceService implements AppInvitePersistenceServi
             }
             Predicate result;
             if (!Nulls.notNull(query.getExpired(), false)) {
-                result = cb.greaterThanOrEqualTo(root.get("expiration"), Instant.now());
+                result = cb.greaterThanOrEqualTo(root.get(AppInviteJpaEntity_.EXPIRATION), Instant.now());
             } else {
-                result = cb.lessThan(root.get("expiration"), Instant.now());
+                result = cb.lessThan(root.get(AppInviteJpaEntity_.EXPIRATION), Instant.now());
             }
 
             List<Predicate> predicates = new ArrayList<>();
@@ -59,8 +59,8 @@ public class AppInviteJpaPersistenceService implements AppInvitePersistenceServi
 
             if (query.getKeyValues() != null && !query.getKeyValues().isEmpty()) {
                 criteriaQuery.distinct(true);
-                MapJoin<AppInviteJpaEntity, String, String> mapJoin = root.joinMap("keyValueMap");
                 for (Map.Entry<String, String> keyEntry : query.getKeyValues().entrySet()) {
+                    MapJoin<AppInviteJpaEntity, String, String> mapJoin = root.joinMap(AppInviteJpaEntity_.KEY_VALUES);
                     predicates.add(cb.and(cb.equal(mapJoin.key(), keyEntry.getKey()), cb.equal(mapJoin.value(), keyEntry.getValue())));
                 }
             }
@@ -77,9 +77,6 @@ public class AppInviteJpaPersistenceService implements AppInvitePersistenceServi
     public AppInviteJpaEntity save(AppInviteJpaEntity entity) {
         if (entity.getId() == null) {
             entity.setId(snowflake.nextId());
-        }
-        if (entity.getCreated() == null) {
-            entity.setCreated(Instant.now());
         }
         if (entity.getCapabilityHolder() != null) {
             entity.setCapabilities(Sets.newHashSet(capabilityRepository.findAllById(entity.getCapabilityHolder())));
@@ -109,15 +106,38 @@ public class AppInviteJpaPersistenceService implements AppInvitePersistenceServi
 
     @Override
     public void delete(Long id) {
-        repository.deleteById(id);
+        repository.findById(id)
+                .ifPresent(e -> {
+                    e.setCapabilities(null);
+                    e.setKeyValues(null);
+                    e.setGroups(null);
+                    repository.delete(e);
+                });
     }
 
     void deleteAll() {
+        // capabilities
+        em.createNativeQuery("delete from co_invite_capability").executeUpdate();
+        // keyValues
+        em.createNativeQuery("delete from co_invite_keyvalue").executeUpdate();
+        // groups
+        em.createNativeQuery("delete from co_invite_group").executeUpdate();
+
         repository.deleteAllInBatch();
     }
 
     @Override
     public long deleteExpired() {
+        // capabilities
+        em.createNativeQuery("delete from co_invite_capability where invite_id in (select id from co_invite where expiration < ?)")
+                .setParameter(1, Instant.now()).executeUpdate();
+        // keyValues
+        em.createNativeQuery("delete from co_invite_keyvalue where invite_id in (select id from co_invite where expiration < ?)")
+                .setParameter(1, Instant.now()).executeUpdate();
+        // groups
+        em.createNativeQuery("delete from co_invite_group where invite_id in (select id from co_invite where expiration < ?)")
+                .setParameter(1, Instant.now()).executeUpdate();
+
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaDelete<AppInviteJpaEntity> delete = cb.createCriteriaDelete(AppInviteJpaEntity.class);
         Root<AppInviteJpaEntity> root = delete.from(AppInviteJpaEntity.class);

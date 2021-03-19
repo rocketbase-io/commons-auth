@@ -43,6 +43,10 @@ public class SimpleAppUserEntity implements AppUserEntity, AppUserReference {
 
     private Instant created;
 
+    private String modifiedBy;
+
+    private Instant modified;
+
     private Instant lastLogin;
 
     private Instant lastTokenInvalidation;

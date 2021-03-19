@@ -22,6 +22,8 @@ public abstract class TeamData {
             .keyValues(ImmutableMap.of("location", "de"))
             .members(ImmutableMap.of(UserData.MARTEN.getId(), AppTeamRole.OWNER, UserData.LUISE.getId(), AppTeamRole.MEMBER))
             .created(Instant.ofEpochSecond(1609459200)) // 2021-01-01
+            .modified(Instant.ofEpochSecond(1609459200))
+            .modifiedBy("test")
             .build();
 
     public static SimpleAppTeamEntity TEAM_TWO = SimpleAppTeamEntity.builder()
@@ -32,6 +34,8 @@ public abstract class TeamData {
             .keyValues(ImmutableMap.of("clientId", "123", "emailAlert", "1h"))
             .members(ImmutableMap.of(UserData.NIELS.getId(), AppTeamRole.OWNER, UserData.MARTEN.getId(), AppTeamRole.OWNER, UserData.SAMPLE_DISABLED.getId(), AppTeamRole.MEMBER))
             .created(Instant.ofEpochSecond(1609632000)) // 2021-01-03
+            .modified(Instant.ofEpochSecond(1609632000))
+            .modifiedBy("test")
             .build();
 
     public static SimpleAppTeamEntity TEAM_THREE = SimpleAppTeamEntity.builder()
@@ -41,6 +45,8 @@ public abstract class TeamData {
             .personal(false)
             .keyValues(ImmutableMap.of("clientId", "333"))
             .created(Instant.ofEpochSecond(1612224000)) // 2021-02-02
+            .modified(Instant.ofEpochSecond(1612224000))
+            .modifiedBy("test")
             .build();
 
 

@@ -17,6 +17,8 @@ public abstract class ClientData {
             .capabilityIds(ImmutableSet.of(CapabilityData.ROOT.getId()))
             .redirectUrls(ImmutableSet.of("http://localhost:8080", "http://localhost:3000"))
             .created(Instant.ofEpochSecond(1609459200)) // 2021-01-01
+            .modified(Instant.ofEpochSecond(1609459200))
+            .modifiedBy("test")
             .build();
 
     public static SimpleAppClientEntity EXAMPLE_BLOG = SimpleAppClientEntity.builder()
@@ -26,6 +28,8 @@ public abstract class ClientData {
             .capabilityIds(ImmutableSet.of(CapabilityData.API_BLOG.getId()))
             .redirectUrls(ImmutableSet.of("https://example.com"))
             .created(Instant.ofEpochSecond(1614556799)) // 2021-02-28
+            .modified(Instant.ofEpochSecond(1614556799))
+            .modifiedBy("test")
             .build();
 
     public static List<AppClientEntity> getEntities() {

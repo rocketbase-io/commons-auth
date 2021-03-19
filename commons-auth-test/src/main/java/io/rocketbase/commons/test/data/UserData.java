@@ -43,6 +43,8 @@ public abstract class UserData {
             .lastLogin(Instant.ofEpochSecond(1612915200)) // 2020-02-10
             .lastTokenInvalidation(Instant.ofEpochSecond(1612310400)) // 2020-02-03
             .created(Instant.ofEpochSecond(1612137600)) // 2020-02-01
+            .modified(Instant.ofEpochSecond(1612137600))
+            .modifiedBy("test")
             .keyValues(ImmutableMap.of("workspace", "1"))
             .activeTeamId(TeamData.TEAM_IDS.get(0))
             .build();
@@ -70,6 +72,8 @@ public abstract class UserData {
             .enabled(true)
             .activeTeamId(TeamData.TEAM_IDS.get(1))
             .created(Instant.ofEpochSecond(1613088000)) // 2020-02-12
+            .modified(Instant.ofEpochSecond(1613088000))
+            .modifiedBy("test")
             .keyValues(ImmutableMap.<String, String>builder()
                     .put("workspace", "1")
                     .build())
@@ -96,6 +100,8 @@ public abstract class UserData {
             .password("password")
             .enabled(true)
             .created(Instant.ofEpochSecond(1610323200)) // 2020-01-11
+            .modified(Instant.ofEpochSecond(1610323200))
+            .modifiedBy("test")
             .keyValues(ImmutableMap.<String, String>builder()
                     .put("workspace", "6")
                     .build())
@@ -115,6 +121,8 @@ public abstract class UserData {
             .enabled(false)
             .activeTeamId(TeamData.TEAM_IDS.get(2))
             .created(Instant.ofEpochSecond(1614211200)) // 2020-02-25
+            .modified(Instant.ofEpochSecond(1609459200))
+            .modifiedBy("test")
             .build();
 
     public static SimpleAppUserEntity SERVICE = SimpleAppUserEntity.builder()
@@ -129,6 +137,8 @@ public abstract class UserData {
             .password("password")
             .enabled(true)
             .created(Instant.ofEpochSecond(1609459200)) // 2020-01-01
+            .modified(Instant.ofEpochSecond(1609459200))
+            .modifiedBy("test")
             .build();
 
     public static SimpleAppUserEntity ADMIN = SimpleAppUserEntity.builder()
@@ -147,6 +157,8 @@ public abstract class UserData {
             .password("password")
             .enabled(true)
             .created(Instant.ofEpochSecond(1609459200)) // 2020-01-01
+            .modified(Instant.ofEpochSecond(1609459200))
+            .modifiedBy("test")
             .build();
 
     public static List<AppUserEntity> getEntities() {

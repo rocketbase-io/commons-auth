@@ -5,11 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,9 +32,11 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class AppGroupJpaEntity implements AppGroupEntity {
 
     @Id
+    @Column(name = "id")
     private Long id;
 
     @Nullable
@@ -39,15 +44,15 @@ public class AppGroupJpaEntity implements AppGroupEntity {
     private String systemRefId;
 
     @NotNull
-    @Column(length = 100)
+    @Column(name = "name", length = 100)
     private String name;
 
-    @Column(length = 500)
+    @Column(name = "description", length = 500)
     private String description;
 
     @Nullable
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_group__parent"))
+    @JoinColumn(name = "parent_id", foreignKey = @ForeignKey(name = "fk_group__parent"))
     private AppGroupJpaEntity parent;
 
     @Transient
@@ -64,7 +69,6 @@ public class AppGroupJpaEntity implements AppGroupEntity {
     }
 
     @NotNull
-    @Size(min = 1, max = 1009)
     @Column(name = "name_path", length = 1009)
     private String namePath;
 
@@ -120,7 +124,18 @@ public class AppGroupJpaEntity implements AppGroupEntity {
     private Map<String, String> keyValues = new HashMap<>();
 
     @NotNull
+    @CreatedDate
+    @Column(name = "created")
     private Instant created;
+
+    @LastModifiedBy
+    @Column(name = "modified_by", length = 36)
+    private String modifiedBy;
+
+    @NotNull
+    @LastModifiedDate
+    @Column(name = "modified")
+    private Instant modified;
 
     public AppGroupJpaEntity(Long id) {
         this.id = id;
@@ -136,5 +151,22 @@ public class AppGroupJpaEntity implements AppGroupEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "AppGroupJpaEntity{" +
+                "id=" + id +
+                ", systemRefId='" + systemRefId + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", parentId=" + (parent != null ? parent.getId() : null) +
+                ", namePath='" + namePath + '\'' +
+                ", withChildren=" + withChildren +
+                ", keyValues=" + keyValues +
+                ", created=" + created +
+                ", modifiedBy='" + modifiedBy + '\'' +
+                ", modified=" + modified +
+                '}';
     }
 }

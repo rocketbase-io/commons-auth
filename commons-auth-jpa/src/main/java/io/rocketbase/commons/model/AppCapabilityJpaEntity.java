@@ -4,11 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -21,20 +24,22 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class AppCapabilityJpaEntity implements AppCapabilityEntity {
 
     @Id
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "key_", length = 20)
     private String key;
 
-    @Column(length = 500)
+    @Column(name = "description", length = 500)
     private String description;
 
     @Nullable
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_capacity__parent"))
+    @JoinColumn(name = "parent_id", foreignKey = @ForeignKey(name = "fk_capacity__parent"))
     private AppCapabilityJpaEntity parent;
 
     @Transient
@@ -50,15 +55,25 @@ public class AppCapabilityJpaEntity implements AppCapabilityEntity {
         return parent == null ? null : parent.getId();
     }
 
-    @NotNull
-    @Size(min = 1, max = 369)
     @Column(name = "key_path", length = 369)
     private String keyPath;
 
     @Column(name = "with_children")
     private boolean withChildren;
 
+    @NotNull
+    @CreatedDate
+    @Column(name = "created")
     private Instant created;
+
+    @LastModifiedBy
+    @Column(name = "modified_by", length = 36)
+    private String modifiedBy;
+
+    @NotNull
+    @LastModifiedDate
+    @Column(name = "modified")
+    private Instant modified;
 
     public AppCapabilityJpaEntity(Long id) {
         this.id = id;
@@ -76,4 +91,18 @@ public class AppCapabilityJpaEntity implements AppCapabilityEntity {
         return Objects.hash(id);
     }
 
+    @Override
+    public String toString() {
+        return "AppCapabilityJpaEntity{" +
+                "id=" + id +
+                ", key='" + key + '\'' +
+                ", description='" + description + '\'' +
+                ", parentId=" + (parent != null ? parent.getId() : null) +
+                ", keyPath='" + keyPath + '\'' +
+                ", withChildren=" + withChildren +
+                ", created=" + created +
+                ", modifiedBy='" + modifiedBy + '\'' +
+                ", modified=" + modified +
+                '}';
+    }
 }

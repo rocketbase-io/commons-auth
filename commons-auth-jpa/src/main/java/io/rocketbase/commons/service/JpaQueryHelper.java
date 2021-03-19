@@ -21,4 +21,10 @@ public interface JpaQueryHelper {
             list.add(cb.like(cb.lower(path), buildLikeString(value)));
         }
     }
+
+    default void addSystemRefIdToList(List<Predicate> list, String value, Path path, CriteriaBuilder cb) {
+        if (!StringUtils.isEmpty(value)) {
+            list.add(cb.equal(path, value));
+        }
+    }
 }

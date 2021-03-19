@@ -12,7 +12,7 @@ import javax.persistence.Embeddable;
 @NoArgsConstructor
 public class UserSettingJpaEmbedded implements UserSetting {
 
-    @Column(length = 22)
+    @Column(name = "locale", length = 22)
     private String locale;
 
     @Column(name="current_time_zone", length = 40)

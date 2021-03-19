@@ -16,7 +16,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 import javax.persistence.EntityManager;
-import java.time.Instant;
+import javax.persistence.criteria.Predicate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -54,16 +54,33 @@ public class AppCapabilityJpaPersistenceService implements AppCapabilityPersiste
 
     @Override
     public Page<AppCapabilityJpaEntity> findAll(QueryAppCapability query, Pageable pageable) {
-        return null;
+        Specification<AppCapabilityJpaEntity> specification = (root, criteriaQuery, cb) -> {
+            if (query == null) {
+                return null;
+            }
+            List<Predicate> predicates = new ArrayList<>();
+            if (query.getIds() != null && !query.getIds().isEmpty()) {
+                predicates.add(root.get(AppCapabilityJpaEntity_.ID).in(query.getIds()));
+            }
+            addToListIfNotEmpty(predicates, query.getKeyPath(), root.get(AppCapabilityJpaEntity_.KEY_PATH), cb);
+            if (query.getParentIds() != null && !query.getParentIds().isEmpty()) {
+                predicates.add(root.get(AppCapabilityJpaEntity_.PARENT).get(AppCapabilityJpaEntity_.ID).in(query.getParentIds()));
+            }
+            addToListIfNotEmpty(predicates, query.getKey(), root.get(AppCapabilityJpaEntity_.KEY), cb);
+            addToListIfNotEmpty(predicates, query.getDescription(), root.get(AppCapabilityJpaEntity_.DESCRIPTION), cb);
+
+            if (!predicates.isEmpty()) {
+                return cb.and(predicates.toArray(new Predicate[]{}));
+            }
+            return null;
+        };
+        return repository.findAll(specification, pageable);
     }
 
     @Override
     public AppCapabilityJpaEntity save(AppCapabilityJpaEntity entity) {
         if (entity.getId() == null) {
             entity.setId(snowflake.nextId());
-        }
-        if (entity.getCreated() == null) {
-            entity.setCreated(Instant.now());
         }
         if (entity.getParentHolder() != null) {
             entity.setParent(repository.findById(entity.getParentHolder()).orElseThrow(NotFoundException::new));
@@ -79,6 +96,16 @@ public class AppCapabilityJpaPersistenceService implements AppCapabilityPersiste
         }
         Set<AppCapabilityJpaEntity> resolved = resolveTree(Arrays.asList(id));
         for (AppCapabilityJpaEntity e : resolved.stream().sorted(Comparator.comparing(AppCapabilityEntity::getDepth).reversed()).collect(Collectors.toList())) {
+
+            // group's capabilities
+            em.createNativeQuery("delete from co_group_capability where capability_id = ?").setParameter(1, e.getId()).executeUpdate();
+            // client's capabilities
+            em.createNativeQuery("delete from co_client_capability where capability_id = ?").setParameter(1, e.getId()).executeUpdate();
+            // invite's capabilities
+            em.createNativeQuery("delete from co_invite_capability where capability_id = ?").setParameter(1, e.getId()).executeUpdate();
+            // user's capabilities
+            em.createNativeQuery("delete from co_user_capability where capability_id = ?").setParameter(1, e.getId()).executeUpdate();
+
             repository.deleteById(e.getId());
         }
     }

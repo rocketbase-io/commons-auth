@@ -4,6 +4,8 @@ import io.rocketbase.commons.dto.appteam.AppTeamRole;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.lang.Nullable;
@@ -41,8 +43,16 @@ public class AppTeamMongoEntity implements AppTeamEntity {
 
     private boolean personal;
 
+    @NotNull
     @CreatedDate
     private Instant created;
+
+    @LastModifiedBy
+    private String modifiedBy;
+
+    @NotNull
+    @LastModifiedDate
+    private Instant modified;
 
     @Builder.Default
     private Map<String, String> keyValues = new HashMap<>();

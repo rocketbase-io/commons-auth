@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
@@ -36,8 +38,16 @@ public class AppCapabilityMongoEntity implements AppCapabilityEntity {
 
     private boolean withChildren;
 
+    @NotNull
     @CreatedDate
     private Instant created;
+
+    @LastModifiedBy
+    private String modifiedBy;
+
+    @NotNull
+    @LastModifiedDate
+    private Instant modified;
 
     public AppCapabilityMongoEntity(Long id) {
         this.id = id;

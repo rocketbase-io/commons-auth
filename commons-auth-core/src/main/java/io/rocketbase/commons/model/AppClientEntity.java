@@ -16,20 +16,20 @@ public interface AppClientEntity extends Serializable {
 
     String getName();
 
-    @NotNull
-    @Size(min = 1, max = 100)
-    void setName(String name);
+    void setName(@NotNull
+                 @Size(min = 1, max = 100)
+                         String name);
 
     String getSystemRefId();
 
-    @Nullable
-    @Size(max = 100)
-    void setSystemRefId(String systemRefId);
+    void setSystemRefId(@Nullable
+                        @Size(max = 100)
+                                String systemRefId);
 
     String getDescription();
 
-    @Size(max = 500)
-    void setDescription(String description);
+    void setDescription(@Size(max = 500)
+                                String description);
 
     Set<Long> getCapabilityIds();
 
@@ -40,5 +40,9 @@ public interface AppClientEntity extends Serializable {
     void setRedirectUrls(Set<String> redirectUrls);
 
     Instant getCreated();
+
+    Instant getModified();
+
+    String getModifiedBy();
 
 }

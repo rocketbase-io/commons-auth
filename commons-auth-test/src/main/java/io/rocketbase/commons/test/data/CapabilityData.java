@@ -19,6 +19,8 @@ public abstract class CapabilityData {
             .keyPath(AppCapabilityRead.ROOT.getKeyPath())
             .withChildren(AppCapabilityRead.ROOT.isWithChildren())
             .created(AppCapabilityRead.ROOT.getCreated())
+            .modified(AppCapabilityRead.ROOT.getModified())
+            .modifiedBy(AppCapabilityRead.ROOT.getModifiedBy())
             .build();
 
     public static SimpleAppCapabilityEntity USER_OBJECT = SimpleAppCapabilityEntity.builder()
@@ -29,6 +31,8 @@ public abstract class CapabilityData {
             .keyPath("user")
             .withChildren(true)
             .created(Instant.ofEpochSecond(1609459200)) // 2021-01-01
+            .modified(Instant.ofEpochSecond(1609459200))
+            .modifiedBy("test")
             .build();
 
     public static SimpleAppCapabilityEntity USER_READ = SimpleAppCapabilityEntity.builder()
@@ -39,6 +43,8 @@ public abstract class CapabilityData {
             .keyPath("user.read")
             .withChildren(false)
             .created(Instant.ofEpochSecond(1612137600)) // 2021-02-01
+            .modified(Instant.ofEpochSecond(1612137600))
+            .modifiedBy("test")
             .build();
 
     public static SimpleAppCapabilityEntity USER_WRITE = SimpleAppCapabilityEntity.builder()
@@ -49,6 +55,8 @@ public abstract class CapabilityData {
             .keyPath("user.write")
             .withChildren(false)
             .created(Instant.ofEpochSecond(1612137600)) // 2021-02-01
+            .modified(Instant.ofEpochSecond(1612137600))
+            .modifiedBy("test")
             .build();
 
     public static SimpleAppCapabilityEntity API_ROOT = SimpleAppCapabilityEntity.builder()
@@ -59,6 +67,8 @@ public abstract class CapabilityData {
             .keyPath("api")
             .withChildren(true)
             .created(Instant.ofEpochSecond(1612137599)) // 2021-01-31
+            .modified(Instant.ofEpochSecond(1612137599))
+            .modifiedBy("test")
             .build();
 
     public static SimpleAppCapabilityEntity API_BLOG = SimpleAppCapabilityEntity.builder()
@@ -69,6 +79,8 @@ public abstract class CapabilityData {
             .keyPath("api.blog")
             .withChildren(true)
             .created(Instant.ofEpochSecond(1612137599)) // 2021-01-31
+            .modified(Instant.ofEpochSecond(1612137599))
+            .modifiedBy("test")
             .build();
 
     public static SimpleAppCapabilityEntity API_BLOG_CRUD = SimpleAppCapabilityEntity.builder()
@@ -79,6 +91,8 @@ public abstract class CapabilityData {
             .keyPath("api.blog.crud")
             .withChildren(false)
             .created(Instant.ofEpochSecond(1612137599)) // 2021-01-31
+            .modified(Instant.ofEpochSecond(1612137599))
+            .modifiedBy("test")
             .build();
 
     public static SimpleAppCapabilityEntity API_BLOG_PUBLISH = SimpleAppCapabilityEntity.builder()
@@ -89,6 +103,8 @@ public abstract class CapabilityData {
             .keyPath("api.blog.publish")
             .withChildren(false)
             .created(Instant.ofEpochSecond(1612137599)) // 2021-01-31
+            .modified(Instant.ofEpochSecond(1612137599))
+            .modifiedBy("test")
             .build();
 
     public static SimpleAppCapabilityEntity API_ASSET = SimpleAppCapabilityEntity.builder()
@@ -99,6 +115,8 @@ public abstract class CapabilityData {
             .keyPath("api.asset")
             .withChildren(false)
             .created(Instant.ofEpochSecond(1614556799)) // 2021-02-28
+            .modified(Instant.ofEpochSecond(1614556799))
+            .modifiedBy("test")
             .build();
 
     public static List<AppCapabilityEntity> getEntities() {

@@ -18,21 +18,21 @@ public interface AppGroupEntity extends Serializable, EntityWithKeyValue<AppGrou
 
     String getName();
 
-    @NotNull
-    @Pattern(regexp = "^[^\\n^\\/]*$")
-    @Size(min = 1, max = 100)
-    void setName(String name);
+    void setName(@NotNull
+                 @Pattern(regexp = "^[^\\n^\\/]*$")
+                 @Size(min = 1, max = 100)
+                         String name);
 
     String getSystemRefId();
 
-    @Nullable
-    @Size(max = 100)
-    void setSystemRefId(String systemRefId);
+    void setSystemRefId(@Nullable
+                        @Size(max = 100)
+                                String systemRefId);
 
     String getDescription();
 
-    @Size(max = 500)
-    void setDescription(String description);
+    void setDescription(@Size(max = 500)
+                                String description);
 
     Set<Long> getCapabilityIds();
 
@@ -51,9 +51,9 @@ public interface AppGroupEntity extends Serializable, EntityWithKeyValue<AppGrou
      */
     String getNamePath();
 
-    @NotNull
-    @Size(min = 1, max = 1009)
-    void setNamePath(String treePath);
+    void setNamePath(@NotNull
+                     @Size(min = 1, max = 1009)
+                             String treePath);
 
     /**
      * is group parent for any other group in the database
@@ -63,6 +63,10 @@ public interface AppGroupEntity extends Serializable, EntityWithKeyValue<AppGrou
     void setWithChildren(boolean withChildren);
 
     Instant getCreated();
+
+    Instant getModified();
+
+    String getModifiedBy();
 
     default int getDepth() {
         return StringUtils.countOccurrencesOf(getNamePath(), "/");

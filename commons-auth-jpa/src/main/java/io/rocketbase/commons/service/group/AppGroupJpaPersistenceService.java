@@ -18,7 +18,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 import javax.persistence.EntityManager;
-import java.time.Instant;
+import javax.persistence.criteria.MapJoin;
+import javax.persistence.criteria.Predicate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -58,16 +59,47 @@ public class AppGroupJpaPersistenceService implements AppGroupPersistenceService
 
     @Override
     public Page<AppGroupJpaEntity> findAll(QueryAppGroup query, Pageable pageable) {
-        return null;
+        Specification<AppGroupJpaEntity> specification = (root, criteriaQuery, cb) -> {
+            if (query == null) {
+                return null;
+            }
+            List<Predicate> predicates = new ArrayList<>();
+            if (query.getIds() != null && !query.getIds().isEmpty()) {
+                predicates.add(root.get(AppGroupJpaEntity_.ID).in(query.getIds()));
+            }
+            addToListIfNotEmpty(predicates, query.getNamePath(), root.get(AppGroupJpaEntity_.NAME_PATH), cb);
+            addSystemRefIdToList(predicates, query.getSystemRefId(), root.get(AppGroupJpaEntity_.SYSTEM_REF_ID), cb);
+            addToListIfNotEmpty(predicates, query.getName(), root.get(AppGroupJpaEntity_.NAME), cb);
+
+            if (query.getParentIds() != null && !query.getParentIds().isEmpty()) {
+                predicates.add(root.get(AppGroupJpaEntity_.PARENT).get(AppGroupJpaEntity_.ID).in(query.getParentIds()));
+            }
+            addToListIfNotEmpty(predicates, query.getDescription(), root.get(AppGroupJpaEntity_.DESCRIPTION), cb);
+
+            if (query.getKeyValues() != null && !query.getKeyValues().isEmpty()) {
+                criteriaQuery.distinct(true);
+                MapJoin<AppGroupJpaEntity, String, String> mapJoin = root.joinMap(AppGroupJpaEntity_.KEY_VALUES);
+                for (Map.Entry<String, String> keyEntry : query.getKeyValues().entrySet()) {
+                    predicates.add(cb.and(cb.equal(mapJoin.key(), keyEntry.getKey()), cb.equal(mapJoin.value(), keyEntry.getValue())));
+                }
+            }
+            if (query.getCapabilityIds() != null && !query.getCapabilityIds().isEmpty()) {
+                criteriaQuery.distinct(true);
+                predicates.add(root.join(AppGroupJpaEntity_.CAPABILITIES).get(AppGroupJpaEntity_.ID).in(query.getCapabilityIds()));
+            }
+
+            if (!predicates.isEmpty()) {
+                return cb.and(predicates.toArray(new Predicate[]{}));
+            }
+            return null;
+        };
+        return repository.findAll(specification, pageable);
     }
 
     @Override
     public AppGroupJpaEntity save(AppGroupJpaEntity entity) {
         if (entity.getId() == null) {
             entity.setId(snowflake.nextId());
-        }
-        if (entity.getCreated() == null) {
-            entity.setCreated(Instant.now());
         }
         if (entity.getParentHolder() != null) {
             entity.setParent(repository.findById(entity.getParentHolder()).orElseThrow(NotFoundException::new));
@@ -86,7 +118,12 @@ public class AppGroupJpaPersistenceService implements AppGroupPersistenceService
         }
         Set<AppGroupJpaEntity> resolved = resolveTree(Arrays.asList(id));
         for (AppGroupJpaEntity e : resolved.stream().sorted(Comparator.comparing(AppGroupEntity::getDepth).reversed()).collect(Collectors.toList())) {
-            repository.deleteById(e.getId());
+            em.createNativeQuery("delete from co_invite_group where group_id = ?").setParameter(1, e.getId()).executeUpdate();
+            em.createNativeQuery("delete from co_user_group where group_id = ?").setParameter(1, e.getId()).executeUpdate();
+
+            e.setCapabilities(null);
+            e.setKeyValues(null);
+            repository.delete(e);
         }
     }
 

@@ -17,16 +17,17 @@ public interface AppCapabilityEntity extends Serializable {
 
     String getKey();
 
-    @NotNull
-    @Pattern(regexp = "^[a-zA-Z0-9_\\-]+$")
-    @Size(min = 1, max = 36)
-    void setKey(String key);
+
+    void setKey(@NotNull
+                @Pattern(regexp = "^[a-zA-Z0-9_\\-]+$")
+                @Size(min = 1, max = 36)
+                        String key);
 
     String getDescription();
 
-    @Nullable
-    @Size(max = 500)
-    void setDescription(String description);
+    void setDescription(@Nullable
+                        @Size(max = 500)
+                                String description);
 
     /**
      * root capability's parent is it's own id
@@ -41,9 +42,9 @@ public interface AppCapabilityEntity extends Serializable {
      */
     String getKeyPath();
 
-    @NotNull
-    @Size(min = 1, max = 369)
-    void setKeyPath(String keyPath);
+    void setKeyPath(@NotNull
+                    @Size(min = 1, max = 369)
+                            String keyPath);
 
     /**
      * is capability parent for any capability in the database
@@ -53,6 +54,12 @@ public interface AppCapabilityEntity extends Serializable {
     void setWithChildren(boolean withChildren);
 
     Instant getCreated();
+
+    void setCreated(Instant created);
+
+    Instant getModified();
+
+    String getModifiedBy();
 
     /**
      * calculated parent count

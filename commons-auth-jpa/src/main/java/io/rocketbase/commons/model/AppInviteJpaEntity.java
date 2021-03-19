@@ -1,13 +1,17 @@
 package io.rocketbase.commons.model;
 
 import io.rocketbase.commons.dto.appteam.AppTeamInvite;
-import io.rocketbase.commons.model.converter.SetPhoneNumberConverter;
+import io.rocketbase.commons.model.converter.AppTeamInviteConverter;
 import io.rocketbase.commons.service.invite.AppInviteJpaPersistenceService;
 import io.rocketbase.commons.service.user.AppUserJpaPersistenceService;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -26,15 +30,18 @@ import java.util.stream.Collectors;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class AppInviteJpaEntity implements AppInviteEntity {
 
     @Id
+    @Column(name = "id")
     private Long id;
 
     @NotNull
+    @Column(name = "invitor")
     private String invitor;
 
-    @Column(length = 2000)
+    @Column(name = "message", length = 2000)
     private String message;
 
     @Column(name = "first_name", length = 100)
@@ -45,6 +52,7 @@ public class AppInviteJpaEntity implements AppInviteEntity {
 
     @NotNull
     @Email
+    @Column(name = "email")
     private String email;
 
     @ManyToMany
@@ -126,16 +134,26 @@ public class AppInviteJpaEntity implements AppInviteEntity {
     }
 
     @NotNull
-    @Column(nullable = false)
+    @Column(name = "expiration")
     private Instant expiration;
 
+    @Column(name = "team_invite", length = 30)
+    @Convert(converter = AppTeamInviteConverter.class)
+    private AppTeamInvite teamInvite;
+
     @NotNull
-    @Column(nullable = false)
+    @CreatedDate
+    @Column(name = "created")
     private Instant created;
 
-    @Column(name = "team_invite", length = 30)
-    @Convert(converter = SetPhoneNumberConverter.class)
-    private AppTeamInvite teamInvite;
+    @LastModifiedBy
+    @Column(name = "modified_by", length = 36)
+    private String modifiedBy;
+
+    @NotNull
+    @LastModifiedDate
+    @Column(name = "modified")
+    private Instant modified;
 
     public AppInviteJpaEntity(Long id) {
         this.id = id;
@@ -153,4 +171,21 @@ public class AppInviteJpaEntity implements AppInviteEntity {
         return Objects.hash(id);
     }
 
+    @Override
+    public String toString() {
+        return "AppInviteJpaEntity{" +
+                "id=" + id +
+                ", invitor='" + invitor + '\'' +
+                ", message='" + message + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", keyValues=" + keyValues +
+                ", expiration=" + expiration +
+                ", teamInvite=" + teamInvite +
+                ", created=" + created +
+                ", modifiedBy='" + modifiedBy + '\'' +
+                ", modified=" + modified +
+                '}';
+    }
 }

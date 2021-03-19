@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.rocketbase.commons.model.user.UserProfile;
 import io.rocketbase.commons.model.user.UserSetting;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.Instant;
@@ -11,24 +12,20 @@ import java.util.Set;
 
 /**
  * entity instance of user that is used by persistence layers internally
- *
  */
 public interface AppUserEntity extends Serializable, EntityWithKeyValue<AppUserEntity>, AppUserReference {
 
     String getId();
 
-    @Size(max = 36)
-    void setId(String id);
+    void setId(@Size(max = 36) String id);
 
     String getSystemRefId();
 
-    @Size(max = 100)
-    void setSystemRefId(String systemRefId);
+    void setSystemRefId(@Size(max = 100) String systemRefId);
 
     String getUsername();
 
-    @Size(max = 255)
-    void setUsername(String username);
+    void setUsername(@Size(max = 255) String username);
 
     String getPassword();
 
@@ -36,8 +33,7 @@ public interface AppUserEntity extends Serializable, EntityWithKeyValue<AppUserE
 
     String getEmail();
 
-    @Size(max = 255)
-    void setEmail(String email);
+    void setEmail(@Size(max = 255) @Email String email);
 
     void setEnabled(boolean enabled);
 
@@ -90,6 +86,10 @@ public interface AppUserEntity extends Serializable, EntityWithKeyValue<AppUserE
     void setSetting(UserSetting userSetting);
 
     Instant getCreated();
+
+    Instant getModified();
+
+    String getModifiedBy();
 
     /**
      * convert current instance to a simple reference copy

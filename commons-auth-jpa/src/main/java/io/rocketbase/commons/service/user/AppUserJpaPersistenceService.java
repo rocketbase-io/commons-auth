@@ -19,13 +19,12 @@ import org.springframework.util.StringUtils;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Predicate;
-import java.time.Instant;
 import java.util.*;
 
 @Slf4j
 public class AppUserJpaPersistenceService implements AppUserPersistenceService<AppUserJpaEntity>, JpaQueryHelper {
 
-    private final EntityManager entityManager;
+    private final EntityManager em;
     private final SimpleJpaRepository<AppUserJpaEntity, String> repository;
     private final AppGroupPersistenceService groupJpaPersistenceService;
     private final AppCapabilityPersistenceService capabilityJpaPersistenceService;
@@ -33,7 +32,7 @@ public class AppUserJpaPersistenceService implements AppUserPersistenceService<A
 
     public AppUserJpaPersistenceService(EntityManager entityManager,
                                         AppGroupPersistenceService groupJpaPersistenceService, AppCapabilityPersistenceService capabilityJpaPersistenceService, AppTeamPersistenceService teamJpaPersistenceService) {
-        this.entityManager = entityManager;
+        em = entityManager;
         repository = new SimpleJpaRepository<>(AppUserJpaEntity.class, entityManager);
         this.groupJpaPersistenceService = groupJpaPersistenceService;
         this.capabilityJpaPersistenceService = capabilityJpaPersistenceService;
@@ -70,7 +69,7 @@ public class AppUserJpaPersistenceService implements AppUserPersistenceService<A
 
     @Override
     public Page<AppUserJpaEntity> findAll(QueryAppUser query, Pageable pageable) {
-        if (query == null || query.isEmpty()) {
+        if (query == null) {
             return repository.findAll(pageable);
         }
 
@@ -87,28 +86,29 @@ public class AppUserJpaPersistenceService implements AppUserPersistenceService<A
             }
 
             // freetext-search combine all properties with or (rest normal by and)
-            if (StringUtils.isEmpty(query.getFreetext())) {
+            if (!StringUtils.isEmpty(query.getFreetext())) {
                 List<Predicate> freeSearch = new ArrayList<>();
                 addToListIfNotEmpty(freeSearch, query.getFreetext(), root.get(AppUserJpaEntity_.USERNAME), cb);
                 addToListIfNotEmpty(freeSearch, query.getFreetext(), root.get(AppUserJpaEntity_.PROFILE).get(UserProfileJpaEmbedded_.FIRST_NAME), cb);
                 addToListIfNotEmpty(freeSearch, query.getFreetext(), root.get(AppUserJpaEntity_.PROFILE).get(UserProfileJpaEmbedded_.LAST_NAME), cb);
                 addToListIfNotEmpty(freeSearch, query.getFreetext(), root.get(AppUserJpaEntity_.EMAIL), cb);
-                result = cb.and(result, cb.or(explicitSearch.toArray(new Predicate[]{})));
+                result = cb.and(result, cb.or(freeSearch.toArray(new Predicate[]{})));
             }
 
             List<Predicate> furtherFilters = new ArrayList<>();
+            addSystemRefIdToList(furtherFilters, query.getSystemRefId(), root.get(AppUserJpaEntity_.SYSTEM_REF_ID), cb);
             if (query.getCapabilityIds() != null && !query.getCapabilityIds().isEmpty()) {
                 criteriaQuery.distinct(true);
-                furtherFilters.add(root.join(AppUserJpaEntity_.CAPABILITIES).in(query.getCapabilityIds()));
+                furtherFilters.add(root.join(AppUserJpaEntity_.CAPABILITIES).get(AppCapabilityJpaEntity_.ID).in(query.getCapabilityIds()));
             }
             if (query.getGroupIds() != null && !query.getGroupIds().isEmpty()) {
                 criteriaQuery.distinct(true);
-                furtherFilters.add(root.join(AppUserJpaEntity_.GROUPS).in(query.getGroupIds()));
+                furtherFilters.add(root.join(AppUserJpaEntity_.GROUPS).get(AppGroupJpaEntity_.ID).in(query.getGroupIds()));
             }
             if (query.getKeyValues() != null && !query.getKeyValues().isEmpty()) {
                 criteriaQuery.distinct(true);
-                MapJoin<AppUserJpaEntity, String, String> mapJoin = root.joinMap("keyValueMap");
                 for (Map.Entry<String, String> keyEntry : query.getKeyValues().entrySet()) {
+                    MapJoin<AppUserJpaEntity, String, String> mapJoin = root.joinMap(AppUserJpaEntity_.KEY_VALUES);
                     furtherFilters.add(cb.and(cb.equal(mapJoin.key(), keyEntry.getKey()), cb.equal(mapJoin.value(), keyEntry.getValue())));
                 }
             }
@@ -123,21 +123,9 @@ public class AppUserJpaPersistenceService implements AppUserPersistenceService<A
 
     @Override
     public AppUserJpaEntity save(AppUserJpaEntity entity) {
-        prePersist(entity);
-        handleHolder(entity);
-        return repository.save(entity);
-    }
-
-    protected void prePersist(AppUserJpaEntity entity) {
         if (entity.getId() == null) {
             entity.setId(UUID.randomUUID().toString());
         }
-        if (entity.getCreated() == null) {
-            entity.setCreated(Instant.now());
-        }
-    }
-
-    protected void handleHolder(AppUserJpaEntity entity) {
         if (entity.getGroupHolder() != null) {
             List<AppGroupJpaEntity> lookupGroups = groupJpaPersistenceService.findAllById(entity.getGroupHolder());
             entity.setGroups(Sets.newHashSet(lookupGroups));
@@ -153,11 +141,18 @@ public class AppUserJpaPersistenceService implements AppUserPersistenceService<A
                 log.warn("set activeTeamId: {} not found. set for appUser: {} activeTeam to null", entity.getActiveTeamHolder(), entity.getId());
             }
         }
+        return repository.save(entity);
     }
 
     @Override
     public void delete(String id) {
-        repository.deleteById(id);
+        repository.findById(id)
+                .ifPresent(e -> {
+                    e.setCapabilities(null);
+                    e.setGroups(null);
+                    e.setKeyValues(null);
+                    repository.delete(e);
+                });
     }
 
     @Override
@@ -166,6 +161,14 @@ public class AppUserJpaPersistenceService implements AppUserPersistenceService<A
     }
 
     void deleteAll() {
+
+        // capabilities
+        em.createNativeQuery("delete from co_user_capability").executeUpdate();
+        // keyValues
+        em.createNativeQuery("delete from co_user_keyvalue").executeUpdate();
+        // groups
+        em.createNativeQuery("delete from co_user_group").executeUpdate();
+
         repository.deleteAllInBatch();
     }
 

@@ -5,6 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
@@ -23,9 +27,11 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class AppTeamJpaEntity implements AppTeamEntity {
 
     @Id
+    @Column(name = "id")
     private Long id;
 
     @Nullable
@@ -33,17 +39,28 @@ public class AppTeamJpaEntity implements AppTeamEntity {
     private String systemRefId;
 
     @NotNull
-    @Column(length = 100)
+    @Column(name = "name", length = 100)
     private String name;
 
-    @Column(length = 500)
+    @Column(name = "description", length = 500)
     private String description;
 
+    @Column(name = "personal")
     private boolean personal;
 
     @NotNull
-    @Column(nullable = false)
+    @CreatedDate
+    @Column(name = "created")
     private Instant created;
+
+    @LastModifiedBy
+    @Column(name = "modified_by", length = 36)
+    private String modifiedBy;
+
+    @NotNull
+    @LastModifiedDate
+    @Column(name = "modified")
+    private Instant modified;
 
     @ElementCollection
     @CollectionTable(
@@ -93,4 +110,19 @@ public class AppTeamJpaEntity implements AppTeamEntity {
         return Objects.hash(id);
     }
 
+    @Override
+    public String toString() {
+        return "AppTeamJpaEntity{" +
+                "id=" + id +
+                ", systemRefId='" + systemRefId + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", personal=" + personal +
+                ", created=" + created +
+                ", modifiedBy='" + modifiedBy + '\'' +
+                ", modified=" + modified +
+                ", keyValues=" + keyValues +
+                ", members=" + members +
+                '}';
+    }
 }

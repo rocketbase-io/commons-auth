@@ -16,18 +16,15 @@ public interface AppTeamEntity extends Serializable, EntityWithKeyValue<AppTeamE
 
     String getName();
 
-    @Size(max = 100)
-    void setName(String name);
+    void setName(@Size(max = 100) String name);
 
     String getSystemRefId();
 
-    @Size(max = 100)
-    void setSystemRefId(String systemRefId);
+    void setSystemRefId(@Size(max = 100) String systemRefId);
 
     String getDescription();
 
-    @Size(max = 500)
-    void setDescription(String description);
+    void setDescription(@Size(max = 500) String description);
 
     boolean isPersonal();
 
@@ -42,5 +39,9 @@ public interface AppTeamEntity extends Serializable, EntityWithKeyValue<AppTeamE
     void setMembers(Map<String, AppTeamRole> members);
 
     Instant getCreated();
+
+    Instant getModified();
+
+    String getModifiedBy();
 
 }

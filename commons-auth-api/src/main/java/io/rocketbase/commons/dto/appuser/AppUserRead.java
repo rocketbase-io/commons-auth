@@ -49,6 +49,10 @@ public class AppUserRead implements AppUserReference, Serializable {
 
     private Instant created;
 
+    private String modifiedBy;
+
+    private Instant modified;
+
     @Nullable
     private Instant lastLogin;
 

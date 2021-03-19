@@ -14,7 +14,7 @@ import java.time.Instant;
 @EqualsAndHashCode(callSuper = true)
 public class AppCapabilityRead extends AppCapabilityShort implements Serializable {
 
-    public static AppCapabilityRead ROOT = new AppCapabilityRead(6291457024L, null, null, true, "root capability", 6291457024L, Instant.ofEpochMilli(1577836800000L));
+    public static AppCapabilityRead ROOT = new AppCapabilityRead(6291457024L, "", "*", true, "root capability", 6291457024L, Instant.ofEpochMilli(1577836800000L), "commons-auth", Instant.ofEpochMilli(1577836800000L));
 
     private String key;
 
@@ -29,6 +29,10 @@ public class AppCapabilityRead extends AppCapabilityShort implements Serializabl
 
     private Instant created;
 
+    private String modifiedBy;
+
+    private Instant modified;
+
     @JsonIgnore
     public AppCapabilityShort toShort() {
         return new AppCapabilityShort(
@@ -38,12 +42,14 @@ public class AppCapabilityRead extends AppCapabilityShort implements Serializabl
     }
 
     @Builder
-    public AppCapabilityRead(Long id, String keyPath, String key, boolean withChildren, String description, Long parentId, Instant created) {
+    public AppCapabilityRead(Long id, String keyPath, String key, boolean withChildren, String description, Long parentId, Instant created, String modifiedBy,  Instant modified) {
         super(id, keyPath);
         this.key = key;
         this.withChildren = withChildren;
         this.description = description;
         this.parentId = parentId;
         this.created = created;
+        this.modifiedBy = modifiedBy;
+        this.modified = modified;
     }
 }

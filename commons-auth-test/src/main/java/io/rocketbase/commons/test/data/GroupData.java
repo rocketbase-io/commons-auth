@@ -20,6 +20,8 @@ public abstract class GroupData {
             .parentId(AppGroupRead.ROOT.getParentId())
             .withChildren(AppGroupRead.ROOT.isWithChildren())
             .created(AppGroupRead.ROOT.getCreated())
+            .modified(AppGroupRead.ROOT.getModified())
+            .modifiedBy(AppGroupRead.ROOT.getModifiedBy())
             .keyValues(ImmutableMap.of("displayMode", "normal"))
             .build();
 
@@ -32,6 +34,8 @@ public abstract class GroupData {
             .keyValues(ImmutableMap.of("displayMode", "detailed", "emailAlert", "1h"))
             .withChildren(true)
             .created(Instant.ofEpochSecond(1609459200)) // 2021-01-01
+            .modified(Instant.ofEpochSecond(1609459200))
+            .modifiedBy("test")
             .build();
 
     public static SimpleAppGroupEntity DEPARTMENT_ONE_GROUP = SimpleAppGroupEntity.builder()
@@ -43,6 +47,8 @@ public abstract class GroupData {
             .keyValues(ImmutableMap.of("workspace", "66", "displayMode", "short"))
             .withChildren(false)
             .created(Instant.ofEpochSecond(1609459200)) // 2021-01-01
+            .modified(Instant.ofEpochSecond(1609459200))
+            .modifiedBy("test")
             .build();
 
     public static SimpleAppGroupEntity DEPARTMENT_TWO_GROUP = SimpleAppGroupEntity.builder()
@@ -54,6 +60,8 @@ public abstract class GroupData {
             .keyValues(ImmutableMap.of("emailAlert", "8h"))
             .withChildren(false)
             .created(Instant.ofEpochSecond(1609459200)) // 2021-01-01
+            .modified(Instant.ofEpochSecond(1609459200))
+            .modifiedBy("test")
             .build();
 
     public static SimpleAppGroupEntity ADMIN_GROUP = SimpleAppGroupEntity.builder()
@@ -64,6 +72,8 @@ public abstract class GroupData {
             .parentId(ROOT.getId())
             .withChildren(false)
             .created(Instant.ofEpochSecond(1612137600)) // 2021-02-01
+            .modified(Instant.ofEpochSecond(1612137600))
+            .modifiedBy("test")
             .keyValues(ImmutableMap.of("displayMode", "detailed"))
             .build();
 
