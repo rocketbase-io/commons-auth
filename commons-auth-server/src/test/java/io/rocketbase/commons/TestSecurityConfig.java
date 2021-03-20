@@ -10,8 +10,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
-import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -44,13 +42,6 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Resource
     private UserDetailsService userDetailsService;
-
-    @Bean
-    public RoleHierarchy roleHierarchy() {
-        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_USER");
-        return roleHierarchy;
-    }
 
     @Autowired
     public void configureAuthentication(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
@@ -114,9 +105,9 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
             // invite form
             .antMatchers(formsProperties.getInviteEndpointPaths()).permitAll()
             // user-management is only allowed by ADMINS
-            .antMatchers(authProperties.getApiRestEndpointPaths()).hasRole("admin")
-            .antMatchers(authProperties.getApiInviteRestEndpointPaths()).hasRole("admin")
-            .antMatchers(authProperties.getImpersonateEndpointPaths()).hasRole("admin")
+            .antMatchers(authProperties.getApiRestEndpointPaths()).hasRole("user.read")
+            .antMatchers(authProperties.getApiInviteRestEndpointPaths()).hasRole("user.write")
+            .antMatchers(authProperties.getImpersonateEndpointPaths()).hasRole("*")
             .antMatchers(authProperties.getUserSearchRestEndpointPaths()).authenticated()
             // secure all other api-endpoints
             .antMatchers(authProperties.getPrefix()+"/api/**").authenticated()

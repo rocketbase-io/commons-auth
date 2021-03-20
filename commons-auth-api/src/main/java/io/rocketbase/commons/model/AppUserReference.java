@@ -2,9 +2,9 @@ package io.rocketbase.commons.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.rocketbase.commons.model.user.UserProfile;
-import org.springframework.data.annotation.Transient;
 import org.springframework.lang.Nullable;
 
+import java.beans.Transient;
 import java.io.Serializable;
 
 /**
@@ -29,6 +29,7 @@ public interface AppUserReference extends Serializable {
      * should be removed - use UserProfile instead
      */
     @Deprecated
+    @Transient
     @Nullable
     String getFirstName();
 
@@ -37,6 +38,7 @@ public interface AppUserReference extends Serializable {
      * should be removed - use UserProfile instead
      */
     @Deprecated
+    @Transient
     @Nullable
     String getLastName();
 
@@ -45,6 +47,7 @@ public interface AppUserReference extends Serializable {
      * should be removed - use UserProfile instead
      */
     @Deprecated
+    @Transient
     @Nullable
     String getAvatar();
 

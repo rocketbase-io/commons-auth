@@ -6,6 +6,8 @@ import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.model.AppGroupJpaEntity;
 import io.rocketbase.commons.model.AppUserJpaEntity;
 import io.rocketbase.commons.model.AppUserToken;
+import io.rocketbase.commons.model.SimpleAppUserToken;
+import io.rocketbase.commons.service.capability.AppCapabilityService;
 import io.rocketbase.commons.service.team.AppTeamService;
 import lombok.RequiredArgsConstructor;
 
@@ -18,11 +20,23 @@ public class AppUserJpaConverter implements AppUserConverter<AppUserJpaEntity> {
 
     private final AppGroupConverter<AppGroupJpaEntity> appGroupConverter;
     private final AppCapabilityConverter appCapabilityConverter;
+    private final AppCapabilityService appCapabilityService;
     private final AppTeamService appTeamService;
 
     @Override
     public AppUserToken toToken(AppUserJpaEntity entity) {
-        return null;
+        return SimpleAppUserToken.builderToken()
+                .id(entity.getId())
+                .systemRefId(entity.getSystemRefId())
+                .username(entity.getUsername())
+                .email(entity.getEmail())
+                .profile(entity.getProfile())
+                .groups(entity.getGroups() != null ? appGroupConverter.fromEntities(entity.getGroups()).stream().map(AppGroupRead::toShort).collect(Collectors.toSet()) : null)
+                .capabilities(appCapabilityService.resolve(entity.getCapabilityIds()))
+                .activeTeam(appTeamService.lookupMembership(entity.getActiveTeamId(), entity.getId()))
+                .keyValues(filterInvisibleKeys(entity.getKeyValues()))
+                .setting(entity.getSetting())
+                .build();
     }
 
     @Override

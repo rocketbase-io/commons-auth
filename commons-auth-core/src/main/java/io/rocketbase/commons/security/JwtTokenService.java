@@ -1,5 +1,7 @@
 package io.rocketbase.commons.security;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.jackson.io.JacksonDeserializer;
@@ -50,8 +52,13 @@ public class JwtTokenService implements Serializable {
     }
 
     private JwtBuilder prepareBuilder(Instant ldt, long expirationMinutes, String username) {
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+
         return Jwts.builder()
-                .serializeToJsonWith(new JacksonSerializer<>())
+                .serializeToJsonWith(new JacksonSerializer<>(mapper))
                 .setIssuedAt(convert(ldt))
                 .setExpiration(convert(ldt.plusSeconds(expirationMinutes * 60)))
                 .signWith(getKey(), SIGNATURE_ALGORITHM)
@@ -95,7 +102,7 @@ public class JwtTokenService implements Serializable {
 
         SimpleAppUserToken jwtJsonUser = new SimpleAppUserToken(appUserToken);
         jwtJsonUser.setCapabilities(null);
-        jwtJsonUser.setKeyValues(KeyValueConverter.filterInvisibleKeys(jwtJsonUser.getKeyValues()));
+        jwtJsonUser.setKeyValues(KeyValueConverter.filterInvisibleAndJwtIgnoredKeys(jwtJsonUser.getKeyValues()));
 
         JwtBuilder jwtBuilder = prepareBuilder(ldt, jwtProperties.getAccessTokenExpiration(), appUserToken.getUsername())
                 .claim(SCOPES_KEY, CapacityAuthoritiesConverter.convertToDtos(scopes))

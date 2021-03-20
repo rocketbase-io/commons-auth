@@ -107,7 +107,7 @@ public class AppUserJpaPersistenceServiceTest extends JpaPersistenceBaseTest {
         // then
         assertThat(result, notNullValue());
         assertThat(result.getTotalElements(), equalTo(1L));
-        assertThat(result.getContent().get(0).getUsername(), equalTo("sample"));
+        assertThat(result.getContent().get(0).getUsername(), equalTo("user"));
     }
 
     @Test
