@@ -67,8 +67,8 @@ public class AuthMongoAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AppUserConverter<AppUserMongoEntity> appUserConverter(@Autowired AppCapabilityService appCapabilityService, @Autowired AppGroupService appGroupService, @Autowired AppTeamService appTeamService) {
-        return new AppUserMongoConverter(appCapabilityService, appGroupService, appTeamService);
+    public AppUserConverter<AppUserMongoEntity> appUserConverter(@Autowired AppCapabilityService appCapabilityService, @Autowired AppGroupService appGroupService, @Autowired AppGroupConverter appGroupConverter, @Autowired AppTeamService appTeamService, @Autowired AppTeamConverter appTeamConverter) {
+        return new AppUserMongoConverter(appCapabilityService, appGroupService, appGroupConverter, appTeamService, appTeamConverter);
     }
 
     @Bean

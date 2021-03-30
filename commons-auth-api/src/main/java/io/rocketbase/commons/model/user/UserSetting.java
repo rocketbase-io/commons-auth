@@ -1,5 +1,6 @@
 package io.rocketbase.commons.model.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.lang.Nullable;
@@ -9,19 +10,20 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Locale;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonDeserialize(as = SimpleUserSetting.class)
 public interface UserSetting extends Serializable {
 
+    @Nullable
     String getLocale();
 
     /**
      * Java {@link Locale} in format (language-region-variant)<br>
      * valid examples:  zh-Hant-TW, DE, en_US
      */
-    @Nullable
-    @Pattern(regexp = "^[A-Za-z]{2,4}([_-][0-9A-Za-z]{2,8})?([_-][0-9A-Za-z]{2,8})?$")
-    @Size(max = 22)
-    void setLocale(String locale);
+    void setLocale(@Pattern(regexp = "^[A-Za-z]{2,4}([_-][0-9A-Za-z]{2,8})?([_-][0-9A-Za-z]{2,8})?$")
+                   @Size(max = 22)
+                           String locale);
 
     /**
      * converts locale value or use LocaleContextHolder when not set
@@ -35,6 +37,7 @@ public interface UserSetting extends Serializable {
         return LocaleContextHolder.getLocale();
     }
 
+    @Nullable
     String getCurrentTimeZone();
 
     /**
@@ -45,39 +48,35 @@ public interface UserSetting extends Serializable {
      *     <li>America/New_York</li>
      * </ul>
      */
-    @Nullable
-    @Pattern(regexp = "^[A-Za-z][A-Za-z0-9~/._+-]+$")
-    @Size(max = 40)
-    void setCurrentTimeZone(String currentTimeZone);
+    void setCurrentTimeZone(@Pattern(regexp = "^[A-Za-z][A-Za-z0-9~/._+-]+$")
+                            @Size(max = 40)
+                                    String currentTimeZone);
 
+    @Nullable
     String getDateFormat();
 
     /**
      * format: yyyy-MM-dd<br>
      * default java dateFormat
      */
-    @Nullable
-    @Size(max = 15)
-    void setDateFormat(String dateFormat);
+    void setDateFormat(@Size(max = 15) String dateFormat);
 
+    @Nullable
     String getTimeFormat();
 
     /**
      * HH:mm:ss
      * default java dateFormat
      */
-    @Nullable
-    @Size(max = 10)
-    void setTimeFormat(String timeFormat);
+    void setTimeFormat(@Size(max = 10) String timeFormat);
 
+    @Nullable
     String getDateTimeFormat();
 
     /**
      * yyyy-MM-dd HH:mm
      * default java dateFormat
      */
-    @Nullable
-    @Size(max = 25)
-    void setDateTimeFormat(String dateTimeFormat);
+    void setDateTimeFormat(@Size(max = 25) String dateTimeFormat);
 
 }

@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
-import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 import java.util.Map;
@@ -19,7 +18,7 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 public class AppGroupRead extends AppGroupShort implements HasKeyValue {
 
-    public static AppGroupRead ROOT = new AppGroupRead(6291457024L, "", null, "*",
+    public static AppGroupRead ROOT = new AppGroupRead(6291457024L, "/", null, "*",
             "root group", true, 6291457024L, null, null, Instant.ofEpochMilli(1577836800000L), "commons-auth", Instant.ofEpochMilli(1577836800000L));
 
     @Nullable
@@ -68,16 +67,5 @@ public class AppGroupRead extends AppGroupShort implements HasKeyValue {
         this.created = created;
         this.modifiedBy = modifiedBy;
         this.modified = modified;
-    }
-
-    /**
-     * calculated parent count
-     * <ul>
-     *     <li>parent0/parent1/key has depth 2</li>
-     *     <li>key has depth 0</li>
-     * </ul>
-     */
-    public int getDepth() {
-        return StringUtils.countOccurrencesOf(getNamePath(), "/");
     }
 }

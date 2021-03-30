@@ -47,7 +47,8 @@ public class AppCapabilityJpaPersistenceService implements AppCapabilityPersiste
     @Override
     public List<AppCapabilityJpaEntity> findAllByParentId(Iterable<Long> ids) {
         Specification<AppCapabilityJpaEntity> specification = (root, criteriaQuery, cb) -> {
-            return cb.and(root.get(AppCapabilityJpaEntity_.PARENT).get(AppCapabilityJpaEntity_.ID).in(Lists.newArrayList(ids)));
+            return cb.and(root.get(AppCapabilityJpaEntity_.PARENT).get(AppCapabilityJpaEntity_.ID).in(Lists.newArrayList(ids)),
+                    cb.notEqual(root.get(AppCapabilityJpaEntity_.ID), AppCapabilityRead.ROOT.getId()));
         };
         return repository.findAll(specification);
     }

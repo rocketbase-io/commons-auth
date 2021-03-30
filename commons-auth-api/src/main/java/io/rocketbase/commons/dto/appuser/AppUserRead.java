@@ -1,6 +1,7 @@
 package io.rocketbase.commons.dto.appuser;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.rocketbase.commons.dto.appcapability.AppCapabilityShort;
 import io.rocketbase.commons.dto.appgroup.AppGroupShort;
 import io.rocketbase.commons.dto.appteam.AppUserMembership;
@@ -21,6 +22,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(of = "id")
+@JsonDeserialize(as = AppUserRead.class)
 public class AppUserRead implements AppUserReference, Serializable {
 
     private String id;

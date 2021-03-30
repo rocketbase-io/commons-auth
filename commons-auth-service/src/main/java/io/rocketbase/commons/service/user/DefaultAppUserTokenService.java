@@ -1,5 +1,6 @@
 package io.rocketbase.commons.service.user;
 
+import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.model.AppUserTokenDetails;
@@ -13,6 +14,7 @@ import java.util.Optional;
 public class DefaultAppUserTokenService implements AppUserTokenService {
 
     private final AppUserService appUserService;
+    private final AppUserConverter appUserConverter;
 
     /**
      * lookup user also via email-adress if used...
@@ -31,57 +33,27 @@ public class DefaultAppUserTokenService implements AppUserTokenService {
      * keyValues of: group, user activeTeam<br>
      * capabilities of: user and group
      */
-    /*
-    protected AppUserToken toToken() {
-        Map<String, String> keyValues = new HashMap<>();
-        // first read all
-        if (getGroups() != null) {
-            List<AppGroupRead> sortedGroups = getGroups().stream()
-                    .filter(g -> getKeyValues() != null)
-                    .sorted(Comparator
-                            .comparing(AppGroupRead::getDepth)
-                            .thenComparing(AppGroupRead::getName))
-                    .collect(Collectors.toList());
-            for (AppGroupRead g : sortedGroups) {
-                keyValues.putAll(g.getKeyValues());
-            }
-        }
-        if (getKeyValues() != null) {
-            keyValues.putAll(getKeyValues());
-        }
-
-        if (getActiveTeam() != null && getActiveTeam().getTeam().getKeyValues() != null) {
-            keyValues.putAll(getActiveTeam().getTeam().getKeyValues());
-        }
-
-        return SimpleAppUserToken.builderToken()
-                .id(getId())
-                .systemRefId(getSystemRefId())
-                .username(getUsername())
-                .email(getEmail())
-                .profile(getProfile())
-                .groups(getGroups() != null ? getGroups().stream().map(AppGroupRead::toShort).collect(Collectors.toSet()) : null)
-                .capabilities(getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet()))
-                .build();
-    }
-     */
     @Override
     public Optional<AppUserToken> findByUsername(String username) {
-        return null;
+        return convertOptional(appUserService.findByIdOrUsername(username));
     }
 
     @Override
     public Optional<AppUserToken> findByEmail(String email) {
-        return Optional.empty();
+        return convertOptional(appUserService.findByEmail(email));
     }
 
     @Override
     public Optional<AppUserToken> findById(String id) {
-        return Optional.empty();
+        return convertOptional(appUserService.findByIdOrUsername(id));
     }
 
     @Override
     public AppUserToken lookup(AppUserEntity appUser) {
-        return null;
+        return appUserConverter.toToken(appUser);
+    }
+
+    protected Optional<AppUserToken> convertOptional(Optional<AppUserEntity> optional) {
+        return optional.isPresent() ? Optional.of(appUserConverter.toToken(optional.get())) : Optional.empty();
     }
 }

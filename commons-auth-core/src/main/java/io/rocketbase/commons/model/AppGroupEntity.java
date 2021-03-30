@@ -1,5 +1,6 @@
 package io.rocketbase.commons.model;
 
+import io.rocketbase.commons.dto.appgroup.AppGroupRead;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
@@ -47,7 +48,7 @@ public interface AppGroupEntity extends Serializable, EntityWithKeyValue<AppGrou
 
     /**
      * calculated tree of parent's names to get also parent names<br>
-     * example: buyers/department/manager
+     * example: /buyers/department/manager
      */
     String getNamePath();
 
@@ -69,7 +70,11 @@ public interface AppGroupEntity extends Serializable, EntityWithKeyValue<AppGrou
     String getModifiedBy();
 
     default int getDepth() {
-        return StringUtils.countOccurrencesOf(getNamePath(), "/");
+        return AppGroupRead.ROOT.getNamePath().equals(getNamePath()) ? 0 : StringUtils.countOccurrencesOf(getNamePath(), "/");
+    }
+
+    default long getSortOrder() {
+        return getDepth() * 100000000000000L + getCreated().toEpochMilli();
     }
 
 }

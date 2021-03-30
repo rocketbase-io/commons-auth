@@ -9,6 +9,7 @@ import io.rocketbase.commons.service.client.AppClientJpaPersistenceService;
 import io.rocketbase.commons.service.client.AppClientPersistenceService;
 import io.rocketbase.commons.service.group.AppGroupJpaPersistenceService;
 import io.rocketbase.commons.service.group.AppGroupPersistenceService;
+import io.rocketbase.commons.service.group.AppGroupService;
 import io.rocketbase.commons.service.invite.AppInviteJpaPersistenceService;
 import io.rocketbase.commons.service.invite.AppInvitePersistenceService;
 import io.rocketbase.commons.service.team.AppTeamJpaPersistenceService;
@@ -75,8 +76,8 @@ public class AuthJpaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AppUserConverter<AppUserJpaEntity> appUserConverter(@Autowired AppGroupConverter<AppGroupJpaEntity> appGroupConverter, @Autowired AppCapabilityService appCapabilityService) {
-        return new AppUserJpaConverter(appGroupConverter, appCapabilityConverter, appCapabilityService, appTeamService);
+    public AppUserConverter<AppUserJpaEntity> appUserConverter(@Autowired AppGroupConverter<AppGroupJpaEntity> appGroupConverter, @Autowired AppGroupService appGroupService, @Autowired AppCapabilityService appCapabilityService, @Autowired AppTeamConverter appTeamConverter) {
+        return new AppUserJpaConverter(appGroupConverter,appGroupService, appCapabilityConverter, appCapabilityService, appTeamService, appTeamConverter);
     }
 
     @Bean

@@ -20,7 +20,7 @@ public abstract class TeamData {
             .description("the one and only")
             .personal(true)
             .keyValues(ImmutableMap.of("location", "de"))
-            .members(ImmutableMap.of(UserData.MARTEN.getId(), AppTeamRole.OWNER, UserData.LUISE.getId(), AppTeamRole.MEMBER))
+            .members(ImmutableMap.of(UserData.MARTEN.getId(), AppTeamRole.OWNER, UserData.SAMPLE_DISABLED.getId(), AppTeamRole.MEMBER))
             .created(Instant.ofEpochSecond(1609459200)) // 2021-01-01
             .modified(Instant.ofEpochSecond(1609459200))
             .modifiedBy("test")
@@ -32,7 +32,7 @@ public abstract class TeamData {
             .description("two is the one!")
             .personal(false)
             .keyValues(ImmutableMap.of("clientId", "123", "emailAlert", "1h"))
-            .members(ImmutableMap.of(UserData.NIELS.getId(), AppTeamRole.OWNER, UserData.MARTEN.getId(), AppTeamRole.OWNER, UserData.SAMPLE_DISABLED.getId(), AppTeamRole.MEMBER))
+            .members(ImmutableMap.of(UserData.NIELS.getId(), AppTeamRole.OWNER, UserData.MARTEN.getId(), AppTeamRole.OWNER, UserData.USER.getId(), AppTeamRole.MEMBER))
             .created(Instant.ofEpochSecond(1609632000)) // 2021-01-03
             .modified(Instant.ofEpochSecond(1609632000))
             .modifiedBy("test")

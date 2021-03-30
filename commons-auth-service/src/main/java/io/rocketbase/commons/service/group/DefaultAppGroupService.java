@@ -11,10 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @RequiredArgsConstructor
 public class DefaultAppGroupService implements AppGroupService {
@@ -62,6 +59,33 @@ public class DefaultAppGroupService implements AppGroupService {
     @Override
     public void delete(Long id) {
         groupPersistenceService.delete(id);
+    }
+
+    @Override
+    public Set<AppGroupEntity> followTreeUpwards(Collection<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return null;
+        }
+        Set<AppGroupEntity> result = new HashSet<>();
+        followUpwards(result, findByIds(ids));
+        return result;
+    }
+
+    protected void followUpwards(Set<AppGroupEntity> result, Collection<AppGroupEntity> entities) {
+        if (entities == null) {
+            return;
+        }
+
+        result.addAll(entities);
+        Set<Long> parentIds = new HashSet<>();
+        for (AppGroupEntity e : entities) {
+            if (!e.getParentId().equals(e.getId())) {
+                parentIds.add(e.getParentId());
+            }
+        }
+        if (!parentIds.isEmpty()) {
+            followUpwards(result, findByIds(parentIds));
+        }
     }
 
     @Override

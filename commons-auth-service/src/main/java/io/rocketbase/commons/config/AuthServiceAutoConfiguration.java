@@ -3,6 +3,7 @@ package io.rocketbase.commons.config;
 import io.rocketbase.commons.converter.AppCapabilityConverter;
 import io.rocketbase.commons.converter.AppGroupConverter;
 import io.rocketbase.commons.converter.AppTeamConverter;
+import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.service.auth.DefaultLoginService;
 import io.rocketbase.commons.service.auth.LoginService;
 import io.rocketbase.commons.service.avatar.AvatarService;
@@ -153,8 +154,8 @@ public class AuthServiceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AppUserTokenService appUserTokenService(@Autowired AppUserService appUserService) {
-        return new DefaultAppUserTokenService(appUserService);
+    public AppUserTokenService appUserTokenService(@Autowired AppUserService appUserService, @Autowired AppUserConverter appUserConverter) {
+        return new DefaultAppUserTokenService(appUserService, appUserConverter);
     }
 
     @Bean

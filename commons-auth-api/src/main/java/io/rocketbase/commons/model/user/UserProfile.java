@@ -1,5 +1,6 @@
 package io.rocketbase.commons.model.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.rocketbase.commons.dto.address.Gender;
 import io.rocketbase.commons.model.HasFirstAndLastName;
@@ -9,81 +10,70 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Set;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonDeserialize(as = SimpleUserProfile.class)
 public interface UserProfile extends Serializable, HasFirstAndLastName {
 
+    @Nullable
     Gender getGender();
 
-    @Nullable
     void setGender(Gender gender);
 
+    @Nullable
     String getSalutation();
 
-    @Nullable
-    @Size(max = 10)
-    void setSalutation(String salutation);
+    void setSalutation(@Size(max = 10) String salutation);
 
+    @Nullable
     String getTitle();
 
-    @Nullable
-    @Size(max = 10)
-    void setTitle(String title);
+    void setTitle(@Size(max = 10) String title);
+
+    void setFirstName(@Size(max = 100) String firstName);
+
+    void setLastName(@Size(max = 100) String lastName);
 
     @Nullable
-    @Size(max = 100)
-    void setFirstName(String firstName);
-
-    @Nullable
-    @Size(max = 100)
-    void setLastName(String lastName);
-
     String getAvatar();
 
-    @Nullable
-    @Size(max = 2000)
-    void setAvatar(String avatar);
+    void setAvatar(@Size(max = 2000) String avatar);
 
+    @Nullable
     String getAbout();
 
-    @Nullable
-    @Size(max = 500)
-    void setAbout(String about);
+    void setAbout(@Size(max = 500) String about);
 
+    @Nullable
     Set<PhoneNumber> getPhoneNumbers();
 
-    @Nullable
     void setPhoneNumbers(Set<PhoneNumber> phoneNumbers);
 
+    @Nullable
     Set<OnlineProfile> getOnlineProfiles();
 
-    @Nullable
     void setOnlineProfiles(Set<OnlineProfile> onlineProfiles);
 
+    @Nullable
     String getLocation();
 
-    @Nullable
-    @Size(max = 255)
-    void setLocation(String location);
+    void setLocation(@Size(max = 255) String location);
 
+    @Nullable
     String getCountry();
 
     /**
      * Alpha-2 code - ISO 3166<br>
      * for example: de, gb, us
      */
-    @Nullable
-    @Size(max = 2)
-    void setCountry(String country);
+    void setCountry(@Size(max = 2) String country);
 
+    @Nullable
     String getJobTitle();
 
-    @Nullable
-    @Size(max = 100)
-    void setJobTitle(String jobTitle);
+    void setJobTitle(@Size(max = 100) String jobTitle);
 
+    @Nullable
     String getOrganization();
 
-    @Nullable
-    @Size(max = 100)
-    void setOrganization(String organization);
+    void setOrganization(@Size(max = 100) String organization);
 }

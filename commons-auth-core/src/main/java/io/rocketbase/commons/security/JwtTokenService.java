@@ -8,7 +8,6 @@ import io.jsonwebtoken.jackson.io.JacksonDeserializer;
 import io.jsonwebtoken.jackson.io.JacksonSerializer;
 import io.jsonwebtoken.lang.Maps;
 import io.rocketbase.commons.config.JwtProperties;
-import io.rocketbase.commons.converter.KeyValueConverter;
 import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.model.AppUserToken;
@@ -29,6 +28,8 @@ import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static io.rocketbase.commons.converter.KeyValueConverter.filterInvisibleAndJwtIgnoredKeys;
+
 @Slf4j
 @RequiredArgsConstructor
 public class JwtTokenService implements Serializable {
@@ -42,6 +43,16 @@ public class JwtTokenService implements Serializable {
     final JwtProperties jwtProperties;
     final CustomAuthoritiesProvider customAuthoritiesProvider;
 
+    private ObjectMapper objectMapper;
+
+    private ObjectMapper getObjectMapper() {
+        if (objectMapper == null) {
+            objectMapper = new ObjectMapper();
+            objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        }
+        return objectMapper;
+    }
+
     private Key getKey() {
         return new SecretKeySpec(Decoders.BASE64.decode(jwtProperties.getSecret()), SIGNATURE_ALGORITHM.getJcaName());
     }
@@ -52,13 +63,8 @@ public class JwtTokenService implements Serializable {
     }
 
     private JwtBuilder prepareBuilder(Instant ldt, long expirationMinutes, String username) {
-
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-
-
         return Jwts.builder()
-                .serializeToJsonWith(new JacksonSerializer<>(mapper))
+                .serializeToJsonWith(new JacksonSerializer<>(getObjectMapper()))
                 .setIssuedAt(convert(ldt))
                 .setExpiration(convert(ldt.plusSeconds(expirationMinutes * 60)))
                 .signWith(getKey(), SIGNATURE_ALGORITHM)
@@ -66,13 +72,18 @@ public class JwtTokenService implements Serializable {
     }
 
     public TokenParseResult parseToken(String token) throws JwtException {
+        if (token == null) {
+            throw new JwtException("token is null");
+        }
         Jws<Claims> jws = Jwts.parserBuilder()
                 .deserializeJsonWith(new JacksonDeserializer(Maps.of(USER_KEY, SimpleAppUserToken.class).build()))
                 .setSigningKey(getKey())
                 .build()
                 .parseClaimsJws(token);
 
-        SimpleAppUserToken appUserToken = jws.getBody().get(USER_KEY, SimpleAppUserToken.class);
+        SimpleAppUserToken appUserToken = Nulls.notNull(jws.getBody().get(USER_KEY, SimpleAppUserToken.class), SimpleAppUserToken.builderToken()
+                .username(jws.getBody().getSubject())
+                .build());
         Collection<String> scopes = (Collection) jws.getBody().getOrDefault(SCOPES_KEY, Collections.emptySet());
         appUserToken.setCapabilities(new HashSet<>(scopes != null ? scopes : Collections.emptySet()));
         Instant issuedAt = jws.getBody().getIssuedAt() != null ? Instant.ofEpochMilli(jws.getBody().getIssuedAt().getTime()) : null;
@@ -102,7 +113,7 @@ public class JwtTokenService implements Serializable {
 
         SimpleAppUserToken jwtJsonUser = new SimpleAppUserToken(appUserToken);
         jwtJsonUser.setCapabilities(null);
-        jwtJsonUser.setKeyValues(KeyValueConverter.filterInvisibleAndJwtIgnoredKeys(jwtJsonUser.getKeyValues()));
+        jwtJsonUser.setKeyValues(filterInvisibleAndJwtIgnoredKeys(jwtJsonUser.getKeyValues()));
 
         JwtBuilder jwtBuilder = prepareBuilder(ldt, jwtProperties.getAccessTokenExpiration(), appUserToken.getUsername())
                 .claim(SCOPES_KEY, CapacityAuthoritiesConverter.convertToDtos(scopes))

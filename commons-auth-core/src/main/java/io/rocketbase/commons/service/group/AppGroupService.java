@@ -31,6 +31,8 @@ public interface AppGroupService {
      */
     void delete(Long id);
 
+    Set<AppGroupEntity> followTreeUpwards(Collection<Long> ids);
+
     Set<AppGroupRead> lookupIds(Collection<Long> ids);
 
     default Set<AppGroupShort> lookupIdsShort(Collection<Long> ids) {

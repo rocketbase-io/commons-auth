@@ -1,5 +1,6 @@
 package io.rocketbase.commons.model;
 
+import io.rocketbase.commons.dto.appcapability.AppCapabilityRead;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
@@ -64,14 +65,13 @@ public interface AppCapabilityEntity extends Serializable {
     /**
      * calculated parent count
      * <ul>
-     *     <li>parent0.parent1.key has depth 2</li>
-     *     <li>key has depth 0</li>
+     *     <li>"parent0.parent1.key" has depth 3</li>
+     *     <li>"key" has depth 1</li>
+     *     <li>"" has depth 0 - special because root capability</li>
      * </ul>
      */
     default int getDepth() {
-        return StringUtils.countOccurrencesOf(getKeyPath(), ".");
+        return getKeyPath().equals(AppCapabilityRead.ROOT.getKeyPath()) ? 0 : StringUtils.countOccurrencesOf(getKeyPath(), ".") + 1;
     }
-
-
 
 }

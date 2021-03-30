@@ -14,7 +14,7 @@ import java.time.Instant;
 @EqualsAndHashCode(callSuper = true)
 public class AppCapabilityRead extends AppCapabilityShort implements Serializable {
 
-    public static AppCapabilityRead ROOT = new AppCapabilityRead(6291457024L, "", "*", true, "root capability", 6291457024L, Instant.ofEpochMilli(1577836800000L), "commons-auth", Instant.ofEpochMilli(1577836800000L));
+    public static AppCapabilityRead ROOT = new AppCapabilityRead(6291457024L, "*", "*", true, "root capability", 6291457024L, Instant.ofEpochMilli(1577836800000L), "commons-auth", Instant.ofEpochMilli(1577836800000L));
 
     private String key;
 

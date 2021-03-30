@@ -3,15 +3,19 @@ package io.rocketbase.commons.resource;
 import io.rocketbase.commons.api.LoginApi;
 import io.rocketbase.commons.dto.authentication.LoginRequest;
 import io.rocketbase.commons.dto.authentication.LoginResponse;
+import io.rocketbase.commons.exception.BadRequestException;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 public class LoginResource implements BaseRestResource, LoginApi {
 
     @Getter
@@ -43,16 +47,21 @@ public class LoginResource implements BaseRestResource, LoginApi {
      *
      * @param login credentials
      * @return token bundle with access- and refresh-token + user details
+     * @throws BadCredentialsException in case of invalid login data
      */
     @Override
-    public LoginResponse login(LoginRequest login) {
-        ResponseEntity<LoginResponse> response = getRestTemplate()
-                .exchange(createUriComponentsBuilder(baseAuthApiUrl)
-                                .path("/auth/login").toUriString(),
-                        HttpMethod.POST,
-                        new HttpEntity<>(login, createHeaderWithLanguage()),
-                        LoginResponse.class);
-        return response.getBody();
+    public LoginResponse login(LoginRequest login) throws BadCredentialsException {
+        try {
+            ResponseEntity<LoginResponse> response = getRestTemplate()
+                    .exchange(createUriComponentsBuilder(baseAuthApiUrl)
+                                    .path("/auth/login").toUriString(),
+                            HttpMethod.POST,
+                            new HttpEntity<>(login, createHeaderWithLanguage()),
+                            LoginResponse.class);
+            return response.getBody();
+        } catch (BadRequestException e) {
+            throw new BadCredentialsException("login not possible");
+        }
     }
 
 

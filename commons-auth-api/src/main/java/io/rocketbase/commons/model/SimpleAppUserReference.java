@@ -70,4 +70,15 @@ public class SimpleAppUserReference implements AppUserReference {
     public String getLastName() {
         return getProfile() != null ? getProfile().getLastName() : null;
     }
+
+    @Override
+    public String toString() {
+        return "SimpleAppUserReference{" +
+                "id='" + id + '\'' +
+                ", systemRefId='" + systemRefId + '\'' +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", profile=" + profile +
+                '}';
+    }
 }

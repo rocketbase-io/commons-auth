@@ -38,7 +38,7 @@ public abstract class UserData {
                     .build())
             .email("marten@rocketbase.io")
             .capabilityIds(Sets.newHashSet(CapabilityData.API_ROOT.getId(), CapabilityData.USER_OBJECT.getId()))
-            .password("password")
+            .password("{noop}pw")
             .enabled(true)
             .lastLogin(Instant.ofEpochSecond(1612915200)) // 2020-02-10
             .lastTokenInvalidation(Instant.ofEpochSecond(1612310400)) // 2020-02-03
@@ -68,7 +68,7 @@ public abstract class UserData {
             .email("niels@rocketbase.io")
             .capabilityIds(Sets.newHashSet(CapabilityData.ROOT.getId()))
             .groupIds(Sets.newHashSet(GroupData.DEPARTMENT_TWO_GROUP.getId()))
-            .password("password")
+            .password("{noop}pw")
             .enabled(true)
             .activeTeamId(TeamData.TEAM_IDS.get(1))
             .created(Instant.ofEpochSecond(1613088000)) // 2020-02-12
@@ -79,7 +79,7 @@ public abstract class UserData {
                     .build())
             .build();
 
-    public static SimpleAppUserEntity LUISE = SimpleAppUserEntity.builder()
+    public static SimpleAppUserEntity SAMPLE_DISABLED = SimpleAppUserEntity.builder()
             .id("a35dc8fc-57f1-4867-b8a5-04926bc0e91f")
             .username("luise")
             .profile(SimpleUserProfile.builder()
@@ -97,8 +97,8 @@ public abstract class UserData {
             .email("luise@example.com")
             .capabilityIds(Sets.newHashSet(CapabilityData.USER_OBJECT.getId()))
             .groupIds(Sets.newHashSet(GroupData.DEPARTMENT_GROUP.getId(), GroupData.DEPARTMENT_ONE_GROUP.getId()))
-            .password("password")
-            .enabled(true)
+            .password("{noop}pw")
+            .enabled(false)
             .created(Instant.ofEpochSecond(1610323200)) // 2020-01-11
             .modified(Instant.ofEpochSecond(1610323200))
             .modifiedBy("test")
@@ -107,7 +107,7 @@ public abstract class UserData {
                     .build())
             .build();
 
-    public static SimpleAppUserEntity SAMPLE_DISABLED = SimpleAppUserEntity.builder()
+    public static SimpleAppUserEntity USER = SimpleAppUserEntity.builder()
             .id("d74678ea-6689-4c6f-a055-e275b4a2a61c")
             .username("user")
             .profile(SimpleUserProfile.builder()
@@ -117,8 +117,8 @@ public abstract class UserData {
             .email("user@rocketbase.io")
             .capabilityIds(Sets.newHashSet(CapabilityData.USER_READ.getId(), CapabilityData.API_BLOG_CRUD.getId()))
             .groupIds(Sets.newHashSet(GroupData.DEPARTMENT_TWO_GROUP.getId()))
-            .password("password")
-            .enabled(false)
+            .password("{noop}pw")
+            .enabled(true)
             .activeTeamId(TeamData.TEAM_IDS.get(2))
             .created(Instant.ofEpochSecond(1614211200)) // 2020-02-25
             .modified(Instant.ofEpochSecond(1609459200))
@@ -131,10 +131,10 @@ public abstract class UserData {
             .profile(SimpleUserProfile.builder()
                     .firstName("Service")
                     .build())
-            .email("servicee@rocketbase.io")
+            .email("service@rocketbase.io")
             .capabilityIds(Sets.newHashSet(CapabilityData.USER_READ.getId(), CapabilityData.API_ASSET.getId(), CapabilityData.API_BLOG_CRUD.getId()))
             .groupIds(Sets.newHashSet(GroupData.DEPARTMENT_TWO_GROUP.getId()))
-            .password("password")
+            .password("{noop}pw")
             .enabled(true)
             .created(Instant.ofEpochSecond(1609459200)) // 2020-01-01
             .modified(Instant.ofEpochSecond(1609459200))
@@ -154,7 +154,7 @@ public abstract class UserData {
             .email("admin@rocketbase.io")
             .groupIds(Sets.newHashSet(GroupData.ADMIN_GROUP.getId()))
             .keyValues(ImmutableMap.of("workspace", "1", "displayMode", "short"))
-            .password("password")
+            .password("{noop}pw")
             .enabled(true)
             .created(Instant.ofEpochSecond(1609459200)) // 2020-01-01
             .modified(Instant.ofEpochSecond(1609459200))
@@ -162,6 +162,6 @@ public abstract class UserData {
             .build();
 
     public static List<AppUserEntity> getEntities() {
-        return Arrays.asList(MARTEN, NIELS, LUISE, SAMPLE_DISABLED, SERVICE, ADMIN);
+        return Arrays.asList(MARTEN, NIELS, SAMPLE_DISABLED, USER, SERVICE, ADMIN);
     }
 }

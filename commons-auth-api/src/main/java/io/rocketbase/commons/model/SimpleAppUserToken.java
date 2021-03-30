@@ -1,7 +1,9 @@
 package io.rocketbase.commons.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.rocketbase.commons.dto.appgroup.AppGroupShort;
 import io.rocketbase.commons.dto.appteam.AppUserMembership;
+import io.rocketbase.commons.model.user.SimpleUserSetting;
 import io.rocketbase.commons.model.user.UserProfile;
 import io.rocketbase.commons.model.user.UserSetting;
 import lombok.Builder;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SimpleAppUserToken extends SimpleAppUserReference implements AppUserToken {
 
     @Nullable
@@ -68,5 +71,22 @@ public class SimpleAppUserToken extends SimpleAppUserReference implements AppUse
         this.capabilities = other.getCapabilities() != null ? new TreeSet<>(other.getCapabilities()) : null;
         this.activeTeam = other.getActiveTeam() != null ? new AppUserMembership(other.getActiveTeam()) : null;
         this.keyValues = other.getKeyValues() != null ? new HashMap<>(other.getKeyValues()) : null;
+        this.setting = other.getSetting() != null ? new SimpleUserSetting(other.getSetting()) : null;
+    }
+
+    @Override
+    public String toString() {
+        return "SimpleAppUserToken{" +
+                "id='" + getId() + '\'' +
+                ", systemRefId='" + getSystemRefId() + '\'' +
+                ", username='" + getUsername() + '\'' +
+                ", email='" + getEmail() + '\'' +
+                ", profile=" + getProfile() +
+                ", groups=" + groups +
+                ", capabilities=" + capabilities +
+                ", activeTeam=" + activeTeam +
+                ", keyValues=" + keyValues +
+                ", setting=" + setting +
+                '}';
     }
 }
