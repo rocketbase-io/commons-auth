@@ -4,9 +4,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public interface AuthQueryConverter<T> {
 
@@ -21,6 +19,18 @@ public interface AuthQueryConverter<T> {
             }
         }
         return result;
+    }
+
+    default Set<Long> parseLongSet(String key, MultiValueMap<String, String> params) {
+        Set<Long> result = new HashSet<>();
+        if (params != null && params.containsKey(key)) {
+            for (String v : params.get(key)) {
+                if (v.matches("[0-9]+")) {
+                    result.add(Long.parseLong(v));
+                }
+            }
+        }
+        return result.isEmpty() ? null : result;
     }
 
     default void addKeyValues(UriComponentsBuilder uriBuilder, String key, Map<String, String> keyValues) {
@@ -38,6 +48,11 @@ public interface AuthQueryConverter<T> {
     }
 
     default void addString(UriComponentsBuilder uriBuilder, String key, Collection<String> value) {
+        if (uriBuilder != null && value != null && !value.isEmpty() && key != null) {
+            uriBuilder.queryParam(key, value);
+        }
+    }
+    default void addLongs(UriComponentsBuilder uriBuilder, String key, Collection<Long> value) {
         if (uriBuilder != null && value != null && !value.isEmpty() && key != null) {
             uriBuilder.queryParam(key, value);
         }

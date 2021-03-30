@@ -14,8 +14,8 @@ public class QueryAppInviteConverter implements AuthQueryConverter<QueryAppInvit
             return null;
         }
         return QueryAppInvite.builder()
-                .invitor(params.containsKey("invitor") ? params.getFirst("invitor") : null)
-                .email(params.containsKey("email") ? params.getFirst("email") : null)
+                .invitor(params.getFirst("invitor"))
+                .email(params.getFirst("email"))
                 .expired(parseBoolean(params, "expired", null))
                 .keyValues(parseKeyValue("keyValue", params))
                 .build();
