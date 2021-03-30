@@ -8,7 +8,7 @@ import io.rocketbase.commons.resource.ValidationResource;
 import io.rocketbase.commons.service.SimpleTokenService;
 import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.test.data.CapabilityData;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.annotation.Resource;
 

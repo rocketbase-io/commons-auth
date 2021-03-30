@@ -7,7 +7,7 @@ import io.rocketbase.commons.model.AppUserReference;
 import io.rocketbase.commons.model.SimpleAppUserReference;
 import io.rocketbase.commons.model.user.SimpleUserProfile;
 import io.rocketbase.commons.test.model.SimpleAppInviteEntity;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.simplejavamail.api.email.Email;
 import org.simplejavamail.api.mailer.Mailer;
 import org.simplejavamail.email.EmailBuilder;

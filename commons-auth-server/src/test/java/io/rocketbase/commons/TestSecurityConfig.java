@@ -19,7 +19,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.StandardPasswordEncoder;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -28,6 +32,8 @@ import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
@@ -64,7 +70,17 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new SCryptPasswordEncoder();
+        PasswordEncoder defaultEncoder = new StandardPasswordEncoder();
+        Map<String, PasswordEncoder> encoders = new HashMap<>();
+        encoders.put("bcrypt", new BCryptPasswordEncoder());
+        encoders.put("scrypt", new SCryptPasswordEncoder());
+        encoders.put("noop", NoOpPasswordEncoder.getInstance());
+
+        DelegatingPasswordEncoder passworEncoder = new DelegatingPasswordEncoder(
+                "bcrypt", encoders);
+        passworEncoder.setDefaultPasswordEncoderForMatches(defaultEncoder);
+
+        return passworEncoder;
     }
 
     @Bean
@@ -105,9 +121,9 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
             // invite form
             .antMatchers(formsProperties.getInviteEndpointPaths()).permitAll()
             // user-management is only allowed by ADMINS
-            .antMatchers(authProperties.getApiRestEndpointPaths()).hasRole("user.read")
-            .antMatchers(authProperties.getApiInviteRestEndpointPaths()).hasRole("user.write")
-            .antMatchers(authProperties.getImpersonateEndpointPaths()).hasRole("*")
+            .antMatchers(authProperties.getApiRestEndpointPaths()).hasAuthority("user.read")
+            .antMatchers(authProperties.getApiInviteRestEndpointPaths()).hasAuthority("user.write")
+            .antMatchers(authProperties.getImpersonateEndpointPaths()).hasAuthority("*")
             .antMatchers(authProperties.getUserSearchRestEndpointPaths()).authenticated()
             // secure all other api-endpoints
             .antMatchers(authProperties.getPrefix()+"/api/**").authenticated()

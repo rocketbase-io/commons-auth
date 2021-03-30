@@ -1,7 +1,7 @@
 package io.rocketbase.commons.service.avatar;
 
 import io.rocketbase.commons.config.GravatarProperties;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;

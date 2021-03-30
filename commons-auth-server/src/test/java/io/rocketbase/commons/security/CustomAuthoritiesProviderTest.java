@@ -7,7 +7,7 @@ import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.model.SimpleAppUserToken;
 import io.rocketbase.commons.model.TokenParseResult;
 import io.rocketbase.commons.util.CapacityAuthoritiesConverter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 

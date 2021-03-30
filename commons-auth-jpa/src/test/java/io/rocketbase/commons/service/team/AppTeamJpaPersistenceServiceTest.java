@@ -7,7 +7,7 @@ import io.rocketbase.commons.model.AppTeamJpaEntity;
 import io.rocketbase.commons.service.JpaPersistenceBaseTest;
 import io.rocketbase.commons.test.data.TeamData;
 import io.rocketbase.commons.test.data.UserData;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -74,7 +74,7 @@ public class AppTeamJpaPersistenceServiceTest extends JpaPersistenceBaseTest {
         entity.setDescription("description");
         entity.setPersonal(true);
         entity.setKeyValues(ImmutableMap.of("workspace", "333", "_secret", "topsecret"));
-        entity.setMembers(ImmutableMap.of(UserData.NIELS.getId(), AppTeamRole.OWNER, UserData.LUISE.getId(), AppTeamRole.MEMBER));
+        entity.setMembers(ImmutableMap.of(UserData.NIELS.getId(), AppTeamRole.OWNER, UserData.SAMPLE_DISABLED.getId(), AppTeamRole.MEMBER));
 
         // when
         service.save(entity);

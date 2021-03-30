@@ -1,6 +1,6 @@
 package io.rocketbase.commons.dto.authentication;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

@@ -5,7 +5,7 @@ import io.rocketbase.commons.config.EmailProperties;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.test.EmailSenderTest;
 import io.rocketbase.commons.test.data.UserData;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import javax.annotation.Resource;

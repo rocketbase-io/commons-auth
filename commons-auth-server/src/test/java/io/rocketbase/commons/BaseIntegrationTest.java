@@ -9,21 +9,22 @@ import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
 import io.rocketbase.commons.test.adapters.AuthRestTestTemplate;
 import io.rocketbase.commons.test.data.*;
-import org.junit.Before;
-import org.junit.runner.RunWith;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Ignore;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import java.util.Collection;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles(profiles = "test")
+@Slf4j
 public class BaseIntegrationTest {
 
     @Value("http://localhost:${local.server.port}")
@@ -66,7 +67,7 @@ public class BaseIntegrationTest {
         return tokenProvider;
     }
 
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         truncateAndSave(CapabilityData.getEntities(), AppCapabilityMongoEntity.COLLECTION_NAME);
         truncateAndSave(ClientData.getEntities(), AppClientMongoEntity.COLLECTION_NAME);
@@ -88,4 +89,9 @@ public class BaseIntegrationTest {
         return baseUrl + "/test";
     }
 
+    @Ignore
+    @Test
+    public void upAndRunning() {
+        log.info("running tests with database: {}", mongoTemplate.getDb().getName());
+    }
 }

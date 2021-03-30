@@ -12,7 +12,7 @@ import io.rocketbase.commons.test.data.CapabilityData;
 import io.rocketbase.commons.test.data.GroupData;
 import io.rocketbase.commons.test.data.UserData;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -88,8 +88,9 @@ public class AppUserJpaPersistenceServiceTest extends JpaPersistenceBaseTest {
 
         // then
         assertThat(result, notNullValue());
-        assertThat(result.getTotalElements(), equalTo(1L));
-        assertThat(result.getContent().get(0).getUsername(), equalTo("niels"));
+        assertThat(result.getTotalElements(), equalTo(2L));
+        assertThat(result.getContent().get(0).getUsername(), equalTo(UserData.NIELS.getUsername()));
+        assertThat(result.getContent().get(1).getUsername(), equalTo(UserData.USER.getUsername()));
     }
 
     @Test
@@ -97,7 +98,6 @@ public class AppUserJpaPersistenceServiceTest extends JpaPersistenceBaseTest {
         // given
         QueryAppUser query = QueryAppUser.builder()
                 .username("s")
-                .lastName("S")
                 .enabled(false)
                 .build();
 
@@ -107,7 +107,7 @@ public class AppUserJpaPersistenceServiceTest extends JpaPersistenceBaseTest {
         // then
         assertThat(result, notNullValue());
         assertThat(result.getTotalElements(), equalTo(1L));
-        assertThat(result.getContent().get(0).getUsername(), equalTo("user"));
+        assertThat(result.getContent().get(0).getUsername(), equalTo(UserData.SAMPLE_DISABLED.getUsername()));
     }
 
     @Test
@@ -138,8 +138,9 @@ public class AppUserJpaPersistenceServiceTest extends JpaPersistenceBaseTest {
 
         // then
         assertThat(result, notNullValue());
-        assertThat(result.getTotalElements(), equalTo(1L));
-        assertThat(result.getContent().get(0).getUsername(), equalTo("service"));
+        assertThat(result.getTotalElements(), equalTo(2L));
+        assertThat(result.getContent().get(0).getUsername(), equalTo(UserData.SERVICE.getUsername()));
+        assertThat(result.getContent().get(1).getUsername(), equalTo(UserData.USER.getUsername()));
     }
 
     @Test

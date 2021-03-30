@@ -10,7 +10,7 @@ import io.rocketbase.commons.resource.ImpersonateResource;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
 import io.rocketbase.commons.util.JwtTokenBody;
 import io.rocketbase.commons.util.JwtTokenDecoder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.annotation.Resource;
 

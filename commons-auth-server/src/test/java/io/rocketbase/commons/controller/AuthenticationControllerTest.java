@@ -17,7 +17,7 @@ import io.rocketbase.commons.service.change.DefaultChangeAppUserWithConfirmServi
 import io.rocketbase.commons.service.user.AppUserPersistenceService;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;

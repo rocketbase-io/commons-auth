@@ -5,6 +5,7 @@ import io.rocketbase.commons.BaseIntegrationTest;
 import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.adapters.JwtTokenProvider;
 import io.rocketbase.commons.dto.PageableResult;
+import io.rocketbase.commons.dto.appcapability.AppCapabilityShort;
 import io.rocketbase.commons.dto.appuser.*;
 import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.model.AppUserEntity;
@@ -12,12 +13,14 @@ import io.rocketbase.commons.model.user.SimpleUserProfile;
 import io.rocketbase.commons.resource.AppUserResource;
 import io.rocketbase.commons.service.user.AppUserPersistenceService;
 import io.rocketbase.commons.test.data.CapabilityData;
+import io.rocketbase.commons.test.data.UserData;
 import io.rocketbase.commons.util.Nulls;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
 import java.time.Instant;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -50,13 +53,15 @@ public class AppUserControllerTest extends BaseIntegrationTest {
 
         // when
         AppUserResource appUserResource = new AppUserResource(new JwtRestTemplate(tokenProvider));
-        PageableResult<AppUserRead> response = appUserResource.find(QueryAppUser.builder().email("ISBALED").build(), PageRequest.of(0, 10));
+        PageableResult<AppUserRead> response = appUserResource.find(QueryAppUser.builder().email("M").build(), PageRequest.of(0, 10));
 
         // then
         assertThat(response, notNullValue());
         assertThat(response.getTotalPages(), equalTo(1));
         assertThat(response.getPageSize(), equalTo(10));
-        assertThat(response.getTotalElements(), greaterThan(2L));
+        assertThat(response.getTotalElements(), equalTo(2L));
+        assertThat(response.getContent().get(0).getEmail(), equalTo(UserData.ADMIN.getEmail()));
+        assertThat(response.getContent().get(1).getEmail(), equalTo(UserData.MARTEN.getEmail()));
     }
 
     @Test
@@ -77,7 +82,7 @@ public class AppUserControllerTest extends BaseIntegrationTest {
         // then
         assertThat(response, notNullValue());
         assertThat(response.getId(), notNullValue());
-        assertThat(response.getCapabilities(), containsInAnyOrder("admin"));
+        assertThat(response.getCapabilities(), containsInAnyOrder(new AppCapabilityShort(CapabilityData.ROOT.getId(), CapabilityData.ROOT.getKeyPath())));
     }
 
     @Test
@@ -97,7 +102,8 @@ public class AppUserControllerTest extends BaseIntegrationTest {
         assertThat(response, notNullValue());
         assertThat(response.getFirstName(), equalTo("firstName"));
         assertThat(response.getLastName(), equalTo("lastName"));
-        assertThat(response.getCapabilities(), containsInAnyOrder("user"));
+        assertThat(response.getCapabilities().stream().map(AppCapabilityShort::getId).collect(Collectors.toSet()),
+                equalTo(UserData.USER.getCapabilityIds()));
     }
 
     @Test

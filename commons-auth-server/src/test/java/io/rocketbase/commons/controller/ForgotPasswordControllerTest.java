@@ -10,7 +10,7 @@ import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.test.EmailSenderTest;
 import io.rocketbase.commons.test.data.CapabilityData;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.annotation.Resource;
 
@@ -81,9 +81,9 @@ public class ForgotPasswordControllerTest extends BaseIntegrationTest {
         // when
         try {
             forgotPasswordResource.forgotPassword(new ForgotPasswordRequest(null, "unkown@rocketbase.io", null, null));
-            // then
-            Assert.fail("should have thrown NotFoundException");
-        } catch (Exception e) {
+
+        } catch (Exception e) {// then
+            Assert.fail("should not thrown any exception also when it's wrong");
         }
     }
 }

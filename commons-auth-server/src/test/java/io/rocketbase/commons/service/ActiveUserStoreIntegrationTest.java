@@ -19,7 +19,7 @@ import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
 import io.rocketbase.commons.test.data.CapabilityData;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.web.client.HttpClientErrorException;
 
 import javax.annotation.Resource;
@@ -85,7 +85,7 @@ public class ActiveUserStoreIntegrationTest extends BaseIntegrationTest {
                     .password("--")
                     .build());
             throw new RuntimeException("should not be possible to login");
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException.Unauthorized e) {
         }
 
         // then

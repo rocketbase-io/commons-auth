@@ -13,7 +13,7 @@ import io.rocketbase.commons.resource.RegistrationResource;
 import io.rocketbase.commons.service.user.AppUserPersistenceService;
 import io.rocketbase.commons.service.user.DefaultAppUserService;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.annotation.Resource;
 import java.time.Instant;

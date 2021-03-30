@@ -2,7 +2,7 @@ package io.rocketbase.commons.service.user;
 
 import com.google.common.collect.Sets;
 import io.rocketbase.commons.model.SimpleAppUserToken;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationEventPublisher;
 
 import static org.hamcrest.MatcherAssert.assertThat;

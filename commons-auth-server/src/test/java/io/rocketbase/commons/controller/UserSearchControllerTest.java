@@ -9,7 +9,8 @@ import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.model.AppUserReference;
 import io.rocketbase.commons.resource.UserSearchResource;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -98,15 +99,16 @@ public class UserSearchControllerTest extends BaseIntegrationTest {
     }
 
 
-    @Test(expected = HttpClientErrorException.class)
+    @Test
     public void testInvalidAuthRestTemplate() {
         // given
         UserSearchResource resource = new UserSearchResource(getBaseUrl(), new RestTemplate());
 
         // when
-        PageableResult<AppUserReference> response = resource.search(new QueryAppUser(), PageRequest.of(0, 1));
-
         // then
+        Assertions.assertThrows(HttpClientErrorException.class, () -> {
+            PageableResult<AppUserReference> response = resource.search(new QueryAppUser(), PageRequest.of(0, 1));
+        });
     }
 
 }

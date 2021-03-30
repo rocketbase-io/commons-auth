@@ -4,14 +4,12 @@ import io.rocketbase.commons.Application;
 import io.rocketbase.commons.model.*;
 import io.rocketbase.commons.test.data.*;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
@@ -20,7 +18,6 @@ import java.util.*;
 import java.util.function.Function;
 
 @Slf4j
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @Transactional
 public class JpaPersistenceBaseTest {
@@ -28,7 +25,7 @@ public class JpaPersistenceBaseTest {
     @Resource
     private EntityManager em;
 
-    @Before
+    @BeforeEach
     public void initDemoData() throws Exception {
         truncateAndSave(CapabilityData.getEntities(), AppCapabilityJpaEntity.class, (Function<AppCapabilityEntity, AppCapabilityJpaEntity>) data -> {
             AppCapabilityJpaEntity e = new AppCapabilityJpaEntity();

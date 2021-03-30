@@ -8,6 +8,7 @@ import io.rocketbase.commons.security.CommonsAuthenticationToken;
 import io.rocketbase.commons.security.CustomAuthoritiesProvider;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.JwtTokenStoreProvider;
+import io.rocketbase.commons.util.Nulls;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -54,7 +55,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             int status = HttpStatus.BAD_REQUEST.value();
             response.setStatus(status);
             response.getWriter().write(String.format("{\"status\": %d, \"message\": \"%s\"}", status,
-                    e.getMessage().replace("\"", "\\")));
+                    Nulls.notNull(e.getMessage()).replace("\"", "\\")));
         }
     }
 

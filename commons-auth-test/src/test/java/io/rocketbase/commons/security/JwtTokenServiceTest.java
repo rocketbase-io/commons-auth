@@ -5,7 +5,7 @@ import io.rocketbase.commons.config.JwtProperties;
 import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.model.SimpleAppUserToken;
 import io.rocketbase.commons.model.TokenParseResult;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.time.ZoneId;

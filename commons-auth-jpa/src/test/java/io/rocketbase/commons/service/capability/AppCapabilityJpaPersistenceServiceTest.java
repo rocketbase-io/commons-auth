@@ -5,7 +5,7 @@ import io.rocketbase.commons.dto.appcapability.QueryAppCapability;
 import io.rocketbase.commons.model.AppCapabilityJpaEntity;
 import io.rocketbase.commons.service.JpaPersistenceBaseTest;
 import io.rocketbase.commons.test.data.CapabilityData;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
