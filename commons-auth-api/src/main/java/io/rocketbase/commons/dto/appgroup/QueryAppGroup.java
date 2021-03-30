@@ -45,7 +45,7 @@ public class QueryAppGroup implements Serializable {
     private Map<String, String> keyValues;
 
     /**
-     * used needs to have capability ids
+     * group has capability exact search
      */
     @Nullable
     private Set<Long> capabilityIds;

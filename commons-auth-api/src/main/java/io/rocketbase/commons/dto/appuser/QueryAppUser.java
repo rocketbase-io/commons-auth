@@ -52,7 +52,7 @@ public class QueryAppUser implements Serializable, HasKeyValue, HasFirstAndLastN
     private String freetext;
 
     /**
-     * user or it's groups have capability
+     * exact capability search
      */
     @Nullable
     private Set<Long> capabilityIds;

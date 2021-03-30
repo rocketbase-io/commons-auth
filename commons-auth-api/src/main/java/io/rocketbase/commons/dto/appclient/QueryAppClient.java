@@ -28,6 +28,9 @@ public class QueryAppClient implements Serializable {
     @Nullable
     private String systemRefId;
 
+    /**
+     * client has capability - exact search
+     */
     @Nullable
     private Set<Long> capabilityIds;
 
