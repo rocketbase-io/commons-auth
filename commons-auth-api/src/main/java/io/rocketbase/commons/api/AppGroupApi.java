@@ -6,6 +6,8 @@ import io.rocketbase.commons.dto.appgroup.AppGroupWrite;
 import io.rocketbase.commons.dto.appgroup.QueryAppGroup;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 public interface AppGroupApi {
 
     default PageableResult<AppGroupRead> find(Pageable pageable) {
@@ -14,9 +16,11 @@ public interface AppGroupApi {
 
     PageableResult<AppGroupRead> find(QueryAppGroup query, Pageable pageable);
 
+    Optional<AppGroupRead> findById(Long id);
+
     AppGroupRead create(Long parentId, AppGroupWrite write);
 
     AppGroupRead update(Long id, AppGroupWrite write);
 
-    void delete(String id);
+    void delete(Long id);
 }

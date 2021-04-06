@@ -18,6 +18,9 @@ import java.util.Map;
 @AllArgsConstructor
 public class AppTeamWrite implements Serializable, HasKeyValue {
 
+    @Nullable
+    private String systemRefId;
+
     @NotNull
     @Size(min = 3, max = 100)
     private String name;

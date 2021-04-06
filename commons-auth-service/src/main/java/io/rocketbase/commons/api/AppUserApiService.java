@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 public class AppUserApiService implements AppUserApi, BaseApiService {
 
@@ -30,6 +32,12 @@ public class AppUserApiService implements AppUserApi, BaseApiService {
     public PageableResult<AppUserRead> find(QueryAppUser query, Pageable pageable) {
         Page<AppUserEntity> page = appUserService.findAll(query, pageable);
         return PageableResult.contentPage(userConverter.fromEntities(page.getContent()), page);
+    }
+
+    @Override
+    public Optional<AppUserRead> findById(String id) {
+        Optional<AppUserEntity> optional = appUserService.findById(id);
+        return optional.isPresent() ? Optional.of(userConverter.fromEntity(optional.get())) : Optional.empty();
     }
 
     @Override

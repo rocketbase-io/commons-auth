@@ -7,6 +7,7 @@ import io.rocketbase.commons.dto.appgroup.AppGroupWrite;
 import io.rocketbase.commons.dto.appgroup.QueryAppGroup;
 import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.model.AppGroupEntity;
+import io.rocketbase.commons.util.Nulls;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,23 +28,81 @@ public class DefaultAppGroupService implements AppGroupService {
     @Override
     public AppGroupEntity create(AppGroupWrite write, Long parentId) {
         AppGroupEntity instance = groupPersistenceService.initNewInstance();
-        instance.setParentId(parentId);
-        return applyAndSave(write, instance);
+        AppGroupEntity parent = groupPersistenceService.findById(parentId).orElseThrow(NotFoundException::new);
+        checkParentHasChildren(parent);
+        instance.setParentId(parent.getId());
+        updateValues(write, instance);
+        updateNamePath(parent.getNamePath(), instance);
+        return groupPersistenceService.save(instance);
     }
 
     @Override
     public AppGroupEntity update(Long id, AppGroupWrite write) {
         AppGroupEntity entity = groupPersistenceService.findById(id).orElseThrow(NotFoundException::new);
-        return applyAndSave(write, entity);
+        AppGroupEntity parent = groupPersistenceService.findById(entity.getParentId()).orElseThrow(NotFoundException::new);
+
+        if (!updateValues(write, entity)) {
+            return entity;
+        }
+        boolean updatedKeyPath = updateNamePath(parent.getNamePath(), entity);
+        if (updatedKeyPath) {
+            entity = groupPersistenceService.save(entity);
+            if (entity.isWithChildren()) {
+                updateChildKeyPath(entity, groupPersistenceService.findAllByParentId(Arrays.asList(entity.getId())));
+            }
+        }
+        return entity;
     }
 
-    protected AppGroupEntity applyAndSave(AppGroupWrite write, AppGroupEntity instance) {
-        instance.setName(write.getName());
-        instance.setSystemRefId(write.getSystemRefId());
-        instance.setDescription(write.getDescription());
-        instance.setCapabilityIds(write.getCapabilityIds());
-        instance.setKeyValues(write.getKeyValues());
-        return groupPersistenceService.save(instance);
+    protected void checkParentHasChildren(AppGroupEntity parent) {
+        if (!parent.isWithChildren()) {
+            // mark parent that it has children
+            parent.setWithChildren(true);
+            groupPersistenceService.save(parent);
+        }
+    }
+
+    protected boolean updateValues(AppGroupWrite write, AppGroupEntity entity) {
+        boolean hasChanged = !Nulls.notNull(entity.getName()).equals(Nulls.notNull(write.getName())) ||
+                !Nulls.notNull(entity.getSystemRefId()).equals(Nulls.notNull(write.getSystemRefId())) ||
+                !Nulls.notNull(entity.getDescription()).equals(Nulls.notNull(write.getDescription())) ||
+                !Nulls.notNull(entity.getCapabilityIds()).equals(Nulls.notNull(write.getCapabilityIds())) ||
+                !Nulls.notNull(entity.getKeyValues()).equals(Nulls.notNull(write.getKeyValues()));
+
+        entity.setName(write.getName());
+        entity.setSystemRefId(write.getSystemRefId());
+        entity.setDescription(write.getDescription());
+        entity.setCapabilityIds(write.getCapabilityIds());
+        entity.setKeyValues(write.getKeyValues());
+
+        return hasChanged;
+    }
+
+    /**
+     * calculates new keyPath
+     *
+     * @return true when updated otherwise false
+     */
+    protected boolean updateNamePath(String parentNamePath, AppGroupEntity entity) {
+        String newPath = parentNamePath + "/" + entity.getName();
+        if (!newPath.equals(entity.getNamePath())) {
+            entity.setNamePath(newPath);
+            return true;
+        }
+        return false;
+    }
+
+    protected void updateChildKeyPath(AppGroupEntity parent, Collection<AppGroupEntity> children) {
+        if (parent == null || children == null || children.isEmpty() ) {
+            return;
+        }
+        for (AppGroupEntity c : children) {
+            updateNamePath(parent.getNamePath(), c);
+            groupPersistenceService.save(c);
+            if (c.isWithChildren()) {
+                updateChildKeyPath(c, groupPersistenceService.findAllByParentId(Arrays.asList(c.getId())));
+            }
+        }
     }
 
     @Override

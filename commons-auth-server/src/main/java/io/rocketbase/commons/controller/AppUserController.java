@@ -49,6 +49,12 @@ public class AppUserController implements BaseController {
         return PageableResult.contentPage(appUserConverter.fromEntities(entities.getContent()), entities);
     }
 
+    @RequestMapping(method = RequestMethod.GET, path = "/api/user/{id}")
+    @ResponseBody
+    public AppUserRead findById(@PathVariable("id") String id) {
+        return appUserConverter.fromEntity(appUserService.findById(id).orElseThrow(NotFoundException::new));
+    }
+
     @RequestMapping(method = RequestMethod.POST, path = "/api/user", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public AppUserRead create(@RequestBody @NotNull @Validated AppUserCreate create) {

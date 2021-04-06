@@ -7,6 +7,7 @@ import io.rocketbase.commons.dto.PageableResult;
 import io.rocketbase.commons.dto.appinvite.AppInviteRead;
 import io.rocketbase.commons.dto.appinvite.InviteRequest;
 import io.rocketbase.commons.dto.appuser.*;
+import io.rocketbase.commons.exception.NotFoundException;
 import lombok.SneakyThrows;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.Optional;
 
 /**
  * api resource used by authenticated users
@@ -53,6 +56,21 @@ public class AppUserResource implements BaseRestResource, AppUserApi {
                 createPagedTypeReference());
 
         return response.getBody();
+    }
+
+    @Override
+    public Optional<AppUserRead> findById(String id) {
+        UriComponentsBuilder uriBuilder = createUriComponentsBuilder(baseAuthApiUrl)
+                .path(API_USER).pathSegment(id);
+        try {
+            ResponseEntity<AppUserRead> response = restTemplate.exchange(uriBuilder.toUriString(),
+                    HttpMethod.GET,
+                    new HttpEntity<>(createHeaderWithLanguage()),
+                    AppUserRead.class);
+            return Optional.of(response.getBody());
+        } catch (NotFoundException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

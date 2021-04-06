@@ -45,6 +45,7 @@ public class DefaultAppTeamService implements AppTeamService {
         instance.setDescription(write.getDescription());
         instance.setPersonal(write.isPersonal());
         instance.setKeyValues(write.getKeyValues());
+        instance.setSystemRefId(write.getSystemRefId());
         return teamPersistenceService.save(instance);
     }
 

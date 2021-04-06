@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 public class AppInviteApiService implements AppInviteApi, BaseApiService {
 
@@ -21,6 +23,12 @@ public class AppInviteApiService implements AppInviteApi, BaseApiService {
     public PageableResult<AppInviteRead> find(QueryAppInvite query, Pageable pageable) {
         Page<AppInviteEntity> page = appInviteService.findAll(query, pageable);
         return PageableResult.contentPage(converter.fromEntities(page.getContent()), page);
+    }
+
+    @Override
+    public Optional<AppInviteRead> findById(Long id) {
+        Optional<AppInviteEntity> optional = appInviteService.findById(id);
+        return optional.isPresent() ? Optional.of(converter.fromEntity(optional.get())) : Optional.empty();
     }
 
     @Override

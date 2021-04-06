@@ -13,6 +13,8 @@ import io.rocketbase.commons.service.FeedbackActionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 public interface AppInviteService extends FeedbackActionService {
 
     /**
@@ -23,7 +25,7 @@ public interface AppInviteService extends FeedbackActionService {
      */
     AppInviteEntity createInvite(InviteRequest request, String baseUrl) throws BadRequestException;
 
-    AppInviteEntity verifyInvite(Long inviteId) throws VerificationException, NotFoundException;
+    AppInviteEntity verifyInvite(Long id) throws VerificationException, NotFoundException;
 
     /**
      * checks verification-token, set password and possible update firstName, lastName
@@ -39,5 +41,7 @@ public interface AppInviteService extends FeedbackActionService {
      */
     Page<AppInviteEntity> findAll(QueryAppInvite query, Pageable pageable);
 
-    void deleteInvite(Long inviteId);
+    Optional<AppInviteEntity> findById(Long id);
+
+    void deleteInvite(Long id);
 }

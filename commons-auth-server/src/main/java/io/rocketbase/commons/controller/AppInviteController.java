@@ -47,6 +47,12 @@ public class AppInviteController implements BaseController {
         return PageableResult.contentPage(appInviteConverter.fromEntities(entities.getContent()), entities);
     }
 
+    @RequestMapping(method = RequestMethod.GET, path = "/api/invite/{id}")
+    @ResponseBody
+    public AppInviteRead findById(@PathVariable("id") Long id) {
+        return appInviteConverter.fromEntity(appInviteService.findById(id).orElseThrow(NotFoundException::new));
+    }
+
     @RequestMapping(method = RequestMethod.POST, path = "/api/invite", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<AppInviteRead> invite(HttpServletRequest request, @RequestBody @NotNull @Validated InviteRequest inviteRequest) {

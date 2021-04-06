@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import javax.annotation.Resource;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 import static io.rocketbase.commons.event.InviteEvent.InviteProcessType.CREATE;
 import static io.rocketbase.commons.event.InviteEvent.InviteProcessType.VERIFY;
@@ -104,6 +105,11 @@ public class DefaultAppInviteService implements AppInviteService {
     @Override
     public Page<AppInviteEntity> findAll(QueryAppInvite query, Pageable pageable) {
         return appInvitePersistenceService.findAll(query, pageable);
+    }
+
+    @Override
+    public Optional<AppInviteEntity> findById(Long id) {
+        return appInvitePersistenceService.findById(id);
     }
 
     @Override

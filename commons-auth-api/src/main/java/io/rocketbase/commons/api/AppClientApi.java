@@ -6,6 +6,8 @@ import io.rocketbase.commons.dto.appclient.AppClientWrite;
 import io.rocketbase.commons.dto.appclient.QueryAppClient;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 public interface AppClientApi {
 
     default PageableResult<AppClientRead> find(Pageable pageable) {
@@ -14,9 +16,11 @@ public interface AppClientApi {
 
     PageableResult<AppClientRead> find(QueryAppClient query, Pageable pageable);
 
+    Optional<AppClientRead> findById(Long id);
+
     AppClientRead create(AppClientWrite write);
 
     AppClientRead update(Long id, AppClientWrite write);
 
-    void delete(String id);
+    void delete(Long id);
 }

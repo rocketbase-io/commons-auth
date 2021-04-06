@@ -7,6 +7,7 @@ import io.rocketbase.commons.dto.PageableResult;
 import io.rocketbase.commons.dto.appinvite.AppInviteRead;
 import io.rocketbase.commons.dto.appinvite.InviteRequest;
 import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
+import io.rocketbase.commons.exception.NotFoundException;
 import lombok.SneakyThrows;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Pageable;
@@ -17,12 +18,15 @@ import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Optional;
+
 /**
  * api resource used by authenticated users
  */
 public class AppInviteResource implements BaseRestResource, AppInviteApi {
 
     public static final String API_INVITE = "/api/invite/";
+
     protected RestTemplate restTemplate;
     protected String baseAuthApiUrl;
     protected QueryAppInviteConverter converter;
@@ -53,6 +57,21 @@ public class AppInviteResource implements BaseRestResource, AppInviteApi {
                 createPagedTypeReference());
 
         return response.getBody();
+    }
+
+    @Override
+    public Optional<AppInviteRead> findById(Long id) {
+        UriComponentsBuilder uriBuilder = createUriComponentsBuilder(baseAuthApiUrl)
+                .path(API_INVITE).pathSegment(String.valueOf(id));
+        try {
+            ResponseEntity<AppInviteRead> response = restTemplate.exchange(uriBuilder.toUriString(),
+                    HttpMethod.GET,
+                    new HttpEntity<>(createHeaderWithLanguage()),
+                    AppInviteRead.class);
+            return Optional.of(response.getBody());
+        } catch (NotFoundException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

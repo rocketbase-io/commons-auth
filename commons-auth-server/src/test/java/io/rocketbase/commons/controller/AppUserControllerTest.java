@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -44,6 +45,34 @@ public class AppUserControllerTest extends BaseIntegrationTest {
         assertThat(response.getTotalPages(), equalTo(1));
         assertThat(response.getPageSize(), equalTo(100));
         assertThat(response.getTotalElements(), greaterThan(2L));
+    }
+
+    @Test
+    public void findByIdKnown() {
+        // given
+        AppUserEntity user = getAppUser("user");
+
+        // when
+        AppUserResource appUserResource = new AppUserResource(new JwtRestTemplate(getTokenProvider("admin")));
+        Optional<AppUserRead> response = appUserResource.findById(user.getId());
+
+        // then
+        assertThat(response, notNullValue());
+        assertThat(response.isPresent(), equalTo(true));
+        assertThat(response.get().getEmail(), equalTo(user.getEmail()));
+    }
+
+    @Test
+    public void findByIdUnknown() {
+        // given
+
+        // when
+        AppUserResource appUserResource = new AppUserResource(new JwtRestTemplate(getTokenProvider("admin")));
+        Optional<AppUserRead> response = appUserResource.findById("0unkown");
+
+        // then
+        assertThat(response, notNullValue());
+        assertThat(response.isPresent(), equalTo(false));
     }
 
     @Test

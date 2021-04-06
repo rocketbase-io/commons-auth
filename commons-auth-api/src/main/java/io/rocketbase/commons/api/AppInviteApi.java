@@ -6,9 +6,13 @@ import io.rocketbase.commons.dto.appinvite.InviteRequest;
 import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 public interface AppInviteApi {
 
     PageableResult<AppInviteRead> find(QueryAppInvite query, Pageable pageable);
+
+    Optional<AppInviteRead> findById(Long id);
 
     AppInviteRead invite(InviteRequest inviteRequest);
 
