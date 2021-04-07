@@ -32,5 +32,7 @@ public class QueryAppTeam implements Serializable {
     @Nullable
     private Boolean personal;
 
+    @Nullable
+    private String systemRefId;
 
 }

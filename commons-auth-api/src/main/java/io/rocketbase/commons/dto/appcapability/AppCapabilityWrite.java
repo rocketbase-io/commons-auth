@@ -25,4 +25,7 @@ public class AppCapabilityWrite implements Serializable {
     @Nullable
     @Size(max = 500)
     private String description;
+
+    @Nullable
+    private String systemRefId;
 }

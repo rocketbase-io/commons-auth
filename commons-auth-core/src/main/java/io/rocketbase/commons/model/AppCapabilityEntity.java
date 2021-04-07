@@ -8,16 +8,14 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.time.Instant;
 
-public interface AppCapabilityEntity extends Serializable {
+public interface AppCapabilityEntity extends Serializable, EntityWithAudit, EntityWithSystemRefId {
 
     Long getId();
 
     void setId(Long id);
 
     String getKey();
-
 
     void setKey(@NotNull
                 @Pattern(regexp = "^[a-zA-Z0-9_\\-]+$")
@@ -53,14 +51,6 @@ public interface AppCapabilityEntity extends Serializable {
     boolean isWithChildren();
 
     void setWithChildren(boolean withChildren);
-
-    Instant getCreated();
-
-    void setCreated(Instant created);
-
-    Instant getModified();
-
-    String getModifiedBy();
 
     /**
      * calculated parent count

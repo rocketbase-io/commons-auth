@@ -75,10 +75,12 @@ public class DefaultAppCapabilityService implements AppCapabilityService {
 
     protected boolean updateValues(AppCapabilityWrite write, AppCapabilityEntity entity) {
         boolean hasChanged = !Nulls.notNull(entity.getKey()).equals(Nulls.notNull(write.getKey())) ||
-                !Nulls.notNull(entity.getDescription()).equals(Nulls.notNull(write.getDescription()));
+                !Nulls.notNull(entity.getDescription()).equals(Nulls.notNull(write.getDescription())) ||
+                !Nulls.notNull(entity.getSystemRefId()).equals(Nulls.notNull(write.getSystemRefId()));
 
         entity.setKey(write.getKey());
         entity.setDescription(write.getDescription());
+        entity.setSystemRefId(write.getSystemRefId());
 
         return hasChanged;
     }

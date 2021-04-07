@@ -18,6 +18,8 @@ public class SimpleAppInviteEntity implements AppInviteEntity {
 
     private Long id;
 
+    private String systemRefId;
+
     private String invitor;
 
     private String message;

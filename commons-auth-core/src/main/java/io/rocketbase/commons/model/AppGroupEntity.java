@@ -1,17 +1,15 @@
 package io.rocketbase.commons.model;
 
 import io.rocketbase.commons.dto.appgroup.AppGroupRead;
-import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.time.Instant;
 import java.util.Set;
 
-public interface AppGroupEntity extends Serializable, EntityWithKeyValue<AppGroupEntity> {
+public interface AppGroupEntity extends Serializable, EntityWithKeyValue<AppGroupEntity>, EntityWithAudit, EntityWithSystemRefId {
 
     Long getId();
 
@@ -21,19 +19,11 @@ public interface AppGroupEntity extends Serializable, EntityWithKeyValue<AppGrou
 
     void setName(@NotNull
                  @Pattern(regexp = "^[^\\n^\\/]*$")
-                 @Size(min = 1, max = 100)
-                         String name);
-
-    String getSystemRefId();
-
-    void setSystemRefId(@Nullable
-                        @Size(max = 100)
-                                String systemRefId);
+                 @Size(min = 1, max = 100) String name);
 
     String getDescription();
 
-    void setDescription(@Size(max = 500)
-                                String description);
+    void setDescription(@Size(max = 500) String description);
 
     Set<Long> getCapabilityIds();
 
@@ -52,9 +42,7 @@ public interface AppGroupEntity extends Serializable, EntityWithKeyValue<AppGrou
      */
     String getNamePath();
 
-    void setNamePath(@NotNull
-                     @Size(min = 1, max = 1009)
-                             String treePath);
+    void setNamePath(@NotNull @Size(min = 1, max = 1009) String treePath);
 
     /**
      * is group parent for any other group in the database
@@ -62,12 +50,6 @@ public interface AppGroupEntity extends Serializable, EntityWithKeyValue<AppGrou
     boolean isWithChildren();
 
     void setWithChildren(boolean withChildren);
-
-    Instant getCreated();
-
-    Instant getModified();
-
-    String getModifiedBy();
 
     default int getDepth() {
         return AppGroupRead.ROOT.getNamePath().equals(getNamePath()) ? 0 : StringUtils.countOccurrencesOf(getNamePath(), "/");

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -17,6 +18,9 @@ public class AppCapabilityRead extends AppCapabilityShort implements Serializabl
     public static AppCapabilityRead ROOT = new AppCapabilityRead(6291457024L, "*", "*", true, "root capability", 6291457024L, Instant.ofEpochMilli(1577836800000L), "commons-auth", Instant.ofEpochMilli(1577836800000L));
 
     private String key;
+
+    @Nullable
+    private String systemRefId;
 
     /**
      * is capability parent for any other capability in the database

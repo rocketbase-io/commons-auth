@@ -1,7 +1,6 @@
 package io.rocketbase.commons.service.invite;
 
 import io.rocketbase.commons.config.AuthProperties;
-import io.rocketbase.commons.converter.AppInviteConverter;
 import io.rocketbase.commons.dto.appinvite.ConfirmInviteRequest;
 import io.rocketbase.commons.dto.appinvite.InviteRequest;
 import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
@@ -49,14 +48,25 @@ public class DefaultAppInviteService implements AppInviteService {
     private AuthEmailService emailService;
 
     @Resource
-    private AppInviteConverter appInviteConverter;
-
-    @Resource
     private ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public AppInviteEntity createInvite(InviteRequest request, String baseUrl) throws BadRequestException {
-        AppInviteEntity entity = appInvitePersistenceService.invite(request, Instant.now().plus(authProperties.getInviteExpiration(), ChronoUnit.MINUTES));
+
+        AppInviteEntity entity = appInvitePersistenceService.initNewInstance();
+        entity.setSystemRefId(request.getSystemRefId());
+        entity.setInvitor(request.getInvitor());
+        entity.setMessage(request.getMessage());
+        entity.setFirstName(request.getFirstName());
+        entity.setLastName(request.getLastName());
+        entity.setEmail(request.getEmail());
+        entity.setCapabilityIds(request.getCapabilityIds());
+        entity.setGroupIds(request.getGroupIds());
+        entity.setKeyValues(request.getKeyValues());
+        entity.setTeamInvite(request.getTeamInvite());
+        entity.setExpiration(Instant.now().plus(authProperties.getInviteExpiration(), ChronoUnit.MINUTES));
+
+        entity = appInvitePersistenceService.save(entity);
 
         applicationEventPublisher.publishEvent(new InviteEvent(this, entity, CREATE));
 
@@ -85,6 +95,7 @@ public class DefaultAppInviteService implements AppInviteService {
         AppUserCreate userCreate = AppUserCreate.builder()
                 .username(request.getUsername().toLowerCase())
                 .password(request.getPassword())
+                .systemRefId(inviteEntity.getSystemRefId())
                 .email(request.getEmail())
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())

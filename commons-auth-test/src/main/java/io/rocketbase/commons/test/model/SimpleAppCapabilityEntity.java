@@ -17,6 +17,8 @@ public class SimpleAppCapabilityEntity implements AppCapabilityEntity {
 
     private Long id;
 
+    private String systemRefId;
+
     private String key;
 
     private String description;

@@ -21,6 +21,9 @@ import java.util.Set;
 public class AppInviteRead implements HasKeyValue, HasFirstAndLastName {
     private Long id;
 
+    @Nullable
+    private String systemRefId;
+
     private String invitor;
 
     private String message;

@@ -1,9 +1,11 @@
 package io.rocketbase.commons.service.invite;
 
 import com.google.common.collect.Sets;
-import io.rocketbase.commons.dto.appinvite.InviteRequest;
 import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
-import io.rocketbase.commons.model.*;
+import io.rocketbase.commons.model.AppCapabilityJpaEntity;
+import io.rocketbase.commons.model.AppGroupJpaEntity;
+import io.rocketbase.commons.model.AppInviteJpaEntity;
+import io.rocketbase.commons.model.AppInviteJpaEntity_;
 import io.rocketbase.commons.service.JpaQueryHelper;
 import io.rocketbase.commons.util.Nulls;
 import io.rocketbase.commons.util.Snowflake;
@@ -86,11 +88,6 @@ public class AppInviteJpaPersistenceService implements AppInvitePersistenceServi
         }
 
         return repository.save(entity);
-    }
-
-    @Override
-    public AppInviteEntity invite(InviteRequest request, Instant expiration) {
-        return null;
     }
 
     @Override

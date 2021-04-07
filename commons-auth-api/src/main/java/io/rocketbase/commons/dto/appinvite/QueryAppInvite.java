@@ -38,6 +38,7 @@ public class QueryAppInvite implements Serializable, HasKeyValue {
     @Nullable
     private Long teamId;
 
-
+    @Nullable
+    private String systemRefId;
 
 }

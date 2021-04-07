@@ -27,6 +27,9 @@ public class AppUserCreate implements Serializable, HasFirstAndLastName, HasKeyV
     private String password;
 
     @Nullable
+    private String systemRefId;
+
+    @Nullable
     @Size(max = 100)
     private String firstName;
 

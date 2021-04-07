@@ -34,5 +34,8 @@ public class QueryAppCapability implements Serializable {
     @Nullable
     private String description;
 
+    @Nullable
+    private String systemRefId;
+
 
 }

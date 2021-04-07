@@ -2,9 +2,7 @@ package io.rocketbase.commons.service.invite;
 
 import com.google.common.collect.Lists;
 import com.mongodb.client.result.DeleteResult;
-import io.rocketbase.commons.dto.appinvite.InviteRequest;
 import io.rocketbase.commons.dto.appinvite.QueryAppInvite;
-import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppInviteMongoEntity;
 import io.rocketbase.commons.service.MongoQueryHelper;
 import io.rocketbase.commons.util.Nulls;
@@ -73,11 +71,6 @@ public class AppInviteMongoPersistenceService implements AppInvitePersistenceSer
         }
         mongoTemplate.save(entity, collectionName);
         return entity;
-    }
-
-    @Override
-    public AppInviteEntity invite(InviteRequest request, Instant expiration) {
-        return null;
     }
 
     @Override

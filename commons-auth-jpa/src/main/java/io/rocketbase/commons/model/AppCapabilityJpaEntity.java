@@ -17,8 +17,11 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "co_capacity",
-        uniqueConstraints = @UniqueConstraint(name = "uk_capacity",  columnNames = {"key_", "parent_id"}),
-        indexes = @Index(name = "idx_capability_parent", columnList = "parent_id")
+        uniqueConstraints = @UniqueConstraint(name = "uk_capacity", columnNames = {"key_", "parent_id"}),
+        indexes = {
+                @Index(name = "idx_capability_parent", columnList = "parent_id"),
+                @Index(name = "idx_capability_systemrefid", columnList = "system_ref_id"),
+        }
 )
 @Data
 @Builder
@@ -30,6 +33,10 @@ public class AppCapabilityJpaEntity implements AppCapabilityEntity {
     @Id
     @Column(name = "id")
     private Long id;
+
+    @Nullable
+    @Column(name = "system_ref_id", length = 100)
+    private String systemRefId;
 
     @Column(name = "key_", length = 20)
     private String key;

@@ -12,7 +12,7 @@ import java.util.Set;
  * entity instance of invite that is used by persistence layers internally
  *
  */
-public interface AppInviteEntity extends Serializable, EntityWithKeyValue<AppInviteEntity>, HasFirstAndLastName {
+public interface AppInviteEntity extends Serializable, EntityWithKeyValue<AppInviteEntity>, HasFirstAndLastName, EntityWithAudit, EntityWithSystemRefId {
 
     Long getId();
 
@@ -53,12 +53,6 @@ public interface AppInviteEntity extends Serializable, EntityWithKeyValue<AppInv
     void setExpiration(Instant expiration);
 
     Instant getExpiration();
-
-    Instant getCreated();
-
-    Instant getModified();
-
-    String getModifiedBy();
 
     /**
      * fullname fallback if null use email

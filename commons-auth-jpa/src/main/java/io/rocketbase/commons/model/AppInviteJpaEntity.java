@@ -12,6 +12,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -25,7 +26,9 @@ import java.util.stream.Collectors;
 
 
 @Entity
-@Table(name = "co_invite")
+@Table(name = "co_invite",
+        indexes = @Index(name = "idx_invite_systemrefid", columnList = "system_ref_id")
+)
 @Data
 @Builder
 @AllArgsConstructor
@@ -36,6 +39,10 @@ public class AppInviteJpaEntity implements AppInviteEntity {
     @Id
     @Column(name = "id")
     private Long id;
+
+    @Nullable
+    @Column(name = "system_ref_id", length = 100)
+    private String systemRefId;
 
     @NotNull
     @Column(name = "invitor")

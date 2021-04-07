@@ -23,6 +23,9 @@ import java.util.Set;
 @AllArgsConstructor
 public class InviteRequest implements Serializable, HasFirstAndLastName, HasKeyValue {
 
+    @Nullable
+    private String systemRefId;
+
     /**
      * name of invitor that will get displayed within email + form
      */

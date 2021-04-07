@@ -13,15 +13,11 @@ import java.util.Set;
 /**
  * entity instance of user that is used by persistence layers internally
  */
-public interface AppUserEntity extends Serializable, EntityWithKeyValue<AppUserEntity>, AppUserReference {
+public interface AppUserEntity extends Serializable, EntityWithKeyValue<AppUserEntity>, AppUserReference, EntityWithAudit, EntityWithSystemRefId {
 
     String getId();
 
     void setId(@Size(max = 36) String id);
-
-    String getSystemRefId();
-
-    void setSystemRefId(@Size(max = 100) String systemRefId);
 
     String getUsername();
 
@@ -84,12 +80,6 @@ public interface AppUserEntity extends Serializable, EntityWithKeyValue<AppUserE
     UserSetting getSetting();
 
     void setSetting(UserSetting userSetting);
-
-    Instant getCreated();
-
-    Instant getModified();
-
-    String getModifiedBy();
 
     /**
      * convert current instance to a simple reference copy

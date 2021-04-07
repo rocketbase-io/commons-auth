@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.Map;
 
-public interface AppTeamEntity extends Serializable, EntityWithKeyValue<AppTeamEntity> {
+public interface AppTeamEntity extends Serializable, EntityWithKeyValue<AppTeamEntity>, EntityWithAudit, EntityWithSystemRefId {
 
     Long getId();
 
@@ -18,10 +18,6 @@ public interface AppTeamEntity extends Serializable, EntityWithKeyValue<AppTeamE
     String getName();
 
     void setName(@NotNull @Size(max = 100) String name);
-
-    String getSystemRefId();
-
-    void setSystemRefId(@Size(max = 100) String systemRefId);
 
     String getDescription();
 
