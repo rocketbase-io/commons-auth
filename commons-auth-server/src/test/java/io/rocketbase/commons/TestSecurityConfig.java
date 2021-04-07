@@ -3,12 +3,15 @@ package io.rocketbase.commons;
 import io.rocketbase.commons.config.AuthProperties;
 import io.rocketbase.commons.config.FormsProperties;
 import io.rocketbase.commons.filter.JwtAuthenticationTokenFilter;
+import io.rocketbase.commons.security.CommonsPrincipal;
 import io.rocketbase.commons.security.TokenAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.AuditorAware;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -34,13 +37,20 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Configuration
 @EnableWebSecurity
+@EnableMongoAuditing(auditorAwareRef = "auditorAware")
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableConfigurationProperties({AuthProperties.class, FormsProperties.class})
 @RequiredArgsConstructor
 public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Bean
+    public AuditorAware<String> auditorAware() {
+        return () -> CommonsPrincipal.getCurrent() != null ? Optional.of(CommonsPrincipal.getCurrent().getUsername()) : Optional.empty();
+    }
 
     private final AuthProperties authProperties;
 

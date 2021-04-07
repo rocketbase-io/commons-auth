@@ -44,7 +44,7 @@ public class AppClientControllerTest extends BaseIntegrationTest {
         assertThat(response, notNullValue());
         assertThat(response.getTotalPages(), equalTo(1));
         assertThat(response.getPageSize(), equalTo(100));
-        assertThat(response.getTotalElements(), greaterThan(2L));
+        assertThat(response.getTotalElements(), equalTo(1L));
     }
 
     @Test
@@ -95,7 +95,7 @@ public class AppClientControllerTest extends BaseIntegrationTest {
         assertThat(response.getName(), equalTo(write.getName()));
         assertThat(response.getDescription(), equalTo(write.getDescription()));
         assertThat(response.getRedirectUrls(), equalTo(write.getRedirectUrls()));
-        assertThat(response.getCapabilities().stream().map(AppCapabilityShort::getId).collect(Collectors.toSet()), equalTo(write.getRedirectUrls()));
+        assertThat(response.getCapabilities().stream().map(AppCapabilityShort::getId).collect(Collectors.toSet()), equalTo(write.getCapabilityIds()));
     }
 
     @Test
@@ -119,7 +119,7 @@ public class AppClientControllerTest extends BaseIntegrationTest {
         assertThat(response.getName(), equalTo(write.getName()));
         assertThat(response.getDescription(), equalTo(write.getDescription()));
         assertThat(response.getRedirectUrls(), equalTo(write.getRedirectUrls()));
-        assertThat(response.getCapabilities().stream().map(AppCapabilityShort::getId).collect(Collectors.toSet()), equalTo(write.getRedirectUrls()));
+        assertThat(response.getCapabilities().stream().map(AppCapabilityShort::getId).collect(Collectors.toSet()), equalTo(write.getCapabilityIds()));
 
         Optional<AppClientEntity> db = appClientPersistenceService.findById(response.getId());
         assertThat(db.isPresent(), equalTo(true));

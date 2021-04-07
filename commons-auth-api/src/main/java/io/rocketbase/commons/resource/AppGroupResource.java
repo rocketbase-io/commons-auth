@@ -84,7 +84,8 @@ public class AppGroupResource implements BaseRestResource, AppGroupApi {
     @Override
     public AppGroupRead update(Long id, AppGroupWrite write) {
         ResponseEntity<AppGroupRead> response = restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
-                        .path(API_GROUP).pathSegment(String.valueOf(id))
+                        .path(API_GROUP)
+                        .pathSegment(String.valueOf(id))
                         .toUriString(),
                 HttpMethod.PUT,
                 new HttpEntity<>(write, createHeaderWithLanguage()),
@@ -96,7 +97,8 @@ public class AppGroupResource implements BaseRestResource, AppGroupApi {
     @Override
     public void delete(Long id) {
         restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
-                        .pathSegment(API_GROUP, String.valueOf(id))
+                        .path(API_GROUP)
+                        .pathSegment(String.valueOf(id))
                         .toUriString(),
                 HttpMethod.DELETE,
                 new HttpEntity<>(createHeaderWithLanguage()),

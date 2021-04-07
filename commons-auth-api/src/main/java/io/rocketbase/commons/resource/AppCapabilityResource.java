@@ -84,7 +84,8 @@ public class AppCapabilityResource implements BaseRestResource, AppCapabilityApi
     @Override
     public AppCapabilityRead update(Long id, AppCapabilityWrite write) {
         ResponseEntity<AppCapabilityRead> response = restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
-                        .path(API_CAPABILITY).pathSegment(String.valueOf(id))
+                        .path(API_CAPABILITY)
+                        .pathSegment(String.valueOf(id))
                         .toUriString(),
                 HttpMethod.PUT,
                 new HttpEntity<>(write, createHeaderWithLanguage()),
@@ -95,7 +96,8 @@ public class AppCapabilityResource implements BaseRestResource, AppCapabilityApi
     @Override
     public void delete(Long id) {
         restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
-                        .pathSegment(API_CAPABILITY, String.valueOf(id))
+                        .path(API_CAPABILITY)
+                        .pathSegment(String.valueOf(id))
                         .toUriString(),
                 HttpMethod.DELETE,
                 new HttpEntity<>(createHeaderWithLanguage()),

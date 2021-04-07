@@ -40,7 +40,7 @@ public class AppCapabilityControllerTest extends BaseIntegrationTest {
         assertThat(response, notNullValue());
         assertThat(response.getTotalPages(), equalTo(1));
         assertThat(response.getPageSize(), equalTo(100));
-        assertThat(response.getTotalElements(), greaterThan(2L));
+        assertThat(response.getTotalElements(), equalTo(2L));
     }
 
     @Test

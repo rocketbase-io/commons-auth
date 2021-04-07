@@ -117,12 +117,12 @@ public class AppGroupControllerTest extends BaseIntegrationTest {
         assertThat(response, notNullValue());
         assertThat(response.getDescription(), equalTo(write.getDescription()));
         assertThat(response.getName(), equalTo(write.getName()));
-        assertThat(response.getNamePath(), equalTo(write.getName()));
+        assertThat(response.getNamePath(), equalTo(GroupData.DEPARTMENT_GROUP.getNamePath()+"/"+write.getName()));
 
         Optional<AppGroupEntity> db = appGroupPersistenceService.findById(response.getId());
         assertThat(db.isPresent(), equalTo(true));
         assertThat(db.get().getModified(), greaterThan(object.getModified()));
-        assertThat(db.get().getModifiedBy(), equalTo(GroupData.DEPARTMENT_GROUP.getNamePath()+"/"+write.getName()));
+        assertThat(db.get().getModifiedBy(), equalTo(username));
     }
 
     @Test

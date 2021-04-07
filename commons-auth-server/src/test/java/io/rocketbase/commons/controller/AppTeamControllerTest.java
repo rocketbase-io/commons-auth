@@ -10,9 +10,7 @@ import io.rocketbase.commons.dto.appteam.QueryAppTeam;
 import io.rocketbase.commons.model.AppTeamEntity;
 import io.rocketbase.commons.resource.AppTeamResource;
 import io.rocketbase.commons.service.team.AppTeamPersistenceService;
-import io.rocketbase.commons.test.data.ClientData;
 import io.rocketbase.commons.test.data.TeamData;
-import io.rocketbase.commons.test.model.SimpleAppClientEntity;
 import io.rocketbase.commons.test.model.SimpleAppTeamEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageRequest;
@@ -43,13 +41,13 @@ public class AppTeamControllerTest extends BaseIntegrationTest {
         assertThat(response, notNullValue());
         assertThat(response.getTotalPages(), equalTo(1));
         assertThat(response.getPageSize(), equalTo(100));
-        assertThat(response.getTotalElements(), greaterThan(2L));
+        assertThat(response.getTotalElements(), equalTo(2L));
     }
 
     @Test
     public void findByIdKnown() {
         // given
-        SimpleAppClientEntity object = ClientData.EXAMPLE_BLOG;
+        SimpleAppTeamEntity object = TeamData.TEAM_ONE;
 
         // when
         AppTeamResource resource = new AppTeamResource(new JwtRestTemplate(getTokenProvider("admin")));

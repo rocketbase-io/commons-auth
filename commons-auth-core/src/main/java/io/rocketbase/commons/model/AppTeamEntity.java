@@ -3,6 +3,7 @@ package io.rocketbase.commons.model;
 import io.rocketbase.commons.dto.appteam.AppTeamRole;
 import org.springframework.lang.Nullable;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.Instant;
@@ -16,7 +17,7 @@ public interface AppTeamEntity extends Serializable, EntityWithKeyValue<AppTeamE
 
     String getName();
 
-    void setName(@Size(max = 100) String name);
+    void setName(@NotNull @Size(max = 100) String name);
 
     String getSystemRefId();
 

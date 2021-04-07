@@ -14,7 +14,8 @@ import org.springframework.data.domain.PageRequest;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 
 public class AppInviteControllerTest extends BaseIntegrationTest {
 
@@ -33,7 +34,7 @@ public class AppInviteControllerTest extends BaseIntegrationTest {
         assertThat(response, notNullValue());
         assertThat(response.getTotalPages(), equalTo(1));
         assertThat(response.getPageSize(), equalTo(100));
-        assertThat(response.getTotalElements(), greaterThan(2L));
+        assertThat(response.getTotalElements(), equalTo(2L));
     }
 
     @Test

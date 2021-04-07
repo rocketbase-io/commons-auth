@@ -84,7 +84,8 @@ public class AppTeamResource implements BaseRestResource, AppTeamApi {
     @Override
     public AppTeamRead update(Long id, AppTeamWrite write) {
         ResponseEntity<AppTeamRead> response = restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
-                        .path(API_TEAM).pathSegment(String.valueOf(id))
+                        .path(API_TEAM)
+                        .pathSegment(String.valueOf(id))
                         .toUriString(),
                 HttpMethod.PUT,
                 new HttpEntity<>(write, createHeaderWithLanguage()),
@@ -95,7 +96,8 @@ public class AppTeamResource implements BaseRestResource, AppTeamApi {
     @Override
     public void delete(Long id) {
         restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
-                        .pathSegment(API_TEAM, String.valueOf(id))
+                        .path(API_TEAM)
+                        .pathSegment(String.valueOf(id))
                         .toUriString(),
                 HttpMethod.DELETE,
                 new HttpEntity<>(createHeaderWithLanguage()),

@@ -3,12 +3,8 @@ package io.rocketbase.commons.service;
 import com.google.common.collect.Sets;
 import io.rocketbase.commons.BaseIntegrationTest;
 import io.rocketbase.commons.adapters.JwtRestTemplate;
-import io.rocketbase.commons.adapters.JwtTokenProvider;
-import io.rocketbase.commons.adapters.SimpleJwtTokenProvider;
-import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
-import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.authentication.LoginRequest;
 import io.rocketbase.commons.dto.authentication.LoginResponse;
 import io.rocketbase.commons.model.AppUserEntity;
@@ -16,9 +12,8 @@ import io.rocketbase.commons.resource.AuthenticationResource;
 import io.rocketbase.commons.resource.LoginResource;
 import io.rocketbase.commons.service.user.ActiveUserStore;
 import io.rocketbase.commons.service.user.AppUserService;
-import io.rocketbase.commons.test.ModifiedJwtTokenService;
 import io.rocketbase.commons.test.data.CapabilityData;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -34,15 +29,9 @@ public class ActiveUserStoreIntegrationTest extends BaseIntegrationTest {
     private AppUserService appUserService;
 
     @Resource
-    private AppUserConverter appUserConverter;
-
-    @Resource
     private ActiveUserStore activeUserStore;
 
-    @Resource
-    private ModifiedJwtTokenService modifiedJwtTokenService;
-
-    @Before
+    @BeforeEach
     public void beforeEachTest() {
         super.beforeEachTest();
         activeUserStore.clear();
@@ -63,7 +52,7 @@ public class ActiveUserStoreIntegrationTest extends BaseIntegrationTest {
         // given
 
         // when
-        AuthenticationResource authenticationResource = new AuthenticationResource(new JwtRestTemplate(getTokenProvider(getAppUser("user"))));
+        AuthenticationResource authenticationResource = new AuthenticationResource(new JwtRestTemplate(getTokenProvider("user")));
         AppUserRead responseUser = authenticationResource.getAuthenticated();
 
         LoginResource loginResource = new LoginResource(getBaseUrl());
@@ -91,16 +80,6 @@ public class ActiveUserStoreIntegrationTest extends BaseIntegrationTest {
         // then
         assertThat(activeUserStore.getUserCount(), equalTo(2L));
         assertThat(activeUserStore.getUserIds(), containsInAnyOrder(responseUser.getId(), loginResponse.getUser().getId()));
-    }
-
-    protected JwtTokenProvider getTokenProvider(AppUserEntity user) {
-        JwtTokenBundle tokenBundle = modifiedJwtTokenService.generateTokenBundle(appUserConverter.toToken(user));
-
-        SimpleJwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl());
-        tokenProvider.setRefreshToken(tokenBundle.getRefreshToken());
-        String expiredToken = modifiedJwtTokenService.generateExpiredToken(user);
-        tokenProvider.setToken(expiredToken);
-        return tokenProvider;
     }
 
 }

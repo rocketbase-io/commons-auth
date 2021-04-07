@@ -22,7 +22,7 @@ public class AppTeamWrite implements Serializable, HasKeyValue {
     private String systemRefId;
 
     @NotNull
-    @Size(min = 3, max = 100)
+    @Size(max = 100)
     private String name;
 
     @Nullable
