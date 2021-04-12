@@ -81,6 +81,15 @@ public interface AppUserService {
      * allow to update values
      *
      * @param usernameOrId entity to lookup
+     * @param update       update entity with valzes
+     * @return
+     */
+    AppUserEntity save(String usernameOrId, AppUserUpdate update);
+
+    /**
+     * allow to path values
+     *
+     * @param usernameOrId entity to lookup
      * @param update       only not null/empty values will get updated
      * @return
      */

@@ -1,0 +1,39 @@
+.flex-layouting {
+    flex-direction: column;
+    height: 100%;
+    max-height: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.flex-layouting__header {
+    flex-shrink: 0;
+}
+
+.flex-layouting.has-header .flex-layouting__header {
+    padding-bottom: var(--lumo-space-m);
+}
+.flex-layouting.has-header .flex-layouting__header .header{
+    font-size: var(--lumo-font-size-xl);
+    font-weight: bolder;
+}
+
+.flex-layouting__content {
+    flex: 1;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.flex-layouting__footer {
+    flex-shrink: 0;
+}
+
+.flex-layouting.has-footer .flex-layouting__footer {
+    padding-top: var(--lumo-space-m);
+}
+
+.flex-layouting.has-footer .flex-layouting__content,
+.flex-layouting.has-header .flex-layouting__content {
+    border: 1px solid var(--lumo-shade-10pct);
+}

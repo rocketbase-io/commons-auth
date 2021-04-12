@@ -25,6 +25,7 @@ public abstract class UserData {
                     .salutation("Mr.")
                     .gender(Gender.MALE)
                     .location("Winsen (Luhe)")
+                    .country("de")
                     .phoneNumbers(Sets.newHashSet(new PhoneNumber("mobile", "+491512 333 6263")))
                     .onlineProfiles(Sets.newHashSet(new OnlineProfile("xing", "https://www.xing.com/profile/Marten_Priess"),
                             new OnlineProfile("github", "melistik")))

@@ -1,15 +1,18 @@
 package io.rocketbase.commons.config;
 
 import io.rocketbase.commons.api.*;
-import io.rocketbase.commons.converter.AppInviteConverter;
-import io.rocketbase.commons.converter.AppUserConverter;
+import io.rocketbase.commons.converter.*;
 import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.auth.LoginService;
+import io.rocketbase.commons.service.capability.AppCapabilityService;
 import io.rocketbase.commons.service.change.ChangeAppUserWithConfirmService;
+import io.rocketbase.commons.service.client.AppClientService;
 import io.rocketbase.commons.service.forgot.AppUserForgotPasswordService;
+import io.rocketbase.commons.service.group.AppGroupService;
 import io.rocketbase.commons.service.impersonate.ImpersonateService;
 import io.rocketbase.commons.service.invite.AppInviteService;
 import io.rocketbase.commons.service.registration.RegistrationService;
+import io.rocketbase.commons.service.team.AppTeamService;
 import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.service.user.AppUserTokenService;
 import io.rocketbase.commons.service.validation.ValidationService;
@@ -63,6 +66,30 @@ public class AuthApiAutoConfiguration {
 
     @Resource
     private ApplicationEventPublisher applicationEventPublisher;
+
+    @Resource
+    private AppCapabilityService appCapabilityService;
+
+    @Resource
+    private AppCapabilityConverter appCapabilityConverter;
+
+    @Resource
+    private AppClientService appClientService;
+
+    @Resource
+    private AppClientConverter appClientConverter;
+
+    @Resource
+    private AppGroupService appGroupService;
+
+    @Resource
+    private AppGroupConverter appGroupConverter;
+
+    @Resource
+    private AppTeamService appTeamService;
+
+    @Resource
+    private AppTeamConverter appTeamConverter;
 
     @Bean
     @ConditionalOnMissingBean
@@ -122,6 +149,30 @@ public class AuthApiAutoConfiguration {
     @ConditionalOnMissingBean
     public ValidationApi validationApi() {
         return new ValidationApiService(validationService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AppCapabilityApi appCapabilityApi() {
+        return new AppCapabilityApiService(appCapabilityService, appCapabilityConverter);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AppClientApi appClientApi() {
+        return new AppClientApiService(appClientService, appClientConverter);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AppGroupApi appGroupApi() {
+        return new AppGroupApiService(appGroupService, appGroupConverter);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AppTeamApi appTeamApi() {
+        return new AppTeamApiService(appTeamService, appTeamConverter);
     }
 
 }

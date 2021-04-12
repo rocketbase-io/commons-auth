@@ -80,6 +80,13 @@ public class AppUserController implements BaseController {
         return appUserConverter.fromEntity(entity);
     }
 
+    @RequestMapping(method = RequestMethod.PUT, path = "/api/user/{id}", consumes = APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public AppUserRead update(@PathVariable("id") String id, @RequestBody @NotNull @Validated AppUserUpdate update) {
+        AppUserEntity entity = appUserService.save(id, update);
+        return appUserConverter.fromEntity(entity);
+    }
+
     @RequestMapping(method = RequestMethod.DELETE, path = "/api/user/{id}")
     public void delete(@PathVariable("id") String id) {
         appUserService.delete(id);

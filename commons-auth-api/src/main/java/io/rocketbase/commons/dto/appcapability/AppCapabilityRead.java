@@ -56,4 +56,8 @@ public class AppCapabilityRead extends AppCapabilityShort implements Serializabl
         this.modifiedBy = modifiedBy;
         this.modified = modified;
     }
+
+    public AppCapabilityRead(Long id) {
+        super(id);
+    }
 }

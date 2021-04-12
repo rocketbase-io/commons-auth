@@ -57,6 +57,12 @@ public class AppUserApiService implements AppUserApi, BaseApiService {
     }
 
     @Override
+    public AppUserRead update(String usernameOrId, AppUserUpdate update) {
+        AppUserEntity entity = appUserService.save(usernameOrId, update);
+        return userConverter.fromEntity(entity);
+    }
+
+    @Override
     public AppUserRead patch(String usernameOrId, AppUserUpdate update) {
         AppUserEntity entity = appUserService.patch(usernameOrId, update);
         return userConverter.fromEntity(entity);

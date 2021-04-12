@@ -68,4 +68,8 @@ public class AppGroupRead extends AppGroupShort implements HasKeyValue {
         this.modifiedBy = modifiedBy;
         this.modified = modified;
     }
+
+    public AppGroupRead(Long id) {
+        super(id);
+    }
 }

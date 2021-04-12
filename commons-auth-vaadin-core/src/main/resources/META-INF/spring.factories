@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+io.rocketbase.commons.vaadin.config.AuthVaadinAutoConfiguration

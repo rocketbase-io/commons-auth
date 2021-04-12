@@ -28,6 +28,8 @@ public interface AppUserApi {
 
     AppUserRead resetPassword(String usernameOrId, AppUserResetPassword reset);
 
+    AppUserRead update(String usernameOrId, AppUserUpdate update);
+
     AppUserRead patch(String usernameOrId, AppUserUpdate update);
 
     void delete(String id);

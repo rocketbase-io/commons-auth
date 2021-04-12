@@ -47,4 +47,7 @@ public class AppUserUpdate implements Serializable, HasKeyValue {
 
     @Nullable
     private Boolean locked;
+
+    @Nullable
+    private Long activeTeamId;
 }

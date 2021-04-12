@@ -1,0 +1,32 @@
+.filter-bar__wrapper {
+    flex-direction: row;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+}
+
+.filter-bar__wrapper .filter-bar__content {
+    width: 100%;
+    max-width: 100%;
+    flex-wrap: wrap;
+    justify-items: flex-start;
+}
+
+.filter-bar__wrapper .button-bar__wrapper {
+    width: auto;
+    max-width: unset;
+    flex-wrap: nowrap;
+}
+
+.filter-bar__wrapper .button-bar__wrapper > * {
+    align-self: flex-start;
+}
+
+
+.filter-bar__wrapper .filter-bar__content label {
+    line-height: 44px;
+}
+
+.filter-bar__wrapper .filter-bar__content > * {
+    margin-right: var(--lumo-space-s);
+}

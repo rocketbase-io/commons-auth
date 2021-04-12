@@ -1,0 +1,26 @@
+.button-bar__wrapper {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    box-sizing: border-box;
+    justify-content: flex-end;
+    width: 100%;
+    max-width: 100%;
+}
+
+.button-bar__wrapper > * {
+    margin-left: var(--lumo-space-s);
+    align-self: flex-end;
+}
+
+
+@media (max-width: 479px) {
+    .button-bar__wrapper.button-bar__wrapper--responsive {
+        flex-direction: column;
+    }
+
+    .button-bar__wrapper.button-bar__wrapper--responsive > * {
+        margin-left: 0;
+        margin-right: var(--lumo-space-s);
+        align-self: stretch;
+    }
+}

@@ -50,6 +50,7 @@ SOFTWARE.
         <module>commons-auth-service</module>
         <module>commons-auth-email-smtp</module>
         <module>commons-auth-email-postmark</module>
+        <module>commons-auth-vaadin-core</module>
     </modules>
 
     <repositories>

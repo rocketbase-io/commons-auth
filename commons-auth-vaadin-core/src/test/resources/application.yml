@@ -1,0 +1,34 @@
+spring:
+  # json configuration
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+      INDENT_OUTPUT: true
+    default-property-inclusion: NON_NULL
+  # email
+  mail:
+    host: localhost
+    username: username
+    password: secret
+    port: 2525
+    properties:
+      mail:
+        debug: false
+        smtp:
+          debug: false
+          auth: true
+          starttls: true
+    test-connection: false
+
+logging:
+  level:
+    io.rocketbase: TRACE
+
+# auth configuration
+auth:
+  jwt:
+    secret: 'P0UoSCtNYlBlU2hWbVlxM3Q2dzl6JEMmRilKQE5jUmZUalduWnI0dTd4IUElRCpHLUthUGRTZ1ZrWHAyczV2OA=='
+
+
+vaadin:
+  urlMapping: /vaadin/*

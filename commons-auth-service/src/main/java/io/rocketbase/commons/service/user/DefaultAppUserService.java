@@ -193,6 +193,19 @@ public class DefaultAppUserService implements AppUserService {
     }
 
     @Override
+    public AppUserEntity save(String usernameOrId, AppUserUpdate update) {
+        AppUserEntity entity = getEntityByUsernameOrId(usernameOrId);
+        entity.setProfile(checkAvatar(update.getProfile(), entity.getEmail()));
+        entity.setSetting(update.getSetting());
+        entity.setCapabilityIds(update.getCapabilityIds());
+        entity.setEnabled(update.getEnabled());
+        entity.setLocked(update.getLocked());
+        entity.setActiveTeamId(update.getActiveTeamId());
+        entity.setKeyValues(update.getKeyValues());
+        return saveAndInvalidate(entity);
+    }
+
+    @Override
     public AppUserEntity patch(String usernameOrId, AppUserUpdate update) {
         AppUserEntity entity = getEntityByUsernameOrId(usernameOrId);
         if (update.getProfile() != null) {
@@ -206,6 +219,12 @@ public class DefaultAppUserService implements AppUserService {
         }
         if (update.getEnabled() != null) {
             entity.setEnabled(update.getEnabled());
+        }
+        if (update.getLocked() != null) {
+            entity.setLocked(update.getLocked());
+        }
+        if (update.getActiveTeamId() != null) {
+            entity.setActiveTeamId(update.getActiveTeamId());
         }
         handleKeyValues(entity, update.getKeyValues());
         return saveAndInvalidate(entity);
@@ -263,7 +282,6 @@ public class DefaultAppUserService implements AppUserService {
     @Override
     public AppUserEntity registerUser(RegistrationRequest registration) throws RegistrationException {
         validationService.registrationIsValid(registration.getUsername(), registration.getPassword(), registration.getEmail());
-
 
         AppUserEntity instance = appUserPersistenceService.initNewInstance();
         instance.setUsername(registration.getUsername().toLowerCase());

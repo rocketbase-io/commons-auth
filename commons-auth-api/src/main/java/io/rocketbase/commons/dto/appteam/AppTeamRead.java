@@ -65,4 +65,8 @@ public class AppTeamRead extends AppTeamShort implements Serializable {
                 getName()
         );
     }
+
+    public AppTeamRead(Long id) {
+        super(id);
+    }
 }

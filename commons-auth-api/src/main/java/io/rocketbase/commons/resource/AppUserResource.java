@@ -100,6 +100,20 @@ public class AppUserResource implements BaseRestResource, AppUserApi {
 
     @Override
     @SneakyThrows
+    public AppUserRead update(String usernameOrId, AppUserUpdate update) {
+        ResponseEntity<AppUserRead> response = restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
+                        .path(API_USER)
+                        .path(usernameOrId)
+                        .toUriString(),
+                HttpMethod.PUT,
+                new HttpEntity<>(update, createHeaderWithLanguage()),
+                AppUserRead.class);
+
+        return response.getBody();
+    }
+
+    @Override
+    @SneakyThrows
     public AppUserRead patch(String usernameOrId, AppUserUpdate update) {
         ResponseEntity<AppUserRead> response = restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
                         .path(API_USER)

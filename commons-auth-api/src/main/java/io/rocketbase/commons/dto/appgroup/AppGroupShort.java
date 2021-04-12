@@ -2,10 +2,10 @@ package io.rocketbase.commons.dto.appgroup;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * short version of AppGroup in oder to link it in response of user + invites
@@ -13,7 +13,6 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "id")
 public class AppGroupShort implements Serializable {
 
 
@@ -30,5 +29,21 @@ public class AppGroupShort implements Serializable {
     public AppGroupShort(AppGroupShort other) {
         this.id = other.id;
         this.namePath = other.namePath;
+    }
+
+    public boolean equals(final Object o) {
+        if (o == this) return true;
+        if (!(o instanceof AppGroupShort)) return false;
+        final AppGroupShort other = (AppGroupShort) o;
+        return Objects.equals(this.getId(), other.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    public AppGroupShort(Long id) {
+        this.id = id;
     }
 }
