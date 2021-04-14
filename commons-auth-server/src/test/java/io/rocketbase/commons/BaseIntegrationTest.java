@@ -10,8 +10,8 @@ import io.rocketbase.commons.test.ModifiedJwtTokenService;
 import io.rocketbase.commons.test.adapters.AuthRestTestTemplate;
 import io.rocketbase.commons.test.data.*;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -89,7 +89,7 @@ public class BaseIntegrationTest {
         return baseUrl + "/test";
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void upAndRunning() {
         log.info("running tests with database: {}", mongoTemplate.getDb().getName());

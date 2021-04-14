@@ -12,7 +12,7 @@ import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.resource.RegistrationResource;
 import io.rocketbase.commons.service.user.AppUserPersistenceService;
 import io.rocketbase.commons.service.user.DefaultAppUserService;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import javax.annotation.Resource;
@@ -76,7 +76,7 @@ public class RegistrationControllerTest extends BaseIntegrationTest {
         try {
             new RegistrationResource(getBaseUrl()).register(registration);
             // then
-            Assert.fail("should have thrown RegistrationException");
+            Assertions.fail("should have thrown RegistrationException");
         } catch (BadRequestException e) {
             assertThat(e.getErrorResponse().getStatus(), equalTo(AuthErrorCodes.REGISTRATION.getStatus()));
         }
@@ -93,7 +93,7 @@ public class RegistrationControllerTest extends BaseIntegrationTest {
         try {
             new RegistrationResource(getBaseUrl()).register(registration);
             // then
-            Assert.fail("should have thrown RegistrationException");
+            Assertions.fail("should have thrown RegistrationException");
         } catch (BadRequestException e) {
             assertThat(e.getErrorResponse().getStatus(), equalTo(AuthErrorCodes.REGISTRATION.getStatus()));
         }

@@ -16,7 +16,7 @@ import io.rocketbase.commons.resource.LoginResource;
 import io.rocketbase.commons.service.change.DefaultChangeAppUserWithConfirmService;
 import io.rocketbase.commons.service.user.AppUserPersistenceService;
 import io.rocketbase.commons.test.ModifiedJwtTokenService;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -89,7 +89,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
         try {
             ResponseEntity<LoginResponse> response = authenticationController.login(login);
             // then
-            Assert.fail("should have thrown BadRequestException");
+            Assertions.fail("should have thrown BadRequestException");
         } catch (Exception e) {
         }
     }
@@ -167,7 +167,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
         try {
             AppUserRead response = resource.getAuthenticated();
             // then
-            Assert.fail("should have thrown HttpClientErrorException");
+            Assertions.fail("should have thrown HttpClientErrorException");
         } catch (HttpClientErrorException e) {
         }
     }
@@ -221,7 +221,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
                     .newPassword("r0cketB@ase")
                     .build());
             // then
-            Assert.fail("should have thrown PasswordValidationException");
+            Assertions.fail("should have thrown PasswordValidationException");
         } catch (BadRequestException e) {
             assertThat(e.getErrorResponse(), notNullValue());
             assertThat(e.getErrorResponse().getFields(), notNullValue());

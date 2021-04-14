@@ -4,8 +4,8 @@ import io.rocketbase.commons.Application;
 import io.rocketbase.commons.model.*;
 import io.rocketbase.commons.test.data.*;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -38,7 +38,7 @@ public class MongoPersistenceBaseTest {
         }
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void upAndRunning() {
         log.info("running tests with database: {}", mongoTemplate.getDb().getName());

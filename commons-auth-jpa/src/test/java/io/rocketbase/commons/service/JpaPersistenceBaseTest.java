@@ -4,8 +4,8 @@ import io.rocketbase.commons.Application;
 import io.rocketbase.commons.model.*;
 import io.rocketbase.commons.test.data.*;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -99,7 +99,7 @@ public class JpaPersistenceBaseTest {
         repository.saveAll(values);
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void upAndRunning() {
         log.info("running tests with entities: {}", em.getMetamodel().getEntities());
