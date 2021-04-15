@@ -22,7 +22,8 @@ spring:
 
 logging:
   level:
-    io.rocketbase: TRACE
+    root: INFO
+    io.rocketbase: DEBUG
 
 # auth configuration
 auth:

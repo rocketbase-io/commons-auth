@@ -13,7 +13,8 @@ hibernate:
 
 logging:
   level:
+    root: INFO
     io.rocketbase: DEBUG
     org.hibernate:
-      SQL: TRACE
-      type.descriptor:.sql.BasicBinder: TRACE
+      SQL: INFO
+      type.descriptor:.sql.BasicBinder: INFO
