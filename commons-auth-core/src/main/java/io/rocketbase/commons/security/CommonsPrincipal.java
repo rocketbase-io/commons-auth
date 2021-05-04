@@ -131,7 +131,12 @@ public class CommonsPrincipal implements AppUserToken, Principal, Serializable {
 
     @Override
     public UserProfile getProfile() {
-        return null;
+        return user != null ? user.getProfile() : null;
+    }
+
+    @Override
+    public String getIdentityProvider() {
+        return user != null ? user.getIdentityProvider() : null;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package io.rocketbase.commons.test.model;
 
+import io.rocketbase.commons.dto.openid.ConnectedAuthorization;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.model.AppUserReference;
 import io.rocketbase.commons.model.user.UserProfile;
@@ -54,6 +55,10 @@ public class SimpleAppUserEntity implements AppUserEntity, AppUserReference {
     private UserProfile profile;
 
     private UserSetting setting;
+
+    private String identityProvider;
+
+    private Set<ConnectedAuthorization> connectedAuthorizations;
 
     @Override
     public void updateLastLogin() {

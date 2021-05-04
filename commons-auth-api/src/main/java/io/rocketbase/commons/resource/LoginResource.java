@@ -13,6 +13,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.util.Assert;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
@@ -59,7 +60,7 @@ public class LoginResource implements BaseRestResource, LoginApi {
                             new HttpEntity<>(login, createHeaderWithLanguage()),
                             LoginResponse.class);
             return response.getBody();
-        } catch (BadRequestException e) {
+        } catch (BadRequestException| HttpClientErrorException.Unauthorized e) {
             throw new BadCredentialsException("login not possible");
         }
     }

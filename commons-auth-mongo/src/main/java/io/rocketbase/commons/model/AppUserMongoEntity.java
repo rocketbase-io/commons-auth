@@ -1,5 +1,6 @@
 package io.rocketbase.commons.model;
 
+import io.rocketbase.commons.dto.openid.ConnectedAuthorization;
 import io.rocketbase.commons.model.user.UserProfile;
 import io.rocketbase.commons.model.user.UserSetting;
 import lombok.AllArgsConstructor;
@@ -54,6 +55,10 @@ public class AppUserMongoEntity implements AppUserEntity {
     private UserProfile profile;
 
     private UserSetting setting;
+
+    private String identityProvider;
+
+    private Set<ConnectedAuthorization> connectedAuthorizations;
 
     private Set<Long> capabilityIds;
 

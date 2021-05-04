@@ -1,5 +1,7 @@
 package io.rocketbase.commons.model;
 
+import io.rocketbase.commons.dto.openid.ConnectedAuthorization;
+import io.rocketbase.commons.model.converter.SetConnectedAuthorizationConverter;
 import io.rocketbase.commons.model.embedded.UserProfileJpaEmbedded;
 import io.rocketbase.commons.model.embedded.UserSettingJpaEmbedded;
 import io.rocketbase.commons.model.user.UserProfile;
@@ -193,6 +195,14 @@ public class AppUserJpaEntity implements AppUserEntity {
     public void setSetting(UserSetting userSetting) {
         this.setting = new UserSettingJpaEmbedded(userSetting);
     }
+
+    @Column(name = "identity_provider")
+    private String identityProvider;
+
+    @Lob
+    @Column(name = "connected_authorization_json")
+    @Convert(converter = SetConnectedAuthorizationConverter.class)
+    private Set<ConnectedAuthorization> connectedAuthorizations;
 
     @NotNull
     @CreatedDate

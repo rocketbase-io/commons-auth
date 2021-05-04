@@ -33,7 +33,7 @@ public class SetOnlineProfileConverter implements AttributeConverter<Set<OnlineP
     @Override
     public Set<OnlineProfile> convertToEntityAttribute(String dbData) {
         Set<OnlineProfile> result = null;
-        if (!StringUtils.isEmpty(dbData)) {
+        if (StringUtils.hasText(dbData)) {
             try {
                 result = OBJECT_MAPPER.readValue(dbData, new TypeReference<Set<OnlineProfile>>() {
                 });

@@ -94,9 +94,9 @@ public class JwtTokenServiceTest {
         // then
         assertThat(parseToken, notNullValue());
         assertThat(parseToken.getExpiration().isAfter(beforeCreate
-                .plusSeconds(60 * getInstance().jwtProperties.getAccessTokenExpiration())), equalTo(true));
+                .plusSeconds(getInstance().jwtProperties.getAccessTokenExpiration())), equalTo(true));
         assertThat(parseToken.getExpiration().isBefore(beforeCreate
-                .plusSeconds(60 * (getInstance().jwtProperties.getAccessTokenExpiration() + 1))), equalTo(true));
+                .plusSeconds((getInstance().jwtProperties.getAccessTokenExpiration() + 10))), equalTo(true));
 
     }
 

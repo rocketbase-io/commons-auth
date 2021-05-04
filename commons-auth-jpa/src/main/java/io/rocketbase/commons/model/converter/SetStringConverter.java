@@ -32,7 +32,7 @@ public class SetStringConverter implements AttributeConverter<Set<String>, Strin
     @Override
     public Set<String> convertToEntityAttribute(String dbData) {
         Set<String> result = null;
-        if (!StringUtils.isEmpty(dbData)) {
+        if (StringUtils.hasText(dbData)) {
             try {
                 result = OBJECT_MAPPER.readValue(dbData, new TypeReference<Set<String>>() {
                 });

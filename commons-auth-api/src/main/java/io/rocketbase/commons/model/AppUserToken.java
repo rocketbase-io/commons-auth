@@ -15,6 +15,9 @@ import java.util.Set;
 @JsonDeserialize(as = SimpleAppUserToken.class)
 public interface AppUserToken extends AppUserReference, HasKeyValue {
 
+    @Nullable
+    String getIdentityProvider();
+
     Set<String> getCapabilities();
 
     @Nullable

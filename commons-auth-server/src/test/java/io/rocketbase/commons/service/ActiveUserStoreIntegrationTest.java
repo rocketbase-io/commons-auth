@@ -15,7 +15,7 @@ import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.test.data.CapabilityData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.security.authentication.BadCredentialsException;
 
 import javax.annotation.Resource;
 
@@ -74,7 +74,7 @@ public class ActiveUserStoreIntegrationTest extends BaseIntegrationTest {
                     .password("--")
                     .build());
             throw new RuntimeException("should not be possible to login");
-        } catch (HttpClientErrorException.Unauthorized e) {
+        } catch (BadCredentialsException e) {
         }
 
         // then

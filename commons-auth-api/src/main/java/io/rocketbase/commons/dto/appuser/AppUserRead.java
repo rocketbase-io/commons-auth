@@ -64,6 +64,9 @@ public class AppUserRead implements AppUserReference, Serializable {
     @Nullable
     private UserSetting setting;
 
+    @Nullable
+    private String identityProvider;
+
     @JsonIgnore
     public AppUserReference toReference() {
         return SimpleAppUserReference.builder()

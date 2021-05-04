@@ -25,6 +25,9 @@ import java.util.stream.Collectors;
 public class SimpleAppUserToken extends SimpleAppUserReference implements AppUserToken {
 
     @Nullable
+    private String identityProvider;
+
+    @Nullable
     private Set<AppGroupShort> groups;
 
     private Set<String> capabilities;
@@ -44,8 +47,9 @@ public class SimpleAppUserToken extends SimpleAppUserReference implements AppUse
     }
 
     @Builder(builderMethodName = "builderToken")
-    public SimpleAppUserToken(String id, String systemRefId, String username, String email, UserProfile profile, Set<AppGroupShort> groups, Set<String> capabilities, AppUserMembership activeTeam, Map<String, String> keyValues, UserSetting setting) {
+    public SimpleAppUserToken(String id, String systemRefId, String username, String email, UserProfile profile, String identityProvider, Set<AppGroupShort> groups, Set<String> capabilities, AppUserMembership activeTeam, Map<String, String> keyValues, UserSetting setting) {
         super(id, systemRefId, username, email, profile);
+        this.identityProvider = identityProvider;
         this.groups = groups;
         this.capabilities = capabilities;
         this.activeTeam = activeTeam;
@@ -53,8 +57,9 @@ public class SimpleAppUserToken extends SimpleAppUserReference implements AppUse
         this.setting = setting;
     }
 
-    public SimpleAppUserToken(AppUserReference reference, Set<AppGroupShort> groups, Set<String> capabilities, AppUserMembership activeTeam, Map<String, String> keyValues) {
+    public SimpleAppUserToken(AppUserReference reference, String identityProvider,  Set<AppGroupShort> groups, Set<String> capabilities, AppUserMembership activeTeam, Map<String, String> keyValues) {
         super(reference.getId(), reference.getSystemRefId(), reference.getUsername(), reference.getEmail(), reference.getProfile());
+        this.identityProvider = identityProvider;
         this.groups = groups;
         this.capabilities = capabilities;
         this.activeTeam = activeTeam;
@@ -67,6 +72,7 @@ public class SimpleAppUserToken extends SimpleAppUserReference implements AppUse
         setUsername(other.getUsername());
         setEmail(other.getEmail());
         setProfile(other.getProfile());
+        this.identityProvider = other.getIdentityProvider();
         this.groups = other.getGroups() != null ? other.getGroups().stream().map(AppGroupShort::new).collect(Collectors.toSet()) : null;
         this.capabilities = other.getCapabilities() != null ? new TreeSet<>(other.getCapabilities()) : null;
         this.activeTeam = other.getActiveTeam() != null ? new AppUserMembership(other.getActiveTeam()) : null;
@@ -82,6 +88,7 @@ public class SimpleAppUserToken extends SimpleAppUserReference implements AppUse
                 ", username='" + getUsername() + '\'' +
                 ", email='" + getEmail() + '\'' +
                 ", profile=" + getProfile() +
+                ", identityProvider='" + getIdentityProvider() +'\'' +
                 ", groups=" + groups +
                 ", capabilities=" + capabilities +
                 ", activeTeam=" + activeTeam +

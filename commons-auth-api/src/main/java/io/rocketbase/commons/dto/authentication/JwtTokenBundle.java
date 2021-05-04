@@ -33,4 +33,8 @@ public class JwtTokenBundle implements Serializable {
         return body.getExpiration();
     }
 
+    public JwtTokenBundle(JwtTokenBundle other) {
+        this.token = other.token;
+        this.refreshToken = other.refreshToken;
+    }
 }

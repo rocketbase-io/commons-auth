@@ -8,6 +8,7 @@ import io.rocketbase.commons.dto.ExpirationInfo;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.*;
 import io.rocketbase.commons.exception.BadRequestException;
+import io.rocketbase.commons.exception.TokenRefreshException;
 import io.rocketbase.commons.model.AppUserEntity;
 import io.rocketbase.commons.model.user.SimpleUserProfile;
 import io.rocketbase.commons.resource.AuthenticationResource;
@@ -168,7 +169,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
             AppUserRead response = resource.getAuthenticated();
             // then
             Assertions.fail("should have thrown HttpClientErrorException");
-        } catch (HttpClientErrorException e) {
+        } catch (TokenRefreshException e) {
         }
     }
 
