@@ -4,6 +4,7 @@ import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.exception.TokenRefreshException;
 import io.rocketbase.commons.resource.BaseRestResource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -58,7 +59,21 @@ public class JwtTokenStoreHttp extends AbstractJwtTokenStore implements BaseRest
                     .setHeader(header, getTokenHeader(tokenBundle.getRefreshToken()))
                     .build();
             HttpResponse response = getHttpClient().execute(uriRequest);
+            HttpEntity entity = response.getEntity();
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode >= 300) {
+                if (log.isDebugEnabled()) {
+                    log.debug("refresh token http-response with error. statusCode: {}", statusCode);
+                }
+            }
             String newToken = EntityUtils.toString(response.getEntity());
+            // validate token
+            JwtTokenBody tokenBody = JwtTokenDecoder.decodeTokenBody(newToken);
+            if (tokenBody == null) {
+                log.error("got invalid newToken during refreshToken");
+                throw new TokenRefreshException();
+            }
+
             tokenBundle.setToken(newToken);
 
             lastToken = null;

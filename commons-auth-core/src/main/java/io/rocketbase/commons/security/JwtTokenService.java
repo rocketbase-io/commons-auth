@@ -62,11 +62,11 @@ public class JwtTokenService implements Serializable {
                 .toInstant());
     }
 
-    private JwtBuilder prepareBuilder(Instant ldt, long expirationMinutes, String username) {
+    private JwtBuilder prepareBuilder(Instant ldt, long expirationSeconds, String username) {
         return Jwts.builder()
                 .serializeToJsonWith(new JacksonSerializer<>(getObjectMapper()))
                 .setIssuedAt(convert(ldt))
-                .setExpiration(convert(ldt.plusSeconds(expirationMinutes * 60)))
+                .setExpiration(convert(ldt.plusSeconds(expirationSeconds)))
                 .signWith(getKey(), SIGNATURE_ALGORITHM)
                 .setSubject(username);
     }

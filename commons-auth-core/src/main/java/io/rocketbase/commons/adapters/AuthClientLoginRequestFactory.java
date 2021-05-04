@@ -21,11 +21,11 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 @Slf4j
 public class AuthClientLoginRequestFactory extends HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory, BaseRestResource {
 
-    private final String baseAuthApiUrl;
-    private final String username;
-    private final String password;
+    final String baseAuthApiUrl;
+    final String username;
+    final String password;
 
-    private JwtTokenStore jwtTokenStore;
+    JwtTokenStore jwtTokenStore;
 
     public AuthClientLoginRequestFactory(HttpClient httpClient, String baseAuthApiUrl, String username, String password) {
         super(httpClient);
@@ -48,10 +48,10 @@ public class AuthClientLoginRequestFactory extends HttpComponentsClientHttpReque
             try {
                 jwtTokenStore.refreshToken();
             } catch (TokenRefreshException e) {
-                refreshJwtTokenStore();
+                jwtTokenStore = refreshJwtTokenStore();
             }
         }
-        request.setHeader(getJwtTokenStore().getHeaderName(), getJwtTokenStore().getTokenHeader());
+        request.setHeader(jwtTokenStore.getHeaderName(), jwtTokenStore.getTokenHeader());
     }
 
     private JwtTokenStore getJwtTokenStore() {
@@ -61,12 +61,17 @@ public class AuthClientLoginRequestFactory extends HttpComponentsClientHttpReque
         return jwtTokenStore;
     }
 
-    private void refreshJwtTokenStore() {
+    protected JwtTokenStore initStore(LoginResponse loginResponse) {
+        return new JwtTokenStoreHttp(baseAuthApiUrl, loginResponse.getJwtTokenBundle());
+    }
+
+    private JwtTokenStore refreshJwtTokenStore() {
         LoginResponse loginResponse = new LoginResource(baseAuthApiUrl).login(new LoginRequest(username, password));
-        jwtTokenStore = new JwtTokenStoreHttp(baseAuthApiUrl, loginResponse.getJwtTokenBundle());
+        jwtTokenStore = initStore(loginResponse);
         if (log.isDebugEnabled()) {
-            log.debug("logged with user: {}", username);
+            log.debug("logged in with user: {}", username);
         }
+        return jwtTokenStore;
     }
 
 
