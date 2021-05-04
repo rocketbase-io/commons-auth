@@ -135,6 +135,8 @@ public class UserForm extends AbstractCompositeField<FormLayout, UserForm, UserF
 
         enabled = new VCheckBox(getTranslation("user.enabled")).withFullWidth();
         locked = new VCheckBox(getTranslation("user.locked")).withFullWidth();
+
+        setReadOnly(false);
     }
 
     @Override
@@ -183,10 +185,10 @@ public class UserForm extends AbstractCompositeField<FormLayout, UserForm, UserF
 
     @Override
     public void setReadOnly(boolean readOnly) {
-        id.setReadOnly(readOnly);
-        systemRefId.setReadOnly(readOnly);
-        username.setReadOnly(readOnly);
-        email.setReadOnly(readOnly);
+        id.setReadOnly(true);
+        systemRefId.setReadOnly(true);
+        username.setReadOnly(true);
+        email.setReadOnly(true);
         capabilities.setReadOnly(readOnly);
         groups.setReadOnly(readOnly);
         activeTeam.setReadOnly(readOnly);
@@ -197,6 +199,6 @@ public class UserForm extends AbstractCompositeField<FormLayout, UserForm, UserF
 
     @Override
     public boolean isReadOnly() {
-        return id.isReadOnly();
+        return capabilities.isReadOnly();
     }
 }

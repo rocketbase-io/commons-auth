@@ -20,6 +20,8 @@
     </repositories>
 
     <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+
         <vaadin.version>14.5.3</vaadin.version>
         <vaadin-spring.version>12.3.3</vaadin-spring.version>
         <spring-data-provider.version>2.1.0</spring-data-provider.version>
