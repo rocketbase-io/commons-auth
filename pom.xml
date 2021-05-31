@@ -102,13 +102,13 @@ SOFTWARE.
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <spring-boot.version>2.4.5</spring-boot.version>
+        <spring-boot.version>2.5.0</spring-boot.version>
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
-        <commons-rest.version>2.2.2</commons-rest.version>
+        <commons-rest.version>2.2.3</commons-rest.version>
         <jjwt.version>0.11.2</jjwt.version>
         <guava.version>30.1.1-jre</guava.version>
         <passay.version>1.6.0</passay.version>
-        <email-template-builder.version>2.0.0</email-template-builder.version>
+        <email-template-builder.version>2.2.0</email-template-builder.version>
         <jacoco.version>0.8.6</jacoco.version>
     </properties>
 
