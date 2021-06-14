@@ -5,8 +5,8 @@ import io.rocketbase.commons.model.HasKeyValue;
 import io.rocketbase.commons.util.Nulls;
 import lombok.*;
 import org.springframework.data.annotation.Transient;
-import org.springframework.lang.Nullable;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.Map;
 

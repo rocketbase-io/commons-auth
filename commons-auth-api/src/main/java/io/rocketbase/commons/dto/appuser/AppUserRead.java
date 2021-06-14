@@ -6,8 +6,8 @@ import io.rocketbase.commons.model.AppUserReference;
 import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.model.SimpleAppUserReference;
 import lombok.*;
-import org.springframework.lang.Nullable;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;

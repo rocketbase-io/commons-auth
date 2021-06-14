@@ -4,8 +4,8 @@ import io.rocketbase.commons.model.AppUserReference;
 import io.rocketbase.commons.model.HasFirstAndLastName;
 import io.rocketbase.commons.model.HasKeyValue;
 import lombok.*;
-import org.springframework.lang.Nullable;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;

@@ -1,7 +1,6 @@
 package io.rocketbase.commons.dto.validation;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import lombok.Getter;
 
 public enum PasswordErrorCodes {
     TOO_SHORT("tooShort"),
@@ -12,11 +11,14 @@ public enum PasswordErrorCodes {
     INSUFFICIENT_SPECIAL("insufficientSpecial"),
     INVALID_CURRENT_PASSWORD("invalidCurrentPassword");
 
-    @Getter
-    @JsonValue
-    private String value;
+    private final String value;
 
     PasswordErrorCodes(String value) {
         this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+        return value;
     }
 }

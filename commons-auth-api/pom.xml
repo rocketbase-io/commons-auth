@@ -49,6 +49,20 @@ SOFTWARE.
             <version>${guava.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-annotations</artifactId>
+            <version>4.2.3</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>2.1.9</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- jackson -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -121,7 +135,7 @@ SOFTWARE.
             <plugin>
                 <groupId>cz.habarta.typescript-generator</groupId>
                 <artifactId>typescript-generator-maven-plugin</artifactId>
-                <version>2.27.744</version>
+                <version>2.32.889</version>
                 <executions>
                     <execution>
                         <id>generate</id>
@@ -137,7 +151,7 @@ SOFTWARE.
                         <file>target/site/apidocs/javadoc.xml</file>
                     </javadocXmlFiles>
                     <optionalAnnotations>
-                        <optionalAnnotation>org.springframework.lang.Nullable</optionalAnnotation>
+                        <optionalAnnotation>javax.annotation.Nullable</optionalAnnotation>
                     </optionalAnnotations>
                     <optionalProperties>useSpecifiedAnnotations</optionalProperties>
                     <classPatterns>
