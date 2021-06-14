@@ -88,4 +88,9 @@ public class AppUserTestEntity implements AppUserEntity {
     public Map<String, String> getKeyValues() {
         return keyValueMap;
     }
+
+    @Override
+    public void setKeyValues(Map<String, String> map) {
+        this.keyValueMap = map;
+    }
 }

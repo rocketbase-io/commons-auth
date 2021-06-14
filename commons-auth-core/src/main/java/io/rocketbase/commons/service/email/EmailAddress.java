@@ -2,8 +2,8 @@ package io.rocketbase.commons.service.email;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.lang.Nullable;
 
+import javax.annotation.Nullable;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.ValidatorFactory;

@@ -115,6 +115,13 @@ public class CommonsPrincipal implements AppUserToken, Principal {
     }
 
     @Override
+    public void setKeyValues(Map<String, String> map) {
+        if (this.user != null) {
+            this.user.setKeyValues(map);
+        }
+    }
+
+    @Override
     public String getName() {
         return getUsername();
     }

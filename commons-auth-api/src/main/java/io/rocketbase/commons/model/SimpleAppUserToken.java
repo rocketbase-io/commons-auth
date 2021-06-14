@@ -41,4 +41,9 @@ public class SimpleAppUserToken implements AppUserToken {
     public Map<String, String> getKeyValues() {
         return getKeyValueMap() != null ? ImmutableMap.copyOf(getKeyValueMap()) : null;
     }
+
+    @Override
+    public void setKeyValues(Map<String, String> map) {
+        keyValueMap = map;
+    }
 }

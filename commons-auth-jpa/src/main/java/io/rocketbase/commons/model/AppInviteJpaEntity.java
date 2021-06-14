@@ -71,6 +71,11 @@ public class AppInviteJpaEntity implements AppInviteEntity {
         return keyValueMap;
     }
 
+    @Override
+    public void setKeyValues(Map<String, String> map) {
+        this.keyValueMap = map;
+    }
+
     public AppInviteJpaEntity(String id) {
         this.id = id;
     }

@@ -4,7 +4,8 @@ import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppUserEntity;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
-import org.springframework.lang.Nullable;
+
+import javax.annotation.Nullable;
 
 @Getter
 public class InviteEvent extends ApplicationEvent {

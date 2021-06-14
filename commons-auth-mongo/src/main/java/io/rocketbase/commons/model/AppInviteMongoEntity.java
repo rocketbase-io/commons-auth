@@ -53,4 +53,9 @@ public class AppInviteMongoEntity implements AppInviteEntity {
     public Map<String, String> getKeyValues() {
         return keyValueMap;
     }
+
+    @Override
+    public void setKeyValues(Map<String, String> map) {
+        this.keyValueMap = map;
+    }
 }

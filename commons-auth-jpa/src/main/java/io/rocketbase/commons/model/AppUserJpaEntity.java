@@ -100,6 +100,11 @@ public class AppUserJpaEntity implements AppUserEntity {
         return keyValueMap;
     }
 
+    @Override
+    public void setKeyValues(Map<String, String> map) {
+        this.keyValueMap = map;
+    }
+
     public AppUserJpaEntity(String id) {
         this.id = id;
     }
