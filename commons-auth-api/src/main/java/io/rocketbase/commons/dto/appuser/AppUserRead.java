@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.rocketbase.commons.model.AppUserReference;
 import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.model.SimpleAppUserReference;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import javax.annotation.Nullable;
@@ -13,12 +14,16 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * database entity representation of user
+ */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 @JsonDeserialize(as = AppUserRead.class)
+@Schema(description = "database entity representation of user")
 public class AppUserRead implements AppUserToken, Serializable {
 
     private String id;

@@ -1,5 +1,6 @@
 package io.rocketbase.commons.dto.forgot;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,10 +10,14 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.Email;
 import java.io.Serializable;
 
+/**
+ * body of password forgot process
+ */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "body of password forgot process")
 public class ForgotPasswordRequest implements Serializable {
 
     @Nullable
@@ -29,6 +34,9 @@ public class ForgotPasswordRequest implements Serializable {
      * * ?verification=VALUE will get append
      */
     @Nullable
+    @Schema(description = "optional parameter to overwrite system default\n" +
+            "full qualified url to a custom UI that proceed the password reset.\n" +
+            "* ?verification=VALUE will get append")
     private String resetPasswordUrl;
 
 
@@ -37,5 +45,6 @@ public class ForgotPasswordRequest implements Serializable {
      */
     @Deprecated
     @Nullable
+    @Schema(description = "please use resetPasswordUrl will get removed in future", deprecated = true)
     private String verificationUrl;
 }

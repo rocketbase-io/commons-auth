@@ -2,6 +2,7 @@ package io.rocketbase.commons.dto.appinvite;
 
 import io.rocketbase.commons.model.HasFirstAndLastName;
 import io.rocketbase.commons.model.HasKeyValue;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import javax.annotation.Nullable;
@@ -13,10 +14,14 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * invite a person to create a user. you can predefine it's role etc.
+ */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "invite a person to create a user. you can predefine it's role etc.")
 public class InviteRequest implements Serializable, HasFirstAndLastName, HasKeyValue {
 
     /**
@@ -24,6 +29,7 @@ public class InviteRequest implements Serializable, HasFirstAndLastName, HasKeyV
      */
     @NotNull
     @Size(max = 255)
+    @Schema(description = "name of invitor that will get displayed within email + form")
     private String invitor;
 
     /**
@@ -31,6 +37,7 @@ public class InviteRequest implements Serializable, HasFirstAndLastName, HasKeyV
      */
     @Size(max = 4000)
     @Nullable
+    @Schema(description = "optional message to add to invited person")
     private String message;
 
     @Nullable
@@ -58,5 +65,6 @@ public class InviteRequest implements Serializable, HasFirstAndLastName, HasKeyV
      * ?inviteId=VALUE will get append
      */
     @Nullable
+    @Schema(description = "optional parameter to overwrite system default. full qualified url to a custom UI that proceed the invite ?inviteId=VALUE will get append")
     private String inviteUrl;
 }

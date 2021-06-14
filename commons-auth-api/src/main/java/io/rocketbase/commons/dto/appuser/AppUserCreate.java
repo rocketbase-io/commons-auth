@@ -2,6 +2,7 @@ package io.rocketbase.commons.dto.appuser;
 
 import io.rocketbase.commons.model.HasFirstAndLastName;
 import io.rocketbase.commons.model.HasKeyValue;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import javax.annotation.Nullable;
@@ -11,11 +12,15 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * post body to create a new user
+ */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"password"})
+@Schema(description = "post body to create a new user")
 public class AppUserCreate implements Serializable, HasFirstAndLastName, HasKeyValue {
 
     @NotNull
