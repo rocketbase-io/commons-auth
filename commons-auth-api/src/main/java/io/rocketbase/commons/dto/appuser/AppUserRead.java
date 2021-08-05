@@ -6,6 +6,7 @@ import io.rocketbase.commons.dto.appcapability.AppCapabilityShort;
 import io.rocketbase.commons.dto.appgroup.AppGroupShort;
 import io.rocketbase.commons.dto.appteam.AppUserMembership;
 import io.rocketbase.commons.model.AppUserReference;
+import io.rocketbase.commons.model.HasKeyValue;
 import io.rocketbase.commons.model.SimpleAppUserReference;
 import io.rocketbase.commons.model.user.UserProfile;
 import io.rocketbase.commons.model.user.UserSetting;
@@ -23,7 +24,7 @@ import java.util.Set;
 @Builder
 @EqualsAndHashCode(of = "id")
 @JsonDeserialize(as = AppUserRead.class)
-public class AppUserRead implements AppUserReference, Serializable {
+public class AppUserRead implements AppUserReference, Serializable, HasKeyValue {
 
     private String id;
 

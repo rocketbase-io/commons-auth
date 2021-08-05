@@ -12,7 +12,7 @@
     <artifactId>commons-auth-service</artifactId>
 
     <properties>
-        <simple-java-mail.version>6.4.0</simple-java-mail.version>
+        <simple-java-mail.version>6.6.1</simple-java-mail.version>
     </properties>
 
     <dependencies>
