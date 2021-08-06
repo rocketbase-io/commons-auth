@@ -1,7 +1,6 @@
 package io.rocketbase.commons.vaadin.user;
 
 
-import com.google.common.base.Joiner;
 import com.vaadin.flow.component.grid.ColumnTextAlign;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrder;
@@ -143,9 +142,9 @@ public class UserGrid extends Grid<AppUserRead> {
                 .withProperty("timeFormat", v -> Nulls.notNull(v.getSetting(), UserSetting::getTimeFormat))
                 .withProperty("dateTimeFormat", v -> Nulls.notNull(v.getSetting(), UserSetting::getDateTimeFormat))
                 .withProperty("currentTimeZone", v -> Nulls.notNull(v.getSetting(), UserSetting::getCurrentTimeZone))
-                .withProperty("capabilities", v -> Joiner.on(", ").join(Nulls.notNull(v.getCapabilities()).stream().map(AppCapabilityShort::getKeyPath).collect(Collectors.toList())))
-                .withProperty("groups", v -> Joiner.on(", ").join(Nulls.notNull(v.getGroups()).stream().map(AppGroupShort::getNamePath).collect(Collectors.toList())))
-                .withProperty("keyValues", v -> Joiner.on(", ").join(Nulls.notNull(v.getKeyValues()).entrySet().stream().map(e -> String.format("'%s': '%s'", e.getKey(), e.getValue())).collect(Collectors.toList())))
+                .withProperty("capabilities", v -> Nulls.notNull(v.getCapabilities()).stream().map(AppCapabilityShort::getKeyPath).collect(Collectors.joining(", ")))
+                .withProperty("groups", v -> Nulls.notNull(v.getGroups()).stream().map(AppGroupShort::getNamePath).collect(Collectors.joining(", ")))
+                .withProperty("keyValues", v -> Nulls.notNull(v.getKeyValues()).entrySet().stream().map(e -> String.format("'%s': '%s'", e.getKey(), e.getValue())).collect(Collectors.joining(", ")))
         );
     }
 
