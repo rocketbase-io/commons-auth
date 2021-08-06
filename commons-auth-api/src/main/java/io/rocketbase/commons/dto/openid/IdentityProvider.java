@@ -27,6 +27,7 @@ public class IdentityProvider implements Serializable {
 
     private String scope;
 
+    @Builder.Default
     private boolean defaultProvider = false;
 
     /**

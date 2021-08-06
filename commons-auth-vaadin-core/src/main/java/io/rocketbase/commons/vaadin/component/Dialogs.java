@@ -7,13 +7,13 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import org.springframework.data.util.Pair;
-import org.springframework.lang.Nullable;
 import org.vaadin.firitin.components.button.VButton;
 import org.vaadin.firitin.components.dialog.VDialog;
 import org.vaadin.firitin.components.html.VH3;
 import org.vaadin.firitin.components.html.VLabel;
 import org.vaadin.firitin.components.orderedlayout.VVerticalLayout;
 
+import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public abstract class Dialogs {

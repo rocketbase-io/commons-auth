@@ -1,9 +1,9 @@
 package io.rocketbase.commons.model;
 
 import io.rocketbase.commons.dto.appcapability.AppCapabilityRead;
-import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;

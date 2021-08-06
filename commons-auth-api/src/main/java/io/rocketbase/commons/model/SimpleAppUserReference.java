@@ -3,7 +3,8 @@ package io.rocketbase.commons.model;
 import io.rocketbase.commons.model.user.SimpleUserProfile;
 import io.rocketbase.commons.model.user.UserProfile;
 import lombok.*;
-import org.springframework.lang.Nullable;
+
+import javax.annotation.Nullable;
 
 /**
  * simplified AppUserEntity without keyValues, password, audit etc...<br>

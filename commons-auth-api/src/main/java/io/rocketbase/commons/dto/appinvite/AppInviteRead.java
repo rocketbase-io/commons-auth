@@ -6,8 +6,8 @@ import io.rocketbase.commons.dto.appteam.AppTeamInvite;
 import io.rocketbase.commons.model.HasFirstAndLastName;
 import io.rocketbase.commons.model.HasKeyValue;
 import lombok.*;
-import org.springframework.lang.Nullable;
 
+import javax.annotation.Nullable;
 import java.beans.Transient;
 import java.time.Instant;
 import java.util.Map;

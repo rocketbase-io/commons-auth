@@ -36,6 +36,11 @@ SOFTWARE.
 
     <artifactId>commons-auth-api</artifactId>
 
+    <properties>
+        <delombok.output>${project.basedir}/target/delombok</delombok.output>
+        <typescript-generator.version>2.32.889</typescript-generator.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.rocketbase.commons</groupId>
@@ -103,20 +108,41 @@ SOFTWARE.
 
     <build>
         <plugins>
-            <!--
+            <plugin>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok-maven-plugin</artifactId>
+                <version>${lombok-maven-plugin.version}</version>
+                <configuration>
+                    <sourceDirectory>${project.build.sourceDirectory}</sourceDirectory>
+                    <outputDirectory>${delombok.output}</outputDirectory>
+                    <addOutputDirectory>false</addOutputDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>delombok</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.3.0</version>
+                <configuration>
+                    <sourcepath>${delombok.output}</sourcepath>
+                </configuration>
                 <executions>
                     <execution>
                         <id>xml-doclet</id>
-                        <phase>process-classes</phase>
+                        <phase>verify</phase>
                         <goals>
                             <goal>javadoc</goal>
                         </goals>
                         <configuration>
-                            <doclet>com.github.markusbernhardt.xmldoclet.NewXmlDoclet</doclet>
+                            <doclet>com.github.markusbernhardt.xmldoclet.XmlDoclet</doclet>
                             <useStandardDocletOptions>false</useStandardDocletOptions>
                             <docletArtifact>
                                 <groupId>com.github.vojtechhabarta</groupId>
@@ -131,14 +157,13 @@ SOFTWARE.
             <plugin>
                 <groupId>cz.habarta.typescript-generator</groupId>
                 <artifactId>typescript-generator-maven-plugin</artifactId>
-                <version>2.27.744</version>
+                <version>${typescript-generator.version}</version>
                 <executions>
                     <execution>
-                        <id>generate</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
-                        <phase>process-classes</phase>
+                        <phase>install</phase>
                     </execution>
                 </executions>
                 <configuration>
@@ -147,26 +172,19 @@ SOFTWARE.
                         <file>target/site/apidocs/javadoc.xml</file>
                     </javadocXmlFiles>
                     <optionalAnnotations>
-                        <optionalAnnotation>org.springframework.lang.Nullable</optionalAnnotation>
+                        <optionalAnnotation>javax.annotation.Nullable</optionalAnnotation>
                     </optionalAnnotations>
                     <optionalProperties>useSpecifiedAnnotations</optionalProperties>
                     <classPatterns>
-                        <classPattern>io.rocketbase.commons.dto.appinvite.**</classPattern>
-                        <classPattern>io.rocketbase.commons.dto.appuser.**</classPattern>
-                        <classPattern>io.rocketbase.commons.dto.appgroup.**</classPattern>
-                        <classPattern>io.rocketbase.commons.dto.appcapability.**</classPattern>
-                        <classPattern>io.rocketbase.commons.dto.appteam.**</classPattern>
-                        <classPattern>io.rocketbase.commons.dto.authentication.**</classPattern>
+                        <classPattern>io.rocketbase.commons.dto.app*.**</classPattern>
+                        <classPattern>io.rocketbase.commons.dto.auth*.**</classPattern>
                         <classPattern>io.rocketbase.commons.dto.forgot.**</classPattern>
+                        <classPattern>io.rocketbase.commons.dto.openid.**</classPattern>
                         <classPattern>io.rocketbase.commons.dto.registration.**</classPattern>
                         <classPattern>io.rocketbase.commons.dto.validation.**</classPattern>
-                        <classPattern>io.rocketbase.commons.model.AppUserEntity*</classPattern>
+                        <classPattern>io.rocketbase.commons.dto.ExpirationInfo</classPattern>
+                        <classPattern>io.rocketbase.commons.model.**</classPattern>
                         <classPattern>io.rocketbase.commons.model.Has*</classPattern>
-                        <classPattern>io.rocketbase.commons.dto.validation.*Codes</classPattern>
-                        <classPattern>io.rocketbase.commons.model.AppUserEntity*</classPattern>
-                        <classPattern>io.rocketbase.commons.model.user.User*</classPattern>
-                        <classPattern>io.rocketbase.commons.model.user.OnlineProfile</classPattern>
-                        <classPattern>io.rocketbase.commons.model.user.PhoneNumber</classPattern>
                     </classPatterns>
                     <excludeClassPatterns>
                         <excludeClassPattern>**Builder</excludeClassPattern>
@@ -201,12 +219,12 @@ SOFTWARE.
                     <importDeclarations>
                         <import>import * as rest from "./commons-rest-api.d.ts"</import>
                     </importDeclarations>
+                    <outputFileType>implementationFile</outputFileType>
                     <outputKind>module</outputKind>
                     <noEslintDisable>true</noEslintDisable>
                     <noTslintDisable>true</noTslintDisable>
                 </configuration>
             </plugin>
-            -->
         </plugins>
     </build>
 </project>

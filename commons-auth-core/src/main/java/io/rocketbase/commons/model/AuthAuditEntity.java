@@ -1,7 +1,6 @@
 package io.rocketbase.commons.model;
 
-import org.springframework.lang.Nullable;
-
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;

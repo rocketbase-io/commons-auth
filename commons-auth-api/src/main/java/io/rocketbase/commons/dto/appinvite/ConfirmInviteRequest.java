@@ -2,8 +2,8 @@ package io.rocketbase.commons.dto.appinvite;
 
 import io.rocketbase.commons.model.HasFirstAndLastName;
 import lombok.*;
-import org.springframework.lang.Nullable;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;

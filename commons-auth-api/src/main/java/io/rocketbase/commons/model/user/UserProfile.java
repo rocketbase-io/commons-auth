@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.rocketbase.commons.dto.address.Gender;
 import io.rocketbase.commons.model.HasFirstAndLastName;
-import org.springframework.lang.Nullable;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Set;

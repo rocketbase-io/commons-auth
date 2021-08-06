@@ -2,8 +2,8 @@ package io.rocketbase.commons.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.rocketbase.commons.model.user.UserProfile;
-import org.springframework.lang.Nullable;
 
+import javax.annotation.Nullable;
 import java.beans.Transient;
 import java.io.Serializable;
 

@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.rocketbase.commons.dto.appgroup.AppGroupShort;
 import io.rocketbase.commons.dto.appteam.AppUserMembership;
 import io.rocketbase.commons.model.user.UserSetting;
-import org.springframework.lang.Nullable;
 
+import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
