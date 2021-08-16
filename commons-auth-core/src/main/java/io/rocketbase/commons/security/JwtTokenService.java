@@ -130,7 +130,7 @@ public class JwtTokenService implements Serializable {
      * @param lastTokenInvalidation optional (used to verify if token was created after last invalidation [for example password change or other security issues])
      * @return true in case of valid
      */
-    public Boolean validateToken(String token, String username, Instant lastTokenInvalidation) {
+    public boolean validateToken(String token, String username, Instant lastTokenInvalidation) {
         TokenParseResult meta;
         try {
             meta = parseToken(token);
@@ -141,6 +141,10 @@ public class JwtTokenService implements Serializable {
             }
             return false;
         }
+        return validateToken(meta, username, lastTokenInvalidation);
+    }
+
+    public boolean validateToken(TokenParseResult meta, String username, Instant lastTokenInvalidation) {
         if (!Nulls.noneNullValue(meta.getUser(), meta.getExpiration(), meta.getIssuedAt())) {
             return false;
         }
@@ -164,7 +168,7 @@ public class JwtTokenService implements Serializable {
         }
     }
 
-    public Boolean validateToken(String token, AppUserEntity user) {
+    public boolean validateToken(String token, AppUserEntity user) {
         return validateToken(token, user.getUsername(), user.getLastTokenInvalidation());
     }
 }

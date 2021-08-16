@@ -33,8 +33,8 @@ public class AuthServerAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public OAuthLoginRefreshController oAuthLoginRefreshController() {
-        return new OAuthLoginRefreshController();
+    public OAuthController oAuthController() {
+        return new OAuthController();
     }
 
     @Bean
@@ -81,6 +81,30 @@ public class AuthServerAutoConfiguration {
     @ConditionalOnExpression(value = "${auth.impersonate.enabled:true}")
     public ImpersonateController impersonateController() {
         return new ImpersonateController();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AppCapabilityController capabilityController() {
+        return new AppCapabilityController();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AppClientController clientController() {
+        return new AppClientController();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AppGroupController groupController() {
+        return new AppGroupController();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AppTeamController teamController() {
+        return new AppTeamController();
     }
 
     // -------------------------------------------------------
@@ -133,5 +157,11 @@ public class AuthServerAutoConfiguration {
     @ConditionalOnMissingBean
     public JwtExceptionHandler jwtExceptionHandler() {
         return new JwtExceptionHandler();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public OAuthExceptionHandler oAuthExceptionHandler() {
+        return new OAuthExceptionHandler();
     }
 }

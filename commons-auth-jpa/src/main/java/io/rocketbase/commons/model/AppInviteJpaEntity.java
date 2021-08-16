@@ -24,7 +24,13 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
+@NamedEntityGraph(
+        name = "co-invite-entity-graph",
+        attributeNodes = {
+                @NamedAttributeNode("capabilities"),
+                @NamedAttributeNode("keyValues")
+        }
+)
 @Entity
 @Table(name = "co_invite",
         indexes = @Index(name = "idx_invite_systemrefid", columnList = "system_ref_id")

@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.model.*;
 import io.rocketbase.commons.model.embedded.UserProfileJpaEmbedded_;
+import io.rocketbase.commons.service.CustomQueryMethodMetadata;
 import io.rocketbase.commons.service.JpaQueryHelper;
 import io.rocketbase.commons.service.capability.AppCapabilityPersistenceService;
 import io.rocketbase.commons.service.group.AppGroupPersistenceService;
@@ -14,14 +15,17 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Predicate;
 import java.util.*;
 
 @Slf4j
+@Transactional
 public class AppUserJpaPersistenceService implements AppUserPersistenceService<AppUserJpaEntity>, JpaQueryHelper {
 
     private final EntityManager em;
@@ -33,7 +37,10 @@ public class AppUserJpaPersistenceService implements AppUserPersistenceService<A
     public AppUserJpaPersistenceService(EntityManager entityManager,
                                         AppGroupPersistenceService groupJpaPersistenceService, AppCapabilityPersistenceService capabilityJpaPersistenceService, AppTeamPersistenceService teamJpaPersistenceService) {
         em = entityManager;
+        EntityGraph entityGraph = entityManager.getEntityGraph("co-user-entity-graph");
+
         repository = new SimpleJpaRepository<>(AppUserJpaEntity.class, entityManager);
+        repository.setRepositoryMethodMetadata(new CustomQueryMethodMetadata(entityGraph));
         this.groupJpaPersistenceService = groupJpaPersistenceService;
         this.capabilityJpaPersistenceService = capabilityJpaPersistenceService;
         this.teamJpaPersistenceService = teamJpaPersistenceService;
@@ -44,8 +51,9 @@ public class AppUserJpaPersistenceService implements AppUserPersistenceService<A
         if (username == null) {
             return Optional.empty();
         }
-        Specification<AppUserJpaEntity> specification = (root, criteriaQuery, cb) -> cb.in(root.get(AppUserJpaEntity_.USERNAME).in(username.toLowerCase()));
+        Specification<AppUserJpaEntity> specification = (root, criteriaQuery, cb) -> cb.equal(root.get(AppUserJpaEntity_.USERNAME), username.toLowerCase());
         return repository.findOne(specification);
+
     }
 
     @Override
@@ -53,7 +61,7 @@ public class AppUserJpaPersistenceService implements AppUserPersistenceService<A
         if (email == null) {
             return Optional.empty();
         }
-        Specification<AppUserJpaEntity> specification = (root, criteriaQuery, cb) -> cb.in(root.get(AppUserJpaEntity_.EMAIL).in(email.toLowerCase()));
+        Specification<AppUserJpaEntity> specification = (root, criteriaQuery, cb) -> cb.equal(root.get(AppUserJpaEntity_.EMAIL), email.toLowerCase());
         return repository.findOne(specification);
     }
 

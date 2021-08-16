@@ -21,6 +21,8 @@ public class AppCapabilityConverter {
                 .description(entity.getDescription())
                 .parentId(entity.getParentId())
                 .created(entity.getCreated())
+                .modified(entity.getModified())
+                .modifiedBy(entity.getModifiedBy())
                 .build();
     }
 

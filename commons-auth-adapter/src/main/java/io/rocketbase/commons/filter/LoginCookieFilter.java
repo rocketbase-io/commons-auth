@@ -44,7 +44,7 @@ public class LoginCookieFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
             Cookie authRemember = WebUtils.getCookie(request, LoginSuccessCookieHandler.AUTH_REMEMBER);
-            if (authRemember != null && !StringUtils.isEmpty(authRemember.getValue())) {
+            if (authRemember != null && StringUtils.hasText(authRemember.getValue())) {
                 try {
                     String cookieRefreshToken = authRemember.getValue();
                     // check if token is valid

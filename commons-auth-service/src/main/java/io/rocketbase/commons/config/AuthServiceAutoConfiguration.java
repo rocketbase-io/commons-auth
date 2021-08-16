@@ -24,6 +24,8 @@ import io.rocketbase.commons.service.group.AppGroupService;
 import io.rocketbase.commons.service.group.DefaultAppGroupService;
 import io.rocketbase.commons.service.impersonate.DefaultImpersonateService;
 import io.rocketbase.commons.service.impersonate.ImpersonateService;
+import io.rocketbase.commons.service.initialize.DataInitializerService;
+import io.rocketbase.commons.service.initialize.DefaultDataInitializerServiceService;
 import io.rocketbase.commons.service.invite.AppInviteService;
 import io.rocketbase.commons.service.invite.DefaultAppInviteService;
 import io.rocketbase.commons.service.registration.DefaultRegistrationService;
@@ -200,6 +202,12 @@ public class AuthServiceAutoConfiguration {
     @ConditionalOnMissingBean
     public ChangeAppUserWithConfirmService changeAppUserWithConfirmService() {
         return new DefaultChangeAppUserWithConfirmService(authProperties);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public DataInitializerService dataInitializerService(@Autowired AppUserService appUserService, @Autowired AppCapabilityService appCapabilityService) {
+        return new DefaultDataInitializerServiceService(appUserService, appCapabilityService);
     }
 
 }

@@ -18,3 +18,8 @@ logging:
     org.hibernate:
       SQL: INFO
       type.descriptor:.sql.BasicBinder: INFO
+
+
+auth:
+  capability:
+    init: false

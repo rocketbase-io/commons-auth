@@ -1,59 +1,63 @@
-import {ApiClientFactoryConfig, buildQuery, createRequestor, PageableRequest, Requestor} from "../util";
-import {AppCapabilityRead, AppCapabilityWrite, QueryAppCapability} from "../api-types/commons-auth-api";
-import {PageableResult} from "../api-types/commons-rest-api";
+import { createRequestorFactory, PageableRequest, Requestor } from "../util";
+import type {
+  AppCapabilityRead,
+  AppCapabilityWrite,
+  PageableResult,
+  QueryAppCapability,
+} from "../api-types";
+import { AxiosRequestConfig } from "axios";
 
-export interface CapabilityQuery extends PageableRequest, QueryAppCapability {
-}
+export interface CapabilityQuery extends PageableRequest, QueryAppCapability {}
 
 export interface CapabilityUpdate {
-    id: number;
-    write: AppCapabilityWrite;
+  id: number;
+  write: AppCapabilityWrite;
 }
 
 export interface CapabilityApi {
-    find: Requestor<CapabilityQuery, PageableResult<AppCapabilityRead>>;
-    findById: Requestor<number, AppCapabilityRead>;
-    create: Requestor<AppCapabilityWrite, AppCapabilityRead>;
-    update: Requestor<CapabilityUpdate, AppCapabilityRead>;
-    remove: Requestor<number, void>;
+  find: Requestor<CapabilityQuery, PageableResult<AppCapabilityRead>>;
+  findById: Requestor<number, AppCapabilityRead>;
+  create: Requestor<AppCapabilityWrite, AppCapabilityRead>;
+  update: Requestor<CapabilityUpdate, AppCapabilityRead>;
+  remove: Requestor<number, void>;
 }
 
-export function createCapabilityApi(cf: ApiClientFactoryConfig): CapabilityApi {
-    const path = '/api/capability';
-    const headers = {"content-type": "application/json"};
+export function createCapabilityApi(cf?: AxiosRequestConfig): CapabilityApi {
+  const createRequestor = createRequestorFactory(cf, {
+    baseURL: `${cf?.baseURL ?? ""}/api/capability`,
+  });
 
-    const find = createRequestor<CapabilityQuery, PageableResult<AppCapabilityRead>>({
-        url: (query) => buildQuery(path, query)
-    }, cf);
+  const find = createRequestor<CapabilityQuery, PageableResult<AppCapabilityRead>>({
+    url: "",
+    query: (query) => query,
+  });
 
-    const findById = createRequestor<number, AppCapabilityRead>({
-        url: (id) => `${path}/${id}`
-    }, cf);
+  const findById = createRequestor<number, AppCapabilityRead>({
+    url: (id) => `/${id}`,
+  });
 
-    const create = createRequestor<AppCapabilityWrite, AppCapabilityRead>({
-        method: "post",
-        url: path,
-        headers,
-        body: (write) => write,
-    }, cf);
+  const create = createRequestor<AppCapabilityWrite, AppCapabilityRead>({
+    method: "post",
+    url: "/",
+    body: (write) => write,
+  });
 
-    const update = createRequestor<CapabilityUpdate, AppCapabilityRead>({
-        method: "put",
-        url: ({id}) => `${path}/${id}`,
-        headers,
-        body: ({write}) => write,
-    }, cf);
+  const update = createRequestor<CapabilityUpdate, AppCapabilityRead>({
+    method: "put",
+    url: ({ id }) => `/${id}`,
+    body: ({ write }) => write,
+  });
 
-    const remove = createRequestor<number, void>({
-        method: "delete",
-        url: (id) => `${path}/${id}`
-    }, cf);
+  const remove = createRequestor<number, void>({
+    method: "delete",
+    url: (id) => `/${id}`,
+  });
 
-    return {
-        find,
-        findById,
-        create,
-        update,
-        remove
-    }
+  return {
+    find,
+    findById,
+    create,
+    update,
+    remove,
+  };
 }

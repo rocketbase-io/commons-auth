@@ -27,7 +27,15 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
+@NamedEntityGraph(
+        name = "co-user-entity-graph",
+        attributeNodes = {
+                @NamedAttributeNode("capabilities"),
+                @NamedAttributeNode("keyValues"),
+                @NamedAttributeNode("groups"),
+                @NamedAttributeNode("activeTeam")
+        }
+)
 @Entity
 @Table(name = "co_user",
         uniqueConstraints = {

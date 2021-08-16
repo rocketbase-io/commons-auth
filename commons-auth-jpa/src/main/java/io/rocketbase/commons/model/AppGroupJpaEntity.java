@@ -20,6 +20,14 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@NamedEntityGraph(
+        name = "co-group-entity-graph",
+        attributeNodes = {
+                @NamedAttributeNode("parent"),
+                @NamedAttributeNode("capabilities"),
+                @NamedAttributeNode("keyValues")
+        }
+)
 @Entity
 @Table(name = "co_group",
         uniqueConstraints = @UniqueConstraint(name = "uk_group", columnNames = {"name", "parent_id"}),

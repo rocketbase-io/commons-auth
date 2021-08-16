@@ -6,6 +6,7 @@ import io.rocketbase.commons.model.AppCapabilityJpaEntity;
 import io.rocketbase.commons.model.AppGroupJpaEntity;
 import io.rocketbase.commons.model.AppInviteJpaEntity;
 import io.rocketbase.commons.model.AppInviteJpaEntity_;
+import io.rocketbase.commons.service.CustomQueryMethodMetadata;
 import io.rocketbase.commons.service.JpaQueryHelper;
 import io.rocketbase.commons.util.Nulls;
 import io.rocketbase.commons.util.Snowflake;
@@ -15,6 +16,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.*;
 import java.time.Instant;
@@ -39,6 +41,8 @@ public class AppInviteJpaPersistenceService implements AppInvitePersistenceServi
         this.repository = new SimpleJpaRepository<>(AppInviteJpaEntity.class, entityManager);
         this.capabilityRepository = new SimpleJpaRepository<>(AppCapabilityJpaEntity.class, entityManager);
         this.groupRepository = new SimpleJpaRepository<>(AppGroupJpaEntity.class, entityManager);
+        EntityGraph entityGraph = entityManager.getEntityGraph("co-invite-entity-graph");
+        repository.setRepositoryMethodMetadata(new CustomQueryMethodMetadata(entityGraph));
     }
 
     @Override

@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.annotation.Resource;
@@ -44,10 +45,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         try {
             TokenParseResult parsedToken = null;
-            try {
-                parsedToken = jwtTokenService.parseToken(getAuthToken(request));
-            } catch (JwtException jwtException) {
-                log.warn("invalid token: {}", jwtException.getMessage());
+            String authToken = getAuthToken(request);
+            if (StringUtils.hasText(authToken)) {
+                try {
+                    parsedToken = jwtTokenService.parseToken(authToken);
+                } catch (JwtException jwtException) {
+                    log.debug("invalid token: {}", jwtException.getMessage());
+                }
             }
             tryToAuthenticate(parsedToken, request);
             chain.doFilter(request, response);

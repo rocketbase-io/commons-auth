@@ -143,5 +143,18 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-maven-plugin</artifactId>
+                <version>${vaadin.version}</version>
+                <configuration>
+                    <compatibilityMode>false</compatibilityMode>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 
 </project>

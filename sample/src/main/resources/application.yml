@@ -1,0 +1,38 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    jdbc-url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
+    username: sa
+    password: sa
+  # json configuration
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
+      INDENT_OUTPUT: true
+    default-property-inclusion: NON_NULL
+
+auth:
+  registration:
+    enabled: false
+  forms:
+    title: "Backend"
+  jwt:
+    secret: 'qLrorTXz9CEkxPLPr8H982LgHzs8QZl+2ZqtILXQG5LUArRzX1RrTlP7pqCqhz391COBAEXj7WLmhO3wTYv9p0s2FjbCcTu1hMKzcZZV4oPE+RqP2O390yurM3eVyv4Skcd3EtxQsmvDowFGL74FTObYjkXUNwDDD7x8y8gzbfx3nDRVHkOLltmvY2EHlpkhaZM9W5zXuwmms00vuxUa1rVxAX2n9Ez20eF5oDre6bmRdp1sSVukq/wvTXP5EtiXu2hJ84lIp4VEqLUaiUHofaGSXAI5PKWqSvK+7kpD2vM8CqzQosmUFdu/2+DmBAoqBXw0xVYF9BOp3DmqalTAMw=='
+    access-token-expiration: 30
+    refresh-token-expiration: 120
+  username:
+    special-characters: -_.@
+    max-length: 255
+  password:
+    min-length: 4
+    uppercase: 0
+    lowercase: 0
+    special: 0
+
+logging:
+  level:
+    root: info
+    io.rocketbase: debug
+    org.springframework.security: debug
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace

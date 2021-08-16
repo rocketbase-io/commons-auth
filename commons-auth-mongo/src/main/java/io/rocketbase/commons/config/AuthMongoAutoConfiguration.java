@@ -15,6 +15,8 @@ import io.rocketbase.commons.service.invite.AppInvitePersistenceService;
 import io.rocketbase.commons.service.team.AppTeamMongoPersistenceService;
 import io.rocketbase.commons.service.team.AppTeamPersistenceService;
 import io.rocketbase.commons.service.team.AppTeamService;
+import io.rocketbase.commons.service.token.AuthorizationCodeMongoService;
+import io.rocketbase.commons.service.token.AuthorizationCodeService;
 import io.rocketbase.commons.service.user.AppUserMongoPersistenceService;
 import io.rocketbase.commons.service.user.AppUserPersistenceService;
 import io.rocketbase.commons.util.Snowflake;
@@ -87,5 +89,11 @@ public class AuthMongoAutoConfiguration {
     @ConditionalOnMissingBean
     public AppClientConverter<AppClientMongoEntity> appClientConverter(@Autowired AppCapabilityService appCapabilityService) {
         return new AppClientMongoConverter(appCapabilityService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AuthorizationCodeService authorizationCodeService(@Autowired MongoTemplate mongoTemplate) {
+        return new AuthorizationCodeMongoService(mongoTemplate, AuthorizationCodeMongoEntity.COLLECTION_NAME);
     }
 }

@@ -52,6 +52,7 @@ SOFTWARE.
         <module>commons-auth-email-postmark</module>
         <module>commons-auth-vaadin-core</module>
         <module>js-client</module>
+        <module>sample</module>
     </modules>
 
     <repositories>

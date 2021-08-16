@@ -18,6 +18,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+@NamedEntityGraph(
+        name = "co-team-entity-graph",
+        attributeNodes = {
+                @NamedAttributeNode("members"),
+                @NamedAttributeNode("keyValues")
+        }
+)
 @Entity
 @Table(name = "co_team",
         uniqueConstraints = {@UniqueConstraint(name = "uk_team", columnNames = "name")},

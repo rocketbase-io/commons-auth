@@ -15,6 +15,8 @@ import io.rocketbase.commons.service.invite.AppInvitePersistenceService;
 import io.rocketbase.commons.service.team.AppTeamJpaPersistenceService;
 import io.rocketbase.commons.service.team.AppTeamPersistenceService;
 import io.rocketbase.commons.service.team.AppTeamService;
+import io.rocketbase.commons.service.token.AuthorizationCodeJpaService;
+import io.rocketbase.commons.service.token.AuthorizationCodeService;
 import io.rocketbase.commons.service.user.AppUserJpaPersistenceService;
 import io.rocketbase.commons.service.user.AppUserPersistenceService;
 import io.rocketbase.commons.util.Snowflake;
@@ -96,5 +98,11 @@ public class AuthJpaAutoConfiguration {
     @ConditionalOnMissingBean
     public AppClientConverter<AppClientJpaEntity> appClientConverter() {
         return new AppClientJpaConverter(appCapabilityConverter);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public AuthorizationCodeService authorizationCodeService(@Autowired EntityManager entityManager) {
+        return new AuthorizationCodeJpaService(entityManager);
     }
 }

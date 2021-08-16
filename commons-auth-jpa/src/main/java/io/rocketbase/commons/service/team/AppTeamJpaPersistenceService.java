@@ -3,19 +3,23 @@ package io.rocketbase.commons.service.team;
 import io.rocketbase.commons.dto.appteam.QueryAppTeam;
 import io.rocketbase.commons.model.AppTeamJpaEntity;
 import io.rocketbase.commons.model.AppTeamJpaEntity_;
+import io.rocketbase.commons.service.CustomQueryMethodMetadata;
 import io.rocketbase.commons.service.JpaQueryHelper;
 import io.rocketbase.commons.util.Snowflake;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Transactional
 public class AppTeamJpaPersistenceService implements AppTeamPersistenceService<AppTeamJpaEntity>, JpaQueryHelper {
 
     private final EntityManager em;
@@ -26,7 +30,10 @@ public class AppTeamJpaPersistenceService implements AppTeamPersistenceService<A
     public AppTeamJpaPersistenceService(EntityManager entityManager, Snowflake snowflake) {
         this.em = entityManager;
         this.snowflake = snowflake;
-        this.repository = new SimpleJpaRepository<>(AppTeamJpaEntity.class, entityManager);
+
+        repository = new SimpleJpaRepository<>(AppTeamJpaEntity.class, entityManager);
+        EntityGraph entityGraph = entityManager.getEntityGraph("co-team-entity-graph");
+        repository.setRepositoryMethodMetadata(new CustomQueryMethodMetadata(entityGraph));
     }
 
     @Override

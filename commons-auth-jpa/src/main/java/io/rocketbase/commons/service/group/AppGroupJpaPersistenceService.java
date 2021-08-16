@@ -10,19 +10,23 @@ import io.rocketbase.commons.model.AppCapabilityJpaEntity;
 import io.rocketbase.commons.model.AppGroupEntity;
 import io.rocketbase.commons.model.AppGroupJpaEntity;
 import io.rocketbase.commons.model.AppGroupJpaEntity_;
+import io.rocketbase.commons.service.CustomQueryMethodMetadata;
 import io.rocketbase.commons.service.JpaQueryHelper;
 import io.rocketbase.commons.util.Snowflake;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.MapJoin;
 import javax.persistence.criteria.Predicate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Transactional
 public class AppGroupJpaPersistenceService implements AppGroupPersistenceService<AppGroupJpaEntity>, JpaQueryHelper {
 
     private final EntityManager em;
@@ -37,6 +41,8 @@ public class AppGroupJpaPersistenceService implements AppGroupPersistenceService
         this.snowflake = snowflake;
         this.repository = new SimpleJpaRepository<>(AppGroupJpaEntity.class, entityManager);
         this.capabilityRepository = new SimpleJpaRepository<>(AppCapabilityJpaEntity.class, entityManager);
+        EntityGraph entityGraph = entityManager.getEntityGraph("co-group-entity-graph");
+        repository.setRepositoryMethodMetadata(new CustomQueryMethodMetadata(entityGraph));
     }
 
     @Override

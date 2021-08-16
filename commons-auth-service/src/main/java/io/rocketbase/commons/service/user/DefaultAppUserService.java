@@ -22,8 +22,6 @@ import io.rocketbase.commons.model.user.SimpleUserProfile;
 import io.rocketbase.commons.model.user.SimpleUserSetting;
 import io.rocketbase.commons.model.user.UserProfile;
 import io.rocketbase.commons.service.avatar.AvatarService;
-import io.rocketbase.commons.service.capability.AppCapabilityService;
-import io.rocketbase.commons.service.group.AppGroupService;
 import io.rocketbase.commons.service.validation.ValidationErrorCodeService;
 import io.rocketbase.commons.service.validation.ValidationService;
 import lombok.Builder;
@@ -59,12 +57,6 @@ public class DefaultAppUserService implements AppUserService {
 
     @Resource
     protected AppUserPersistenceService<AppUserEntity> appUserPersistenceService;
-
-    @Resource
-    protected AppGroupService groupService;
-
-    @Resource
-    protected AppCapabilityService capabilityService;
 
     @Resource
     protected AvatarService avatarService;

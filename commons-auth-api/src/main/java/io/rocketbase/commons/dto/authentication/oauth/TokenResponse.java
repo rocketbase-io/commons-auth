@@ -1,4 +1,4 @@
-package io.rocketbase.commons.dto.authentication;
+package io.rocketbase.commons.dto.authentication.oauth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -8,11 +8,15 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+/**
+ * response of {@link TokenRequest}<br>
+ * depending on flow some properties are optional
+ */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OAuthLoginResponse implements Serializable {
+public class TokenResponse implements Serializable {
 
     @JsonProperty("token_type")
     private String tokenType;

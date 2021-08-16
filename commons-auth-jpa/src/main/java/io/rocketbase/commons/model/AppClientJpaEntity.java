@@ -19,6 +19,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@NamedEntityGraph(
+        name = "co-client-entity-graph",
+        attributeNodes = {
+                @NamedAttributeNode("capabilities")
+        }
+)
 @Entity
 @Table(name = "co_client",
         uniqueConstraints = @UniqueConstraint(name = "uk_client", columnNames = {"name"}),

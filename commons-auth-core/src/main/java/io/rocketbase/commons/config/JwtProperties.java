@@ -19,9 +19,9 @@ public class JwtProperties {
     private String secret;
 
     /**
-     * in seconds! default 1 hour
+     * in seconds! default 15min
      */
-    private long accessTokenExpiration = 3600;
+    private long accessTokenExpiration = 900;
 
     /**
      * in seconds! default 30 days

@@ -192,10 +192,17 @@ SOFTWARE.
                         <excludeClassPattern>**Serializer</excludeClassPattern>
                         <excludeClassPattern>**Exception</excludeClassPattern>
                         <excludeClassPattern>**Visitor</excludeClassPattern>
+                        <excludeClassPattern>io.rocketbase.commons.dto.address.**</excludeClassPattern>
+                        <excludeClassPattern>io.rocketbase.commons.model.user.SimpleUser**</excludeClassPattern>
+                        <excludeClassPattern>io.rocketbase.commons.model.SimpleAppUser**</excludeClassPattern>
                     </excludeClassPatterns>
                     <excludeClasses>
                         <excludeClass>java.io.Serializable</excludeClass>
                         <excludeClass>java.lang.Iterable</excludeClass>
+                        <excludeClass>java.util.Locale</excludeClass>
+                        <excludeClass>java.lang.Cloneable</excludeClass>
+                        <excludeClass>io.rocketbase.commons.dto.validation.ModelConstraint</excludeClass>
+                        <excludeClass>io.rocketbase.commons.dto.validation.ValidationConstraint</excludeClass>
                     </excludeClasses>
                     <customTypeMappings>
                         <customTypeMapping>java.net.URL:string</customTypeMapping>
@@ -207,17 +214,14 @@ SOFTWARE.
                         <customTypeMapping>io.rocketbase.commons.obfuscated.ObfuscatedId:string</customTypeMapping>
                         <customTypeMapping>io.rocketbase.commons.dto.ErrorResponse:rest.ErrorResponse</customTypeMapping>
                         <customTypeMapping><![CDATA[io.rocketbase.commons.dto.PageableResult<E>:rest.PageableResult<E>]]></customTypeMapping>
-                        <customTypeMapping>io.rocketbase.commons.dto.address.AddressDto:rest.AddressDto</customTypeMapping>
-                        <customTypeMapping>io.rocketbase.commons.dto.address.ContactDto:rest.ContactDto</customTypeMapping>
-                        <customTypeMapping>io.rocketbase.commons.dto.address.Gender:rest.Gender</customTypeMapping>
                         <customTypeMapping>io.rocketbase.commons.model.HasKeyValue:rest.HasKeyValue</customTypeMapping>
                         <customTypeMapping>io.rocketbase.commons.model.HasFirstAndLastName:rest.HasFirstAndLastName</customTypeMapping>
                         <customTypeMapping>io.rocketbase.commons.translation.Translation:rest.Translation</customTypeMapping>
                         <customTypeMapping>io.rocketbase.commons.dto.ErrorResponse:rest.ErrorResponse</customTypeMapping>
-                        <customTypeMapping><![CDATA[io.rocketbase.commons.dto.PageableResult<E>:rest.PageableResult]]></customTypeMapping>
+                        <customTypeMapping><![CDATA[io.rocketbase.commons.model.EntityWithKeyValue<T>:rest.EntityWithKeyValue<T>]]></customTypeMapping>
                     </customTypeMappings>
                     <importDeclarations>
-                        <import>import * as rest from "./commons-rest-api.d.ts"</import>
+                        <import>import * as rest from "./commons-rest-api"</import>
                     </importDeclarations>
                     <outputFileType>implementationFile</outputFileType>
                     <outputKind>module</outputKind>

@@ -1,59 +1,58 @@
-import {ApiClientFactoryConfig, buildQuery, createRequestor, PageableRequest, Requestor} from "../util";
-import {AppClientRead, AppClientWrite, QueryAppClient} from "../api-types/commons-auth-api";
-import {PageableResult} from "../api-types/commons-rest-api";
+import { createRequestorFactory, PageableRequest, Requestor } from "../util";
+import type { AppClientRead, AppClientWrite, PageableResult, QueryAppClient } from "../api-types";
+import { AxiosRequestConfig } from "axios";
 
-export interface ClientQuery extends PageableRequest, QueryAppClient {
-}
+export interface ClientQuery extends PageableRequest, QueryAppClient {}
 
 export interface ClientUpdate {
-    id: number;
-    write: AppClientWrite;
+  id: number;
+  write: AppClientWrite;
 }
 
 export interface ClientApi {
-    find: Requestor<ClientQuery, PageableResult<AppClientRead>>;
-    findById: Requestor<number, AppClientRead>;
-    create: Requestor<AppClientWrite, AppClientRead>;
-    update: Requestor<ClientUpdate, AppClientRead>;
-    remove: Requestor<number, void>;
+  find: Requestor<ClientQuery, PageableResult<AppClientRead>>;
+  findById: Requestor<number, AppClientRead>;
+  create: Requestor<AppClientWrite, AppClientRead>;
+  update: Requestor<ClientUpdate, AppClientRead>;
+  remove: Requestor<number, void>;
 }
 
-export function createClientApi(cf: ApiClientFactoryConfig): ClientApi {
-    const path = '/api/client';
-    const headers = {"content-type": "application/json"};
+export function createClientApi(cf?: AxiosRequestConfig): ClientApi {
+  const createRequestor = createRequestorFactory(cf, {
+    baseURL: `${cf?.baseURL ?? ""}/api/client`,
+  });
 
-    const find = createRequestor<ClientQuery, PageableResult<AppClientRead>>({
-        url: (query) => buildQuery(path, query)
-    }, cf);
+  const find = createRequestor<ClientQuery, PageableResult<AppClientRead>>({
+    url: "/",
+    query: (query) => query,
+  });
 
-    const findById = createRequestor<number, AppClientRead>({
-        url: (id) => `${path}/${id}`
-    }, cf);
+  const findById = createRequestor<number, AppClientRead>({
+    url: (id) => `/${id}`,
+  });
 
-    const create = createRequestor<AppClientWrite, AppClientRead>({
-        method: "post",
-        url: path,
-        headers,
-        body: (write) => write,
-    }, cf);
+  const create = createRequestor<AppClientWrite, AppClientRead>({
+    method: "post",
+    url: "/",
+    body: (write) => write,
+  });
 
-    const update = createRequestor<ClientUpdate, AppClientRead>({
-        method: "put",
-        url: ({id}) => `${path}/${id}`,
-        headers,
-        body: ({write}) => write,
-    }, cf);
+  const update = createRequestor<ClientUpdate, AppClientRead>({
+    method: "put",
+    url: ({ id }) => `/${id}`,
+    body: ({ write }) => write,
+  });
 
-    const remove = createRequestor<number, void>({
-        method: "delete",
-        url: (id) => `${path}/${id}`
-    }, cf);
+  const remove = createRequestor<number, void>({
+    method: "delete",
+    url: (id) => `/${id}`,
+  });
 
-    return {
-        find,
-        findById,
-        create,
-        update,
-        remove
-    }
+  return {
+    find,
+    findById,
+    create,
+    update,
+    remove,
+  };
 }

@@ -1,59 +1,63 @@
-import {ApiClientFactoryConfig, buildQuery, createRequestor, PageableRequest, Requestor} from "../util";
-import {AppGroupRead, AppGroupWrite, QueryAppGroup} from "../api-types/commons-auth-api";
-import {PageableResult} from "../api-types/commons-rest-api";
+import { createRequestorFactory, PageableRequest, Requestor } from "../util";
+import type { AppGroupRead, AppGroupWrite, PageableResult, QueryAppGroup } from "../api-types";
+import { AxiosRequestConfig } from "axios";
 
-export interface GroupQuery extends PageableRequest, QueryAppGroup {
+export interface GroupQuery extends PageableRequest, QueryAppGroup {}
+
+export interface GroupCreate {
+  parentId: number;
+  write: AppGroupWrite;
 }
 
 export interface GroupUpdate {
-    id: number;
-    write: AppGroupWrite;
+  id: number;
+  write: AppGroupWrite;
 }
 
 export interface GroupApi {
-    find: Requestor<GroupQuery, PageableResult<AppGroupRead>>;
-    findById: Requestor<number, AppGroupRead>;
-    create: Requestor<AppGroupWrite, AppGroupRead>;
-    update: Requestor<GroupUpdate, AppGroupRead>;
-    remove: Requestor<number, void>;
+  find: Requestor<GroupQuery, PageableResult<AppGroupRead>>;
+  findById: Requestor<number, AppGroupRead>;
+  create: Requestor<GroupCreate, AppGroupRead>;
+  update: Requestor<GroupUpdate, AppGroupRead>;
+  remove: Requestor<number, void>;
 }
 
-export function createGroupApi(cf: ApiClientFactoryConfig): GroupApi {
-    const path = '/api/group';
-    const headers = {"content-type": "application/json"};
+export function createGroupApi(cf?: AxiosRequestConfig): GroupApi {
+  const createRequestor = createRequestorFactory(cf, {
+    baseURL: `${cf?.baseURL ?? ""}/api/group`,
+  });
 
-    const find = createRequestor<GroupQuery, PageableResult<AppGroupRead>>({
-        url: (query) => buildQuery(path, query)
-    }, cf);
+  const find: GroupApi["find"] = createRequestor({
+    url: "",
+    query: (query) => query,
+  });
 
-    const findById = createRequestor<number, AppGroupRead>({
-        url: (id) => `${path}/${id}`
-    }, cf);
+  const findById: GroupApi["findById"] = createRequestor({
+    url: (id) => `/${id}`,
+  });
 
-    const create = createRequestor<AppGroupWrite, AppGroupRead>({
-        method: "post",
-        url: path,
-        headers,
-        body: (write) => write,
-    }, cf);
+  const create: GroupApi["create"] = createRequestor({
+    method: "post",
+    url: ({ parentId }) => `/${parentId}`,
+    body: ({ write }) => write,
+  });
 
-    const update = createRequestor<GroupUpdate, AppGroupRead>({
-        method: "put",
-        url: ({id}) => `${path}/${id}`,
-        headers,
-        body: ({write}) => write,
-    }, cf);
+  const update: GroupApi["update"] = createRequestor({
+    method: "put",
+    url: ({ id }) => `/${id}`,
+    body: ({ write }) => write,
+  });
 
-    const remove = createRequestor<number, void>({
-        method: "delete",
-        url: (id) => `${path}/${id}`
-    }, cf);
+  const remove: GroupApi["remove"] = createRequestor({
+    method: "delete",
+    url: (id) => `/${id}`,
+  });
 
-    return {
-        find,
-        findById,
-        create,
-        update,
-        remove
-    }
+  return {
+    find,
+    findById,
+    create,
+    update,
+    remove,
+  };
 }

@@ -8,6 +8,9 @@ import io.rocketbase.commons.model.AppCapabilityMongoEntity;
 import io.rocketbase.commons.service.MongoQueryHelper;
 import io.rocketbase.commons.util.Snowflake;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -23,8 +26,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static io.rocketbase.commons.dto.appcapability.AppCapabilityRead.ROOT;
+
+@Slf4j
 @RequiredArgsConstructor
-public class AppCapabilityMongoPersistenceService implements AppCapabilityPersistenceService<AppCapabilityMongoEntity>, MongoQueryHelper {
+public class AppCapabilityMongoPersistenceService implements AppCapabilityPersistenceService<AppCapabilityMongoEntity>, MongoQueryHelper, ApplicationListener<ApplicationReadyEvent> {
 
     private final MongoTemplate mongoTemplate;
 
@@ -110,5 +116,24 @@ public class AppCapabilityMongoPersistenceService implements AppCapabilityPersis
                 .id(snowflake.nextId())
                 .created(Instant.now())
                 .build();
+    }
+
+    @Override
+    public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
+        if (findAllById(Arrays.asList(ROOT.getId())).isEmpty()) {
+            save(AppCapabilityMongoEntity.builder()
+                    .id(ROOT.getId())
+                    .systemRefId(ROOT.getSystemRefId())
+                    .key(ROOT.getKey())
+                    .description(ROOT.getDescription())
+                    .parentId(ROOT.getParentId())
+                    .keyPath(ROOT.getKeyPath())
+                    .withChildren(false)
+                    .created(ROOT.getCreated())
+                    .modified(Instant.now())
+                    .modifiedBy(ROOT.getModifiedBy())
+                    .build());
+            log.debug("root capability persisted");
+        }
     }
 }

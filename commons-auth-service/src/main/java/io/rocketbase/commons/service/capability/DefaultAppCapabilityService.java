@@ -92,6 +92,9 @@ public class DefaultAppCapabilityService implements AppCapabilityService {
      */
     protected boolean updateKeyPath(String parentKeyPath, AppCapabilityEntity entity) {
         String newPath = parentKeyPath + "." + entity.getKey();
+        if (parentKeyPath.equals("*")) {
+            newPath = entity.getKey();
+        }
         if (!newPath.equals(entity.getKeyPath())) {
             entity.setKeyPath(newPath);
             return true;

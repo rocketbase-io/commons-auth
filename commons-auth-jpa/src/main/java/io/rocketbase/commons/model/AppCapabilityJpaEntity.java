@@ -15,6 +15,12 @@ import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.Objects;
 
+@NamedEntityGraph(
+        name = "co-capability-entity-graph",
+        attributeNodes = {
+                @NamedAttributeNode("parent")
+        }
+)
 @Entity
 @Table(name = "co_capacity",
         uniqueConstraints = @UniqueConstraint(name = "uk_capacity", columnNames = {"key_", "parent_id"}),
