@@ -1,5 +1,6 @@
 package org.company.sample.initializer;
 
+import com.google.common.collect.Sets;
 import io.rocketbase.commons.dto.appcapability.AppCapabilityRead;
 import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.service.initialize.DataInitializerService;
@@ -9,7 +10,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.Set;
 
 @Slf4j
 @Service
@@ -25,7 +25,7 @@ public class UserInitializer implements ApplicationListener<ApplicationReadyEven
                 .username("admin")
                 .password("admin")
                 .email("info@rocketbase.io")
-                .capabilityIds(Set.of(AppCapabilityRead.ROOT.getId()))
+                .capabilityIds(Sets.newHashSet(AppCapabilityRead.ROOT.getId()))
                 .enabled(true)
                 .build());
 
