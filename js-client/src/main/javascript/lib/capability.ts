@@ -27,28 +27,28 @@ export function createCapabilityApi(cf?: AxiosRequestConfig): CapabilityApi {
     baseURL: `${cf?.baseURL ?? ""}/api/capability`,
   });
 
-  const find = createRequestor<CapabilityQuery, PageableResult<AppCapabilityRead>>({
+  const find: CapabilityApi["find"] = createRequestor({
     url: "",
     query: (query) => query,
   });
 
-  const findById = createRequestor<number, AppCapabilityRead>({
+  const findById: CapabilityApi["findById"] = createRequestor({
     url: (id) => `/${id}`,
   });
 
-  const create = createRequestor<AppCapabilityWrite, AppCapabilityRead>({
+  const create: CapabilityApi["create"] = createRequestor({
     method: "post",
     url: "/",
     body: (write) => write,
   });
 
-  const update = createRequestor<CapabilityUpdate, AppCapabilityRead>({
+  const update: CapabilityApi["update"] = createRequestor({
     method: "put",
     url: ({ id }) => `/${id}`,
     body: ({ write }) => write,
   });
 
-  const remove = createRequestor<number, void>({
+  const remove: CapabilityApi["remove"] = createRequestor({
     method: "delete",
     url: (id) => `/${id}`,
   });

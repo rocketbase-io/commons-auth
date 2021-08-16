@@ -22,28 +22,28 @@ export function createClientApi(cf?: AxiosRequestConfig): ClientApi {
     baseURL: `${cf?.baseURL ?? ""}/api/client`,
   });
 
-  const find = createRequestor<ClientQuery, PageableResult<AppClientRead>>({
+  const find: ClientApi["find"] = createRequestor({
     url: "/",
     query: (query) => query,
   });
 
-  const findById = createRequestor<number, AppClientRead>({
+  const findById: ClientApi["findById"] = createRequestor({
     url: (id) => `/${id}`,
   });
 
-  const create = createRequestor<AppClientWrite, AppClientRead>({
+  const create: ClientApi["create"] = createRequestor({
     method: "post",
     url: "/",
     body: (write) => write,
   });
 
-  const update = createRequestor<ClientUpdate, AppClientRead>({
+  const update: ClientApi["update"] = createRequestor({
     method: "put",
     url: ({ id }) => `/${id}`,
     body: ({ write }) => write,
   });
 
-  const remove = createRequestor<number, void>({
+  const remove: ClientApi["remove"] = createRequestor({
     method: "delete",
     url: (id) => `/${id}`,
   });

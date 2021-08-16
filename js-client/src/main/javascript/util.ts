@@ -5,7 +5,7 @@ export interface RequestorConfig<Options, Result, Error = unknown> {
   client?: AxiosInstance;
   method?: Method | ((options: Options) => Method);
   url: string | ((options: Options) => string);
-  headers?: unknown | ((options: Options) => unknown);
+  headers?: (keyof Options)[] | ((options: Options) => unknown);
   query?: (keyof Options)[] | ((options: Options) => unknown);
   body?: (keyof Options)[] | ((options: Options) => unknown);
   options?: AxiosRequestConfig | ((options: Options) => AxiosRequestConfig);
