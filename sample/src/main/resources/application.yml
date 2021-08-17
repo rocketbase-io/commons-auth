@@ -29,6 +29,9 @@ auth:
     lowercase: 0
     special: 0
 
+vaadin:
+  urlMapping: /app/*
+
 logging:
   level:
     root: info

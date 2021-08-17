@@ -21,6 +21,7 @@ import io.rocketbase.commons.service.user.AppUserMongoPersistenceService;
 import io.rocketbase.commons.service.user.AppUserPersistenceService;
 import io.rocketbase.commons.util.Snowflake;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -45,8 +46,8 @@ public class AuthMongoAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AppCapabilityPersistenceService<AppCapabilityMongoEntity> appCapabilityPersistenceService(@Autowired MongoTemplate mongoTemplate, @Autowired Snowflake snowflake) {
-        return new AppCapabilityMongoPersistenceService(mongoTemplate, snowflake, AppCapabilityMongoEntity.COLLECTION_NAME);
+    public AppCapabilityPersistenceService<AppCapabilityMongoEntity> appCapabilityPersistenceService(@Autowired MongoTemplate mongoTemplate, @Autowired Snowflake snowflake,  @Value("${auth.capability.init:true}") boolean initializeRoot) {
+        return new AppCapabilityMongoPersistenceService(mongoTemplate, snowflake, AppCapabilityMongoEntity.COLLECTION_NAME, initializeRoot);
     }
 
     @Bean

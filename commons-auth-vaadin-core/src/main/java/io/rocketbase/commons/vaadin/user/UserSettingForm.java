@@ -7,7 +7,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import io.rocketbase.commons.model.user.SimpleUserSetting;
 import io.rocketbase.commons.model.user.UserSetting;
 import org.vaadin.firitin.components.formlayout.VFormLayout;
-import org.vaadin.firitin.components.select.VSelect;
 import org.vaadin.firitin.components.textfield.VTextField;
 
 import java.util.Arrays;
@@ -30,8 +29,10 @@ public class UserSettingForm extends AbstractCompositeField<FormLayout, UserSett
 
     protected void initFields() {
         locale = new VTextField().withFullWidth();
-        currentTimeZone = new VSelect<>(null, Arrays.stream(TimeZone.getAvailableIDs()).sorted().collect(Collectors.toList()))
-                .withFullWidth();
+
+        currentTimeZone = new Select<>();
+        currentTimeZone.setItems(Arrays.stream(TimeZone.getAvailableIDs()).sorted().collect(Collectors.toList()));
+        currentTimeZone.setWidthFull();
 
         dateFormat = new VTextField().withFullWidth();
         timeFormat = new VTextField().withFullWidth();

@@ -50,7 +50,6 @@ public class AppCapabilityJpaEntity implements AppCapabilityEntity {
     @Column(name = "description", length = 500)
     private String description;
 
-    @Nullable
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "parent_id", foreignKey = @ForeignKey(name = "fk_capacity__parent"))
     private AppCapabilityJpaEntity parent;

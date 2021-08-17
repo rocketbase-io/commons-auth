@@ -10,7 +10,6 @@ import io.rocketbase.commons.dto.address.Gender;
 import io.rocketbase.commons.model.user.SimpleUserProfile;
 import io.rocketbase.commons.model.user.UserProfile;
 import org.vaadin.firitin.components.formlayout.VFormLayout;
-import org.vaadin.firitin.components.select.VSelect;
 import org.vaadin.firitin.components.textfield.VTextArea;
 import org.vaadin.firitin.components.textfield.VTextField;
 
@@ -44,9 +43,11 @@ public class UserProfileForm extends AbstractCompositeField<FormLayout, UserProf
     }
 
     protected void initFields() {
-        gender = new VSelect<>(null, EnumSet.allOf(Gender.class))
-                .withFullWidth()
-                .withItemLabelGenerator(v -> v.getTranslation().getTranslated(UI.getCurrent().getLocale()));
+        gender = new Select<>();
+        gender.setWidthFull();
+        gender.setItems(EnumSet.allOf(Gender.class));
+        gender.setItemLabelGenerator(v -> v.getTranslation().getTranslated(UI.getCurrent().getLocale()));
+
         title = new VTextField().withFullWidth();
         firstName = new VTextField().withFullWidth();
         lastName = new VTextField().withFullWidth();
@@ -56,12 +57,15 @@ public class UserProfileForm extends AbstractCompositeField<FormLayout, UserProf
         about = new VTextArea().withFullWidth();
 
         location = new VTextField().withFullWidth();
-        country = new VSelect<>(null, Arrays.stream(Locale.getISOCountries())
+
+        country = new Select<>();
+        country.setWidthFull();
+        country.setItems(Arrays.stream(Locale.getISOCountries())
                 .map(String::toLowerCase)
                 .sorted()
-                .collect(Collectors.toList()))
-                .withItemLabelGenerator(v -> v == null ? "" : String.format("%s - %s", v, new Locale("", v).getDisplayCountry(UI.getCurrent().getLocale())))
-                .withFullWidth();
+                .collect(Collectors.toList()));
+        country.setItemLabelGenerator(v -> v == null ? "" : String.format("%s - %s", v, new Locale("", v).getDisplayCountry(UI.getCurrent().getLocale())));
+
         jobTitle = new VTextField().withFullWidth();
         organization = new VTextField().withFullWidth();
     }

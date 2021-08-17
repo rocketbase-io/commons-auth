@@ -11,36 +11,44 @@ import io.rocketbase.commons.service.CustomQueryMethodMetadata;
 import io.rocketbase.commons.service.JpaQueryHelper;
 import io.rocketbase.commons.util.Snowflake;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationListener;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.Predicate;
-import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.rocketbase.commons.dto.appcapability.AppCapabilityRead.ROOT;
+import static org.springframework.transaction.annotation.Propagation.NOT_SUPPORTED;
 
 @Slf4j
 @Transactional
-public class AppCapabilityJpaPersistenceService implements AppCapabilityPersistenceService<AppCapabilityJpaEntity>, JpaQueryHelper, ApplicationListener<ApplicationReadyEvent> {
+public class AppCapabilityJpaPersistenceService implements AppCapabilityPersistenceService<AppCapabilityJpaEntity>, JpaQueryHelper, InitializingBean {
 
+    private final PlatformTransactionManager transactionManager;
     private final EntityManager em;
     private final Snowflake snowflake;
+    private final boolean initializeRoot;
 
     private final SimpleJpaRepository<AppCapabilityJpaEntity, Long> repository;
 
 
-    public AppCapabilityJpaPersistenceService(EntityManager entityManager, Snowflake snowflake) {
+    public AppCapabilityJpaPersistenceService(PlatformTransactionManager transactionManager, EntityManager entityManager, Snowflake snowflake, boolean initializeRoot) {
+        this.transactionManager = transactionManager;
         this.em = entityManager;
         this.snowflake = snowflake;
+        this.initializeRoot = initializeRoot;
+
         this.repository = new SimpleJpaRepository<>(AppCapabilityJpaEntity.class, entityManager);
         EntityGraph entityGraph = entityManager.getEntityGraph("co-capability-entity-graph");
         repository.setRepositoryMethodMetadata(new CustomQueryMethodMetadata(entityGraph));
@@ -129,22 +137,43 @@ public class AppCapabilityJpaPersistenceService implements AppCapabilityPersiste
     }
 
     @Override
-    public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        boolean initialize = applicationReadyEvent.getApplicationContext().getEnvironment().getProperty("auth.capability.init", Boolean.class, true);
-        if (initialize && findAllById(Arrays.asList(ROOT.getId())).isEmpty()) {
-            save(AppCapabilityJpaEntity.builder()
-                    .id(ROOT.getId())
-                    .systemRefId(ROOT.getSystemRefId())
-                    .key(ROOT.getKey())
-                    .description(ROOT.getDescription())
-                    .parent(new AppCapabilityJpaEntity(ROOT.getParentId()))
-                    .keyPath(ROOT.getKeyPath())
-                    .withChildren(false)
-                    .created(ROOT.getCreated())
-                    .modified(Instant.now())
-                    .modifiedBy(ROOT.getModifiedBy())
-                    .build());
-            log.debug("root capability persisted");
+    public void ensureInitializedRoot() {
+        if (findAllById(Arrays.asList(ROOT.getId())).isEmpty()) {
+            DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
+            definition.setIsolationLevel(TransactionDefinition.ISOLATION_REPEATABLE_READ);
+            definition.setTimeout(3);
+
+            TransactionStatus status = transactionManager.getTransaction(definition);
+
+            try {
+                em.createNativeQuery("insert into co_capacity (id, system_ref_id, key_, description, parent_id, key_path, with_children, created, modified_by, modified) " +
+                                "values (:id, :systemRefId, :key, :description, :parentId, :keyPath, :withChildren, :created, :modifiedBy, :modified)")
+                        .setParameter("id", ROOT.getId())
+                        .setParameter("systemRefId", ROOT.getSystemRefId())
+                        .setParameter("key", ROOT.getKey())
+                        .setParameter("description", ROOT.getDescription())
+                        .setParameter("parentId", ROOT.getParentId())
+                        .setParameter("keyPath", ROOT.getKeyPath())
+                        .setParameter("withChildren", false)
+                        .setParameter("created", ROOT.getCreated())
+                        .setParameter("modifiedBy", ROOT.getModifiedBy())
+                        .setParameter("modified", ROOT.getModified())
+                        .executeUpdate();
+                transactionManager.commit(status);
+                log.debug("root capability persisted");
+            } catch (Exception e) {
+                transactionManager.rollback(status);
+                log.error("couldn't persist root capability: {}", e.getMessage());
+            }
+        }
+    }
+
+
+    @Transactional(propagation = NOT_SUPPORTED)
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        if (initializeRoot) {
+            ensureInitializedRoot();
         }
     }
 }

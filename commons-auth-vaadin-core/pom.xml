@@ -22,7 +22,6 @@
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
 
-        <vaadin.version>14.6.7</vaadin.version>
         <vaadin-spring.version>12.4.0</vaadin-spring.version>
         <spring-data-provider.version>2.1.0</spring-data-provider.version>
         <multi-combo-box-flow.version>0.4.0</multi-combo-box-flow.version>

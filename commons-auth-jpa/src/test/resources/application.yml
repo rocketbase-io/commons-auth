@@ -22,4 +22,4 @@ logging:
 
 auth:
   capability:
-    init: false
+    init: true

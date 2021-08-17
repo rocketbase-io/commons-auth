@@ -90,7 +90,7 @@ public class JpaPersistenceBaseTest {
 
     protected void truncateAndSave(Collection collection, Class clazz, Function function) throws Exception {
         SimpleJpaRepository repository = new SimpleJpaRepository<>(clazz, em);
-        repository.deleteAll();
+        repository.deleteAllInBatch();
 
         List values = new ArrayList<>();
         for (Object o : collection) {

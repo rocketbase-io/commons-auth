@@ -75,7 +75,7 @@ public class AuthenticationController implements BaseController {
 
     @RequestMapping(value = "/auth/me", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<AppUserRead> getAuthenticated(Authentication authentication, HttpServletRequest request ) {
+    public ResponseEntity<AppUserRead> getAuthenticated(Authentication authentication) {
         if (authentication == null || !(CommonsAuthenticationToken.class.isAssignableFrom(authentication.getClass()))) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }

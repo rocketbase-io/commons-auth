@@ -1,4 +1,4 @@
-package io.rocketbase.commons.vaadin;
+package org.company.sample.config;
 
 import com.vaadin.flow.i18n.I18NProvider;
 import io.rocketbase.commons.vaadin.i18n.TranslationProvider;
@@ -10,7 +10,6 @@ import org.springframework.core.io.ResourceLoader;
 
 @Configuration
 public class VaadinConfiguration {
-
 
     @Bean
     @ConditionalOnMissingBean

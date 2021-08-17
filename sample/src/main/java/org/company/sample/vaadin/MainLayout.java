@@ -1,4 +1,4 @@
-package io.rocketbase.commons.vaadin.view;
+package org.company.sample.vaadin;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
@@ -14,16 +14,18 @@ import com.vaadin.flow.component.tabs.Tabs;
 import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
+import org.company.sample.vaadin.view.HomeView;
+import org.company.sample.vaadin.view.UserView;
 
 import java.util.Optional;
 
 @Viewport("width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes")
-public class MainView extends AppLayout {
+public class MainLayout extends AppLayout {
 
     private final Tabs menu;
     private Label viewTitle;
 
-    public MainView() {
+    public MainLayout() {
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
         menu = createMenu();
@@ -78,7 +80,10 @@ public class MainView extends AppLayout {
     }
 
     private Component[] createMenuItems() {
-        return new Tab[]{createTab("Home", UserView.class)};
+        return new Tab[]{
+                createTab("Home", HomeView.class),
+                createTab("User", UserView.class),
+        };
     }
 
     private static Tab createTab(String text, Class<? extends Component> navigationTarget) {

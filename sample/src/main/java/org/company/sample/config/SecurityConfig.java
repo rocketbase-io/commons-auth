@@ -15,6 +15,7 @@ import io.rocketbase.commons.service.JwtTokenStoreProvider;
 import io.rocketbase.commons.service.token.AuthorizationCodeService;
 import io.rocketbase.commons.service.user.AppUserTokenService;
 import io.rocketbase.commons.util.JwtTokenStoreService;
+import io.rocketbase.commons.vaadin.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -109,6 +110,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
+        SecurityUtils.configure(httpSecurity);
+
         // @formatter:off
         httpSecurity
                 // activate CorsConfigurationSource
@@ -139,14 +142,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
                         "/assets/**",
                         "/images/**",
                         "/static/favicon.ico",
-                        "/favicon.ico",
-                        "/api/asset/*/*"
+                        "/favicon.ico"
                 ).permitAll()
                 // configure auth endpoint
                 .antMatchers(authProperties.getAllPublicRestEndpointPaths()).permitAll()
                 // allow logged in users get profile details etc.
-                //.antMatchers(authProperties.getAllAuthenticatedRestEndpointPaths()).authenticated()
-                .antMatchers("/auth/me").permitAll()
+                .antMatchers(authProperties.getAllAuthenticatedRestEndpointPaths()).authenticated()
                 // login/logout, forgot, reset-password forms etc
                 .antMatchers(formsProperties.getFormEndpointPaths()).permitAll()
                 // registration form
@@ -159,7 +160,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
                 .antMatchers(authProperties.getUserSearchRestEndpointPaths()).authenticated()
                 // secure all other api-endpoints
                 .antMatchers(authProperties.getPrefix() + "/api/**").authenticated()
-                .antMatchers("/oauth/**").permitAll()
                 .anyRequest().authenticated();
 
         // Custom JWT based security filter
@@ -178,11 +178,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
 
     @Override
     public void configure(WebSecurity web) {
+        SecurityUtils.configure(web);
+
         // needed when basic auth is also set and oauth (with header auth is used)
         web.ignoring()
                 .antMatchers(HttpMethod.GET, "/actuator/health")
-                .antMatchers(HttpMethod.GET, "/oauth/auth")
-                .antMatchers(HttpMethod.POST, "/oauth/auth");
+                .antMatchers(authProperties.getOauthRestEndpointPaths());
     }
 
 

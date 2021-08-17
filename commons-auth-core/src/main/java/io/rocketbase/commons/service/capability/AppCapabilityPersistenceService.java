@@ -41,4 +41,6 @@ public interface AppCapabilityPersistenceService<E extends AppCapabilityEntity> 
     void delete(Long id);
 
     E initNewInstance();
+
+    void ensureInitializedRoot();
 }

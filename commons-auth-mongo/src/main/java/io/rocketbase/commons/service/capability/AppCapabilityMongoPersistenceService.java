@@ -9,8 +9,7 @@ import io.rocketbase.commons.service.MongoQueryHelper;
 import io.rocketbase.commons.util.Snowflake;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationListener;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -30,14 +29,12 @@ import static io.rocketbase.commons.dto.appcapability.AppCapabilityRead.ROOT;
 
 @Slf4j
 @RequiredArgsConstructor
-public class AppCapabilityMongoPersistenceService implements AppCapabilityPersistenceService<AppCapabilityMongoEntity>, MongoQueryHelper, ApplicationListener<ApplicationReadyEvent> {
+public class AppCapabilityMongoPersistenceService implements AppCapabilityPersistenceService<AppCapabilityMongoEntity>, MongoQueryHelper, InitializingBean {
 
     private final MongoTemplate mongoTemplate;
-
     private final Snowflake snowflake;
-
     private final String collectionName;
-
+    private final boolean initializeRoot;
     @Override
     public Optional<AppCapabilityMongoEntity> findById(Long id) {
         AppCapabilityMongoEntity entity = mongoTemplate.findOne(new Query(Criteria.where("_id").is(id)), AppCapabilityMongoEntity.class, collectionName);
@@ -119,7 +116,7 @@ public class AppCapabilityMongoPersistenceService implements AppCapabilityPersis
     }
 
     @Override
-    public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
+    public void ensureInitializedRoot() {
         if (findAllById(Arrays.asList(ROOT.getId())).isEmpty()) {
             save(AppCapabilityMongoEntity.builder()
                     .id(ROOT.getId())
@@ -134,6 +131,13 @@ public class AppCapabilityMongoPersistenceService implements AppCapabilityPersis
                     .modifiedBy(ROOT.getModifiedBy())
                     .build());
             log.debug("root capability persisted");
+        }
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        if (initializeRoot) {
+            ensureInitializedRoot();
         }
     }
 }
