@@ -12,6 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * public interactions for registration flow
+ */
 public class RegistrationResource implements BaseRestResource, RegistrationApi {
 
     protected String baseAuthApiUrl;

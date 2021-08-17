@@ -4,6 +4,9 @@ import { AxiosRequestConfig } from "axios";
 
 export interface UserSearchQuery extends PageableRequest, QueryAppUser {}
 
+/**
+ * user lookups could be accessible for authenticated users
+ */
 export interface UserSearchApi {
   search: Requestor<UserSearchQuery, PageableResult<AppUserRead>>;
   findByUsernameOrId: Requestor<string, AppUserRead>;

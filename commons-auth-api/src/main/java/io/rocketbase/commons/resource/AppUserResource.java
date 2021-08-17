@@ -4,8 +4,6 @@ import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.api.AppUserApi;
 import io.rocketbase.commons.convert.QueryAppUserConverter;
 import io.rocketbase.commons.dto.PageableResult;
-import io.rocketbase.commons.dto.appinvite.AppInviteRead;
-import io.rocketbase.commons.dto.appinvite.InviteRequest;
 import io.rocketbase.commons.dto.appuser.*;
 import io.rocketbase.commons.exception.NotFoundException;
 import lombok.SneakyThrows;
@@ -21,7 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.Optional;
 
 /**
- * api resource used by authenticated users
+ * backend/admin api to interact with user entities
  */
 public class AppUserResource implements BaseRestResource, AppUserApi {
 
@@ -136,20 +134,6 @@ public class AppUserResource implements BaseRestResource, AppUserApi {
                 HttpMethod.DELETE,
                 new HttpEntity<>(createHeaderWithLanguage()),
                 AppUserRead.class);
-    }
-
-    @Override
-    @SneakyThrows
-    public AppInviteRead invite(InviteRequest inviteRequest) {
-        ResponseEntity<AppInviteRead> response = restTemplate.exchange(createUriComponentsBuilder(baseAuthApiUrl)
-                        .path(API_USER)
-                        .path("invite")
-                        .toUriString(),
-                HttpMethod.POST,
-                new HttpEntity<>(inviteRequest, createHeaderWithLanguage()),
-                AppInviteRead.class);
-
-        return response.getBody();
     }
 
     protected ParameterizedTypeReference<PageableResult<AppUserRead>> createPagedTypeReference() {

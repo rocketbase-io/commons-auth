@@ -21,7 +21,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.Optional;
 
 /**
- * api resource used by authenticated users
+ * backend/admin api to interact with invite entities
  */
 public class AppInviteResource implements BaseRestResource, AppInviteApi {
 

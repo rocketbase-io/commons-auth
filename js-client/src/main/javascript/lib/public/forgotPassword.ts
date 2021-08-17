@@ -1,12 +1,15 @@
-import { createRequestorFactory, Requestor } from "../util";
+import { createRequestorFactory, Requestor } from "../../util";
 import type {
   AppUserRead,
   ExpirationInfo,
   ForgotPasswordRequest,
   PerformPasswordResetRequest,
-} from "../api-types";
+} from "../../api-types";
 import { AxiosRequestConfig } from "axios";
 
+/**
+ * public interactions for password forget flow
+ */
 export interface ForgotPasswordApi {
   forgotPassword: Requestor<ForgotPasswordRequest, ExpirationInfo<void>>;
   resetPassword: Requestor<PerformPasswordResetRequest, AppUserRead>;

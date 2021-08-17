@@ -14,7 +14,7 @@ public enum PasswordErrorCodes {
 
     @Getter
     @JsonValue
-    private String value;
+    private final String value;
 
     PasswordErrorCodes(String value) {
         this.value = value;

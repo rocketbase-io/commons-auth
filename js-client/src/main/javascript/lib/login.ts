@@ -6,6 +6,9 @@ export interface NewAccessTokenRequest {
   refreshToken: string;
 }
 
+/**
+ * authentication via login + refresh jwt access-token
+ */
 export interface LoginApi {
   login: Requestor<LoginRequest, LoginResponse>;
   newAccessToken: Requestor<NewAccessTokenRequest, string>;

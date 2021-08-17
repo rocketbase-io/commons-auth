@@ -48,7 +48,7 @@ public class SimpleTokenService {
          */
         public static Token parseString(String serialization) {
             try {
-                String values[] = serialization.split("\\:", 2);
+                String[] values = serialization.split("\\:", 2);
 
                 LocalDateTime expired = null;
                 if (values[0] != null && values[0].length() == 21) {
@@ -64,10 +64,7 @@ public class SimpleTokenService {
         }
 
         public boolean isValid() {
-            if (exp == null || exp.isBefore(LocalDateTime.now())) {
-                return false;
-            }
-            return true;
+            return exp != null && !exp.isBefore(LocalDateTime.now());
         }
     }
 }

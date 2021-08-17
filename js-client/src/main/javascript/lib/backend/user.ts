@@ -1,14 +1,12 @@
-import { createRequestorFactory, PageableRequest, Requestor } from "../util";
+import { createRequestorFactory, PageableRequest, Requestor } from "../../util";
 import type {
-  AppInviteRead,
   AppUserCreate,
   AppUserRead,
   AppUserResetPassword,
   AppUserUpdate,
-  InviteRequest,
   PageableResult,
   QueryAppUser,
-} from "../api-types";
+} from "../../api-types";
 import { AxiosRequestConfig } from "axios";
 
 export interface UserQuery extends PageableRequest, QueryAppUser {}
@@ -22,6 +20,9 @@ export interface ResetPassword {
   reset: AppUserResetPassword;
 }
 
+/**
+ * backend/admin api to interact with user entities
+ */
 export interface UserApi {
   find: Requestor<UserQuery, PageableResult<AppUserRead>>;
   findById: Requestor<string, AppUserRead>;
@@ -30,7 +31,6 @@ export interface UserApi {
   update: Requestor<UserUpdate, AppUserRead>;
   patch: Requestor<UserUpdate, AppUserRead>;
   remove: Requestor<string, void>;
-  invite: Requestor<InviteRequest, AppInviteRead>;
 }
 
 export function createUserApi(cf?: AxiosRequestConfig): UserApi {
@@ -76,12 +76,6 @@ export function createUserApi(cf?: AxiosRequestConfig): UserApi {
     url: (id) => `/${id}`,
   });
 
-  const invite: UserApi["invite"] = createRequestor({
-    method: "post",
-    url: "/invite",
-    body: (invite) => invite,
-  });
-
   return {
     find,
     findById,
@@ -90,6 +84,5 @@ export function createUserApi(cf?: AxiosRequestConfig): UserApi {
     update,
     patch,
     remove,
-    invite,
   };
 }

@@ -1,5 +1,5 @@
-import { createRequestorFactory, PageableRequest, Requestor } from "../util";
-import type { AppTeamRead, AppTeamWrite, PageableResult, QueryAppTeam } from "../api-types";
+import { createRequestorFactory, PageableRequest, Requestor } from "../../util";
+import type { AppTeamRead, AppTeamWrite, PageableResult, QueryAppTeam } from "../../api-types";
 import { AxiosRequestConfig } from "axios";
 
 export interface TeamQuery extends PageableRequest, QueryAppTeam {}
@@ -9,6 +9,9 @@ export interface TeamUpdate {
   write: AppTeamWrite;
 }
 
+/**
+ * backend/admin api to interact with team entities
+ */
 export interface TeamApi {
   find: Requestor<TeamQuery, PageableResult<AppTeamRead>>;
   findById: Requestor<number, AppTeamRead>;

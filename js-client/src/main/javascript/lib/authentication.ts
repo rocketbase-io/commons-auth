@@ -10,6 +10,9 @@ import type {
 } from "../api-types";
 import { AxiosRequestConfig } from "axios";
 
+/**
+ * endpoints to update authenticated user itself
+ */
 export interface AuthenticationApi {
   me: Requestor<void, AppUserRead>;
   changePassword: Requestor<PasswordChangeRequest, void>;

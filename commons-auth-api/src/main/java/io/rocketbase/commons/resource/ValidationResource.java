@@ -9,6 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * public endpoints for validations
+ */
 public class ValidationResource implements BaseRestResource, ValidationApi {
 
     protected String baseAuthApiUrl;

@@ -1,5 +1,10 @@
-import { createRequestorFactory, PageableRequest, Requestor } from "../util";
-import type { AppClientRead, AppClientWrite, PageableResult, QueryAppClient } from "../api-types";
+import { createRequestorFactory, PageableRequest, Requestor } from "../../util";
+import type {
+  AppClientRead,
+  AppClientWrite,
+  PageableResult,
+  QueryAppClient,
+} from "../../api-types";
 import { AxiosRequestConfig } from "axios";
 
 export interface ClientQuery extends PageableRequest, QueryAppClient {}
@@ -9,6 +14,9 @@ export interface ClientUpdate {
   write: AppClientWrite;
 }
 
+/**
+ * backend/admin api to interact with client entities
+ */
 export interface ClientApi {
   find: Requestor<ClientQuery, PageableResult<AppClientRead>>;
   findById: Requestor<number, AppClientRead>;

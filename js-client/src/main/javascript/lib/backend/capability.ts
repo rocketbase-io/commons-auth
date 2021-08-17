@@ -1,10 +1,10 @@
-import { createRequestorFactory, PageableRequest, Requestor } from "../util";
+import { createRequestorFactory, PageableRequest, Requestor } from "../../util";
 import type {
   AppCapabilityRead,
   AppCapabilityWrite,
   PageableResult,
   QueryAppCapability,
-} from "../api-types";
+} from "../../api-types";
 import { AxiosRequestConfig } from "axios";
 
 export interface CapabilityQuery extends PageableRequest, QueryAppCapability {}
@@ -14,6 +14,9 @@ export interface CapabilityUpdate {
   write: AppCapabilityWrite;
 }
 
+/**
+ * backend/admin api to interact with capability entities
+ */
 export interface CapabilityApi {
   find: Requestor<CapabilityQuery, PageableResult<AppCapabilityRead>>;
   findById: Requestor<number, AppCapabilityRead>;

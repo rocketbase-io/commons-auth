@@ -18,6 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * endpoints to update authenticated user itself
+ */
 public class AuthenticationResource implements BaseRestResource, AuthenticationApi {
 
     protected String baseAuthApiUrl;

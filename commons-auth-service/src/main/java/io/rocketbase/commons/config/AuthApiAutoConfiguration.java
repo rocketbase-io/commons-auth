@@ -100,7 +100,7 @@ public class AuthApiAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public AppUserApi appUserApi() {
-        return new AppUserApiService(appUserService, appUserConverter, validationService, appInviteService, inviteConverter);
+        return new AppUserApiService(appUserService, appUserConverter, validationService);
     }
 
     @Bean

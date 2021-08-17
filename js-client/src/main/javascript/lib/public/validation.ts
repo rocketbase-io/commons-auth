@@ -1,13 +1,16 @@
-import { createRequestorFactory, Requestor } from "../util";
+import { createRequestorFactory, Requestor } from "../../util";
 import type {
   EmailErrorCodes,
   PasswordErrorCodes,
   TokenErrorCodes,
   UsernameErrorCodes,
   ValidationResponse,
-} from "../api-types";
+} from "../../api-types";
 import { AxiosRequestConfig } from "axios";
 
+/**
+ * public endpoints for validations
+ */
 export interface ValidationApi {
   validatePassword: Requestor<string, ValidationResponse<PasswordErrorCodes>>;
   validateUsername: Requestor<string, ValidationResponse<UsernameErrorCodes>>;

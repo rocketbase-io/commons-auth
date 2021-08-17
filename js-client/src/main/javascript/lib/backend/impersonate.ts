@@ -1,7 +1,10 @@
-import { createRequestorFactory, Requestor } from "../util";
-import type { JwtTokenBundle } from "../api-types";
+import { createRequestorFactory, Requestor } from "../../util";
+import type { JwtTokenBundle } from "../../api-types";
 import { AxiosRequestConfig } from "axios";
 
+/**
+ * api resource used by admins to impersonate as someone else
+ */
 export interface ImpersonateApi {
   impersonate: Requestor<string, JwtTokenBundle>;
 }

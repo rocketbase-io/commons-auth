@@ -19,6 +19,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Optional;
 
+/**
+ * backend/admin api to interact with client entities
+ */
 public class AppClientResource implements BaseRestResource, AppClientApi {
 
     public static final String API_CLIENT = "/api/client/";

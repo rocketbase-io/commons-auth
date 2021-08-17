@@ -80,8 +80,12 @@ public class AuthProperties {
      * quick help to configure login spring security<br>
      * endpoints login and oauth
      */
-    public String getOauthRestEndpointPaths() {
-        return UrlParts.ensureStartsAndEndsWithSlash(prefix) + "auth/oauth2/token";
+    public String[] getOauthRestEndpointPaths() {
+        String prefixPath = UrlParts.ensureStartsAndEndsWithSlash(prefix);
+        return new String[]{
+                prefixPath + "oauth/auth",
+                prefixPath + "oauth/token"
+        };
     }
 
     /**
@@ -91,7 +95,8 @@ public class AuthProperties {
     public String[] getAllPublicRestEndpointPaths() {
         String prefixPath = UrlParts.ensureStartsAndEndsWithSlash(prefix);
         return new String[]{
-                getOauthRestEndpointPaths(),
+                prefixPath + "oauth/auth",
+                prefixPath + "oauth/token",
                 prefixPath + "auth/login",
                 prefixPath + "auth/forgot-password",
                 prefixPath + "auth/reset-password",

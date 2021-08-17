@@ -1,5 +1,5 @@
-import { createRequestorFactory, PageableRequest, Requestor } from "../util";
-import type { AppGroupRead, AppGroupWrite, PageableResult, QueryAppGroup } from "../api-types";
+import { createRequestorFactory, PageableRequest, Requestor } from "../../util";
+import type { AppGroupRead, AppGroupWrite, PageableResult, QueryAppGroup } from "../../api-types";
 import { AxiosRequestConfig } from "axios";
 
 export interface GroupQuery extends PageableRequest, QueryAppGroup {}
@@ -14,6 +14,9 @@ export interface GroupUpdate {
   write: AppGroupWrite;
 }
 
+/**
+ * backend/admin api to interact with group entities
+ */
 export interface GroupApi {
   find: Requestor<GroupQuery, PageableResult<AppGroupRead>>;
   findById: Requestor<number, AppGroupRead>;

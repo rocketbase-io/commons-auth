@@ -7,7 +7,7 @@ public final class KeyGenerator {
     private static final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static final String SPECIAL_SIGN = "!#$%&()*+,-./:;<=>?@[]^_`{|}~";
     private static final String ALPHABET_WITH_SPECIAL = ALPHABET + SPECIAL_SIGN;
-    private static SecureRandom RANDOM = new SecureRandom();
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     /**
      * random string with alphabet of 0-9 + a-z (lower/upper)

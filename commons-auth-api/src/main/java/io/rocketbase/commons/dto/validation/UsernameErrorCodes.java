@@ -11,7 +11,7 @@ public enum UsernameErrorCodes {
 
     @Getter
     @JsonValue
-    private String value;
+    private final String value;
 
     UsernameErrorCodes(String value) {
         this.value = value;

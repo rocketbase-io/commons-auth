@@ -1,8 +1,6 @@
 package io.rocketbase.commons.api;
 
 import io.rocketbase.commons.dto.PageableResult;
-import io.rocketbase.commons.dto.appinvite.AppInviteRead;
-import io.rocketbase.commons.dto.appinvite.InviteRequest;
 import io.rocketbase.commons.dto.appuser.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +31,5 @@ public interface AppUserApi {
     AppUserRead patch(String usernameOrId, AppUserUpdate update);
 
     void delete(String id);
-
-    AppInviteRead invite(InviteRequest inviteRequest);
 
 }

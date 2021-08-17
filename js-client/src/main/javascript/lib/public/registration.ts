@@ -1,12 +1,15 @@
-import { createRequestorFactory, Requestor } from "../util";
+import { createRequestorFactory, Requestor } from "../../util";
 import type {
   AppUserRead,
   ExpirationInfo,
   JwtTokenBundle,
   RegistrationRequest,
-} from "../api-types";
+} from "../../api-types";
 import { AxiosRequestConfig } from "axios";
 
+/**
+ * public interactions for registration flow
+ */
 export interface RegistrationApi {
   register: Requestor<RegistrationRequest, ExpirationInfo<AppUserRead>>;
   verify: Requestor<string, JwtTokenBundle>;

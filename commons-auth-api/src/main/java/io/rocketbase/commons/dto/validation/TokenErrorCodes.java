@@ -9,7 +9,7 @@ public enum TokenErrorCodes {
 
     @Getter
     @JsonValue
-    private String value;
+    private final String value;
 
     TokenErrorCodes(String value) {
         this.value = value;

@@ -19,6 +19,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Optional;
 
+/**
+ * backend/admin api to interact with capability entities
+ */
 public class AppCapabilityResource implements BaseRestResource, AppCapabilityApi {
 
     public static final String API_CAPABILITY = "/api/capability/";

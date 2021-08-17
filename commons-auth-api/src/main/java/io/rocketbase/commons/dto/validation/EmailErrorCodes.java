@@ -10,7 +10,7 @@ public enum EmailErrorCodes {
 
     @Getter
     @JsonValue
-    private String value;
+    private final String value;
 
     EmailErrorCodes(String value) {
         this.value = value;

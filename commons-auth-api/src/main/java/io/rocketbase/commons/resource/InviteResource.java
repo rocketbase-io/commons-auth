@@ -11,7 +11,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * used for invited to lookup their details
+ * public interactions for invite flow
  */
 public class InviteResource implements BaseRestResource, InviteApi {
 

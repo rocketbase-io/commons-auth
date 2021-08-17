@@ -20,6 +20,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Optional;
 
+/**
+ * user lookups could be accessible for authenticated users
+ */
 public class UserSearchResource implements BaseRestResource, UserSearchApi {
 
     public static final String API_USER = "/api/user-search/";

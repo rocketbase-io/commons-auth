@@ -12,6 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * public interactions for password forget flow
+ */
 public class ForgotPasswordResource implements BaseRestResource, ForgotPasswordApi {
 
     protected RestTemplate restTemplate;

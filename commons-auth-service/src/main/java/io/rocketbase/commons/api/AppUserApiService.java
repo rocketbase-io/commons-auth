@@ -1,14 +1,9 @@
 package io.rocketbase.commons.api;
 
-import io.rocketbase.commons.converter.AppInviteConverter;
 import io.rocketbase.commons.converter.AppUserConverter;
 import io.rocketbase.commons.dto.PageableResult;
-import io.rocketbase.commons.dto.appinvite.AppInviteRead;
-import io.rocketbase.commons.dto.appinvite.InviteRequest;
 import io.rocketbase.commons.dto.appuser.*;
-import io.rocketbase.commons.model.AppInviteEntity;
 import io.rocketbase.commons.model.AppUserEntity;
-import io.rocketbase.commons.service.invite.AppInviteService;
 import io.rocketbase.commons.service.user.AppUserService;
 import io.rocketbase.commons.service.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +19,6 @@ public class AppUserApiService implements AppUserApi, BaseApiService {
     private final AppUserConverter userConverter;
 
     private final ValidationService validationService;
-
-    private final AppInviteService appInviteService;
-    private final AppInviteConverter inviteConverter;
 
     @Override
     public PageableResult<AppUserRead> find(QueryAppUser query, Pageable pageable) {
@@ -73,9 +65,4 @@ public class AppUserApiService implements AppUserApi, BaseApiService {
         appUserService.delete(id);
     }
 
-    @Override
-    public AppInviteRead invite(InviteRequest inviteRequest) {
-        AppInviteEntity invite = appInviteService.createInvite(inviteRequest, getBaseUrl());
-        return inviteConverter.fromEntity(invite);
-    }
 }

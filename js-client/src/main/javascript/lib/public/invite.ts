@@ -1,7 +1,10 @@
-import { createRequestorFactory, Requestor } from "../util";
-import type { AppInviteRead, AppUserRead, ConfirmInviteRequest } from "../api-types";
+import { createRequestorFactory, Requestor } from "../../util";
+import type { AppInviteRead, AppUserRead, ConfirmInviteRequest } from "../../api-types";
 import { AxiosRequestConfig } from "axios";
 
+/**
+ * public interactions for invite flow
+ */
 export interface InviteApi {
   verify: Requestor<number, AppInviteRead>;
   transformToUser: Requestor<ConfirmInviteRequest, AppUserRead>;

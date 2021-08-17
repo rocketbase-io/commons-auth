@@ -19,6 +19,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Optional;
 
+/**
+ * backend/admin api to interact with team entities
+ */
 public class AppTeamResource implements BaseRestResource, AppTeamApi {
 
     public static final String API_TEAM = "/api/team/";

@@ -16,6 +16,9 @@ import org.springframework.util.Assert;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * authentication via login + refresh jwt access-token
+ */
 @Slf4j
 public class LoginResource implements BaseRestResource, LoginApi {
 
