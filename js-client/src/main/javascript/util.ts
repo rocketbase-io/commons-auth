@@ -25,7 +25,7 @@ export function mergeRequestConfig(
   const result: AxiosRequestConfig = {};
   for (const config of configs.map((it = {}) => it))
     for (const key of Object.keys(config) as (keyof typeof config)[])
-      if (config[key] == null)
+      if (config[key] == null) continue;
       else if (!deep.includes(key)) result[key] = config[key];
       else result[key] = { ...(result[key] ?? {}), ...(config[key] ?? {}) };
 
