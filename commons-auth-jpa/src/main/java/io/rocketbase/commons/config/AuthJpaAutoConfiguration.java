@@ -21,10 +21,12 @@ import io.rocketbase.commons.service.user.AppUserJpaPersistenceService;
 import io.rocketbase.commons.service.user.AppUserPersistenceService;
 import io.rocketbase.commons.util.Snowflake;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManager;
@@ -66,8 +68,8 @@ public class AuthJpaAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AppCapabilityPersistenceService<AppCapabilityJpaEntity> appCapabilityPersistenceService(@Autowired EntityManager entityManager, @Autowired Snowflake snowflake) {
-        return new AppCapabilityJpaPersistenceService(entityManager, snowflake);
+    public AppCapabilityPersistenceService<AppCapabilityJpaEntity> appCapabilityPersistenceService(@Autowired PlatformTransactionManager transactionManager, @Autowired EntityManager entityManager, @Autowired Snowflake snowflake, @Value("${auth.capability.init:true}") boolean initializeRoot) {
+        return new AppCapabilityJpaPersistenceService(transactionManager, entityManager, snowflake, initializeRoot);
     }
 
     @Bean
