@@ -19,6 +19,7 @@ import io.rocketbase.commons.service.token.AuthorizationCodeMongoService;
 import io.rocketbase.commons.service.token.AuthorizationCodeService;
 import io.rocketbase.commons.service.user.AppUserMongoPersistenceService;
 import io.rocketbase.commons.service.user.AppUserPersistenceService;
+import io.rocketbase.commons.util.CommonsAuthCollectionNameResolver;
 import io.rocketbase.commons.util.Snowflake;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,40 +33,46 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 @AutoConfigureBefore(AuthServiceAutoConfiguration.class)
 public class AuthMongoAutoConfiguration {
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private Snowflake snowflake;
+
     @Bean
     @ConditionalOnMissingBean
-    public AppUserPersistenceService<AppUserMongoEntity> appUserPersistenceService(@Autowired MongoTemplate mongoTemplate) {
-        return new AppUserMongoPersistenceService(mongoTemplate, AppUserMongoEntity.COLLECTION_NAME);
+    public AppUserPersistenceService<AppUserMongoEntity> appUserPersistenceService(@Autowired CommonsAuthCollectionNameResolver collectionNameResolver) {
+        return new AppUserMongoPersistenceService(mongoTemplate, collectionNameResolver.user());
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public AppInvitePersistenceService<AppInviteMongoEntity> appInvitePersistenceService(@Autowired MongoTemplate mongoTemplate, @Autowired Snowflake snowflake) {
-        return new AppInviteMongoPersistenceService(mongoTemplate, snowflake, AppInviteMongoEntity.COLLECTION_NAME);
+    public AppInvitePersistenceService<AppInviteMongoEntity> appInvitePersistenceService(@Autowired CommonsAuthCollectionNameResolver collectionNameResolver) {
+        return new AppInviteMongoPersistenceService(mongoTemplate, snowflake, collectionNameResolver.invite());
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public AppCapabilityPersistenceService<AppCapabilityMongoEntity> appCapabilityPersistenceService(@Autowired MongoTemplate mongoTemplate, @Autowired Snowflake snowflake,  @Value("${auth.capability.init:true}") boolean initializeRoot) {
-        return new AppCapabilityMongoPersistenceService(mongoTemplate, snowflake, AppCapabilityMongoEntity.COLLECTION_NAME, initializeRoot);
+    public AppCapabilityPersistenceService<AppCapabilityMongoEntity> appCapabilityPersistenceService(@Autowired CommonsAuthCollectionNameResolver collectionNameResolver, @Value("${auth.capability.init:true}") boolean initializeRoot) {
+        return new AppCapabilityMongoPersistenceService(mongoTemplate, snowflake, collectionNameResolver.capability(), initializeRoot);
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public AppTeamPersistenceService<AppTeamMongoEntity> appTeamPersistenceService(@Autowired MongoTemplate mongoTemplate, @Autowired Snowflake snowflake) {
-        return new AppTeamMongoPersistenceService(mongoTemplate, snowflake, AppTeamMongoEntity.COLLECTION_NAME);
+    public AppTeamPersistenceService<AppTeamMongoEntity> appTeamPersistenceService(@Autowired CommonsAuthCollectionNameResolver collectionNameResolver) {
+        return new AppTeamMongoPersistenceService(mongoTemplate, snowflake, collectionNameResolver.team());
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public AppGroupPersistenceService<AppGroupMongoEntity> appGroupPersistenceService(@Autowired MongoTemplate mongoTemplate, @Autowired Snowflake snowflake) {
-        return new AppGroupMongoPersistenceService(mongoTemplate, snowflake, AppGroupMongoEntity.COLLECTION_NAME);
+    public AppGroupPersistenceService<AppGroupMongoEntity> appGroupPersistenceService(@Autowired CommonsAuthCollectionNameResolver collectionNameResolver) {
+        return new AppGroupMongoPersistenceService(mongoTemplate, snowflake, collectionNameResolver.group());
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public AppClientPersistenceService<AppClientMongoEntity> appClientPersistenceService(@Autowired MongoTemplate mongoTemplate, @Autowired Snowflake snowflake) {
-        return new AppClientMongoPersistenceService(mongoTemplate, snowflake, AppClientMongoEntity.COLLECTION_NAME);
+    public AppClientPersistenceService<AppClientMongoEntity> appClientPersistenceService(@Autowired CommonsAuthCollectionNameResolver collectionNameResolver) {
+        return new AppClientMongoPersistenceService(mongoTemplate, snowflake, collectionNameResolver.client());
     }
 
     @Bean
@@ -94,7 +101,7 @@ public class AuthMongoAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public AuthorizationCodeService authorizationCodeService(@Autowired MongoTemplate mongoTemplate) {
-        return new AuthorizationCodeMongoService(mongoTemplate, AuthorizationCodeMongoEntity.COLLECTION_NAME);
+    public AuthorizationCodeService authorizationCodeService(@Autowired CommonsAuthCollectionNameResolver collectionNameResolver) {
+        return new AuthorizationCodeMongoService(mongoTemplate, collectionNameResolver.authcode());
     }
 }

@@ -43,7 +43,7 @@ public class InviteFormsController extends AbstractFormsController {
             AppInviteRead info = inviteApi.verify(inviteId);
             model.addAttribute("validInvite", true);
             model.addAttribute("invitor", info.getInvitor());
-            model.addAttribute("message", StringUtils.isEmpty(info.getMessage()) ? null : info.getMessage());
+            model.addAttribute("message", StringUtils.hasText(info.getMessage()) ? info.getMessage() : null);
             model.addAttribute("inviteForm", new InviteForm(info));
         } catch (Exception e) {
             model.addAttribute("validInvite", false);

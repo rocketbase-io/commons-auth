@@ -122,7 +122,7 @@ public class OAuthController {
                 throw new OAuthException(OAuthException.ErrorType.INVALID_REQUEST, "code unknown");
             }
             AuthorizationCode code = optional.get();
-            if (!Nulls.notNull(code.getAuthRequest().getRedirect_uri()).equals(Nulls.notNull(tokenRequest.getRedirect_uri()))) {
+            if (!Nulls.notNull(code.getAuthRequest().getRedirect_uri()).equals(Nulls.notNull(tokenRequest.getRedirect_uri())) ) {
                 throw new OAuthException(OAuthException.ErrorType.INVALID_REQUEST, "wrong redirect uri");
             }
 

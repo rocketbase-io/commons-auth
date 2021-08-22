@@ -8,7 +8,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.annotation.Nullable;
@@ -16,20 +15,17 @@ import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.Objects;
 
-@Document(collection = "co_capacity")
+@Document(collection = "${auth.entity.prefix:co_}capability")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppCapabilityMongoEntity implements AppCapabilityEntity {
 
-    public static final String COLLECTION_NAME = "co_capacity";
-
     @Id
     private Long id;
 
     @Nullable
-    @Indexed
     private String systemRefId;
 
     private String key;

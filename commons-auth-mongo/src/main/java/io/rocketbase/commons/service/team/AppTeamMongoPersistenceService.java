@@ -54,10 +54,10 @@ public class AppTeamMongoPersistenceService implements AppTeamPersistenceService
     Query getQuery(QueryAppTeam query) {
         Query result = new Query();
         if (query != null) {
-            if (!StringUtils.isEmpty(query.getName())) {
+            if (StringUtils.hasText(query.getName())) {
                 result.addCriteria(buildRegexCriteria("name", query.getName()));
             }
-            if (!StringUtils.isEmpty(query.getDescription())) {
+            if (StringUtils.hasText(query.getDescription())) {
                 result.addCriteria(buildRegexCriteria("description", query.getDescription()));
             }
             if (query.getIds() != null && !query.getIds().isEmpty()) {

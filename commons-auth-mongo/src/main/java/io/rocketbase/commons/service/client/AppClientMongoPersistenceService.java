@@ -54,16 +54,16 @@ public class AppClientMongoPersistenceService implements AppClientPersistenceSer
     Query getQuery(QueryAppClient query) {
         Query result = new Query();
         if (query != null) {
-            if (!StringUtils.isEmpty(query.getSystemRefId())) {
+            if (StringUtils.hasText(query.getSystemRefId())) {
                 result.addCriteria(buildRegexCriteria("systemRefId", query.getSystemRefId()));
             }
-            if (!StringUtils.isEmpty(query.getName())) {
+            if (StringUtils.hasText(query.getName())) {
                 result.addCriteria(buildRegexCriteria("name", query.getName()));
             }
-            if (!StringUtils.isEmpty(query.getDescription())) {
+            if (StringUtils.hasText(query.getDescription())) {
                 result.addCriteria(buildRegexCriteria("description", query.getDescription()));
             }
-            if (!StringUtils.isEmpty(query.getRedirectUrl())) {
+            if (StringUtils.hasText(query.getRedirectUrl())) {
                 result.addCriteria(buildRegexCriteria("redirectUrls", query.getRedirectUrl()));
             }
             if (query.getIds() != null && !query.getIds().isEmpty()) {

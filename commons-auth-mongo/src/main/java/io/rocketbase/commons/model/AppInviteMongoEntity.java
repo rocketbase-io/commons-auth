@@ -21,23 +21,18 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import static io.rocketbase.commons.model.AppInviteMongoEntity.COLLECTION_NAME;
 
-
-@Document(collection = COLLECTION_NAME)
+@Document(collection = "${auth.entity.prefix:co_}invite")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppInviteMongoEntity implements AppInviteEntity {
 
-    public static final String COLLECTION_NAME = "co_invite";
-
     @Id
     private Long id;
 
     @Nullable
-    @Indexed
     private String systemRefId;
 
     @Indexed

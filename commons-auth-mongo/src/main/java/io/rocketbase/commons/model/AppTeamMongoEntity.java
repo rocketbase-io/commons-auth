@@ -1,12 +1,14 @@
 package io.rocketbase.commons.model;
 
 import io.rocketbase.commons.dto.appteam.AppTeamRole;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.annotation.Nullable;
@@ -16,24 +18,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static io.rocketbase.commons.model.AppTeamMongoEntity.COLLECTION_NAME;
 
-
-@Document(collection = COLLECTION_NAME)
+@Document(collection = "${auth.entity.prefix:co_}team")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = {"id"})
 public class AppTeamMongoEntity implements AppTeamEntity {
-
-    public static final String COLLECTION_NAME = "co_team";
 
     @Id
     private Long id;
 
     @Nullable
-    @Indexed
     private String systemRefId;
 
     @NotNull

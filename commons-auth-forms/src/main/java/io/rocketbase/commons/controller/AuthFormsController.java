@@ -75,7 +75,7 @@ public class AuthFormsController extends AbstractFormsController {
                                BindingResult bindingResult, Model model,
                                HttpServletRequest request) {
         if (!bindingResult.hasErrors()) {
-            if (StringUtils.isEmpty(forgot.getEmail()) && StringUtils.isEmpty(forgot.getUsername())) {
+            if (!StringUtils.hasText(forgot.getEmail()) && !StringUtils.hasText(forgot.getUsername())) {
                 model.addAttribute("usernameOrEmailRequired", true);
             } else {
                 try {

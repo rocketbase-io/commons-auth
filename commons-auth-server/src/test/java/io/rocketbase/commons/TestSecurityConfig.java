@@ -30,9 +30,9 @@ import org.springframework.security.crypto.password.StandardPasswordEncoder;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsUtils;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -45,7 +45,7 @@ import java.util.Optional;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableConfigurationProperties({AuthProperties.class, FormsProperties.class})
 @RequiredArgsConstructor
-public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
+public class TestSecurityConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
     @Bean
     public AuditorAware<String> auditorAware() {
@@ -157,17 +157,13 @@ public class TestSecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().antMatchers(authProperties.getOauthRestEndpointPaths());
     }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin(CorsConfiguration.ALL);
-        configuration.addAllowedMethod(CorsConfiguration.ALL);
-        configuration.addAllowedHeader(CorsConfiguration.ALL);
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(1800L);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOriginPatterns(CorsConfiguration.ALL)
+                .allowedMethods(CorsConfiguration.ALL)
+                .allowedHeaders(CorsConfiguration.ALL)
+                .maxAge(600L);
     }
 
 }

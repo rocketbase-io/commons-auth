@@ -8,7 +8,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.annotation.Nullable;
@@ -17,22 +16,17 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.Set;
 
-import static io.rocketbase.commons.model.AppClientMongoEntity.COLLECTION_NAME;
-
-@Document(collection = COLLECTION_NAME)
+@Document(collection = "${auth.entity.prefix:co_}client")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class  AppClientMongoEntity implements AppClientEntity {
 
-    public static final String COLLECTION_NAME = "co_client";
-
     @Id
     private Long id;
 
     @Nullable
-    @Indexed
     private String systemRefId;
 
     @NotNull

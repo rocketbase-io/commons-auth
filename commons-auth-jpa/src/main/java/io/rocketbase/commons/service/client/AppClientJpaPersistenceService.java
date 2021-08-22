@@ -66,7 +66,7 @@ public class AppClientJpaPersistenceService implements AppClientPersistenceServi
 
             addToListIfNotEmpty(predicates, query.getName(), root.get(AppClientJpaEntity_.NAME), cb);
             addToListIfNotEmpty(predicates, query.getDescription(), root.get(AppClientJpaEntity_.DESCRIPTION), cb);
-            if (!StringUtils.isEmpty(query.getRedirectUrl())) {
+            if (StringUtils.hasText(query.getRedirectUrl())) {
                 predicates.add(cb.like(cb.lower(root.get(AppClientJpaEntity_.REDIRECT_URLS).as(String.class)), buildLikeString(query.getRedirectUrl())));
             }
             addSystemRefIdToList(predicates, query.getSystemRefId(), root.get(AppClientJpaEntity_.SYSTEM_REF_ID), cb);

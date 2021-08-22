@@ -43,10 +43,10 @@ public class AppInviteMongoPersistenceService implements AppInvitePersistenceSer
     Query getQuery(QueryAppInvite query) {
         Query result = new Query();
         if (query != null) {
-            if (!StringUtils.isEmpty(query.getInvitor())) {
+            if (StringUtils.hasText(query.getInvitor())) {
                 result.addCriteria(buildRegexCriteria("invitor", query.getInvitor()));
             }
-            if (!StringUtils.isEmpty(query.getEmail())) {
+            if (StringUtils.hasText(query.getEmail())) {
                 result.addCriteria(buildRegexCriteria("email", query.getEmail()));
             }
             if (!Nulls.notNull(query.getExpired(), false)) {
@@ -109,7 +109,7 @@ public class AppInviteMongoPersistenceService implements AppInvitePersistenceSer
 
     @Override
     public long deleteExpired() {
-        DeleteResult remove = mongoTemplate.remove(getQuery(QueryAppInvite.builder().expired(true).build()), AppInviteMongoEntity.class);
+        DeleteResult remove = mongoTemplate.remove(getQuery(QueryAppInvite.builder().expired(true).build()), AppInviteMongoEntity.class, collectionName);
         return remove.getDeletedCount();
     }
 }

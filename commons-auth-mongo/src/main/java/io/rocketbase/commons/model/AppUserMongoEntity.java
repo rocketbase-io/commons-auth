@@ -11,7 +11,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.Email;
@@ -22,33 +21,26 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import static io.rocketbase.commons.model.AppUserMongoEntity.COLLECTION_NAME;
 
-
-@Document(collection = COLLECTION_NAME)
+@Document(collection = "${auth.entity.prefix:co_}user")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppUserMongoEntity implements AppUserEntity {
 
-    public static final String COLLECTION_NAME = "co_user";
-
     @Id
     private String id;
 
-    @Indexed
     private String systemRefId;
 
     @NotNull
-    @Indexed(unique = true)
     private String username;
 
     @NotNull
     private String password;
 
     @NotNull
-    @Indexed(unique = true)
     @Email
     private String email;
 

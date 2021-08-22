@@ -46,10 +46,10 @@ public class DefaultAppUserForgotPasswordService implements AppUserForgotPasswor
     @Override
     public ExpirationInfo<Void> requestPasswordReset(ForgotPasswordRequest forgotPassword, String baseUrl) {
         AppUserEntity appUser = null;
-        if (!StringUtils.isEmpty(forgotPassword.getUsername())) {
+        if (StringUtils.hasText(forgotPassword.getUsername())) {
             appUser = appUserService.getByUsername(forgotPassword.getUsername());
         }
-        if (!StringUtils.isEmpty(forgotPassword.getEmail()) && appUser == null) {
+        if (StringUtils.hasText(forgotPassword.getEmail()) && appUser == null) {
             appUser = appUserService.findByEmail(forgotPassword.getEmail().toLowerCase()).orElse(null);
         }
         Instant expires = Instant.now().plus(authProperties.getPasswordResetExpiration(), ChronoUnit.MINUTES);

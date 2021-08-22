@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+io.rocketbase.commons.config.AuthMongoCollectionAutoConfiguration,\
 io.rocketbase.commons.config.AuthMongoAutoConfiguration

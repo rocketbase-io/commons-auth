@@ -10,18 +10,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
 
-import static io.rocketbase.commons.model.AppUserMongoEntity.COLLECTION_NAME;
 
-
-@Document(collection = COLLECTION_NAME)
+@Document(collection = "${auth.entity.prefix:co_}authcode")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "code")
 public class AuthorizationCodeMongoEntity {
-
-    public static final String COLLECTION_NAME = "co_authcode";
 
     @Id
     private String code;

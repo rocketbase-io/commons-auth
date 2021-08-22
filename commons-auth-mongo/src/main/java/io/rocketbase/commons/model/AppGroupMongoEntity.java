@@ -8,7 +8,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.annotation.Nullable;
@@ -19,22 +18,17 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import static io.rocketbase.commons.model.AppGroupMongoEntity.COLLECTION_NAME;
-
-@Document(collection = COLLECTION_NAME)
+@Document(collection = "${auth.entity.prefix:co_}group")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppGroupMongoEntity implements AppGroupEntity {
 
-    public static final String COLLECTION_NAME = "co_group";
-
     @Id
     private Long id;
 
     @Nullable
-    @Indexed
     private String systemRefId;
 
     @NotNull

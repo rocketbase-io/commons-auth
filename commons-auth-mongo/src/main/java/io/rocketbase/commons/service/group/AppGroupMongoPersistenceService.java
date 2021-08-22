@@ -63,19 +63,19 @@ public class AppGroupMongoPersistenceService implements AppGroupPersistenceServi
     Query getQuery(QueryAppGroup query) {
         Query result = new Query();
         if (query != null) {
-            if (!StringUtils.isEmpty(query.getNamePath())) {
+            if (StringUtils.hasText(query.getNamePath())) {
                 result.addCriteria(buildRegexCriteria("namePath", query.getNamePath()));
             }
-            if (!StringUtils.isEmpty(query.getSystemRefId())) {
+            if (StringUtils.hasText(query.getSystemRefId())) {
                 result.addCriteria(buildRegexCriteria("systemRefId", query.getSystemRefId()));
             }
-            if (!StringUtils.isEmpty(query.getName())) {
+            if (StringUtils.hasText(query.getName())) {
                 result.addCriteria(buildRegexCriteria("name", query.getName()));
             }
             if (query.getParentIds() != null && !query.getParentIds().isEmpty()) {
                 result.addCriteria(Criteria.where("parentId").in(query.getParentIds()));
             }
-            if (!StringUtils.isEmpty(query.getDescription())) {
+            if (StringUtils.hasText(query.getDescription())) {
                 result.addCriteria(buildRegexCriteria("description", query.getDescription()));
             }
             if (query.getIds() != null && !query.getIds().isEmpty()) {

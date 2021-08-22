@@ -21,7 +21,7 @@ public class AppTeamInviteConverter implements AttributeConverter<AppTeamInvite,
 
     @Override
     public AppTeamInvite convertToEntityAttribute(String dbData) {
-        if (!StringUtils.isEmpty(dbData) && dbData.matches("^[0-9]+;[a-zA-Z]+$")) {
+        if (StringUtils.hasText(dbData) && dbData.matches("^[0-9]+;[a-zA-Z]+$")) {
             String[] split = dbData.split(";");
             return new AppTeamInvite(Long.parseLong(split[0]), AppTeamRole.valueOf(split[1]));
         }

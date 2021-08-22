@@ -372,7 +372,7 @@ public class DefaultAppUserService implements AppUserService {
         if (userProfile == null) {
             return null;
         }
-        if (StringUtils.isEmpty(userProfile.getAvatar()) && avatarService.isEnabled() && email != null) {
+        if (!StringUtils.hasText(userProfile.getAvatar()) && avatarService.isEnabled() && email != null) {
             userProfile.setAvatar(avatarService.getAvatar(email));
         }
         return userProfile;

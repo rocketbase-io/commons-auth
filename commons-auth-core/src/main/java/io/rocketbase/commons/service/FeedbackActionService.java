@@ -9,7 +9,7 @@ public interface FeedbackActionService {
     AuthProperties getAuthProperties();
 
     default String buildActionUrl(String applicationBaseUrl, ActionType actionType, Object token, String customUrl) {
-        String result = StringUtils.isEmpty(customUrl) ? buildBaseUrl(applicationBaseUrl, actionType) : customUrl;
+        String result = StringUtils.hasText(customUrl) ? customUrl : buildBaseUrl(applicationBaseUrl, actionType);
 
         result += result.contains("?") ? "&" : "?";
         result += actionType.getParameterName() + "=" + token;
@@ -37,7 +37,7 @@ public interface FeedbackActionService {
         }
 
         String result;
-        if (!StringUtils.isEmpty(configuredUrl)) {
+        if (StringUtils.hasText(configuredUrl)) {
             // in case of configured url this will have a full qualified url to a custom UI
             result = configuredUrl;
         } else {

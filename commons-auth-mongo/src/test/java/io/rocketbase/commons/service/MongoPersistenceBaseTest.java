@@ -1,8 +1,8 @@
 package io.rocketbase.commons.service;
 
 import io.rocketbase.commons.Application;
-import io.rocketbase.commons.model.*;
 import io.rocketbase.commons.test.data.*;
+import io.rocketbase.commons.util.CommonsAuthCollectionNameResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -21,14 +21,17 @@ public class MongoPersistenceBaseTest {
     @Resource
     private MongoTemplate mongoTemplate;
 
+    @Resource
+    private CommonsAuthCollectionNameResolver collectionNameResolver;
+
     @BeforeEach
     public void initDemoData() {
-        truncateAndSave(CapabilityData.getEntities(), AppCapabilityMongoEntity.COLLECTION_NAME);
-        truncateAndSave(ClientData.getEntities(), AppClientMongoEntity.COLLECTION_NAME);
-        truncateAndSave(GroupData.getEntities(), AppGroupMongoEntity.COLLECTION_NAME);
-        truncateAndSave(TeamData.getEntities(), AppTeamMongoEntity.COLLECTION_NAME);
-        truncateAndSave(InviteData.getEntities(), AppInviteMongoEntity.COLLECTION_NAME);
-        truncateAndSave(UserData.getEntities(), AppUserMongoEntity.COLLECTION_NAME);
+        truncateAndSave(CapabilityData.getEntities(), collectionNameResolver.capability());
+        truncateAndSave(ClientData.getEntities(), collectionNameResolver.client());
+        truncateAndSave(GroupData.getEntities(), collectionNameResolver.group());
+        truncateAndSave(TeamData.getEntities(), collectionNameResolver.team());
+        truncateAndSave(InviteData.getEntities(), collectionNameResolver.invite());
+        truncateAndSave(UserData.getEntities(), collectionNameResolver.user());
     }
 
     protected void truncateAndSave(Collection collection, String collectionName) {

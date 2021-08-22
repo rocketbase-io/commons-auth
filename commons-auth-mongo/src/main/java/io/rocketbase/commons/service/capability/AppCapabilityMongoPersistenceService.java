@@ -73,10 +73,10 @@ public class AppCapabilityMongoPersistenceService implements AppCapabilityPersis
             if (!StringUtils.isEmpty(query.getKey())) {
                 result.addCriteria(buildRegexCriteria("key", query.getKey()));
             }
-            if (!StringUtils.isEmpty(query.getDescription())) {
+            if (StringUtils.hasText(query.getDescription())) {
                 result.addCriteria(buildRegexCriteria("description", query.getDescription()));
             }
-            if (!StringUtils.isEmpty(query.getKeyPath())) {
+            if (StringUtils.hasText(query.getKeyPath())) {
                 result.addCriteria(buildRegexCriteria("keyPath", query.getKeyPath()));
             }
             if (query.getIds() != null && !query.getIds().isEmpty()) {
