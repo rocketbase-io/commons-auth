@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.Map;
@@ -29,9 +30,9 @@ public class CommonsPrincipal implements AppUserToken, Principal, Serializable {
     }
 
     /**
-     * @return the <code>CommonsPrincipal</code> or <code>null</code> if no authentication
-     * * information is available
+     * @return the <code>CommonsPrincipal</code> or <code>null</code> if no authentication information is available
      */
+    @Nullable
     public static CommonsPrincipal getCurrent() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof CommonsAuthenticationToken) {
@@ -41,15 +42,24 @@ public class CommonsPrincipal implements AppUserToken, Principal, Serializable {
     }
 
     /**
+     * @return user's id or <code>null</code> if no authentication information is available
+     */
+    @Nullable
+    public static String getCurrentId() {
+        CommonsPrincipal current = getCurrent();
+        return current != null ? current.getId() : null;
+    }
+
+    /**
      * @param key is stored internally in lowercase so that this function also lowers the given key...
      * @return the value of the given key when user is logged in and key exists<br>
      */
     public static String getCurrentKeyValue(String key) {
         CommonsPrincipal current = getCurrent();
-        if (current != null) {
-            return current.getKeyValues() != null ? current.getKeyValues().getOrDefault(key, null) : null;
+        if (current == null) {
+            return null;
         }
-        return null;
+        return current.getKeyValues() != null ? current.getKeyValues().getOrDefault(key, null) : null;
     }
 
     /**
