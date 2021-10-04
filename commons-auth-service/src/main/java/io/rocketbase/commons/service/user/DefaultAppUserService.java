@@ -38,10 +38,10 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import static io.rocketbase.commons.event.PasswordEvent.PasswordProcessType.CHANGED;
 
@@ -77,9 +77,9 @@ public class DefaultAppUserService implements AppUserService {
 
     @PostConstruct
     public void postConstruct() {
-        if (authProperties.getUserCacheTime() > 0) {
+        if (authProperties.getUserCacheTime() != null && authProperties.getUserCacheTime().get(ChronoUnit.SECONDS) > 0) {
             cache = CacheBuilder.newBuilder()
-                    .expireAfterAccess(authProperties.getUserCacheTime(), TimeUnit.MINUTES)
+                    .expireAfterAccess(authProperties.getUserCacheTime())
                     .build(new CacheLoader<CacheFilter, Optional<AppUserEntity>>() {
                         @Override
                         public Optional<AppUserEntity> load(CacheFilter key) {

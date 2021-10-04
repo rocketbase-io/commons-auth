@@ -22,7 +22,6 @@ import org.springframework.context.ApplicationEventPublisher;
 
 import javax.annotation.Resource;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 
 import static io.rocketbase.commons.event.RegistrationEvent.RegistrationProcessType.REGISTER;
 import static io.rocketbase.commons.event.RegistrationEvent.RegistrationProcessType.VERIFIED;
@@ -54,7 +53,7 @@ public class DefaultRegistrationService implements RegistrationService {
         ExpirationInfo<AppUserEntity> expirationInfo = new ExpirationInfo<>(null, entity);
         if (registrationProperties.isVerification()) {
             try {
-                expirationInfo.setExpires(Instant.now().plus(registrationProperties.getVerificationExpiration(), ChronoUnit.MINUTES));
+                expirationInfo.setExpires(Instant.now().plus(registrationProperties.getVerificationExpiration()));
 
                 String token = SimpleTokenService.generateToken(registration.getUsername(), registrationProperties.getVerificationExpiration());
                 appUserService.updateKeyValues(entity.getUsername(), ImmutableMap.of(REGISTRATION_KV, token));

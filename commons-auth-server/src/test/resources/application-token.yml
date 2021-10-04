@@ -1,5 +1,5 @@
 # auth configuration
 auth:
   jwt:
-    access-token-expiration: 4
-    refresh-token-expiration: 10
+    access-token-expiration: 4s
+    refresh-token-expiration: 10s

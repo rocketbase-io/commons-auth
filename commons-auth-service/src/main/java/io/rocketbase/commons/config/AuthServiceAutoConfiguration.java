@@ -206,8 +206,8 @@ public class AuthServiceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DataInitializerService dataInitializerService(@Autowired AppUserService appUserService, @Autowired AppCapabilityService appCapabilityService) {
-        return new DefaultDataInitializerServiceService(appUserService, appCapabilityService);
+    public DataInitializerService dataInitializerService(@Autowired AppUserService appUserService, @Autowired AppCapabilityService appCapabilityService, @Autowired AppClientService appClientService) {
+        return new DefaultDataInitializerServiceService(appUserService, appCapabilityService, appClientService);
     }
 
 }

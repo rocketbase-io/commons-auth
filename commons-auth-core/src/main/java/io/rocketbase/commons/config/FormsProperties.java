@@ -1,20 +1,29 @@
 package io.rocketbase.commons.config;
 
 import io.rocketbase.commons.util.UrlParts;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @ConfigurationProperties(prefix = "auth.forms")
 public class FormsProperties {
 
     /**
      * prefix for the paths of the forms-controller
      */
+    @Builder.Default
     private String prefix = "";
 
+    @Builder.Default
     private String title = "commons-auth";
 
+    @Builder.Default
     private String logoSrc = "./assets/rocketbase.svg";
 
     /**

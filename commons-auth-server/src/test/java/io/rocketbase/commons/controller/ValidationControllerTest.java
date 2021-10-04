@@ -11,6 +11,8 @@ import io.rocketbase.commons.test.data.CapabilityData;
 import org.junit.jupiter.api.Test;
 
 import javax.annotation.Resource;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -119,7 +121,7 @@ public class ValidationControllerTest extends BaseIntegrationTest {
     @Test
     public void validateToken() {
         // given
-        String token = SimpleTokenService.generateToken("test", 10);
+        String token = SimpleTokenService.generateToken("test", Duration.of(10, ChronoUnit.SECONDS));
         // when
         ValidationResponse<TokenErrorCodes> response = new ValidationResource(getBaseUrl()).validateToken(token);
 
@@ -131,7 +133,7 @@ public class ValidationControllerTest extends BaseIntegrationTest {
     @Test
     public void validateTokenExpired() {
         // given
-        String token = SimpleTokenService.generateToken("test", -1L);
+        String token = SimpleTokenService.generateToken("test", Duration.of(-1, ChronoUnit.SECONDS));
         // when
         ValidationResponse<TokenErrorCodes> response = new ValidationResource(getBaseUrl()).validateToken(token);
 

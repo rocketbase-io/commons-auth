@@ -47,11 +47,11 @@ You can configure the behaviour of the service by following properties
 | auth.role-admin                | ADMIN           |                                                              |
 | auth.role-user                 | USER            |                                                              |
 | auth.token-secret              | *fixed 32chars* | **should get changed for production**<br>used to generate reset + verification tokens |
-| auth.use-cache-time            | 30              | time in minutes - 0 means disabled                           |
+| auth.use-cache-time            | 30m              | (duration layout)  - 0s means disabled                           |ƒ
 | auth.verification-url          | null            | full qualified url to a custom UI that proceed the verification<br />?verification=VALUE will get append |
 | auth.password-reset-url        | null            | full qualified url to a custom UI that proceed the password reset<br />?verification=VALUE will get append |
-| auth.password-reset-expiration | 60              | time in minutes - after this period the token is invalid     |
-| auth.invite-expiration         | 10080           | time in minutes (default 7-days) - after this period the token is invalid     |
+| auth.password-reset-expiration | 1h              | 1 hour (duration layout) - after this period the token is invalid     |
+| auth.invite-expiration         | 7d           | default 7-days (duration layout) - after this period the token is invalid     |
 | auth.base-url                  | http://localhost:8080 | required for authFormsController etc. need to specify correctly when you use it |
 | auth.invite.enabled            | true            | activate invite endpoints (for "admins" and "invited")  |
 For handling the JWT-Tokens and it's expirations you can use these properties:
@@ -62,8 +62,8 @@ For handling the JWT-Tokens and it's expirations you can use these properties:
 | auth.jwt.token-prefix          | Bearer          | standard approach with " " at the end                        |
 | auth.jwt.uri-param          | token          | token could also get provided via url-param in case of downloads etc.                        |
 | auth.jwt.secet          | **required**          | a base64 encoded jwt secret |
-| auth.jwt.access-token-expiration          | 360          | time in seconds |
-| auth.jwt.refresh-token-expiration          | 2592000          | time in seconds - default means 30 days |
+| auth.jwt.access-token-expiration          | 15m          | duration layout - default means 15 minutes |
+| auth.jwt.refresh-token-expiration          | 30d          | duration layout default means 30 days |
 
 The required security for password could be configured by the following properties:
 
@@ -91,7 +91,7 @@ The service contains also an registration flow that is by default enabled
 | ------------------------------ | --------------- | ------------------------------------------------------------ |
 | auth.registration.enabled          | true          | allow users to register |
 | auth.registration.verification          | true          | registered used needs to verify their email |
-| auth.registration.verification-expiration          | 1440          | time in minutes - default means 1 day |
+| auth.registration.verification-expiration          | 1d          | duration layout - default means 1 day |
 | auth.registration.role          | USER          | role of user after registration |
 
 Gravatar is been used by default to fetch an avatar if nothing is provided.

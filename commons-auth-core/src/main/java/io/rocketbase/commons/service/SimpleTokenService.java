@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -25,8 +26,8 @@ public class SimpleTokenService {
             .appendValue(SECOND_OF_MINUTE, 2)
             .toFormatter(Locale.ENGLISH);
 
-    public static String generateToken(String username, long expiresInMinutes) {
-        return KeyGenerator.random(4) + LocalDateTime.now().plusMinutes(expiresInMinutes).format(DTF) + KeyGenerator.random(4) + ":" + username;
+    public static String generateToken(String username, Duration expiration) {
+        return KeyGenerator.random(4) + LocalDateTime.now().plus(expiration).format(DTF) + KeyGenerator.random(4) + ":" + username;
     }
 
     public static Token parseToken(String token) {

@@ -21,7 +21,7 @@ public class ActiveUserStoreLocalCache implements ActiveUserStore {
 
     public ActiveUserStoreLocalCache(JwtProperties jwtProperties) {
         activeUsers = CacheBuilder.newBuilder()
-                .expireAfterWrite(jwtProperties.getAccessTokenExpiration(), TimeUnit.MINUTES)
+                .expireAfterWrite(jwtProperties.getAccessTokenExpiration())
                 .removalListener(l -> applicationEventPublisher.publishEvent(new ActiveUserChangedEvent(ActiveUserStoreLocalCache.this)))
                 .build();
     }

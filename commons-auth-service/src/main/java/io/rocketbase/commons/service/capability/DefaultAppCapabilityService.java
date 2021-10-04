@@ -33,6 +33,9 @@ public class DefaultAppCapabilityService implements AppCapabilityService {
 
     @Override
     public List<AppCapabilityEntity> findByIds(Collection<Long> ids) {
+        if (ids == null) {
+            return null;
+        }
         return capabilityPersistenceService.findAllById(ids);
     }
 

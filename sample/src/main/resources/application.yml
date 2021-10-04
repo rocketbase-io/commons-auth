@@ -18,8 +18,8 @@ auth:
     title: "Backend"
   jwt:
     secret: 'qLrorTXz9CEkxPLPr8H982LgHzs8QZl+2ZqtILXQG5LUArRzX1RrTlP7pqCqhz391COBAEXj7WLmhO3wTYv9p0s2FjbCcTu1hMKzcZZV4oPE+RqP2O390yurM3eVyv4Skcd3EtxQsmvDowFGL74FTObYjkXUNwDDD7x8y8gzbfx3nDRVHkOLltmvY2EHlpkhaZM9W5zXuwmms00vuxUa1rVxAX2n9Ez20eF5oDre6bmRdp1sSVukq/wvTXP5EtiXu2hJ84lIp4VEqLUaiUHofaGSXAI5PKWqSvK+7kpD2vM8CqzQosmUFdu/2+DmBAoqBXw0xVYF9BOp3DmqalTAMw=='
-    access-token-expiration: 30
-    refresh-token-expiration: 120
+    access-token-expiration: 30s
+    refresh-token-expiration: 120s
   username:
     special-characters: -_.@
     max-length: 255

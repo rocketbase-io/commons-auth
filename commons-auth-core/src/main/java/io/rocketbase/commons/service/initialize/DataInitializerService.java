@@ -2,7 +2,10 @@ package io.rocketbase.commons.service.initialize;
 
 import io.rocketbase.commons.dto.appuser.AppUserCreate;
 import io.rocketbase.commons.model.AppCapabilityEntity;
+import io.rocketbase.commons.model.AppClientEntity;
 import io.rocketbase.commons.model.AppUserEntity;
+
+import java.util.Set;
 
 public interface DataInitializerService {
 
@@ -22,4 +25,14 @@ public interface DataInitializerService {
      * @return final Capability of the last keyPath segment
      */
     AppCapabilityEntity checkCapabilityKeyPathInitialized(String keyPath);
+
+    /**
+     * check if client is configured for given name and redirectUrl combination
+     *
+     * @param name name of client
+     * @param redirectUrls set of possible redirect urls
+     * @param keyPaths     will check each keyPath existence and add these to users rights
+     * @return found or created entity
+     */
+    AppClientEntity checkClient(String name, Set<String> redirectUrls, String... keyPaths);
 }

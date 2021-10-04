@@ -1,80 +1,84 @@
 package io.rocketbase.commons.config;
 
 import io.rocketbase.commons.util.UrlParts;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @ConfigurationProperties(prefix = "auth")
 public class AuthProperties {
 
     /**
-     * cache time in minutes <br>
      * 0 means disabled
      */
-    private int userCacheTime = 30;
+    @Builder.Default
+    private Duration userCacheTime = Duration.of(30, ChronoUnit.MINUTES);
 
+    @Builder.Default
     private String baseUrl = "http://localhost:8080";
 
     /**
      * prefix for controllers
      */
+    @Builder.Default
     private String prefix = "";
 
     /**
      * should use verify it's email-adress
      */
+    @Builder.Default
     private boolean verifyEmail = true;
 
     /**
      * full qualified url to a custom UI that proceed the verification<br>
      * ?verification=VALUE will get append
      */
-    private String verificationUrl = null;
+    private String verificationUrl;
 
     /**
      * full qualified url to a custom UI that proceed the password reset<br>
      * ?verification=VALUE will get append
      */
-    private String passwordResetUrl = null;
+    private String passwordResetUrl;
 
     /**
      * full qualified url to a custom UI that proceed the invite reset<br>
      * ?inviteId=VALUE will get append
      */
-    private String inviteUrl = null;
+    private String inviteUrl;
 
     /**
      * full qualified url to a custom UI that proceed the change email<br>
      * ?inviteId=VALUE will get append
      */
-    private String changeEmailUrl = null;
+    private String changeEmailUrl;
 
     /**
      * full qualified url to a custom UI that proceed the change username<br>
      * ?inviteId=VALUE will get append
      */
-    private String changeUsernameUrl = null;
+    private String changeUsernameUrl;
 
-    /**
-     * in minutes
-     */
-    private long passwordResetExpiration = 60;
+    @Builder.Default
+    private Duration passwordResetExpiration = Duration.of(1, ChronoUnit.HOURS);
 
-    /**
-     * in minutes
-     */
-    private long changeEmailExpiration = 60;
+    @Builder.Default
+    private Duration changeEmailExpiration = Duration.of(1, ChronoUnit.HOURS);
 
-    /**
-     * in minutes
-     */
-    private long changeUsernameExpiration = 60;
+    @Builder.Default
+    private Duration changeUsernameExpiration = Duration.of(1, ChronoUnit.HOURS);
 
-    /**
-     * in minutes - default 7 days
-     */
-    private long inviteExpiration = 10080;
+    @Builder.Default
+    private Duration inviteExpiration = Duration.of(7, ChronoUnit.DAYS);
 
     /**
      * quick help to configure login spring security<br>
@@ -97,6 +101,7 @@ public class AuthProperties {
         return new String[]{
                 prefixPath + "oauth/auth",
                 prefixPath + "oauth/token",
+                prefixPath + "oauth/.well-known/openid-configuration",
                 prefixPath + "auth/login",
                 prefixPath + "auth/forgot-password",
                 prefixPath + "auth/reset-password",

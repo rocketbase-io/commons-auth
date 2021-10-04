@@ -23,6 +23,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.Serializable;
 import java.security.Key;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -62,11 +63,11 @@ public class JwtTokenService implements Serializable {
                 .toInstant());
     }
 
-    private JwtBuilder prepareBuilder(Instant ldt, long expirationSeconds, String username) {
+    private JwtBuilder prepareBuilder(Instant ldt, Duration expiration, String username) {
         return Jwts.builder()
                 .serializeToJsonWith(new JacksonSerializer<>(getObjectMapper()))
                 .setIssuedAt(convert(ldt))
-                .setExpiration(convert(ldt.plusSeconds(expirationSeconds)))
+                .setExpiration(convert(ldt.plus(expiration)))
                 .signWith(getKey(), SIGNATURE_ALGORITHM)
                 .setSubject(username);
     }

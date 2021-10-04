@@ -21,7 +21,6 @@ import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 
 import static io.rocketbase.commons.event.PasswordEvent.PasswordProcessType.PROCEED_RESET;
 import static io.rocketbase.commons.event.PasswordEvent.PasswordProcessType.REQUEST_RESET;
@@ -52,7 +51,7 @@ public class DefaultAppUserForgotPasswordService implements AppUserForgotPasswor
         if (StringUtils.hasText(forgotPassword.getEmail()) && appUser == null) {
             appUser = appUserService.findByEmail(forgotPassword.getEmail().toLowerCase()).orElse(null);
         }
-        Instant expires = Instant.now().plus(authProperties.getPasswordResetExpiration(), ChronoUnit.MINUTES);
+        Instant expires = Instant.now().plus(authProperties.getPasswordResetExpiration());
         ExpirationInfo<Void> info = ExpirationInfo.<Void>builder()
                 .expires(expires)
                 .build();

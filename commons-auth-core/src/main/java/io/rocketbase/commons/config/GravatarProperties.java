@@ -1,16 +1,29 @@
 package io.rocketbase.commons.config;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @ConfigurationProperties(prefix = "auth.gravatar")
 public class GravatarProperties {
 
+    @Builder.Default
     private boolean enabled = true;
+
+    @Builder.Default
     private Integer size = 265;
+
+    @Builder.Default
     private DefaultImage image = DefaultImage.RETRO;
+
+    @Builder.Default
     private ImageRating rating = null;
 
     public enum DefaultImage {

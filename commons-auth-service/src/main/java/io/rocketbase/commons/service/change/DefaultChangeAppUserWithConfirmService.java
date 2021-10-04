@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Resource;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -44,7 +43,7 @@ public class DefaultChangeAppUserWithConfirmService implements ChangeAppUserWith
 
         if (authProperties.isVerifyEmail()) {
             try {
-                Instant expires = Instant.now().plus(authProperties.getChangeEmailExpiration(), ChronoUnit.MINUTES);
+                Instant expires = Instant.now().plus(authProperties.getChangeEmailExpiration());
                 String token = SimpleTokenService.generateToken(entity.getUsername(), authProperties.getChangeEmailExpiration());
                 appUserService.updateKeyValues(entity.getUsername(), ImmutableMap.of(CHANGEMAIL_TOKEN, token, CHANGEMAIL_VALUE, changeRequest.getNewEmail()));
 

@@ -23,7 +23,6 @@ import org.springframework.data.domain.Pageable;
 
 import javax.annotation.Resource;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import static io.rocketbase.commons.event.InviteEvent.InviteProcessType.CREATE;
@@ -64,7 +63,7 @@ public class DefaultAppInviteService implements AppInviteService {
         entity.setGroupIds(request.getGroupIds());
         entity.setKeyValues(request.getKeyValues());
         entity.setTeamInvite(request.getTeamInvite());
-        entity.setExpiration(Instant.now().plus(authProperties.getInviteExpiration(), ChronoUnit.MINUTES));
+        entity.setExpiration(Instant.now().plus(authProperties.getInviteExpiration()));
 
         entity = appInvitePersistenceService.save(entity);
 
