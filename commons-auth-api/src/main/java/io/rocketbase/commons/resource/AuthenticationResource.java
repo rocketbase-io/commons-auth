@@ -9,6 +9,7 @@ import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
 import io.rocketbase.commons.dto.authentication.UsernameChangeRequest;
 import io.rocketbase.commons.exception.EmailValidationException;
 import io.rocketbase.commons.exception.UsernameValidationException;
+import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.model.user.UserProfile;
 import io.rocketbase.commons.model.user.UserSetting;
 import org.springframework.core.ParameterizedTypeReference;
@@ -44,13 +45,13 @@ public class AuthenticationResource implements BaseRestResource, AuthenticationA
      * @return user details
      */
     @Override
-    public AppUserRead getAuthenticated() {
-        ResponseEntity<AppUserRead> response = restTemplate
+    public AppUserToken getAuthenticated() {
+        ResponseEntity<AppUserToken> response = restTemplate
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/me").toUriString(),
                         HttpMethod.GET,
                         new HttpEntity<>(createHeaderWithLanguage()),
-                        AppUserRead.class);
+                        AppUserToken.class);
         return response.getBody();
     }
 

@@ -182,8 +182,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
 
         // needed when basic auth is also set and oauth (with header auth is used)
         web.ignoring()
-                .antMatchers(HttpMethod.GET, "/actuator/health")
-                .antMatchers(authProperties.getOauthRestEndpointPaths());
+                .antMatchers(HttpMethod.GET, "/actuator/health");
     }
 
 

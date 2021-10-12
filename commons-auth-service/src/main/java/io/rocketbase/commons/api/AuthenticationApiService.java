@@ -11,6 +11,7 @@ import io.rocketbase.commons.event.UpdateProfileEvent;
 import io.rocketbase.commons.event.UpdateSettingEvent;
 import io.rocketbase.commons.exception.NotFoundException;
 import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.model.user.UserProfile;
 import io.rocketbase.commons.model.user.UserSetting;
 import io.rocketbase.commons.security.CommonsPrincipal;
@@ -28,12 +29,12 @@ public class AuthenticationApiService implements AuthenticationApi, BaseApiServi
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
-    public AppUserRead getAuthenticated() {
+    public AppUserToken getAuthenticated() {
         CommonsPrincipal principal = getCurrentPrincipal();
         AppUserEntity entity = appUserService.findById(principal.getId())
                 .orElseThrow(NotFoundException::new);
 
-        return userConverter.fromEntity(entity);
+        return userConverter.toToken(entity);
     }
 
     @Override

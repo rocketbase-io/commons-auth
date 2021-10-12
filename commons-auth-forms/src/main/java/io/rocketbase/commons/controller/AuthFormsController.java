@@ -27,10 +27,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
+
+import static io.rocketbase.commons.handler.LoginSuccessCookieHandler.AUTH_REMEMBER;
 
 @Slf4j
 @Controller
@@ -59,6 +62,13 @@ public class AuthFormsController extends AbstractFormsController {
     public String logoutForm(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {
+            // remove refresh-token cookue
+            Cookie authRemember = new Cookie(AUTH_REMEMBER, null);
+            authRemember.setMaxAge(0);
+            authRemember.setHttpOnly(false);
+            authRemember.setPath("/");
+            response.addCookie(authRemember);
+
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
         return "redirect:/login?logout";

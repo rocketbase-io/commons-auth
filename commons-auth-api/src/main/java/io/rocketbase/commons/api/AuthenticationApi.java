@@ -7,12 +7,12 @@ import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
 import io.rocketbase.commons.dto.authentication.UsernameChangeRequest;
 import io.rocketbase.commons.exception.EmailValidationException;
 import io.rocketbase.commons.exception.UsernameValidationException;
+import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.model.user.UserProfile;
 import io.rocketbase.commons.model.user.UserSetting;
 
 public interface AuthenticationApi {
-
-    AppUserRead getAuthenticated();
+    AppUserToken getAuthenticated();
 
     void changePassword(PasswordChangeRequest passwordChange);
 

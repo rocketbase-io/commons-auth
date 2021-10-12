@@ -75,14 +75,14 @@ public class AuthenticationController implements BaseController {
 
     @RequestMapping(value = "/auth/me", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<AppUserRead> getAuthenticated(Authentication authentication) {
+    public ResponseEntity<AppUserToken> getAuthenticated(Authentication authentication) {
         if (authentication == null || !(CommonsAuthenticationToken.class.isAssignableFrom(authentication.getClass()))) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         AppUserEntity entity = appUserService.getByUsername(authentication.getName());
         applicationEventPublisher.publishEvent(new RequestMeEvent(this, entity));
         activeUserStore.addUser(appUserTokenService.lookup(entity));
-        return ResponseEntity.ok(appUserConverter.fromEntity(entity));
+        return ResponseEntity.ok(appUserConverter.toToken(entity));
     }
 
     @RequestMapping(value = "/auth/change-password", method = RequestMethod.PUT, consumes = APPLICATION_JSON_VALUE)

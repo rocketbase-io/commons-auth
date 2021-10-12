@@ -74,14 +74,13 @@ public class OAuthController {
     @Resource
     private AppCapabilityService appCapabilityService;
 
-    // activate cors in this way in order to work in combination with ignored security for this endpoint
-    @CrossOrigin(allowedHeaders = "*", origins = "*")
     @RequestMapping(method = {RequestMethod.POST, RequestMethod.GET}, path = "/oauth/auth")
     @ResponseBody
     public RedirectView auth(@Validated AuthRequest authRequest, HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         try {
             String userId = verifyUserId(request, response, authentication);
             AuthorizationCode code = new AuthorizationCode(authRequest, userId, 300);
+            log.info("code saved... {}", code);
             authorizationCodePersistenceService.save(code);
 
             if (userId == null) {
@@ -124,8 +123,7 @@ public class OAuthController {
         return null;
     }
 
-    @CrossOrigin(allowedHeaders = "*", origins = "*")
-    @RequestMapping(method = RequestMethod.POST, path = "/oauth/token")
+    @RequestMapping(method = {RequestMethod.POST, RequestMethod.GET}, path = "/oauth/token")
     @ResponseBody
     public TokenResponse requestToken(@Validated TokenRequest tokenRequest) {
         if ("authorization_code".equalsIgnoreCase(tokenRequest.getGrant_type())) {
@@ -142,7 +140,7 @@ public class OAuthController {
             AppUserToken token = appUserTokenService.findById(code.getUserId()).orElseThrow(NotFoundException::new);
             activeUserStore.addUser(token);
             authorizationCodePersistenceService.delete(code.getCode());
-            TokenResponse response = buildTokenResponse(code.getAuthRequest().getScope(), token, Nulls.notNull(code.getAuthRequest().getScope()).contains("offline_access"));
+            TokenResponse response = buildTokenResponse(code.getAuthRequest().getScope(), token, Nulls.notNull(code.getAuthRequest().getScope()).toLowerCase().contains("offline_access"));
             log.info("accessToken expires: {}", jwtTokenService.parseToken(response.getAccessToken()).getExpiration());
             return response;
         } else if ("password".equalsIgnoreCase(tokenRequest.getGrant_type())) {
@@ -167,7 +165,6 @@ public class OAuthController {
         throw new OAuthException(OAuthException.ErrorType.INVALID_REQUEST);
     }
 
-    @CrossOrigin(allowedHeaders = "*", origins = "*")
     @RequestMapping(method = RequestMethod.GET, path = "/oauth/.well-known/openid-configuration")
     @ResponseBody
     public WellKnownConfiguration wellKnownOpenidConfiguration(@RequestParam(value = "client_id", required = false) Optional<Long> clientId, HttpServletRequest request) {

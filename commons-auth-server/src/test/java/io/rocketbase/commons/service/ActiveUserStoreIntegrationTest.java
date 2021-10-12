@@ -4,10 +4,10 @@ import com.google.common.collect.Sets;
 import io.rocketbase.commons.BaseIntegrationTest;
 import io.rocketbase.commons.adapters.JwtRestTemplate;
 import io.rocketbase.commons.dto.appuser.AppUserCreate;
-import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.LoginRequest;
 import io.rocketbase.commons.dto.authentication.LoginResponse;
 import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.resource.AuthenticationResource;
 import io.rocketbase.commons.resource.LoginResource;
 import io.rocketbase.commons.service.user.ActiveUserStore;
@@ -53,7 +53,7 @@ public class ActiveUserStoreIntegrationTest extends BaseIntegrationTest {
 
         // when
         AuthenticationResource authenticationResource = new AuthenticationResource(new JwtRestTemplate(getTokenProvider("user")));
-        AppUserRead responseUser = authenticationResource.getAuthenticated();
+        AppUserToken responseUser = authenticationResource.getAuthenticated();
 
         LoginResource loginResource = new LoginResource(getBaseUrl());
         LoginResponse loginResponse = loginResource.login(LoginRequest.builder()

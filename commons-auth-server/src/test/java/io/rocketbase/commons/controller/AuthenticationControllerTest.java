@@ -10,6 +10,7 @@ import io.rocketbase.commons.dto.authentication.*;
 import io.rocketbase.commons.exception.BadRequestException;
 import io.rocketbase.commons.exception.TokenRefreshException;
 import io.rocketbase.commons.model.AppUserEntity;
+import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.model.user.SimpleUserProfile;
 import io.rocketbase.commons.resource.AuthenticationResource;
 import io.rocketbase.commons.resource.BasicResponseErrorHandler;
@@ -123,7 +124,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
 
         // when
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
-        AppUserRead response = resource.getAuthenticated();
+        AppUserToken response = resource.getAuthenticated();
 
         // the
         assertThat(response, notNullValue());
@@ -145,7 +146,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
 
         // when
         AuthenticationResource resource = new AuthenticationResource(new JwtRestTemplate(tokenProvider));
-        AppUserRead response = resource.getAuthenticated();
+        AppUserToken response = resource.getAuthenticated();
 
         // the
         assertThat(response, notNullValue());
@@ -166,7 +167,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
 
         // when
         try {
-            AppUserRead response = resource.getAuthenticated();
+            AppUserToken response = resource.getAuthenticated();
             // then
             Assertions.fail("should have thrown HttpClientErrorException");
         } catch (TokenRefreshException e) {
@@ -247,7 +248,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest {
                 .avatar(avatar)
                 .build());
 
-        AppUserRead response = resource.getAuthenticated();
+        AppUserToken response = resource.getAuthenticated();
 
         // then
         assertThat(response.getFirstName(), equalTo("firstName"));
