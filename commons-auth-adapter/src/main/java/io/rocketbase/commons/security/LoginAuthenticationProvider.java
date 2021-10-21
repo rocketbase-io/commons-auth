@@ -32,7 +32,7 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
         try {
             LoginResponse login = loginApi.login(new LoginRequest(authentication.getName(), String.valueOf(authentication.getCredentials())));
             Collection<GrantedAuthority> authorities = jwtTokenService.parseToken(login.getJwtTokenBundle().getToken()).getAuthoritiesFromToken();
-            return new CommonsAuthenticationToken(authorities, login.getUser(), jwtTokenStoreProvider.getInstance(login.getJwtTokenBundle()));
+            return new CommonsAuthenticationToken(authorities, login.getUser(), jwtTokenStoreProvider.getInstance(login.getJwtTokenBundle()), null);
         } catch (HttpClientErrorException e) {
             if (Arrays.asList(HttpStatus.FORBIDDEN, HttpStatus.UNAUTHORIZED).contains(e.getStatusCode())) {
                 throw new BadCredentialsException("wrong username/password", e);

@@ -5,6 +5,7 @@ import io.rocketbase.commons.api.AuthenticationApi;
 import io.rocketbase.commons.dto.ExpirationInfo;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.EmailChangeRequest;
+import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
 import io.rocketbase.commons.dto.authentication.UsernameChangeRequest;
 import io.rocketbase.commons.exception.EmailValidationException;
@@ -61,13 +62,14 @@ public class AuthenticationResource implements BaseRestResource, AuthenticationA
      * @param passwordChange change request
      */
     @Override
-    public void changePassword(PasswordChangeRequest passwordChange) {
-        restTemplate
+    public JwtTokenBundle changePassword(PasswordChangeRequest passwordChange) {
+        ResponseEntity<JwtTokenBundle> response = restTemplate
                 .exchange(createUriComponentsBuilder(baseAuthApiUrl)
                                 .path("/auth/change-password").toUriString(),
                         HttpMethod.PUT,
                         new HttpEntity<>(passwordChange, createHeaderWithLanguage()),
-                        Void.class);
+                        JwtTokenBundle.class);
+        return response.getBody();
     }
 
     @Override

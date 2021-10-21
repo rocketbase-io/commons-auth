@@ -24,6 +24,8 @@ public class TokenParseResult {
 
     private Instant expiration;
 
+    private Long clientId;
+
     public Set<GrantedAuthority> getAuthoritiesFromToken() {
         if (user != null && user.getCapabilities() != null) {
             return user.getCapabilities().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toSet());

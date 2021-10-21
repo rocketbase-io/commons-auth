@@ -60,7 +60,7 @@ public class LoginCookieFilter extends OncePerRequestFilter {
                     }
 
                     CommonsAuthenticationToken authentication = new CommonsAuthenticationToken(authorities, parsedToken.getUser(),
-                            jwtTokenStoreProvider.getInstance(new JwtTokenBundle(accessToken, cookieRefreshToken)));
+                            jwtTokenStoreProvider.getInstance(new JwtTokenBundle(accessToken, cookieRefreshToken)), parsedToken.getClientId());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     if (log.isTraceEnabled()) {
                         log.trace("authenticated user {} with {}, setting security context", parsedToken.getUser().getUsername(), authorities);

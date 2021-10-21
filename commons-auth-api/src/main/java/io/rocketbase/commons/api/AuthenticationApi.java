@@ -3,6 +3,7 @@ package io.rocketbase.commons.api;
 import io.rocketbase.commons.dto.ExpirationInfo;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.authentication.EmailChangeRequest;
+import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
 import io.rocketbase.commons.dto.authentication.UsernameChangeRequest;
 import io.rocketbase.commons.exception.EmailValidationException;
@@ -14,7 +15,7 @@ import io.rocketbase.commons.model.user.UserSetting;
 public interface AuthenticationApi {
     AppUserToken getAuthenticated();
 
-    void changePassword(PasswordChangeRequest passwordChange);
+    JwtTokenBundle changePassword(PasswordChangeRequest passwordChange);
 
     AppUserRead changeUsername(UsernameChangeRequest usernameChange) throws UsernameValidationException;
 

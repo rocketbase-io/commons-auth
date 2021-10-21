@@ -39,6 +39,7 @@ public class JwtTokenService implements Serializable {
 
     public static final String REFRESH_TOKEN = "REFRESH_TOKEN";
     public static final String SCOPES_KEY = "scopes";
+    public static final String CLIENT_ID_KEY = "clientId";
     public static final String USER_KEY = "user";
 
     final JwtProperties jwtProperties;
@@ -89,15 +90,24 @@ public class JwtTokenService implements Serializable {
         appUserToken.setCapabilities(new HashSet<>(scopes != null ? scopes : Collections.emptySet()));
         Instant issuedAt = jws.getBody().getIssuedAt() != null ? Instant.ofEpochMilli(jws.getBody().getIssuedAt().getTime()) : null;
         Instant expiration = jws.getBody().getExpiration() != null ? Instant.ofEpochMilli(jws.getBody().getExpiration().getTime()) : null;
-        return new TokenParseResult(token, appUserToken, issuedAt, expiration);
+        Long clientId = jws.getBody().containsKey(CLIENT_ID_KEY) && String.valueOf(jws.getBody().get(CLIENT_ID_KEY)).matches("[0-9]+") ?
+                Long.parseLong(String.valueOf(jws.getBody().get(CLIENT_ID_KEY))) : null;
+        return new TokenParseResult(token, appUserToken, issuedAt, expiration, clientId);
     }
 
     public JwtTokenBundle generateTokenBundle(AppUserToken appUserToken) {
+        return generateTokenBundle(appUserToken, null);
+    }
+
+    public JwtTokenBundle generateTokenBundle(AppUserToken appUserToken, Long clientId) {
         Instant now = Instant.now();
+        JwtBuilder refreshTokenBuilder = prepareBuilder(now, jwtProperties.getRefreshTokenExpiration(), appUserToken.getUsername())
+                .claim(SCOPES_KEY, Arrays.asList(REFRESH_TOKEN));
+        if (clientId != null) {
+            refreshTokenBuilder.claim(CLIENT_ID_KEY, clientId);
+        }
         return new JwtTokenBundle(generateAccessToken(now, appUserToken),
-                prepareBuilder(now, jwtProperties.getRefreshTokenExpiration(), appUserToken.getUsername())
-                        .claim(SCOPES_KEY, Arrays.asList(REFRESH_TOKEN))
-                        .compact());
+                refreshTokenBuilder.compact());
     }
 
     public String generateAccessToken(AppUserToken appUserToken) {

@@ -106,7 +106,7 @@ public class AuthApiAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public AuthenticationApi authenticationApi() {
-        return new AuthenticationApiService(appUserService, appUserConverter, changeAppUserWithConfirmService, applicationEventPublisher);
+        return new AuthenticationApiService(appUserService, appUserConverter, changeAppUserWithConfirmService, applicationEventPublisher, jwtTokenService);
     }
 
     @Bean

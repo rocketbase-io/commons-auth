@@ -138,9 +138,19 @@ public class OAuthController {
 
             // lookup user with rights
             AppUserToken token = appUserTokenService.findById(code.getUserId()).orElseThrow(NotFoundException::new);
+
+            // TODO: client_id is optional
+            if (code.getClientId() != null) {
+                AppClientEntity client = appClientService.findById(code.getClientId()).orElseThrow(() -> {
+                    throw new OAuthException(OAuthException.ErrorType.INVALID_REQUEST, "wrong client id");
+                });
+                // limit capabilities that re only allowed for specific client
+                token.retainCapabilities(appCapabilityService.resolve(client.getCapabilityIds()));
+            }
+
             activeUserStore.addUser(token);
             authorizationCodePersistenceService.delete(code.getCode());
-            TokenResponse response = buildTokenResponse(code.getAuthRequest().getScope(), token, Nulls.notNull(code.getAuthRequest().getScope()).toLowerCase().contains("offline_access"));
+            TokenResponse response = buildTokenResponse(code.getAuthRequest().getScope(), token, Nulls.notNull(code.getAuthRequest().getScope()).toLowerCase().contains("offline_access"), code.getClientId());
             log.info("accessToken expires: {}", jwtTokenService.parseToken(response.getAccessToken()).getExpiration());
             return response;
         } else if ("password".equalsIgnoreCase(tokenRequest.getGrant_type())) {
@@ -150,14 +160,20 @@ public class OAuthController {
             LoginResponse loginResponse = loginService.performLogin(tokenRequest.getUsername(), tokenRequest.getPassword());
             activeUserStore.addUser(loginResponse.getUser());
             AppUserToken token = appUserTokenService.findById(loginResponse.getUser().getId()).orElseThrow(NotFoundException::new);
-            return buildTokenResponse(tokenRequest.getScope(), token, true);
+            return buildTokenResponse(tokenRequest.getScope(), token, true, null);
         } else if ("refresh_token".equalsIgnoreCase(tokenRequest.getGrant_type())) {
             // validate jwt
             TokenParseResult parsedToken = jwtTokenService.parseToken(tokenRequest.getRefresh_token());
             // lookup user with rights
             AppUserToken token = appUserTokenService.findByUsername(parsedToken.getUser().getUsername()).orElseThrow(NotFoundException::new);
+            if (parsedToken.getClientId() != null) {
+                AppClientEntity client = appClientService.findById(parsedToken.getClientId()).orElseThrow(() -> {
+                    throw new OAuthException(OAuthException.ErrorType.INVALID_REQUEST, "client id not found of token");
+                });
+                token.retainCapabilities(appCapabilityService.resolve(client.getCapabilityIds()));
+            }
             activeUserStore.addUser(token);
-            TokenResponse tokenResponse = buildTokenResponse(tokenRequest.getScope(), token, false);
+            TokenResponse tokenResponse = buildTokenResponse(tokenRequest.getScope(), token, false, parsedToken.getClientId());
             tokenResponse.setRefreshToken(tokenRequest.getRefresh_token());
             tokenResponse.setRefreshExpiresIn(getExpiresIn(tokenRequest.getRefresh_token()));
             return tokenResponse;
@@ -192,12 +208,12 @@ public class OAuthController {
                 .build();
     }
 
-    protected TokenResponse buildTokenResponse(String scope, AppUserToken token, boolean withRefresh) {
+    protected TokenResponse buildTokenResponse(String scope, AppUserToken token, boolean withRefresh, Long clientId) {
         TokenResponse.TokenResponseBuilder builder = TokenResponse.builder()
                 .tokenType("Bearer")
                 .scope(scope);
         if (withRefresh) {
-            JwtTokenBundle bundle = jwtTokenService.generateTokenBundle(token);
+            JwtTokenBundle bundle = jwtTokenService.generateTokenBundle(token, clientId);
             return builder
                     .accessToken(bundle.getToken())
                     .expiresIn(getExpiresIn(bundle.getToken()))

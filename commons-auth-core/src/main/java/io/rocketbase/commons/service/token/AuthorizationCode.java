@@ -49,6 +49,11 @@ public class AuthorizationCode implements Serializable {
         return Instant.now().plusSeconds(invalidAfterSeconds);
     }
 
+    public Long getClientId() {
+        return authRequest != null && authRequest.getClient_id() != null && authRequest.getClient_id().matches("[0-9]+") ?
+                Long.parseLong(authRequest.getClient_id()) : null;
+    }
+
     public boolean isValid() {
         return Instant.now().isBefore(invalid);
     }

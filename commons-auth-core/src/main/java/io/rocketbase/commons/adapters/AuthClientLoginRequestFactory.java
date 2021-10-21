@@ -54,7 +54,7 @@ public class AuthClientLoginRequestFactory extends HttpComponentsClientHttpReque
         request.setHeader(jwtTokenStore.getHeaderName(), jwtTokenStore.getTokenHeader());
     }
 
-    private JwtTokenStore getJwtTokenStore() {
+    protected JwtTokenStore getJwtTokenStore() {
         if (jwtTokenStore == null) {
             refreshJwtTokenStore();
         }
@@ -65,7 +65,7 @@ public class AuthClientLoginRequestFactory extends HttpComponentsClientHttpReque
         return new JwtTokenStoreHttp(baseAuthApiUrl, loginResponse.getJwtTokenBundle());
     }
 
-    private JwtTokenStore refreshJwtTokenStore() {
+    protected JwtTokenStore refreshJwtTokenStore() {
         LoginResponse loginResponse = new LoginResource(baseAuthApiUrl).login(new LoginRequest(username, password));
         jwtTokenStore = initStore(loginResponse);
         if (log.isDebugEnabled()) {

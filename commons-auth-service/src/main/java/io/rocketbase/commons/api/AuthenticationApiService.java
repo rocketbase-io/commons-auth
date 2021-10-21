@@ -5,6 +5,7 @@ import io.rocketbase.commons.dto.ExpirationInfo;
 import io.rocketbase.commons.dto.appuser.AppUserRead;
 import io.rocketbase.commons.dto.appuser.AppUserUpdate;
 import io.rocketbase.commons.dto.authentication.EmailChangeRequest;
+import io.rocketbase.commons.dto.authentication.JwtTokenBundle;
 import io.rocketbase.commons.dto.authentication.PasswordChangeRequest;
 import io.rocketbase.commons.dto.authentication.UsernameChangeRequest;
 import io.rocketbase.commons.event.UpdateProfileEvent;
@@ -15,6 +16,7 @@ import io.rocketbase.commons.model.AppUserToken;
 import io.rocketbase.commons.model.user.UserProfile;
 import io.rocketbase.commons.model.user.UserSetting;
 import io.rocketbase.commons.security.CommonsPrincipal;
+import io.rocketbase.commons.security.JwtTokenService;
 import io.rocketbase.commons.service.change.ChangeAppUserWithConfirmService;
 import io.rocketbase.commons.service.user.AppUserService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class AuthenticationApiService implements AuthenticationApi, BaseApiServi
     private final AppUserConverter userConverter;
     private final ChangeAppUserWithConfirmService changeAppUserWithConfirmService;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final JwtTokenService jwtTokenService;
 
     @Override
     public AppUserToken getAuthenticated() {
@@ -38,9 +41,10 @@ public class AuthenticationApiService implements AuthenticationApi, BaseApiServi
     }
 
     @Override
-    public void changePassword(PasswordChangeRequest passwordChange) {
+    public JwtTokenBundle changePassword(PasswordChangeRequest passwordChange) {
         CommonsPrincipal principal = getCurrentPrincipal();
-        appUserService.performUpdatePassword(principal.getId(), passwordChange);
+        AppUserEntity entity = appUserService.performUpdatePassword(principal.getId(), passwordChange);
+        return jwtTokenService.generateTokenBundle(userConverter.toToken(entity));
     }
 
     @Override

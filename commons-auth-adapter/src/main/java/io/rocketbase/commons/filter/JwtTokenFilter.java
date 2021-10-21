@@ -84,7 +84,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             authorities.addAll(customAuthoritiesProvider.getExtraSecurityContextAuthorities(parsedToken.getUser(), request));
 
             CommonsAuthenticationToken authentication = new CommonsAuthenticationToken(authorities, parsedToken.getUser(),
-                    jwtTokenStoreProvider.getInstance(new JwtTokenBundle(parsedToken.getToken(), null)));
+                    jwtTokenStoreProvider.getInstance(new JwtTokenBundle(parsedToken.getToken(), null)), parsedToken.getClientId());
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             if (log.isTraceEnabled()) {
                 log.trace("authenticated user {} with {}, setting security context", parsedToken.getUser().getUsername(), authorities);

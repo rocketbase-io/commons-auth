@@ -47,7 +47,7 @@ public class JwtAuthenticationTokenFilter extends JwtTokenFilter {
                 authorities.addAll(customAuthoritiesProvider.getExtraSecurityContextAuthorities(user.getAppUserToken(), request));
 
                 CommonsAuthenticationToken authentication = new CommonsAuthenticationToken(authorities, user.getAppUserToken(),
-                        jwtTokenStoreProvider.getInstance(new JwtTokenBundle(authToken, null)));
+                        jwtTokenStoreProvider.getInstance(new JwtTokenBundle(authToken, null)), null);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 if (log.isTraceEnabled()) {
                     log.trace("authenticated user {} with {}, setting security context", username, authorities);
