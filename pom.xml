@@ -50,7 +50,6 @@ SOFTWARE.
         <module>commons-auth-service</module>
         <module>commons-auth-email-smtp</module>
         <module>commons-auth-email-postmark</module>
-        <module>commons-auth-vaadin-core</module>
         <module>sample</module>
     </modules>
 
@@ -111,7 +110,6 @@ SOFTWARE.
         <passay.version>1.6.1</passay.version>
         <email-template-builder.version>2.2.0</email-template-builder.version>
         <jacoco.version>0.8.7</jacoco.version>
-        <vaadin.version>14.7.3</vaadin.version>
 
         <!-- lombok -->
         <lombok.version>1.18.22</lombok.version>

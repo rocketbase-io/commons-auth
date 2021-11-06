@@ -15,7 +15,6 @@ import io.rocketbase.commons.service.JwtTokenStoreProvider;
 import io.rocketbase.commons.service.token.AuthorizationCodeService;
 import io.rocketbase.commons.service.user.AppUserTokenService;
 import io.rocketbase.commons.util.JwtTokenStoreService;
-import io.rocketbase.commons.vaadin.security.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -110,7 +109,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        SecurityUtils.configure(httpSecurity);
 
         // @formatter:off
         httpSecurity
@@ -178,8 +176,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements WebM
 
     @Override
     public void configure(WebSecurity web) {
-        SecurityUtils.configure(web);
-
         // needed when basic auth is also set and oauth (with header auth is used)
         web.ignoring()
                 .antMatchers(HttpMethod.GET, "/actuator/health");
