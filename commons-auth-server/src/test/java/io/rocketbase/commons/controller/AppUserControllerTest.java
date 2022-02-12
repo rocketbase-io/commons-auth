@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 
 import javax.annotation.Resource;
 import java.time.Instant;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -63,6 +64,25 @@ public class AppUserControllerTest extends BaseIntegrationTestPrefixed {
         assertThat(response.getTotalPages(), equalTo(1));
         assertThat(response.getPageSize(), equalTo(10));
         assertThat(response.getTotalElements(), greaterThan(2L));
+    }
+
+    @Test
+    public void findOne() {
+        // given
+        AppUserEntity user = getAppUser("admin");
+        JwtTokenProvider tokenProvider = new SimpleJwtTokenProvider(getBaseUrl(), modifiedJwtTokenService.generateTokenBundle(user));
+
+        // when
+        AppUserResource appUserResource = new AppUserResource(new JwtRestTemplate(tokenProvider));
+        Optional<AppUserRead> responseUser = appUserResource.findOne("user");
+        Optional<AppUserRead> responseUnkownId = appUserResource.findOne("unkownId");
+
+        // then
+        assertThat(responseUser, notNullValue());
+        assertThat(responseUser.isPresent(), equalTo(true));
+        assertThat(responseUser.get().getUsername(), equalTo("user"));
+        assertThat(responseUnkownId, notNullValue());
+        assertThat(responseUnkownId.isPresent(), equalTo(false));
     }
 
     @Test

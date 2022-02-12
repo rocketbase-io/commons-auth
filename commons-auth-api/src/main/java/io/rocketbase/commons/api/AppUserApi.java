@@ -7,6 +7,8 @@ import io.rocketbase.commons.dto.appuser.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 public interface AppUserApi {
 
     @Deprecated
@@ -19,6 +21,8 @@ public interface AppUserApi {
     }
 
     PageableResult<AppUserRead> find(QueryAppUser query, Pageable pageable);
+
+    Optional<AppUserRead> findOne(String usernameOrId);
 
     AppUserRead create(AppUserCreate create);
 

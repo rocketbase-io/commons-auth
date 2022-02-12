@@ -49,6 +49,13 @@ public class AppUserController implements BaseController {
         return PageableResult.contentPage(appUserConverter.fromEntities(entities.getContent()), entities);
     }
 
+    @RequestMapping(method = RequestMethod.GET, path = "/api/user/{usernameOrId}")
+    @ResponseBody
+    public AppUserRead findOne(@PathVariable("usernameOrId") String usernameOrId) {
+        AppUserEntity entity = appUserService.findByIdOrUsername(usernameOrId).orElseThrow(NotFoundException::new);
+        return appUserConverter.fromEntity(entity);
+    }
+
     @RequestMapping(method = RequestMethod.POST, path = "/api/user", consumes = APPLICATION_JSON_VALUE)
     @ResponseBody
     public AppUserRead create(@RequestBody @NotNull @Validated AppUserCreate create) {
@@ -76,17 +83,8 @@ public class AppUserController implements BaseController {
 
     @RequestMapping(method = RequestMethod.DELETE, path = "/api/user/{id}")
     public void delete(@PathVariable("id") String id) {
-        AppUserEntity entity = getById(id);
+        AppUserEntity entity = appUserService.findById(id).orElseThrow(NotFoundException::new);
         appUserService.delete(entity);
-    }
-
-
-    private AppUserEntity getById(String id) {
-        Optional<AppUserEntity> optionalAppUser = appUserService.findById(id);
-        if (!optionalAppUser.isPresent()) {
-            throw new NotFoundException();
-        }
-        return optionalAppUser.get();
     }
 
 }
