@@ -61,7 +61,7 @@ For handling the JWT-Tokens and it's expirations you can use these properties:
 | auth.jwt.header                | Authorization   | standard approach                                            |
 | auth.jwt.token-prefix          | Bearer          | standard approach with " " at the end                        |
 | auth.jwt.uri-param          | token          | token could also get provided via url-param in case of downloads etc.                        |
-| auth.jwt.secet          | **required**          | a base64 encoded jwt secret |
+| auth.jwt.secret          | **required**          | a base64 encoded jwt secret |
 | auth.jwt.access-token-expiration          | 60          | time in minutes |
 | auth.jwt.refresh-token-expiration          | 43200          | time in minutes - default means 30 days |
 
