@@ -1,18 +1,13 @@
 package io.rocketbase.commons.service;
 
 import com.google.common.collect.ImmutableMap;
-import io.rocketbase.commons.Application;
 import io.rocketbase.commons.dto.appuser.QueryAppUser;
 import io.rocketbase.commons.model.AppUserMongoEntity;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
@@ -21,11 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
-
-@Slf4j
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
-public class AppUserMongoServiceImplTest {
+public class AppUserMongoServiceImplTest extends BaseIntegrationTest {
 
     @Resource
     private AppUserPersistenceService<AppUserMongoEntity> service;

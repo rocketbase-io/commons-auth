@@ -11,10 +11,6 @@
 
     <artifactId>commons-auth-email-postmark</artifactId>
 
-    <properties>
-        <postmark-spring.version>0.0.1</postmark-spring.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>io.rocketbase.commons</groupId>

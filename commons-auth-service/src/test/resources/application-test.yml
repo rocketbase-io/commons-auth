@@ -20,6 +20,9 @@ spring:
           starttls: true
     test-connection: false
 
+  main:
+    allow-circular-references: true
+
 logging:
   level:
     io.rocketbase: TRACE
