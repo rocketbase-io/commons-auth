@@ -2,6 +2,8 @@ package io.rocketbase.commons.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.List;
 
@@ -13,7 +15,7 @@ public interface AppInviteEntity extends EntityWithKeyValue<AppInviteEntity>, Ha
 
     String getInvitor();
 
-    void setInvitor(String invitor);
+    void setInvitor(@NotNull String invitor);
 
     String getMessage();
 
@@ -29,7 +31,7 @@ public interface AppInviteEntity extends EntityWithKeyValue<AppInviteEntity>, Ha
 
     String getEmail();
 
-    void setEmail(String email);
+    void setEmail(@NotNull @Email String email);
 
     List<String> getRoles();
 
@@ -39,7 +41,7 @@ public interface AppInviteEntity extends EntityWithKeyValue<AppInviteEntity>, Ha
 
     Instant getExpiration();
 
-    void setExpiration(Instant expiration);
+    void setExpiration(@NotNull Instant expiration);
 
     /**
      * fullname fallback if null use email

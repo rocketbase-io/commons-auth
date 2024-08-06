@@ -6,8 +6,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,19 +28,14 @@ public class AppUserJpaEntity implements AppUserEntity {
     @Column(length = 36)
     private String id;
 
-    @NotNull
     private String username;
-
 
     private String firstName;
 
     private String lastName;
 
-    @NotNull
     private String password;
 
-    @NotNull
-    @Email
     private String email;
 
     @Column(length = 2000)
@@ -72,7 +65,6 @@ public class AppUserJpaEntity implements AppUserEntity {
 
     private boolean enabled;
 
-    @NotNull
     @CreatedDate
     @Column(nullable = false)
     private Instant created;

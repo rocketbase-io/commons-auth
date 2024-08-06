@@ -5,8 +5,6 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +24,6 @@ public class AppInviteJpaEntity implements AppInviteEntity {
     @Column(length = 36, nullable = false)
     private String id;
 
-    @NotNull
     private String invitor;
 
     @Column(length = 4000)
@@ -36,8 +33,6 @@ public class AppInviteJpaEntity implements AppInviteEntity {
 
     private String lastName;
 
-    @NotNull
-    @Email
     private String email;
 
     @Column(name = "roles")
@@ -57,12 +52,10 @@ public class AppInviteJpaEntity implements AppInviteEntity {
     @Builder.Default
     private Map<String, String> keyValueMap = new HashMap<>();
 
-    @NotNull
     @CreatedDate
     @Column(nullable = false)
     private Instant created;
 
-    @NotNull
     @Column(nullable = false)
     private Instant expiration;
 

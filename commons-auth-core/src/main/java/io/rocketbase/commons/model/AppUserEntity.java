@@ -3,6 +3,8 @@ package io.rocketbase.commons.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.List;
 
@@ -10,17 +12,17 @@ public interface AppUserEntity extends UserDetails, AppUserToken, EntityWithKeyV
 
     void setId(String id);
 
-    void setUsername(String username);
+    void setUsername(@NotNull String username);
 
     String getPassword();
 
-    void setPassword(String password);
+    void setPassword(@NotNull String password);
 
     void setFirstName(String firstName);
     
     void setLastName(String lastName);
 
-    void setEmail(String email);
+    void setEmail(@NotNull @Email String email);
 
     void setAvatar(String avatar);
 
