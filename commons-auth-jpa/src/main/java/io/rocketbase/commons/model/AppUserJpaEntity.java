@@ -58,7 +58,6 @@ public class AppUserJpaEntity implements AppUserEntity {
             indexes = @Index(name = "idx_user_keyvalue", columnList = "user_id")
     )
     @MapKeyColumn(name = "field_key", length = 50)
-    @Lob
     @Column(name = "field_value", nullable = false)
     @Builder.Default
     private Map<String, String> keyValueMap = new HashMap<>();
